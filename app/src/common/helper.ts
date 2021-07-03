@@ -14,7 +14,7 @@ export const createGetServerSideProps: <T>(
 ) => GetServerSideProps<T> = fn => async context => {
   try {
     return await fn(context);
-  } catch (e) {
+  } catch (e: any) {
     const code = e?.graphQLErrors?.[0].extensions?.code;
     if (code === 'UNAUTHENTICATED') {
       context.res.setHeader(

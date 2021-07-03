@@ -6,7 +6,7 @@ import { SpinnerBoarder } from './SpinnerBoarder';
 interface ButtonProps {
   children?: React.ReactNode;
   className?: string;
-  type: 'primary' | 'dark';
+  type: 'primary' | 'dark' | 'white';
   htmlType?: 'button' | 'submit' | 'reset';
   disabled?: boolean;
   block?: boolean;
@@ -62,7 +62,13 @@ export const Button = React.forwardRef((props: ButtonProps, ref: any) => {
       tw`focus:( ring-indigo-500 )`,
       isDisabled && tw`bg-indigo-400!`,
     ],
+    type === 'white' && [
+      tw`text-white bg-white border border-gray-300`,
+      tw`hover:( bg-gray-50 )`,
+      tw`focus:( ring-indigo-500  )`,
+    ],
     size === 'small' && tw`text-sm px-2 py-1 rounded`,
+    size === 'large' && tw`px-5 py-3 text-base`,
   ];
   if (href) {
     return (

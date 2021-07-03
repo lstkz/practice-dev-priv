@@ -1,10 +1,8 @@
 import { Button } from '../../components/Button';
-import 'twin.macro';
 import React from 'react';
 import { Input } from '../../components/Input';
 import { Separator } from '../../components/Separator';
-import { GoogleIcon } from '../../icons/GoogleIcon';
-import { GithubIcon } from '../../icons/GithubIcon';
+import { AuthSocialButtons } from '../../components/AuthSocialButtons';
 
 export function LoginForm() {
   return (
@@ -13,28 +11,7 @@ export function LoginForm() {
         <div className="px-4 py-8 sm:px-10">
           <div>
             <p className="text-sm font-medium text-gray-700">Sign in with</p>
-
-            <div className="mt-1 grid grid-cols-2 gap-3">
-              <div>
-                <a
-                  href="#"
-                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                >
-                  <span className="sr-only">Sign in with Google</span>
-                  <GoogleIcon className="w-5 h-5" />
-                </a>
-              </div>
-
-              <div>
-                <a
-                  href="#"
-                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                >
-                  <span className="sr-only">Sign in with GitHub</span>
-                  <GithubIcon className="w-5 h-5" />
-                </a>
-              </div>
-            </div>
+            <AuthSocialButtons tw="mt-1" />
           </div>
           <Separator tw="mt-6">Or</Separator>
 

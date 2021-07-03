@@ -22,9 +22,14 @@ export function ContextInput(props: ContextInputProps) {
         onChange={e => {
           updateValue(e.target.value);
         }}
+        state={hasError ? 'error' : undefined}
+        aria-invalid={hasError}
+        aria-describedby={`${name}-error`}
       />
       {hasError && (
-        <div css={tw`text-red-500 mt-1 text-sm font-medium`}>{error}</div>
+        <div id={`${name}-error`} css={tw`mt-2 text-sm text-red-600`}>
+          {error}
+        </div>
       )}
     </div>
   );

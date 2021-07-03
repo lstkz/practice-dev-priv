@@ -1,3 +1,4 @@
+import { ExclamationIcon } from '@heroicons/react/outline';
 import React from 'react';
 import 'twin.macro';
 
@@ -8,8 +9,16 @@ interface AlertProps {
 export function Alert(props: AlertProps) {
   const { children } = props;
   return (
-    <div tw="rounded-md px-4 py-2 text-center bg-red-600 text-white">
-      {children}
+    <div tw="rounded-md bg-red-50 p-4 text-red-800 text-center">
+      <div className="flex">
+        <div className="flex-shrink-0">
+          <ExclamationIcon
+            className="h-5 w-5 text-red-400"
+            aria-hidden="true"
+          />
+        </div>
+        <div className="ml-3 text-sm">{children}</div>
+      </div>
     </div>
   );
 }

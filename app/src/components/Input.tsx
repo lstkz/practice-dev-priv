@@ -1,3 +1,4 @@
+import { ExclamationCircleIcon } from '@heroicons/react/outline';
 import * as React from 'react';
 import tw from 'twin.macro';
 
@@ -6,11 +7,14 @@ type BaseProps = Pick<
   | 'value'
   | 'placeholder'
   | 'onChange'
+  | 'onBlur'
   | 'type'
   | 'id'
   | 'autoComplete'
   | 'maxLength'
   | 'onKeyPress'
+  | 'aria-invalid'
+  | 'aria-describedby'
 >;
 
 export interface InputProps extends BaseProps {
@@ -70,7 +74,7 @@ export function Input(props: InputProps) {
       {label && (
         <label
           css={[
-            tw`text-gray-600 text-sm mb-2 font-medium`,
+            tw`block text-sm font-medium text-gray-700 mb-1`,
             noLabel && tw`sr-only`,
           ]}
           htmlFor={rest.id}
@@ -78,23 +82,28 @@ export function Input(props: InputProps) {
           {label}
         </label>
       )}
-      <input
-        {...rest}
-        ref={inputRef}
-        data-test={testId}
-        className={inputClassName}
-        type={type}
-        css={[
-          tw`block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md`,
-          // tw`block w-full text-gray-700 border border-gray-300 shadow-sm transition-all placeholder-gray-500`,
-          // tw`outline-none`,
-          // tw`focus:border-primary focus:shadow-lg focus:placeholder-gray-400`,
-          // size === 'large' && tw`px-7 py-4 rounded-lg`,
-          // size === 'small' && tw`px-3 py-4 rounded-md`,
-          // !size && tw`py-3 px-5 rounded-md`,
-          state === 'error' && tw`border-red-500 focus:border-red-700`,
-        ]}
-      />
+      <div className="relative rounded-md shadow-sm">
+        <input
+          {...rest}
+          ref={inputRef}
+          data-test={testId}
+          className={inputClassName}
+          type={type}
+          css={[
+            tw`block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md`,
+            state === 'error' &&
+              tw`border-red-300 text-red-900 placeholder-red-300 focus:outline-none focus:ring-red-500 focus:border-red-500`,
+          ]}
+        />
+        {state === 'error' && (
+          <div tw="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+            <ExclamationCircleIcon
+              className="h-5 w-5 text-red-500"
+              aria-hidden="true"
+            />
+          </div>
+        )}
+      </div>
       {feedback && (
         <InputFeedback
           color={state === 'error' ? 'danger' : undefined}

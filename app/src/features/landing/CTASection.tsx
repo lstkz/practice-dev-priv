@@ -1,3 +1,7 @@
+import React from 'react';
+import { createUrl } from '../../common/url';
+import { Button } from '../../components/Button';
+
 export default function CTASection() {
   return (
     <div className="bg-indigo-50">
@@ -8,12 +12,13 @@ export default function CTASection() {
         </h2>
         <div className="mt-8 flex lg:mt-0 lg:flex-shrink-0">
           <div className="inline-flex rounded-md shadow">
-            <a
-              href="#"
-              className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+            <Button
+              size="large"
+              type="primary"
+              href={createUrl({ name: 'register' })}
             >
               Get started
-            </a>
+            </Button>
           </div>
         </div>
       </div>
