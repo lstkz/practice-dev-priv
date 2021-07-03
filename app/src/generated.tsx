@@ -83,6 +83,12 @@ export type LoginMutation = { __typename?: 'Mutation' } & {
   login: { __typename?: 'AuthResult' } & DefaultAuthResultFragment;
 };
 
+export type GetModulesQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetModulesQuery = { __typename?: 'Query' } & {
+  me: { __typename?: 'User' } & Pick<User, 'id'>;
+};
+
 export type RegisterMutationVariables = Exact<{
   registerValues: RegisterInput;
 }>;
@@ -170,6 +176,61 @@ export type LoginMutationResult = Apollo.MutationResult<LoginMutation>;
 export type LoginMutationOptions = Apollo.BaseMutationOptions<
   LoginMutation,
   LoginMutationVariables
+>;
+export const GetModulesDocument = gql`
+  query GetModules {
+    me {
+      id
+    }
+  }
+`;
+
+/**
+ * __useGetModulesQuery__
+ *
+ * To run a query within a React component, call `useGetModulesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetModulesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetModulesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetModulesQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetModulesQuery,
+    GetModulesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetModulesQuery, GetModulesQueryVariables>(
+    GetModulesDocument,
+    options
+  );
+}
+export function useGetModulesLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetModulesQuery,
+    GetModulesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<GetModulesQuery, GetModulesQueryVariables>(
+    GetModulesDocument,
+    options
+  );
+}
+export type GetModulesQueryHookResult = ReturnType<typeof useGetModulesQuery>;
+export type GetModulesLazyQueryHookResult = ReturnType<
+  typeof useGetModulesLazyQuery
+>;
+export type GetModulesQueryResult = Apollo.QueryResult<
+  GetModulesQuery,
+  GetModulesQueryVariables
 >;
 export const RegisterDocument = gql`
   mutation Register($registerValues: RegisterInput!) {
