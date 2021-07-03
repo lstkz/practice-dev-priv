@@ -1,18 +1,26 @@
+import Link from 'next/link';
 import React from 'react';
 import tw from 'twin.macro';
 import { SpinnerBoarder } from './SpinnerBoarder';
 
-interface ButtonProps
-  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'> {
-  type: 'primary';
-  htmlType?: 'submit';
+interface ButtonProps {
+  children?: React.ReactNode;
+  className?: string;
+  type: 'primary' | 'dark';
+  htmlType?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
   block?: boolean;
   icon?: React.ReactNode;
   loading?: boolean;
-  size?: 'small';
+  href?: string;
+  size?: 'small' | 'default' | 'large';
+  onClick?: (
+    e: React.MouseEvent<HTMLAnchorElement | HTMLDivElement, MouseEvent>
+  ) => void;
+  testId?: string;
 }
 
-export function Button(props: ButtonProps) {
+export const Button = React.forwardRef((props: ButtonProps, ref: any) => {
   const {
     htmlType,
     type,
@@ -22,9 +30,11 @@ export function Button(props: ButtonProps) {
     children,
     disabled,
     size,
-    ...rest
+    testId,
+    href,
+    onClick,
+    className,
   } = props;
-
   const inner = (
     <>
       {(loading || icon) && (
@@ -36,26 +46,48 @@ export function Button(props: ButtonProps) {
     </>
   );
   const isDisabled = loading || disabled;
+  const css = [
+    tw`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md justify-center`,
+    tw`focus:( outline-none ring-2 ring-offset-2 )`,
+    block && tw`w-full`,
+    isDisabled && tw`hover:cursor-default`,
+    type === 'dark' && [
+      tw`text-white bg-gray-600`,
+      tw`hover:( bg-gray-700 )`,
+      tw`focus:( ring-gray-700 ring-offset-gray-400 )`,
+    ],
+    type === 'primary' && [
+      tw`text-white bg-indigo-600 `,
+      tw`hover:( bg-indigo-700 )`,
+      tw`focus:( ring-indigo-500 )`,
+      isDisabled && tw`bg-indigo-400!`,
+    ],
+    size === 'small' && tw`text-sm px-2 py-1 rounded`,
+  ];
+  if (href) {
+    return (
+      <Link href={href} passHref>
+        <a
+          data-test={testId}
+          ref={ref}
+          css={css}
+          onClick={onClick as any}
+          className={className}
+        >
+          {inner}
+        </a>
+      </Link>
+    );
+  }
   return (
     <button
       disabled={isDisabled}
-      css={[
-        tw`rounded-md px-4 py-2 transition-all inline-flex justify-center items-center`,
-        tw`focus:( ring-indigo-400 outline-none ring-2 )`,
-        block && tw`w-full`,
-        isDisabled && tw`hover:cursor-default`,
-        type === 'primary' && [
-          tw`text-white bg-indigo-500 `,
-          tw`hover:( bg-indigo-600 )`,
-          tw`focus:( focus:ring-offset-2 bg-indigo-600 )`,
-          isDisabled && tw`bg-indigo-400!`,
-        ],
-        size === 'small' && tw`text-sm px-2 py-1 rounded`,
-      ]}
+      css={css}
       type={htmlType}
-      {...rest}
+      onClick={onClick as any}
+      className={className}
     >
       {inner}
     </button>
   );
-}
+});

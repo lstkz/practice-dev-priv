@@ -1,9 +1,5 @@
 /* This example requires Tailwind CSS v2.0+ */
 import {
-  AnnotationIcon,
-  GlobeAltIcon,
-  LightningBoltIcon,
-  ScaleIcon,
   CodeIcon,
   TerminalIcon,
   UserGroupIcon,
