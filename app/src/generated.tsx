@@ -83,6 +83,12 @@ export type LoginMutation = { __typename?: 'Mutation' } & {
   login: { __typename?: 'AuthResult' } & DefaultAuthResultFragment;
 };
 
+export type GetModuleQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetModuleQuery = { __typename?: 'Query' } & {
+  me: { __typename?: 'User' } & Pick<User, 'id'>;
+};
+
 export type GetModulesQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetModulesQuery = { __typename?: 'Query' } & {
@@ -176,6 +182,58 @@ export type LoginMutationResult = Apollo.MutationResult<LoginMutation>;
 export type LoginMutationOptions = Apollo.BaseMutationOptions<
   LoginMutation,
   LoginMutationVariables
+>;
+export const GetModuleDocument = gql`
+  query GetModule {
+    me {
+      id
+    }
+  }
+`;
+
+/**
+ * __useGetModuleQuery__
+ *
+ * To run a query within a React component, call `useGetModuleQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetModuleQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetModuleQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetModuleQuery(
+  baseOptions?: Apollo.QueryHookOptions<GetModuleQuery, GetModuleQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetModuleQuery, GetModuleQueryVariables>(
+    GetModuleDocument,
+    options
+  );
+}
+export function useGetModuleLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetModuleQuery,
+    GetModuleQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<GetModuleQuery, GetModuleQueryVariables>(
+    GetModuleDocument,
+    options
+  );
+}
+export type GetModuleQueryHookResult = ReturnType<typeof useGetModuleQuery>;
+export type GetModuleLazyQueryHookResult = ReturnType<
+  typeof useGetModuleLazyQuery
+>;
+export type GetModuleQueryResult = Apollo.QueryResult<
+  GetModuleQuery,
+  GetModuleQueryVariables
 >;
 export const GetModulesDocument = gql`
   query GetModules {

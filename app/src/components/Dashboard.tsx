@@ -5,6 +5,7 @@ import tw from 'twin.macro';
 import { ProfileDropdown } from './ProfileDropdown';
 import Link from 'next/link';
 import { createUrl } from '../common/url';
+import { Button } from './Button';
 
 const navigation = [
   { name: 'Dashboard', href: '#', current: true },
@@ -19,6 +20,7 @@ interface DashboardProps {
 
 export default function Dashboard(props: DashboardProps) {
   const { children } = props;
+  const isLoggedIn = false;
   return (
     <>
       <Disclosure as="nav" className="bg-gray-800">
@@ -71,7 +73,26 @@ export default function Dashboard(props: DashboardProps) {
                   </div>
                 </div>
                 <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                  <ProfileDropdown />
+                  {isLoggedIn ? (
+                    <ProfileDropdown />
+                  ) : (
+                    <div tw="space-x-4">
+                      <Button
+                        href={createUrl({ name: 'login' })}
+                        focusBg="gray-800"
+                        type="white"
+                      >
+                        Log in
+                      </Button>
+                      <Button
+                        href={createUrl({ name: 'register' })}
+                        focusBg="gray-800"
+                        type="primary"
+                      >
+                        Join now
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

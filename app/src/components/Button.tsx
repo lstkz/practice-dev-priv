@@ -18,6 +18,7 @@ interface ButtonProps {
     e: React.MouseEvent<HTMLAnchorElement | HTMLDivElement, MouseEvent>
   ) => void;
   testId?: string;
+  focusBg?: 'gray-800';
 }
 
 export const Button = React.forwardRef((props: ButtonProps, ref: any) => {
@@ -34,6 +35,7 @@ export const Button = React.forwardRef((props: ButtonProps, ref: any) => {
     href,
     onClick,
     className,
+    focusBg,
   } = props;
   const inner = (
     <>
@@ -63,12 +65,13 @@ export const Button = React.forwardRef((props: ButtonProps, ref: any) => {
       isDisabled && tw`bg-indigo-400!`,
     ],
     type === 'white' && [
-      tw`text-white bg-white border border-gray-300`,
+      tw`text-gray-700 bg-white border border-gray-300`,
       tw`hover:( bg-gray-50 )`,
-      tw`focus:( ring-indigo-500  )`,
+      tw`focus:( ring-indigo-500   )`,
     ],
     size === 'small' && tw`text-sm px-2 py-1 rounded`,
     size === 'large' && tw`px-5 py-3 text-base`,
+    focusBg === 'gray-800' && tw`ring-offset-gray-800`,
   ];
   if (href) {
     return (

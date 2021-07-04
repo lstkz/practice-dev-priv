@@ -31,6 +31,10 @@ export type UrlOptions =
     }
   | {
       name: 'modules';
+    }
+  | {
+      name: 'module';
+      id: number;
     };
 
 export function createUrl(options: UrlOptions) {
@@ -39,6 +43,8 @@ export function createUrl(options: UrlOptions) {
       return '/modules';
     case 'tos':
       return '/terms';
+    case 'module':
+      return '/module/' + options.id;
     default:
       return '/' + options.name;
   }

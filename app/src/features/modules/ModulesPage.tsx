@@ -1,5 +1,5 @@
 import React from 'react';
-import Breadcrumb from '../../components/Breadcrumb';
+import { Container } from '../../components/Container';
 import Dashboard from '../../components/Dashboard';
 import { TwoColLayout } from '../../components/TwoColLayout';
 import { ModuleListItem } from './ModuleListItem';
@@ -48,8 +48,7 @@ export function ModulesPage() {
   const {} = useModulesState();
   return (
     <Dashboard>
-      <Breadcrumb />
-      <div tw="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 mt-10">
+      <Container>
         <TwoColLayout
           left={
             <div className="bg-white shadow overflow-hidden sm:rounded-md">
@@ -62,7 +61,7 @@ export function ModulesPage() {
           }
           right={<ModulesFilter />}
         />
-      </div>
+      </Container>
     </Dashboard>
   );
 }
