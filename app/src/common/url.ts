@@ -28,6 +28,9 @@ export type UrlOptions =
     }
   | {
       name: 'pricing';
+    }
+  | {
+      name: 'modules';
     };
 
 export function createUrl(options: UrlOptions) {

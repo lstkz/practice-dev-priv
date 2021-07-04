@@ -4,6 +4,7 @@ import {
   LightningBoltIcon,
   TerminalIcon,
   DocumentTextIcon,
+  SunIcon,
 } from '@heroicons/react/outline';
 
 const pickChallengeSteps = [
@@ -40,7 +41,7 @@ const testShareSteps = [
     id: 2,
     name: 'Success?',
     description: 'Congrats! Now share your solution with other users.',
-    icon: AnnotationIcon,
+    icon: SunIcon,
   },
 ];
 

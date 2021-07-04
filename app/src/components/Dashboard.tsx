@@ -3,6 +3,8 @@ import { Disclosure } from '@headlessui/react';
 import { MenuIcon, XIcon } from '@heroicons/react/outline';
 import tw from 'twin.macro';
 import { ProfileDropdown } from './ProfileDropdown';
+import Link from 'next/link';
+import { createUrl } from '../common/url';
 
 const navigation = [
   { name: 'Dashboard', href: '#', current: true },
@@ -37,16 +39,16 @@ export default function Dashboard(props: DashboardProps) {
                 </div>
                 <div className="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
                   <div className="flex-shrink-0 flex items-center">
-                    <img
-                      className="block lg:hidden h-8 w-auto"
-                      src="https://tailwindui.com/img/logos/workflow-mark-indigo-500.svg"
-                      alt="Workflow"
-                    />
-                    <img
-                      className="hidden lg:block h-8 w-auto"
-                      src="https://tailwindui.com/img/logos/workflow-logo-indigo-500-mark-white-text.svg"
-                      alt="Workflow"
-                    />
+                    <Link href={createUrl({ name: 'modules' })}>
+                      <a>
+                        <span className="sr-only">Practice.dev</span>
+                        <img
+                          className="h-6 w-auto"
+                          src={require('../../public/logo.png')}
+                          alt="practice.dev"
+                        />
+                      </a>
+                    </Link>
                   </div>
                   <div className="hidden sm:block sm:ml-6">
                     <div className="flex space-x-4">

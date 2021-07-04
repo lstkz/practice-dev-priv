@@ -9,6 +9,13 @@ import TestimonialsSection from './TestimonialsSection';
 import { WhatsPracticeDevSection } from './WhatsPracticeDevSection';
 
 export function LandingPage() {
+  React.useEffect(() => {
+    const node = document.querySelector('#__next') as HTMLDivElement;
+    node.style.height = 'auto';
+    return () => {
+      node.style.height = '';
+    };
+  }, []);
   return (
     <>
       <MainSection />

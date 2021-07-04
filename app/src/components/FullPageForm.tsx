@@ -17,7 +17,7 @@ export function FullPageForm(props: AuthFormProps) {
       tw="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8"
     >
       <div tw="sm:mx-auto sm:w-full sm:max-w-md">
-        <Logo tw="mx-auto" />
+        <Logo black tw="mx-auto" />
         <h2 tw="mt-6 text-center text-3xl font-extrabold text-gray-900">
           {title}
         </h2>

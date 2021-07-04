@@ -1,12 +1,15 @@
+import Link from 'next/link';
+import { createUrl } from '../../common/url';
+
 /* This example requires Tailwind CSS v2.0+ */
 const navigation = {
   main: [
-    { name: 'Challenges', href: '#' },
-    { name: 'Projects', href: '#' },
-    { name: 'FAQ', href: '#' },
-    { name: 'Contact us', href: '#' },
-    { name: 'Terms', href: '#' },
-    { name: 'Privacy Policy', href: '#' },
+    { name: 'Modules', href: createUrl({ name: 'modules' }) },
+    { name: 'Projects', href: '/' },
+    { name: 'FAQ', href: '/' },
+    { name: 'Contact us', href: '/' },
+    { name: 'Terms', href: '/' },
+    { name: 'Privacy Policy', href: '/' },
   ],
   social: [
     {
@@ -70,12 +73,11 @@ export default function Footer() {
         >
           {navigation.main.map(item => (
             <div key={item.name} className="px-5 py-2">
-              <a
-                href={item.href}
-                className="text-base text-gray-500 hover:text-gray-900"
-              >
-                {item.name}
-              </a>
+              <Link href={item.href}>
+                <a className="text-base text-gray-500 hover:text-gray-900">
+                  {item.name}
+                </a>
+              </Link>
             </div>
           ))}
         </nav>

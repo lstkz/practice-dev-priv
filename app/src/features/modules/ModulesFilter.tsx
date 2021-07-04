@@ -32,7 +32,17 @@ export function ModulesFilter() {
               Vue
             </Checkbox>
           </FilterSection>
-          <FilterSection title="Tags"></FilterSection>
+          <FilterSection title="Difficulty">
+            <Checkbox id="difficulty-beginner" name="difficulty">
+              Beginner
+            </Checkbox>
+            <Checkbox id="difficulty-intermediate" name="difficulty">
+              Intermediate
+            </Checkbox>
+            <Checkbox id="difficulty-various" name="difficulty">
+              Various
+            </Checkbox>
+          </FilterSection>
         </div>
       </div>
     </section>

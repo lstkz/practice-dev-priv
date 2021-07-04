@@ -20,6 +20,8 @@ export default class MyDocument extends Document {
         ...initialProps,
         styles: (
           <>
+            <title>Learn to Code - for Free | practice.dev</title>
+            <link rel="shortcut icon" href="/favicon.png" />
             <link
               rel="stylesheet"
               href="https://rsms.me/inter/inter.css"

@@ -2,17 +2,23 @@ import Link from 'next/link';
 
 interface LogoProps {
   className?: string;
+  black?: boolean;
 }
 
 export function Logo(props: LogoProps) {
+  const { black, ...rest } = props;
   return (
     <Link href="/">
       <a>
         <span className="sr-only">Practice.dev</span>
         <img
-          {...props}
-          tw="h-8 w-auto sm:h-10"
-          src="https://tailwindui.com/img/logos/workflow-mark-indigo-500.svg"
+          {...rest}
+          tw="h-8 w-auto sm:h-8"
+          src={
+            black
+              ? require('../../public/logo-black.png')
+              : require('../../public/logo.png')
+          }
           alt=""
         />
       </a>

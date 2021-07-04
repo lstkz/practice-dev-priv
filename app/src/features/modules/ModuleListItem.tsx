@@ -1,4 +1,8 @@
-import { LocationMarkerIcon, UsersIcon } from '@heroicons/react/outline';
+import {
+  LocationMarkerIcon,
+  UsersIcon,
+  ClockIcon,
+} from '@heroicons/react/outline';
 import tw from 'twin.macro';
 import Badge from '../../components/Badge';
 
@@ -55,11 +59,11 @@ export function ModuleListItem(props: ModuleListItemProps) {
                 250
               </p>
               <p className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 sm:ml-6">
-                <LocationMarkerIcon
+                <ClockIcon
                   className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"
                   aria-hidden="true"
                 />
-                sss
+                100h
               </p>
             </div>
             <div tw="mt-2 space-x-2">
