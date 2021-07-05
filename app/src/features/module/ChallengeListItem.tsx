@@ -1,7 +1,11 @@
-import { UsersIcon, ClockIcon } from '@heroicons/react/outline';
+import {
+  UsersIcon,
+  ClockIcon,
+  ChartSquareBarIcon,
+  ClipboardCheckIcon,
+} from '@heroicons/react/outline';
 import Link from 'next/link';
 import React from 'react';
-import tw from 'twin.macro';
 import { createUrl } from '../../common/url';
 import Badge from '../../components/Badge';
 import DotBadge from '../../components/DotBadge';
@@ -43,19 +47,6 @@ export function ChallengeListItem(props: ChallengeListItemProps) {
                       : 'green'
                   }
                 />
-
-                {/* <div
-                  css={[
-                    tw`inline-flex items-baseline px-2.5 py-0.5 rounded-full text-sm font-medium  md:mt-2 lg:mt-0`,
-                    progress === 100
-                      ? tw`bg-green-100 text-green-800`
-                      : progress < 50
-                      ? tw`bg-red-100 text-red-800`
-                      : tw`bg-yellow-100 text-yellow-800`,
-                  ]}
-                >
-                  {solved}/{total}
-                </div> */}
               </div>
             </div>
             <div tw="mt-4 ">
@@ -64,7 +55,13 @@ export function ChallengeListItem(props: ChallengeListItemProps) {
                   250
                 </IconStats>
                 <IconStats icon={<ClockIcon />} tooltip="Total practice time">
-                  100h
+                  15m
+                </IconStats>
+                <IconStats icon={<ChartSquareBarIcon />} tooltip="Success rate">
+                  94%
+                </IconStats>
+                <IconStats icon={<ClipboardCheckIcon />} tooltip="Solutions">
+                  15
                 </IconStats>
               </div>
               <div tw="mt-2 space-x-2">

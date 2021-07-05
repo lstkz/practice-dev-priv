@@ -3,7 +3,7 @@ import { Checkbox } from '../../components/Checkbox';
 import { FilterPanel } from '../../components/FilterPanel';
 import { FilterSection } from '../../components/FilterSection';
 
-export function ModulesFilter() {
+export function ModuleFilter() {
   return (
     <FilterPanel>
       <FilterSection title="Status">
@@ -13,16 +13,8 @@ export function ModulesFilter() {
         <Checkbox id="status-attempted" name="status">
           Attempted
         </Checkbox>
-      </FilterSection>
-      <FilterSection title="Main Technology">
-        <Checkbox id="main-tech-react" name="main-tech">
-          React
-        </Checkbox>
-        <Checkbox disabled id="main-tech-angular" name="main-tech">
-          Angular
-        </Checkbox>
-        <Checkbox disabled id="main-tech-vue" name="main-tech">
-          Vue
+        <Checkbox id="status-solved" name="solved">
+          Solved
         </Checkbox>
       </FilterSection>
       <FilterSection title="Difficulty">

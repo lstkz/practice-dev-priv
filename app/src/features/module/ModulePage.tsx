@@ -7,6 +7,7 @@ import { Container } from '../../components/Container';
 import Dashboard from '../../components/Dashboard';
 import { TwoColLayout } from '../../components/TwoColLayout';
 import { Challenge, ChallengeListItem } from './ChallengeListItem';
+import { ModuleFilter } from './ModuleFilter';
 import { useModuleActions, useModuleState } from './ModuleModule';
 
 const item = {
@@ -80,7 +81,7 @@ export function ModulePage() {
                 ))}
               </ConnectedList>
             }
-            right={<div />}
+            right={<ModuleFilter />}
           />
         </div>
       </Container>
