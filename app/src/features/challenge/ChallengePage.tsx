@@ -1,7 +1,9 @@
 import React from 'react';
+import { BrowserPreview } from './BrowserPreview';
 import { ChallengeDetails } from './ChallengeDetails';
 import { ChallengeHeader } from './ChallengeHeader';
 import { useChallengeActions, useChallengeState } from './ChallengeModule';
+import { EditorWrapper } from './EditorWrapper';
 
 export function ChallengePage() {
   const {} = useChallengeActions();
@@ -13,8 +15,12 @@ export function ChallengePage() {
         <div style={{ width: 100 / 3 + '%' }}>
           <ChallengeDetails />
         </div>
-        <div style={{ width: 100 / 3 + '%' }}></div>
-        <div style={{ width: 100 / 3 + '%' }}></div>
+        <div style={{ width: 100 / 3 + '%' }}>
+          <EditorWrapper />
+        </div>
+        <div style={{ width: 100 / 3 + '%' }}>
+          <BrowserPreview />
+        </div>
       </div>
     </div>
   );
