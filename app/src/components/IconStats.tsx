@@ -17,7 +17,7 @@ export function IconStats(props: IconStatsProps) {
   }, []);
   return (
     <>
-      <p tw="flex items-center text-sm text-gray-500" data-tip data-for={id}>
+      <div tw="flex items-center text-sm text-gray-500" data-tip data-for={id}>
         <span
           tw="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"
           aria-hidden="true"
@@ -30,7 +30,7 @@ export function IconStats(props: IconStatsProps) {
             <span>{tooltip}</span>
           </ReactTooltip>
         )}
-      </p>
+      </div>
     </>
   );
 }

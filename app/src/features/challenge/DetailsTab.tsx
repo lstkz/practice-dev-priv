@@ -1,7 +1,5 @@
 import React from 'react';
 import tw, { styled } from 'twin.macro';
-import Badge from '../../components/Badge';
-import { Button } from '../../components/Button';
 
 const Wrapper = styled.div`
   h1 {

@@ -13,21 +13,27 @@ type State = {
 const sampleCode = `
 import React from "react";
 import ReactDOM from "react-dom";
-        
+
 function App() {
-  React.useEffect(() => {
-    const onClick = () => {
-      console.log('click2');
-    }
-    document.addEventListener('click', onClick);
-    return () => { 
-      document.removeEventListener('click', onClick);
-    }
-  }, [])
-  return <div>7</div>
+  const [count, setCount] = React.useState(0);
+  return (
+    <div>
+      <h2>
+        Count: <span data-test="count">{count}</span>
+      </h2>
+      <button
+        data-test="increase-btn"
+        onClick={() => {
+          setCount(count + 1);
+        }}
+      >
+        increase
+      </button>
+    </div>
+  );
 }
 
-const rootElement = document.getElementById("root");
+const rootElement = document.getElementById("root")!;
 ReactDOM.unmountComponentAtNode(rootElement);
 
 ReactDOM.render(
