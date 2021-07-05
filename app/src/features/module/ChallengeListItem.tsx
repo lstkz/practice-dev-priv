@@ -4,25 +4,23 @@ import React from 'react';
 import tw from 'twin.macro';
 import { createUrl } from '../../common/url';
 import Badge from '../../components/Badge';
+import DotBadge from '../../components/DotBadge';
 import { IconStats } from '../../components/IconStats';
 
-interface Module {
+export interface Challenge {
   id: number;
   title: string;
-  description: React.ReactNode;
+  description: string;
   tags: string[];
-  solved: number;
-  total: number;
+  status: 'solved' | 'attempted' | 'unattempted';
 }
 
-interface ModuleListItemProps {
-  item: Module;
+interface ChallengeListItemProps {
+  item: Challenge;
 }
 
-export function ModuleListItem(props: ModuleListItemProps) {
+export function ChallengeListItem(props: ChallengeListItemProps) {
   const { item } = props;
-  const { solved, total } = item;
-  const progress = (solved / total) * 100;
   return (
     <li>
       <Link passHref href={createUrl({ name: 'module', id: item.id })}>
@@ -36,7 +34,17 @@ export function ModuleListItem(props: ModuleListItemProps) {
                 <p tw="text-sm mt-2 text-gray-600">{item.description}</p>
               </div>
               <div tw="ml-6">
-                <div
+                <DotBadge
+                  color={
+                    item.status === 'unattempted'
+                      ? 'gray'
+                      : item.status === 'attempted'
+                      ? 'red'
+                      : 'green'
+                  }
+                />
+
+                {/* <div
                   css={[
                     tw`inline-flex items-baseline px-2.5 py-0.5 rounded-full text-sm font-medium  md:mt-2 lg:mt-0`,
                     progress === 100
@@ -47,7 +55,7 @@ export function ModuleListItem(props: ModuleListItemProps) {
                   ]}
                 >
                   {solved}/{total}
-                </div>
+                </div> */}
               </div>
             </div>
             <div tw="mt-4 ">

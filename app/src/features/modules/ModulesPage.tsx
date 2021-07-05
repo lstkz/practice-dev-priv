@@ -1,4 +1,5 @@
 import React from 'react';
+import { ConnectedList } from '../../components/ConnectedList';
 import { Container } from '../../components/Container';
 import Dashboard from '../../components/Dashboard';
 import { TwoColLayout } from '../../components/TwoColLayout';
@@ -51,13 +52,11 @@ export function ModulesPage() {
       <Container>
         <TwoColLayout
           left={
-            <div className="bg-white shadow overflow-hidden sm:rounded-md">
-              <ul className="divide-y divide-gray-200">
-                {items.map(item => (
-                  <ModuleListItem item={item} key={item.id} />
-                ))}
-              </ul>
-            </div>
+            <ConnectedList>
+              {items.map(item => (
+                <ModuleListItem item={item} key={item.id} />
+              ))}
+            </ConnectedList>
           }
           right={<ModulesFilter />}
         />
