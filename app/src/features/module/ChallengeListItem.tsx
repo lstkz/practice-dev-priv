@@ -27,7 +27,7 @@ export function ChallengeListItem(props: ChallengeListItemProps) {
   const { item } = props;
   return (
     <li>
-      <Link passHref href={createUrl({ name: 'module', id: item.id })}>
+      <Link passHref href={createUrl({ name: 'challenge', id: item.id })}>
         <a tw="block hover:bg-gray-50 focus:( outline-none bg-gray-100 ) ">
           <div tw="px-4 py-4 sm:px-6">
             <div tw="flex items-center justify-between">
@@ -49,28 +49,26 @@ export function ChallengeListItem(props: ChallengeListItemProps) {
                 />
               </div>
             </div>
-            <div tw="mt-4 ">
-              <div tw="flex space-x-4">
-                <IconStats icon={<UsersIcon />} tooltip="Users attempted">
-                  250
-                </IconStats>
-                <IconStats icon={<ClockIcon />} tooltip="Total practice time">
-                  15m
-                </IconStats>
-                <IconStats icon={<ChartSquareBarIcon />} tooltip="Success rate">
-                  94%
-                </IconStats>
-                <IconStats icon={<ClipboardCheckIcon />} tooltip="Solutions">
-                  15
-                </IconStats>
-              </div>
-              <div tw="mt-2 space-x-2">
-                {item.tags.map(tag => (
-                  <Badge key={tag} color="purple">
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
+            <div tw="mt-4 flex space-x-4">
+              <IconStats icon={<UsersIcon />} tooltip="Users attempted">
+                250
+              </IconStats>
+              <IconStats icon={<ClockIcon />} tooltip="Total practice time">
+                15m
+              </IconStats>
+              <IconStats icon={<ChartSquareBarIcon />} tooltip="Success rate">
+                94%
+              </IconStats>
+              <IconStats icon={<ClipboardCheckIcon />} tooltip="Solutions">
+                15
+              </IconStats>
+            </div>
+            <div tw="mt-2 space-x-2">
+              {item.tags.map(tag => (
+                <Badge key={tag} color="purple">
+                  {tag}
+                </Badge>
+              ))}
             </div>
           </div>
         </a>

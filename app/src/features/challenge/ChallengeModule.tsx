@@ -2,9 +2,12 @@ import React from 'react';
 import { gql } from '@apollo/client';
 import { InferGetServerSidePropsType } from 'next';
 import { useImmer, createModuleContext, useActions } from 'context-api';
-// import { GetModulesDocument, GetModulesQuery } from '../../generated';
+// import {
+//   GetChallengeDocument,
+//   GetChallengeQuery,
+// } from '../../generated';
 import { getApolloClient } from '../../getApolloClient';
-import { ModulesPage } from './ModulesPage';
+import { ChallengePage } from './ChallengePage';
 import { createGetServerSideProps } from '../../common/helper';
 
 interface Actions {
@@ -17,13 +20,13 @@ interface State {
 
 const [Provider, useContext] = createModuleContext<State, Actions>();
 
-export function ModulesModule(props: ModulesSSRProps) {
+export function ChallengeModule(props: ChallengeSSRProps) {
   const {} = props;
   const [state, setState, getState] = useImmer<State>(
     {
       foo: false,
     },
-    'ModulesModule'
+    'ChallengeModule'
   );
   const actions = useActions<Actions>({
     test: () => {},
@@ -31,25 +34,25 @@ export function ModulesModule(props: ModulesSSRProps) {
 
   return (
     <Provider state={state} actions={actions}>
-      <ModulesPage />
+      <ChallengePage />
     </Provider>
   );
 }
 
-export function useModulesActions() {
+export function useChallengeActions() {
   return useContext().actions;
 }
 
-export function useModulesState() {
+export function useChallengeState() {
   return useContext().state;
 }
 
-export type ModulesSSRProps = InferGetServerSidePropsType<
+export type ChallengeSSRProps = InferGetServerSidePropsType<
   typeof getServerSideProps
 >;
 
 gql`
-  query GetModules {
+  query GetChallenge {
     me {
       id
     }
@@ -58,8 +61,8 @@ gql`
 
 export const getServerSideProps = createGetServerSideProps(async ctx => {
   const client = getApolloClient(ctx);
-  // const ret = await client.query<GetModulesQuery>({
-  //   query: GetModulesDocument,
+  // const ret = await client.query<GetChallengeQuery>({
+  //   query: GetChallengeDocument,
   // });
   return {
     // props: ret.data,

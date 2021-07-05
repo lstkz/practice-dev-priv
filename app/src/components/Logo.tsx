@@ -3,12 +3,13 @@ import Link from 'next/link';
 interface LogoProps {
   className?: string;
   black?: boolean;
+  href?: string;
 }
 
 export function Logo(props: LogoProps) {
-  const { black, ...rest } = props;
+  const { black, href, ...rest } = props;
   return (
-    <Link href="/">
+    <Link href={href ?? '/'}>
       <a>
         <span className="sr-only">Practice.dev</span>
         <img

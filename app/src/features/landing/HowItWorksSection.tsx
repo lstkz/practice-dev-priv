@@ -1,5 +1,4 @@
 import {
-  AnnotationIcon,
   GlobeAltIcon,
   LightningBoltIcon,
   TerminalIcon,

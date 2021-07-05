@@ -6,6 +6,7 @@ import { ProfileDropdown } from './ProfileDropdown';
 import Link from 'next/link';
 import { createUrl } from '../common/url';
 import { Button } from './Button';
+import Footer from '../features/landing/Footer';
 
 const navigation = [
   { name: 'Dashboard', href: '#', current: true },
@@ -120,6 +121,7 @@ export default function Dashboard(props: DashboardProps) {
         )}
       </Disclosure>
       <div tw="bg-gray-50 flex-1">{children}</div>
+      <Footer />
     </>
   );
 }

@@ -74,6 +74,12 @@ export type User = {
   username: Scalars['String'];
 };
 
+export type GetChallengeQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetChallengeQuery = { __typename?: 'Query' } & {
+  me: { __typename?: 'User' } & Pick<User, 'id'>;
+};
+
 export type LoginMutationVariables = Exact<{
   username: Scalars['String'];
   password: Scalars['String'];
@@ -134,6 +140,63 @@ export const DefaultAuthResultFragmentDoc = gql`
   }
   ${AllUserPropsFragmentDoc}
 `;
+export const GetChallengeDocument = gql`
+  query GetChallenge {
+    me {
+      id
+    }
+  }
+`;
+
+/**
+ * __useGetChallengeQuery__
+ *
+ * To run a query within a React component, call `useGetChallengeQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetChallengeQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetChallengeQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetChallengeQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetChallengeQuery,
+    GetChallengeQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetChallengeQuery, GetChallengeQueryVariables>(
+    GetChallengeDocument,
+    options
+  );
+}
+export function useGetChallengeLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetChallengeQuery,
+    GetChallengeQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<GetChallengeQuery, GetChallengeQueryVariables>(
+    GetChallengeDocument,
+    options
+  );
+}
+export type GetChallengeQueryHookResult = ReturnType<
+  typeof useGetChallengeQuery
+>;
+export type GetChallengeLazyQueryHookResult = ReturnType<
+  typeof useGetChallengeLazyQuery
+>;
+export type GetChallengeQueryResult = Apollo.QueryResult<
+  GetChallengeQuery,
+  GetChallengeQueryVariables
+>;
 export const LoginDocument = gql`
   mutation Login($username: String!, $password: String!) {
     login(username: $username, password: $password) {
