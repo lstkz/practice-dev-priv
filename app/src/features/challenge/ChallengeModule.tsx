@@ -11,12 +11,18 @@ import { ChallengePage } from './ChallengePage';
 import { createGetServerSideProps } from '../../common/helper';
 
 interface Actions {
-  test: () => void;
+  setChallengeTab: (challengeTab: ChallengeTab) => void;
 }
 
 interface State {
-  foo: boolean;
+  challengeTab: ChallengeTab;
 }
+
+export type ChallengeTab =
+  | 'details'
+  | 'solutions'
+  | 'test_suite'
+  | 'submissions';
 
 const [Provider, useContext] = createModuleContext<State, Actions>();
 
@@ -24,12 +30,16 @@ export function ChallengeModule(props: ChallengeSSRProps) {
   const {} = props;
   const [state, setState, getState] = useImmer<State>(
     {
-      foo: false,
+      challengeTab: 'details',
     },
     'ChallengeModule'
   );
   const actions = useActions<Actions>({
-    test: () => {},
+    setChallengeTab: challengeTab => {
+      setState(draft => {
+        draft.challengeTab = challengeTab;
+      });
+    },
   });
 
   return (

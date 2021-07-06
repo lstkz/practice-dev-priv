@@ -3,10 +3,20 @@ import { Tabs } from '../../components/Tabs';
 import { EmbeddedIframe } from './EmbeddedIframe';
 import { WebNavigator } from './WebNavigator';
 
-export function BrowserPreview() {
+interface BrowserPreviewProps {
+  isDragging: boolean;
+}
+
+export function BrowserPreview(props: BrowserPreviewProps) {
+  const { isDragging } = props;
   const [tab, setTab] = React.useState('preview');
   return (
-    <div tw="h-full flex flex-col">
+    <div
+      tw="h-full flex flex-col"
+      style={{
+        pointerEvents: isDragging ? 'none' : undefined,
+      }}
+    >
       <div>
         <Tabs
           selected={tab}

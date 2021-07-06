@@ -1,19 +1,19 @@
 import ScrollContainer from 'react-indiana-drag-scroll';
 import tw from 'twin.macro';
 
-interface Tab {
-  name: string;
+interface Tab<T> {
+  name: T;
   title: string;
   count?: number;
 }
 
-interface TabsProps {
-  onSelect: (tab: string) => void;
-  selected: string;
-  tabs: Tab[];
+interface TabsProps<T> {
+  onSelect: (tab: T) => void;
+  selected: T;
+  tabs: Tab<T>[];
 }
 
-export function Tabs(props: TabsProps) {
+export function Tabs<T extends string = string>(props: TabsProps<T>) {
   const { onSelect, selected, tabs } = props;
 
   return (
