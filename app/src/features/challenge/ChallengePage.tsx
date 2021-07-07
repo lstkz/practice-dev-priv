@@ -15,7 +15,7 @@ export function ChallengePage() {
   return (
     <div tw="h-full flex flex-col">
       <ChallengeHeader />
-      <div tw="flex flex-1 h-full ">
+      <div tw="flex" style={{ height: `calc(100% - 2.5rem)` }}>
         <LeftSidebar />
         <LayoutManager
           left={<LeftCol />}

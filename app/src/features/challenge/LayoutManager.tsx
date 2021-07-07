@@ -23,8 +23,8 @@ export function LayoutManager(props: LayoutManagerProps) {
     const resizeObserver = new ResizeObserver(entries => {
       const item = entries[0];
       setSize({
-        height: item.contentRect.height,
         width: item.contentRect.width,
+        height: item.contentRect.height,
       });
     });
 
