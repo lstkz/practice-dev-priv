@@ -1,6 +1,7 @@
 import React from 'react';
 import tw from 'twin.macro';
 import { useLayoutEffectFix } from '../../hooks/useLayoutEffectFix';
+import { Resizer } from './Resizer';
 
 interface LayoutManagerProps {
   left: React.ReactNode;
@@ -17,6 +18,9 @@ export function LayoutManager(props: LayoutManagerProps) {
     width: 0,
     height: 0,
   });
+  const [leftSize, setLeftSize] = React.useState(300);
+  const [rightSize, setRightSize] = React.useState(400);
+  // const [isDraggingLeft, setIsDraggingLeft] = React.useState(false);
 
   useLayoutEffectFix(() => {
     document.body.style.overflow = 'hidden';
@@ -34,16 +38,24 @@ export function LayoutManager(props: LayoutManagerProps) {
       resizeObserver.disconnect();
     };
   }, []);
-  const leftSize = 300;
-  const rightSize = 400;
+
   return (
-    <div tw="flex flex-1 h-full overflow-hidden" ref={ref}>
+    <div tw="flex flex-1 h-full overflow-hidden relative" ref={ref}>
       <div
         css={[tw`h-full flex-shrink-0`, !hasLeft && tw`overflow-hidden`]}
         style={{ width: hasLeft ? leftSize : 0, height: size.height }}
       >
-        {left}
+        {React.useMemo(() => left, [left])}
       </div>
+      {hasLeft && (
+        <Resizer
+          type="left"
+          x={leftSize}
+          minWidth={300}
+          maxWidth={size.width - rightSize - 100}
+          updateSize={setLeftSize}
+        />
+      )}
       <div
         tw="h-full flex-shrink-0"
         style={{
@@ -52,13 +64,22 @@ export function LayoutManager(props: LayoutManagerProps) {
           height: size.height,
         }}
       >
-        {main}
+        {React.useMemo(() => main, [main])}
       </div>
+      {hasRight && (
+        <Resizer
+          type="right"
+          x={rightSize}
+          minWidth={200}
+          maxWidth={size.width - leftSize - 100}
+          updateSize={setRightSize}
+        />
+      )}
       <div
         css={[tw`h-full flex-shrink-0`, !hasRight && tw`overflow-hidden`]}
         style={{ width: hasRight ? rightSize : 0, height: size.height }}
       >
-        {right}
+        {React.useMemo(() => right, [right])}
       </div>
     </div>
   );
