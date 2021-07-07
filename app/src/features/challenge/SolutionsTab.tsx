@@ -2,7 +2,7 @@ import { ArrowDownIcon, ArrowUpIcon } from '@heroicons/react/outline';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid';
 import React from 'react';
 import tw, { styled } from 'twin.macro';
-import { Button } from '../../components/Button';
+import { Button, getBaseButtonStyles } from '../../components/Button';
 import Select from '../../components/Select';
 
 const people = [
@@ -45,8 +45,11 @@ const people = [
 ];
 
 const IconButton = styled.button`
-  ${tw`h-5 w-6  bg-indigo-300 hover:bg-indigo-400 p-0.5 rounded-sm hover:cursor-pointer flex items-center justify-center text-black`}
-  ${tw`focus:(outline-none ring-2 ring-indigo-500 ring-offset-2 ring-offset-gray-900) `}
+  ${getBaseButtonStyles({
+    type: 'light',
+    focusBg: 'gray-900',
+  })}
+  ${tw`h-5 w-6 p-0 rounded-sm`}
 `;
 
 export function SolutionsTab() {

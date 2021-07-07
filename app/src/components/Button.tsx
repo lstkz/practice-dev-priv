@@ -3,6 +3,14 @@ import React from 'react';
 import tw from 'twin.macro';
 import { SpinnerBoarder } from './SpinnerBoarder';
 
+export interface BaseButtonProps {
+  type: 'primary' | 'dark' | 'white' | 'light';
+  disabled?: boolean;
+  block?: boolean;
+  size?: 'small' | 'default' | 'large';
+  focusBg?: 'gray-800' | 'gray-900';
+}
+
 interface ButtonProps {
   children?: React.ReactNode;
   className?: string;
@@ -21,38 +29,13 @@ interface ButtonProps {
   focusBg?: 'gray-800' | 'gray-900';
 }
 
-export const Button = React.forwardRef((props: ButtonProps, ref: any) => {
-  const {
-    htmlType,
-    type,
-    block,
-    loading,
-    icon,
-    children,
-    disabled,
-    size,
-    testId,
-    href,
-    onClick,
-    className,
-    focusBg,
-  } = props;
-  const inner = (
-    <>
-      {(loading || icon) && (
-        <div className="mr-3 flex items-center">
-          {loading ? <SpinnerBoarder size="sm" /> : icon}
-        </div>
-      )}
-      {children}
-    </>
-  );
-  const isDisabled = loading || disabled;
-  const css = [
+export function getBaseButtonStyles(props: BaseButtonProps) {
+  const { type, block, disabled, focusBg, size } = props;
+  return [
     tw`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md justify-center`,
     tw`focus:( outline-none ring-2 ring-offset-2 )`,
     block && tw`w-full`,
-    isDisabled && tw`hover:cursor-default`,
+    disabled && tw`hover:cursor-default`,
     type === 'dark' && [
       tw`text-white bg-gray-600`,
       tw`hover:( bg-gray-700 )`,
@@ -62,7 +45,7 @@ export const Button = React.forwardRef((props: ButtonProps, ref: any) => {
       tw`text-white bg-indigo-600 `,
       tw`hover:( bg-indigo-700 )`,
       tw`focus:( ring-indigo-500 )`,
-      isDisabled && tw`bg-indigo-400!`,
+      disabled && tw`bg-indigo-400!`,
     ],
     type === 'white' && [
       tw`text-gray-700 bg-white border border-gray-300`,
@@ -76,9 +59,48 @@ export const Button = React.forwardRef((props: ButtonProps, ref: any) => {
     ],
     size === 'small' && tw`text-sm px-2 py-1 rounded`,
     size === 'large' && tw`px-5 py-3 text-base`,
-    focusBg === 'gray-800' && tw`ring-offset-gray-800`,
-    focusBg === 'gray-900' && tw`ring-offset-gray-900`,
+    getFocusBgTw(focusBg),
   ];
+}
+
+export type FocusBg = 'gray-800' | 'gray-900';
+
+export function getFocusBgTw(focusBg: FocusBg | undefined) {
+  if (focusBg === 'gray-800') {
+    return tw`ring-offset-gray-800`;
+  }
+  if (focusBg === 'gray-900') {
+    return tw`ring-offset-gray-900`;
+  }
+}
+
+export const Button = React.forwardRef((props: ButtonProps, ref: any) => {
+  const {
+    htmlType,
+    loading,
+    icon,
+    children,
+    disabled,
+    testId,
+    href,
+    onClick,
+    className,
+  } = props;
+  const inner = (
+    <>
+      {(loading || icon) && (
+        <div className="mr-3 flex items-center">
+          {loading ? <SpinnerBoarder size="sm" /> : icon}
+        </div>
+      )}
+      {children}
+    </>
+  );
+  const isDisabled = loading || disabled;
+  const css = getBaseButtonStyles({
+    ...props,
+    disabled: isDisabled,
+  });
   if (href) {
     return (
       <Link href={href} passHref>

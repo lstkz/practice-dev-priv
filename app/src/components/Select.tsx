@@ -3,8 +3,9 @@ import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid';
 import React from 'react';
 import tw from 'twin.macro';
+import { BaseButtonProps, getBaseButtonStyles } from './Button';
 
-function classNames(...classes) {
+function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(' ');
 }
 
@@ -13,17 +14,15 @@ interface Option {
   label: string;
 }
 
-interface SelectProps {
+interface SelectProps extends BaseButtonProps {
   label: React.ReactNode;
   value: any;
   options: Option[];
   onChange: (value: any) => void;
-  focusBg?: 'gray-800' | 'gray-900';
-  type?: 'light';
 }
 
 export default function Select(props: SelectProps) {
-  const { options, value, label, onChange, type, focusBg } = props;
+  const { options, value, label, onChange, ...buttonProps } = props;
   const selected = React.useMemo(() => options.find(x => x.value === value), [
     options,
     value,
@@ -39,18 +38,8 @@ export default function Select(props: SelectProps) {
           <div tw="mt-1 relative">
             <Listbox.Button
               css={[
-                tw`bg-white relative w-full rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default  sm:text-sm`,
-                tw`focus:( outline-none ring-2 ring-offset-2 )`,
-                tw`text-gray-700 bg-white border border-gray-300`,
-                tw`hover:( bg-gray-50 )`,
-                tw`focus:( ring-indigo-500 )`,
-                type === 'light' && [
-                  tw`text-black bg-indigo-300 border-none font-medium`,
-                  tw`hover:( bg-indigo-400 )`,
-                  tw`focus:( ring-indigo-500   )`,
-                ],
-                focusBg === 'gray-800' && tw`ring-offset-gray-800`,
-                focusBg === 'gray-900' && tw`ring-offset-gray-900`,
+                ...getBaseButtonStyles(buttonProps),
+                tw`w-full pl-3 pr-10 py-2 justify-start border-none`,
               ]}
             >
               <span tw="block truncate">{selected?.label ?? '-'}</span>
@@ -58,7 +47,7 @@ export default function Select(props: SelectProps) {
                 <SelectorIcon
                   css={[
                     tw`h-5 w-5 text-gray-400`,
-                    type === 'light' && tw`text-black`,
+                    buttonProps.type === 'light' && tw`text-black`,
                   ]}
                   aria-hidden="true"
                 />
