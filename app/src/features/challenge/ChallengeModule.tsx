@@ -2,27 +2,24 @@ import React from 'react';
 import { gql } from '@apollo/client';
 import { InferGetServerSidePropsType } from 'next';
 import { useImmer, createModuleContext, useActions } from 'context-api';
-// import {
-//   GetChallengeDocument,
-//   GetChallengeQuery,
-// } from '../../generated';
 import { getApolloClient } from '../../getApolloClient';
 import { ChallengePage } from './ChallengePage';
 import { createGetServerSideProps } from '../../common/helper';
 
 interface Actions {
-  setChallengeTab: (challengeTab: ChallengeTab) => void;
+  setLeftSidebarTab: (leftSidebarTab: LeftSidebarTab | null) => void;
 }
 
 interface State {
-  challengeTab: ChallengeTab;
+  leftSidebarTab: LeftSidebarTab | null;
 }
 
-export type ChallengeTab =
+export type LeftSidebarTab =
   | 'details'
+  | 'file-explorer'
+  | 'test-suite'
   | 'solutions'
-  | 'test_suite'
-  | 'submissions';
+  | 'submission-history';
 
 const [Provider, useContext] = createModuleContext<State, Actions>();
 
@@ -30,14 +27,14 @@ export function ChallengeModule(props: ChallengeSSRProps) {
   const {} = props;
   const [state, setState, getState] = useImmer<State>(
     {
-      challengeTab: 'details',
+      leftSidebarTab: 'details',
     },
     'ChallengeModule'
   );
   const actions = useActions<Actions>({
-    setChallengeTab: challengeTab => {
+    setLeftSidebarTab: leftSidebarTab => {
       setState(draft => {
-        draft.challengeTab = challengeTab;
+        draft.leftSidebarTab = leftSidebarTab;
       });
     },
   });

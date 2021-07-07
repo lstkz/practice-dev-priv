@@ -45,8 +45,8 @@ const people = [
 ];
 
 const IconButton = styled.button`
-  ${tw`h-5 w-6 text-indigo-500 bg-indigo-100 hover:bg-indigo-200 p-0.5 rounded-sm hover:cursor-pointer flex items-center justify-center`}
-  ${tw`focus:(outline-none ring-1 ring-indigo-400) `}
+  ${tw`h-5 w-6  bg-indigo-300 hover:bg-indigo-400 p-0.5 rounded-sm hover:cursor-pointer flex items-center justify-center text-black`}
+  ${tw`focus:(outline-none ring-2 ring-indigo-500 ring-offset-2 ring-offset-gray-900) `}
 `;
 
 export function SolutionsTab() {
@@ -56,8 +56,10 @@ export function SolutionsTab() {
     <div>
       <div style={{ maxWidth: 120 }}>
         <Select
+          type="light"
+          focusBg="gray-900"
           value={sortBy}
-          label="Sort by"
+          label={<span tw="text-gray-200">Sort by</span>}
           onChange={setSortBy}
           options={[
             {
@@ -76,7 +78,7 @@ export function SolutionsTab() {
         />
       </div>
       <div className="flow-root mt-6">
-        <ul className="-my-5 divide-y divide-gray-200">
+        <ul className="-my-5 divide-y divide-gray-700">
           {people.map((person, i) => (
             <li key={i} className="py-4">
               <div className="flex items-center space-x-4">
@@ -84,7 +86,7 @@ export function SolutionsTab() {
                   <IconButton>
                     <ChevronUpIcon />
                   </IconButton>
-                  <span tw="text-base text-center font-bold text-indigo-500 py-1">
+                  <span tw="text-base text-center font-bold text-indigo-200 py-1">
                     10
                   </span>
                   <IconButton>
@@ -99,16 +101,16 @@ export function SolutionsTab() {
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">
+                  <p className="text-base font-medium text-gray-200 truncate">
                     {person.name}
                   </p>
-                  <p className="text-sm text-gray-500 ">
+                  <p className="text-sm text-gray-400 ">
                     by {'@' + person.handle}
                   </p>
-                  <p className="text-sm text-gray-500 ">at 18:00 3 Jul 2020</p>
+                  <p className="text-sm text-gray-400 ">at 18:00 3 Jul 2020</p>
                 </div>
                 <div>
-                  <Button type="white" size="small">
+                  <Button type="light" size="small" focusBg="gray-900">
                     Load
                   </Button>
                 </div>
@@ -118,7 +120,7 @@ export function SolutionsTab() {
         </ul>
       </div>
       <div className="mt-6">
-        <Button type="white" block>
+        <Button type="light" block focusBg="gray-900">
           Load More
         </Button>
       </div>

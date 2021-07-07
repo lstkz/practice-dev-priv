@@ -6,7 +6,7 @@ import { SpinnerBoarder } from './SpinnerBoarder';
 interface ButtonProps {
   children?: React.ReactNode;
   className?: string;
-  type: 'primary' | 'dark' | 'white';
+  type: 'primary' | 'dark' | 'white' | 'light';
   htmlType?: 'button' | 'submit' | 'reset';
   disabled?: boolean;
   block?: boolean;
@@ -18,7 +18,7 @@ interface ButtonProps {
     e: React.MouseEvent<HTMLAnchorElement | HTMLDivElement, MouseEvent>
   ) => void;
   testId?: string;
-  focusBg?: 'gray-800';
+  focusBg?: 'gray-800' | 'gray-900';
 }
 
 export const Button = React.forwardRef((props: ButtonProps, ref: any) => {
@@ -69,9 +69,15 @@ export const Button = React.forwardRef((props: ButtonProps, ref: any) => {
       tw`hover:( bg-gray-50 )`,
       tw`focus:( ring-indigo-500   )`,
     ],
+    type === 'light' && [
+      tw` bg-indigo-300 text-black`,
+      tw`hover:( bg-indigo-400 )`,
+      tw`focus:( ring-indigo-500   )`,
+    ],
     size === 'small' && tw`text-sm px-2 py-1 rounded`,
     size === 'large' && tw`px-5 py-3 text-base`,
     focusBg === 'gray-800' && tw`ring-offset-gray-800`,
+    focusBg === 'gray-900' && tw`ring-offset-gray-900`,
   ];
   if (href) {
     return (

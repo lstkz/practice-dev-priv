@@ -4,7 +4,7 @@ import { LeftCol } from './LeftCol';
 import { ChallengeHeader } from './ChallengeHeader';
 import { useChallengeActions, useChallengeState } from './ChallengeModule';
 import { EditorWrapper } from './EditorWrapper';
-import { ChallengeSidebar } from './ChallengeSidebar';
+import { LeftSidebar } from './LeftSidebar';
 
 export function ChallengePage() {
   const {} = useChallengeActions();
@@ -16,11 +16,13 @@ export function ChallengePage() {
       <div tw="flex flex-1">
         <div style={{ width: (1 / 3) * 100 + '%' }}>
           <div tw="flex h-full">
-            <ChallengeSidebar />
-            <LeftCol />
+            <LeftSidebar />
+            <div tw="h-full flex-1">
+              <LeftCol />
+            </div>
           </div>
         </div>
-        <div style={{ width: (1 / 3) * 100 + '%' }}>
+        <div style={{ width: (1 / 3) * 100 + '%', height: '100%' }}>
           <EditorWrapper />
         </div>
         <div style={{ width: (1 / 3) * 100 + '%' }}>
