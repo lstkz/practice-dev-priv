@@ -5,6 +5,7 @@ import React from 'react';
 import tw, { styled } from 'twin.macro';
 import { Button, getBaseButtonStyles } from '../../components/Button';
 import Select from '../../components/Select';
+import { TabTitle } from './TabTitle';
 
 interface Solution {
   name: string;
@@ -76,19 +77,24 @@ export function SolutionsTab() {
       setIsLoaded(true);
     }, 1000);
   }, []);
+  const title = <TabTitle>Solutions</TabTitle>;
   if (!isLoaded) {
     return (
-      <div tw="flex h-3/4 items-center justify-center">
-        <FontAwesomeIcon
-          tw="text-indigo-300 text-5xl animate-spin-slow "
-          icon={faSpinner}
-        />
+      <div tw="h-full">
+        {title}
+        <div tw="flex h-3/4 items-center justify-center">
+          <FontAwesomeIcon
+            tw="text-indigo-300 text-5xl animate-spin-slow "
+            icon={faSpinner}
+          />
+        </div>
       </div>
     );
   }
 
   return (
     <div>
+      {title}
       <div style={{ maxWidth: 120 }}>
         <Select
           type="light"
