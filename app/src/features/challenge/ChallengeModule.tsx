@@ -8,10 +8,12 @@ import { createGetServerSideProps } from '../../common/helper';
 
 interface Actions {
   setLeftSidebarTab: (leftSidebarTab: LeftSidebarTab | null) => void;
+  setRightSidebarTab: (rightSidebarTab: RightSidebarTab | null) => void;
 }
 
 interface State {
   leftSidebarTab: LeftSidebarTab | null;
+  rightSidebarTab: RightSidebarTab | null;
 }
 
 export type LeftSidebarTab =
@@ -21,6 +23,8 @@ export type LeftSidebarTab =
   | 'solutions'
   | 'submission-history';
 
+export type RightSidebarTab = 'preview' | 'demo';
+
 const [Provider, useContext] = createModuleContext<State, Actions>();
 
 export function ChallengeModule(props: ChallengeSSRProps) {
@@ -28,6 +32,7 @@ export function ChallengeModule(props: ChallengeSSRProps) {
   const [state, setState, getState] = useImmer<State>(
     {
       leftSidebarTab: 'details',
+      rightSidebarTab: 'preview',
     },
     'ChallengeModule'
   );
@@ -35,6 +40,11 @@ export function ChallengeModule(props: ChallengeSSRProps) {
     setLeftSidebarTab: leftSidebarTab => {
       setState(draft => {
         draft.leftSidebarTab = leftSidebarTab;
+      });
+    },
+    setRightSidebarTab: rightSidebarTab => {
+      setState(draft => {
+        draft.rightSidebarTab = rightSidebarTab;
       });
     },
   });

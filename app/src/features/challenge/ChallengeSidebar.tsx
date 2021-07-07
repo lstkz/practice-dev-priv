@@ -1,31 +1,35 @@
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
+import { Place } from 'react-tooltip';
 import tw from 'twin.macro';
 import { Tooltip } from '../../components/Tooltip';
 
 interface SidebarItem<T> {
   name: T;
   label: string;
-  fa: IconDefinition;
+  fa?: IconDefinition;
+  customIcon?: React.ReactNode;
   current: boolean;
 }
 
 interface ChallengeSidebarProps<T> {
   items: SidebarItem<T>[];
   onSelect: (name: T) => void;
+  tooltipPlace?: Place;
 }
 
 export function ChallengeSidebar<T extends string>(
   props: ChallengeSidebarProps<T>
 ) {
-  const { items, onSelect } = props;
+  const { items, onSelect, tooltipPlace } = props;
   return (
     <nav aria-label="Sidebar" tw="flex-shrink-0 bg-gray-800 overflow-y-auto">
       <div tw="relative flex flex-col p-2 space-y-3">
         {items.map(item => (
-          <Tooltip key={item.name} tooltip={item.label}>
+          <Tooltip place={tooltipPlace} key={item.name} tooltip={item.label}>
             <button
+              className="group"
               css={[
                 item.current
                   ? tw`bg-gray-900 text-white`
@@ -45,6 +49,7 @@ export function ChallengeSidebar<T extends string>(
                   icon={item.fa}
                 />
               )}
+              {item.customIcon}
             </button>
           </Tooltip>
         ))}

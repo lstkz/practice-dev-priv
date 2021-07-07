@@ -1,11 +1,12 @@
 import React from 'react';
-import ReactTooltip from 'react-tooltip';
+import ReactTooltip, { Place } from 'react-tooltip';
 import { styled } from 'twin.macro';
 
 interface TooltipProps {
   children: React.ReactNode;
   tooltip: React.ReactNode;
   className?: string;
+  place?: Place;
 }
 
 let nextId = 1;
@@ -17,7 +18,7 @@ const Wrapper = styled.div`
 `;
 
 export function Tooltip(props: TooltipProps) {
-  const { children, className, tooltip } = props;
+  const { children, className, tooltip, place } = props;
   const [id, setId] = React.useState('');
   React.useEffect(() => {
     setId(`Tooltip-${nextId++}`);
@@ -28,7 +29,7 @@ export function Tooltip(props: TooltipProps) {
       {children}
 
       {id && (
-        <ReactTooltip type="dark" id={id} effect="solid">
+        <ReactTooltip place={place} type="dark" id={id} effect="solid">
           {tooltip}
         </ReactTooltip>
       )}

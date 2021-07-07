@@ -14,6 +14,7 @@ export function LeftSidebar() {
   const { leftSidebarTab } = useChallengeState();
   return (
     <ChallengeSidebar
+      tooltipPlace="right"
       onSelect={name => {
         if (leftSidebarTab === name) {
           setLeftSidebarTab(null);
