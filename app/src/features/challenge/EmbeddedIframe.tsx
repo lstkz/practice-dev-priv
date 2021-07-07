@@ -8,6 +8,9 @@ export function EmbeddedIframe() {
   );
 
   function inject(code: string) {
+    if (!iframeRef.current) {
+      return;
+    }
     const importMap = {
       imports: {
         react:

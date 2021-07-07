@@ -1,10 +1,6 @@
 import React from 'react';
 import { ChallengeSidebar } from './ChallengeSidebar';
-import {
-  faGlobe,
-  faCheckCircle,
-  faCheck,
-} from '@fortawesome/free-solid-svg-icons';
+import { faGlobe, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { useChallengeActions, useChallengeState } from './ChallengeModule';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 

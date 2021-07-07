@@ -139,10 +139,12 @@ export function SolutionsTab() {
                   <p className="text-base font-medium text-gray-200 truncate">
                     {item.name}
                   </p>
-                  <p className="text-sm text-gray-400 ">
+                  <p className="text-sm text-gray-400 whitespace-nowrap truncate">
                     by {'@' + item.handle}
                   </p>
-                  <p className="text-sm text-gray-400 ">at 18:00 3 Jul 2020</p>
+                  <p className="text-sm text-gray-400 truncate">
+                    18:00 3/7/2020
+                  </p>
                 </div>
                 <div>
                   <Button type="light" size="small" focusBg="gray-900">
