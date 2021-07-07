@@ -3,11 +3,11 @@ import tw, { styled } from 'twin.macro';
 
 const Wrapper = styled.div`
   h1 {
-    ${tw`text-xl font-bold leading-7 text-gray-900 mt-2`}
+    ${tw`text-xl font-bold leading-7 text-gray-100 mt-2`}
   }
 
   p {
-    ${tw`mt-2 text-gray-800`}
+    ${tw`mt-2 text-gray-300`}
   }
 `;
 

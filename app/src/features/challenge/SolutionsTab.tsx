@@ -1,4 +1,7 @@
+import { ArrowDownIcon, ArrowUpIcon } from '@heroicons/react/outline';
+import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid';
 import React from 'react';
+import tw, { styled } from 'twin.macro';
 import { Button } from '../../components/Button';
 import Select from '../../components/Select';
 
@@ -41,12 +44,17 @@ const people = [
   },
 ];
 
+const IconButton = styled.button`
+  ${tw`h-5 w-6 text-indigo-500 bg-indigo-100 hover:bg-indigo-200 p-0.5 rounded-sm hover:cursor-pointer flex items-center justify-center`}
+  ${tw`focus:(outline-none ring-1 ring-indigo-400) `}
+`;
+
 export function SolutionsTab() {
-  const [sortBy, setSortBy] = React.useState('Select');
+  const [sortBy, setSortBy] = React.useState('best');
 
   return (
     <div>
-      <div style={{ maxWidth: 200 }}>
+      <div style={{ maxWidth: 120 }}>
         <Select
           value={sortBy}
           label="Sort by"
@@ -69,9 +77,20 @@ export function SolutionsTab() {
       </div>
       <div className="flow-root mt-6">
         <ul className="-my-5 divide-y divide-gray-200">
-          {people.map(person => (
-            <li key={person.handle} className="py-4">
+          {people.map((person, i) => (
+            <li key={i} className="py-4">
               <div className="flex items-center space-x-4">
+                <div tw="flex flex-col ml-2">
+                  <IconButton>
+                    <ChevronUpIcon />
+                  </IconButton>
+                  <span tw="text-base text-center font-bold text-indigo-500 py-1">
+                    10
+                  </span>
+                  <IconButton>
+                    <ChevronDownIcon />
+                  </IconButton>
+                </div>
                 <div className="flex-shrink-0">
                   <img
                     className="h-8 w-8 rounded-full"
@@ -92,12 +111,6 @@ export function SolutionsTab() {
                   <Button type="white" size="small">
                     Load
                   </Button>
-                  {/* <button
-                    tabIndex={0}
-                    className="inline-flex items-center shadow-sm px-2.5 py-0.5 border border-gray-300 text-sm leading-5 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50"
-                  >
-                    Load
-                  </button> */}
                 </div>
               </div>
             </li>
