@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import logo_black from '../../public/logo-black.png';
+import logo from '../../public/logo.png';
 
 interface LogoProps {
   className?: string;
@@ -15,11 +17,7 @@ export function Logo(props: LogoProps) {
         <img
           {...rest}
           tw="h-8 w-auto sm:h-8"
-          src={
-            black
-              ? require('../../public/logo-black.png')
-              : require('../../public/logo.png')
-          }
+          src={black ? logo_black.src : logo.src}
           alt=""
         />
       </a>

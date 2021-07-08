@@ -24,4 +24,3 @@ declare module 'monaco-editor' {
 }
 
 declare module 'next-transpile-modules';
-declare module 'next-images';

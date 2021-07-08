@@ -34,7 +34,7 @@ export function LayoutManager(props: LayoutManagerProps) {
   const ref = React.useRef<HTMLDivElement | null>(null);
   const [size, setSize] = React.useState({
     width: 0,
-    height: 0,
+    height: 1280,
   });
   const [leftSize, setLeftSize] = React.useState(LEFT_DEFAULT);
   const [rightSize, setRightSize] = React.useState(RIGHT_DEFAULT);
