@@ -9,6 +9,9 @@ const withImages = require('next-images');
 
 module.exports = withImages(
   withTM({
+    typescript: {
+      ignoreBuildErrors: true,
+    },
     future: {
       webpack5: true,
     },
