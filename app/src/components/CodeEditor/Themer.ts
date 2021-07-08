@@ -24,6 +24,9 @@ export class Themer {
     this.map = new Map();
     this.scopeCache = new Map();
     for (const token of settings.tokenColors) {
+      if (!token.scope) {
+        continue;
+      }
       const scopes = Array.isArray(token.scope)
         ? token.scope
         : token.scope.split(',');

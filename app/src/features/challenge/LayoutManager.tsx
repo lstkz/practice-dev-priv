@@ -96,7 +96,7 @@ export function LayoutManager(props: LayoutManagerProps) {
         />
       )}
       <div
-        tw="h-full flex-shrink-0"
+        tw="h-full flex-shrink-0 flex-1"
         style={{
           width:
             size.width - (hasLeft ? leftSize : 0) - (hasRight ? rightSize : 0),

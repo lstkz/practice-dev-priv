@@ -5,9 +5,17 @@ import { Highlighter } from './Highlighter';
 import { Monaco } from '../../types';
 
 export function createEditor(monaco: Monaco, wrapper: HTMLDivElement) {
+  monaco.editor.defineTheme('myCustomTheme', {
+    base: 'vs-dark',
+    inherit: true,
+    rules: [],
+    colors: {
+      'editor.background': '#011627',
+    },
+  });
   const properties: editor.IStandaloneEditorConstructionOptions = {
     language: 'typescript',
-    theme: 'vs-dark',
+    theme: 'myCustomTheme',
     model: null,
     minimap: {
       enabled: false,

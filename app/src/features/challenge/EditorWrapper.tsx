@@ -3,6 +3,7 @@ import React from 'react';
 import { CodeEditor } from '../../components/CodeEditor/CodeEditor';
 import { Monaco } from '../../types';
 import loader from '@monaco-editor/loader';
+import { styled } from 'twin.macro';
 
 type State = {
   isLoaded: boolean;
@@ -42,7 +43,39 @@ ReactDOM.render(
   </React.StrictMode>,
   rootElement
 );
-    `;
+    `.trimStart();
+
+const Wrapper = styled.div`
+  .view-line {
+    .mtk1,
+    .mtk2,
+    .mtk3,
+    .mtk4,
+    .mtk5,
+    .mtk6,
+    .mtk7,
+    .mtk8,
+    .mtk9,
+    .mtk10,
+    .mtk11,
+    .mtk12,
+    .mtk13,
+    .mtk14,
+    .mtk15,
+    .mtk16,
+    .mtk17,
+    .mtk18,
+    .mtk19,
+    .mtk20,
+    .mtk21,
+    .mtk22,
+    .mtk23,
+    .mtk24,
+    .mtk25 {
+      color: #dcdcdc;
+    }
+  }
+`;
 
 export function EditorWrapper() {
   const [state, setState] = useImmer<State>({
@@ -80,5 +113,11 @@ export function EditorWrapper() {
     void init();
   }, []);
 
-  return <div ref={wrapperRef} style={{ height: '100%' }}></div>;
+  return (
+    <Wrapper
+      ref={wrapperRef}
+      style={{ height: '100%', background: '#011627' }}
+      tw="border-l border-gray-800"
+    ></Wrapper>
+  );
 }
