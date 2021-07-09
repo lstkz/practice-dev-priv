@@ -1,16 +1,21 @@
-import * as R from 'remeda';
 import { createModuleContext, useActions, useImmer } from 'context-api';
+import * as uuid from 'uuid';
 import React from 'react';
 import { ActionIcon } from './ActionIcon';
 import {
   createExtendedItems,
   getDisplayList,
   sortExplorerItems,
+  sortItemsInline,
 } from './utils';
 import { FileExplorerItemList } from './FileExplorerItemList';
 import { NewDirectoryIcon } from './icons/NewDirectoryIcon';
 import { NewFileIcon } from './icons/NewFileIcon';
-import { ExplorerItemType, ExplorerItemTypeExtended } from './types';
+import {
+  ExplorerItemType,
+  ExplorerItemTypeExtended,
+  NewFileType,
+} from './types';
 import { doFn } from '../../common/helper';
 
 interface FileExplorerProps {
@@ -21,12 +26,14 @@ interface State {
   hasFocus: boolean;
   items: ExplorerItemType[];
   activeItemId: string | null;
+  navigationActiveItemId: string | null;
   expandedDirectories: Record<string, boolean>;
 }
 
 interface Actions {
   toggleDirectoryExpanded: (id: string) => void;
   setActive: (id: string) => void;
+  addNew: (type: NewFileType, name: string, parentId: string | null) => void;
 }
 
 const [Provider, useContext] = createModuleContext<State, Actions>();
@@ -36,9 +43,16 @@ export function FileExplorer(props: FileExplorerProps) {
     hasFocus: false,
     items: React.useMemo(() => sortExplorerItems(props.items), []),
     activeItemId: null,
+    navigationActiveItemId: null,
     expandedDirectories: {},
   });
-  const { activeItemId, expandedDirectories, items } = state;
+  const [isAdding, setIsAdding] = React.useState<NewFileType | null>(null);
+  const {
+    activeItemId,
+    navigationActiveItemId,
+    expandedDirectories,
+    items,
+  } = state;
   const actions = useActions<Actions>({
     toggleDirectoryExpanded: id => {
       setState(draft => {
@@ -52,6 +66,37 @@ export function FileExplorer(props: FileExplorerProps) {
     setActive: id => {
       setState(draft => {
         draft.activeItemId = id;
+      });
+    },
+    addNew: (type, name, parentId) => {
+      setState(draft => {
+        const id = uuid.v4();
+        const newItem =
+          type === 'directory'
+            ? {
+                type,
+                name,
+                id,
+                content: [],
+              }
+            : { type, name, id };
+        let rootItems = draft.items;
+        if (parentId) {
+          const travel = (items: typeof rootItems) => {
+            items.forEach(item => {
+              if (item.type === 'directory') {
+                if (item.id === parentId) {
+                  rootItems = item.content;
+                } else {
+                  travel(item.content);
+                }
+              }
+            });
+          };
+          travel(draft.items);
+        }
+        rootItems.push(newItem);
+        sortItemsInline(rootItems);
       });
     },
   });
@@ -87,6 +132,7 @@ export function FileExplorer(props: FileExplorerProps) {
         onBlur={() => {
           setState(draft => {
             draft.hasFocus = false;
+            draft.navigationActiveItemId = null;
           });
         }}
         onKeyDown={e => {
@@ -95,20 +141,50 @@ export function FileExplorer(props: FileExplorerProps) {
               case 'Tab': {
                 return true;
               }
+              case 'ArrowRight': {
+                if (!navigationActiveItemId) {
+                  return true;
+                }
+                const item = itemMap[navigationActiveItemId];
+                if (item.type === 'directory') {
+                  setState(draft => {
+                    draft.expandedDirectories[navigationActiveItemId] = true;
+                  });
+                } else {
+                  setState(draft => {
+                    draft.activeItemId = navigationActiveItemId;
+                    draft.navigationActiveItemId = null;
+                  });
+                }
+                return true;
+              }
+              case 'ArrowLeft': {
+                if (!navigationActiveItemId) {
+                  return true;
+                }
+                const item = itemMap[navigationActiveItemId];
+                if (item.type === 'directory') {
+                  setState(draft => {
+                    delete draft.expandedDirectories[navigationActiveItemId];
+                  });
+                }
+                return true;
+              }
               case 'ArrowUp':
               case 'ArrowDown': {
-                if (!activeItemId) {
+                if (!navigationActiveItemId && !activeItemId) {
                   setState(draft => {
-                    draft.activeItemId = displayList[0]?.id;
+                    draft.navigationActiveItemId = displayList[0]?.id;
                   });
                   return true;
                 }
                 const idx =
-                  displayList.findIndex(item => item.id === activeItemId) +
-                  (e.key === 'ArrowDown' ? 1 : -1);
+                  displayList.findIndex(
+                    item => item.id === (navigationActiveItemId ?? activeItemId)
+                  ) + (e.key === 'ArrowDown' ? 1 : -1);
                 if (displayList[idx]) {
                   setState(draft => {
-                    draft.activeItemId = displayList[idx].id;
+                    draft.navigationActiveItemId = displayList[idx].id;
                   });
                 }
                 return true;
@@ -123,16 +199,37 @@ export function FileExplorer(props: FileExplorerProps) {
         <div tw="flex">
           <div tw="text-xs font-semibold tracking-wider mb-1 ">FILES</div>
           <div tw="ml-auto space-x-2">
-            <ActionIcon title="New File">
+            <ActionIcon
+              title="New File"
+              onClick={() => {
+                setIsAdding('file');
+              }}
+            >
               <NewFileIcon />
             </ActionIcon>
-            <ActionIcon title="New Directory">
+            <ActionIcon
+              title="New Directory"
+              onClick={() => {
+                setIsAdding('directory');
+              }}
+            >
               <NewDirectoryIcon />
             </ActionIcon>
           </div>
         </div>
         <div tw="-mx-3">
-          <FileExplorerItemList nestedLevel={0} items={items} />
+          <FileExplorerItemList
+            isAdding={isAdding}
+            onNewAdded={(type, name) => {
+              actions.addNew(type, name, null);
+              setIsAdding(null);
+            }}
+            onNewCancelled={() => {
+              setIsAdding(null);
+            }}
+            nestedLevel={0}
+            items={items}
+          />
         </div>
       </div>
     </Provider>

@@ -25,3 +25,5 @@ export interface DirectoryItemTypeExtended extends DirectoryItemType {
 export type ExplorerItemTypeExtended =
   | FileItemTypeExtended
   | DirectoryItemTypeExtended;
+
+export type NewFileType = 'file' | 'directory';

@@ -18,7 +18,7 @@ interface FileExplorerItemProps {
 }
 
 const Wrapper = styled.div`
-  ${tw`flex items-center hover:bg-gray-800 cursor-pointer text-gray-300 py-0.5 relative select-none focus:outline-none`}
+  ${tw`flex items-center hover:bg-gray-800 cursor-pointer text-gray-300 py-0.5 relative select-none focus:outline-none border border-transparent`}
 `;
 
 const Actions = styled.div`
@@ -27,13 +27,24 @@ const Actions = styled.div`
 
 export function FileExplorerItem(props: FileExplorerItemProps) {
   const { item, nestedLevel } = props;
-  const { activeItemId, expandedDirectories } = useFileExplorerState();
+  const {
+    activeItemId,
+    navigationActiveItemId,
+    expandedDirectories,
+    hasFocus,
+  } = useFileExplorerState();
   const { toggleDirectoryExpanded, setActive } = useFileExplorerActions();
   const style = {
     paddingLeft: nestedLevel + 'rem',
   };
-  const css = [
-    item.id === activeItemId && tw`bg-indigo-800 hover:bg-indigo-800`,
+  const isActive = item.id === activeItemId;
+  const bgCss = [
+    isActive && tw`bg-gray-700 hover:bg-gray-700`,
+    isActive && hasFocus && tw`bg-indigo-700 hover:bg-indigo-700`,
+  ];
+  const wrapperCss = [
+    ...bgCss,
+    item.id === navigationActiveItemId && tw`border border-blue-600`,
   ];
   if (item.type === 'file') {
     return (
@@ -44,13 +55,13 @@ export function FileExplorerItem(props: FileExplorerItemProps) {
         onClick={() => {
           setActive(item.id);
         }}
-        css={css}
+        css={wrapperCss}
       >
         <div tw="w-4 h-4 mr-1 ml-4">
           <FileIcon name={item.name} />
         </div>
         {item.name}
-        <Actions css={css}>
+        <Actions css={bgCss}>
           <ActionIcon title="Edit">
             <EditIcon />
           </ActionIcon>
@@ -72,7 +83,7 @@ export function FileExplorerItem(props: FileExplorerItemProps) {
           toggleDirectoryExpanded(item.id);
           setActive(item.id);
         }}
-        css={css}
+        css={wrapperCss}
       >
         <div tw="h-4 w-4">
           <ExpandedIcon isExpanded={isExpanded} />
@@ -81,7 +92,7 @@ export function FileExplorerItem(props: FileExplorerItemProps) {
           <FolderIcon isOpen={isExpanded} />
         </div>
         {item.name}
-        <Actions css={css}>
+        <Actions css={bgCss}>
           <ActionIcon title="New File">
             <NewFileIcon />
           </ActionIcon>

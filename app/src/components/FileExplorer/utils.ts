@@ -30,25 +30,28 @@ export function createExtendedItems(items: ExplorerItemType[]) {
   return sortExplorerItems(extendItems(items, null));
 }
 
+export function sortItemsInline<T extends ExplorerItemType>(items: T[]) {
+  items.sort((a, b) => {
+    if (a.type !== b.type) {
+      return a.type === 'directory' ? -1 : 1;
+    }
+    return a.name.localeCompare(b.name);
+  });
+  return items;
+}
+
 export function sortExplorerItems<T extends ExplorerItemType>(items: T[]) {
   const sortItems = (items: T[]): T[] => {
-    return [...items]
-      .sort((a, b) => {
-        if (a.type !== b.type) {
-          return a.type === 'directory' ? -1 : 1;
-        }
-        return a.name.localeCompare(b.name);
-      })
-      .map(item => {
-        if (item.type === 'directory') {
-          return {
-            ...item,
-            content: sortItems(item.content as any),
-          };
-        } else {
-          return item;
-        }
-      });
+    return sortItemsInline([...items]).map(item => {
+      if (item.type === 'directory') {
+        return {
+          ...item,
+          content: sortItems(item.content as any),
+        };
+      } else {
+        return item;
+      }
+    });
   };
   return sortItems(items);
 }
