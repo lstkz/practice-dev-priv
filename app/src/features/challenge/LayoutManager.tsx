@@ -13,7 +13,7 @@ interface LayoutManagerProps {
   hasRight: boolean;
 }
 
-const LEFT_MIN = 300;
+const LEFT_MIN = 200;
 const MAIN_MIN = 300;
 const RIGHT_MIN = 300;
 const LEFT_DEFAULT = 300;

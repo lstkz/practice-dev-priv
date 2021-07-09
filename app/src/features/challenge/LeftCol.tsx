@@ -1,6 +1,7 @@
 import React from 'react';
 import { useChallengeState } from './ChallengeModule';
 import { DetailsTab } from './DetailsTab';
+import { FileExplorerTab } from './FileExplorerTab';
 import { SolutionsTab } from './SolutionsTab';
 import { TestSuiteTab } from './TestSuiteTab';
 
@@ -11,6 +12,7 @@ export function LeftCol() {
       {leftSidebarTab === 'details' && <DetailsTab />}
       {leftSidebarTab === 'solutions' && <SolutionsTab />}
       {leftSidebarTab === 'test-suite' && <TestSuiteTab />}
+      {leftSidebarTab === 'file-explorer' && <FileExplorerTab />}
     </div>
   );
 }
