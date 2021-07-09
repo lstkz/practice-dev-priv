@@ -29,6 +29,7 @@ export function FileExplorerItemList(props: FileExplorerItemListProps) {
     <>
       {isAdding === 'directory' && (
         <AddNewItem
+          nestedLevel={nestedLevel}
           type={isAdding}
           onNewAdded={onNewAdded!}
           onNewCancelled={onNewCancelled!}
@@ -37,6 +38,7 @@ export function FileExplorerItemList(props: FileExplorerItemListProps) {
       {directoryItems.map(renderItem)}
       {isAdding === 'file' && (
         <AddNewItem
+          nestedLevel={nestedLevel}
           type={isAdding}
           onNewAdded={onNewAdded!}
           onNewCancelled={onNewCancelled!}

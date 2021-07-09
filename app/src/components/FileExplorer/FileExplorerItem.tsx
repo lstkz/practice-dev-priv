@@ -10,7 +10,7 @@ import { ActionIcon } from './ActionIcon';
 import { EditIcon } from './icons/EditIcon';
 import { NewDirectoryIcon } from './icons/NewDirectoryIcon';
 import { NewFileIcon } from './icons/NewFileIcon';
-import { ExplorerItemType } from './types';
+import { ExplorerItemType, NewFileType } from './types';
 
 interface FileExplorerItemProps {
   item: ExplorerItemType;
@@ -33,10 +33,15 @@ export function FileExplorerItem(props: FileExplorerItemProps) {
     expandedDirectories,
     hasFocus,
   } = useFileExplorerState();
-  const { toggleDirectoryExpanded, setActive } = useFileExplorerActions();
+  const {
+    toggleDirectoryExpanded,
+    setActive,
+    addNew,
+  } = useFileExplorerActions();
   const style = {
     paddingLeft: nestedLevel + 'rem',
   };
+  const [isAdding, setIsAdding] = React.useState<NewFileType | null>(null);
   const isActive = item.id === activeItemId;
   const bgCss = [
     isActive && tw`bg-gray-700 hover:bg-gray-700`,
@@ -92,11 +97,32 @@ export function FileExplorerItem(props: FileExplorerItemProps) {
           <FolderIcon isOpen={isExpanded} />
         </div>
         {item.name}
-        <Actions css={bgCss}>
-          <ActionIcon title="New File">
+        <Actions
+          css={bgCss}
+          onClick={e => {
+            e.stopPropagation();
+          }}
+        >
+          <ActionIcon
+            title="New File"
+            onClick={() => {
+              if (!isExpanded) {
+                toggleDirectoryExpanded(item.id);
+              }
+              setIsAdding('file');
+            }}
+          >
             <NewFileIcon />
           </ActionIcon>
-          <ActionIcon title="New Directory">
+          <ActionIcon
+            title="New Directory"
+            onClick={() => {
+              if (!isExpanded) {
+                toggleDirectoryExpanded(item.id);
+              }
+              setIsAdding('directory');
+            }}
+          >
             <NewDirectoryIcon />
           </ActionIcon>
           <ActionIcon title="Edit">
@@ -109,8 +135,16 @@ export function FileExplorerItem(props: FileExplorerItemProps) {
       </Wrapper>
       {isExpanded && (
         <FileExplorerItemList
+          isAdding={isAdding}
           nestedLevel={nestedLevel + 1}
           items={item.content}
+          onNewAdded={(type, name) => {
+            addNew(type, name, item.id);
+            setIsAdding(null);
+          }}
+          onNewCancelled={() => {
+            setIsAdding(null);
+          }}
         />
       )}
     </>

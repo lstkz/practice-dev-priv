@@ -39,7 +39,7 @@ interface Actions {
 const [Provider, useContext] = createModuleContext<State, Actions>();
 
 export function FileExplorer(props: FileExplorerProps) {
-  const [state, setState, _getState] = useImmer<State>({
+  const [state, setState] = useImmer<State>({
     hasFocus: false,
     items: React.useMemo(() => sortExplorerItems(props.items), []),
     activeItemId: null,

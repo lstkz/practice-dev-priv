@@ -5,13 +5,14 @@ import { FolderIcon } from './icons/FolderIcon';
 import { NewFileType } from './types';
 
 interface AddNewItemProps {
+  nestedLevel: number;
   type: NewFileType;
   onNewAdded: (type: NewFileType, name: string) => void;
   onNewCancelled: () => void;
 }
 
 export function AddNewItem(props: AddNewItemProps) {
-  const { type, onNewAdded, onNewCancelled } = props;
+  const { type, onNewAdded, onNewCancelled, nestedLevel } = props;
   const [value, setValue] = React.useState('');
   const commit = () => {
     const name = value.trim();
@@ -22,7 +23,12 @@ export function AddNewItem(props: AddNewItemProps) {
     }
   };
   return (
-    <div tw="flex items-center text-gray-300 select-none focus:outline-none border border-transparent bg-indigo-700 ">
+    <div
+      style={{
+        paddingLeft: nestedLevel + 'rem',
+      }}
+      tw="flex items-center text-gray-300 select-none focus:outline-none border border-transparent bg-indigo-700 "
+    >
       <div tw=" flex">
         {type === 'directory' && (
           <>
