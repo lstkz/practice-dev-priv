@@ -29,7 +29,7 @@ const [Provider, useContext] = createModuleContext<State, Actions>();
 
 export function ChallengeModule(props: ChallengeSSRProps) {
   const {} = props;
-  const [state, setState, _getState] = useImmer<State>(
+  const [state, setState] = useImmer<State>(
     {
       leftSidebarTab: 'details',
       rightSidebarTab: 'preview',

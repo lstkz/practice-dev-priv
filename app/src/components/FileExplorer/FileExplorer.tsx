@@ -179,9 +179,6 @@ export function FileExplorer(props: FileExplorerProps) {
         onKeyDown={e => {
           const shouldPrevent = doFn(() => {
             switch (e.key) {
-              case 'Tab': {
-                return true;
-              }
               case 'ArrowRight': {
                 if (!navigationActiveItemId) {
                   return true;
