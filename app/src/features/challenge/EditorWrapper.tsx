@@ -113,11 +113,5 @@ export function EditorWrapper() {
     void init();
   }, []);
 
-  return (
-    <Wrapper
-      ref={wrapperRef}
-      style={{ height: '100%', background: '#011627' }}
-      tw="border-l border-gray-800"
-    ></Wrapper>
-  );
+  return <Wrapper ref={wrapperRef} style={{ height: '100%' }}></Wrapper>;
 }

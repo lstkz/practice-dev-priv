@@ -2,7 +2,7 @@ import React from 'react';
 import { LeftCol } from './LeftCol';
 import { ChallengeHeader } from './ChallengeHeader';
 import { useChallengeActions, useChallengeState } from './ChallengeModule';
-import { EditorWrapper } from './EditorWrapper';
+import { MainCol } from './MainCol';
 import { LeftSidebar } from './LeftSidebar';
 import { RightSidebar } from './RightSidebar';
 import { RightCol } from './RightCol';
@@ -20,7 +20,7 @@ export function ChallengePage() {
         <LayoutManager
           left={<LeftCol />}
           hasLeft={leftSidebarTab != null}
-          main={<EditorWrapper />}
+          main={<MainCol />}
           right={<RightCol />}
           hasRight={rightSidebarTab != null}
         />
