@@ -1,5 +1,6 @@
 import React from 'react';
 import produce, { Draft } from 'immer';
+export type { WritableDraft } from 'immer/dist/types/types-external';
 
 export type SetState<T> = (f: (draft: Draft<T>) => void | T) => void;
 

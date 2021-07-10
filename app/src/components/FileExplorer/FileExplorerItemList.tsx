@@ -23,7 +23,7 @@ export function FileExplorerItemList(props: FileExplorerItemListProps) {
     }
   });
   const renderItem = (item: ExplorerItemType) => (
-    <FileExplorerItem nestedLevel={nestedLevel} item={item} key={item.name} />
+    <FileExplorerItem nestedLevel={nestedLevel} item={item} key={item.id} />
   );
   return (
     <>

@@ -1,16 +1,11 @@
 import React from 'react';
 import { useFileExplorerActions, useFileExplorerState } from './FileExplorer';
 import { FileExplorerItemList } from './FileExplorerItemList';
-import { FileIcon } from './icons/FileIcon';
-import { FolderIcon } from './icons/FolderIcon';
-import { ExpandedIcon } from './icons/ExpandedIcon';
 import tw, { styled } from 'twin.macro';
-import { TrashIcon } from './icons/TrashIcon';
-import { ActionIcon } from './ActionIcon';
-import { EditIcon } from './icons/EditIcon';
-import { NewDirectoryIcon } from './icons/NewDirectoryIcon';
-import { NewFileIcon } from './icons/NewFileIcon';
 import { ExplorerItemType, NewFileType } from './types';
+import { confirmItemDelete, ItemActions } from './ItemActions';
+import { NameInput } from './NameInput';
+import { ItemPrefixIcons } from './ItemPrefixIcons';
 
 interface FileExplorerItemProps {
   item: ExplorerItemType;
@@ -18,11 +13,7 @@ interface FileExplorerItemProps {
 }
 
 const Wrapper = styled.div`
-  ${tw`flex items-center hover:bg-gray-800 cursor-pointer text-gray-300 py-0.5 relative select-none focus:outline-none border border-transparent`}
-`;
-
-const Actions = styled.div`
-  ${tw`absolute right-0 top-0 bottom-0 text-gray-400 hidden group-hover:flex items-center px-2 space-x-1 bg-gray-800`}
+  ${tw`flex h-6 items-center hover:bg-gray-800 cursor-pointer text-gray-300   relative select-none focus:outline-none border border-transparent`}
 `;
 
 export function FileExplorerItem(props: FileExplorerItemProps) {
@@ -37,103 +28,118 @@ export function FileExplorerItem(props: FileExplorerItemProps) {
     toggleDirectoryExpanded,
     setActive,
     addNew,
+    updateItemName,
+    registerItem,
+    removeItem,
   } = useFileExplorerActions();
   const style = {
     paddingLeft: nestedLevel + 'rem',
   };
   const [isAdding, setIsAdding] = React.useState<NewFileType | null>(null);
+  const [isEdit, setIsEdit] = React.useState(false);
+  const [editName, setEditName] = React.useState('');
   const isActive = item.id === activeItemId;
   const bgCss = [
     isActive && tw`bg-gray-700 hover:bg-gray-700`,
     isActive && hasFocus && tw`bg-indigo-700 hover:bg-indigo-700`,
   ];
-  const wrapperCss = [
-    ...bgCss,
-    item.id === navigationActiveItemId && tw`border border-blue-600`,
-  ];
-  if (item.type === 'file') {
-    return (
-      <Wrapper
-        tabIndex={0}
-        style={style}
-        className="group"
-        onClick={() => {
-          setActive(item.id);
-        }}
-        css={wrapperCss}
-      >
-        <div tw="w-4 h-4 mr-1 ml-4">
-          <FileIcon name={item.name} />
-        </div>
-        {item.name}
-        <Actions css={bgCss}>
-          <ActionIcon title="Edit">
-            <EditIcon />
-          </ActionIcon>
-          <ActionIcon title="Delete">
-            <TrashIcon />
-          </ActionIcon>
-        </Actions>
-      </Wrapper>
-    );
-  }
+  const wrapperRef = React.useRef<HTMLDivElement>(null!);
+  const startEdit = () => {
+    setIsEdit(true);
+    setEditName(item.name);
+  };
+  const hideEdit = () => {
+    setIsEdit(false);
+    requestAnimationFrame(() => {
+      wrapperRef.current.focus();
+    });
+  };
+  React.useEffect(() => {
+    registerItem(item.id, {
+      confirmDelete: () => {
+        if (confirmItemDelete(item)) {
+          removeItem(item.id);
+        }
+      },
+      rename: () => {
+        startEdit();
+      },
+    });
+    return () => {
+      registerItem(item.id, null);
+    };
+  }, []);
+
   const isExpanded = expandedDirectories[item.id];
+  const commitEdit = () => {
+    const name = editName.trim();
+    if (name) {
+      updateItemName(item.id, name);
+    }
+    hideEdit();
+  };
+
   return (
     <>
       <Wrapper
+        ref={wrapperRef}
         tabIndex={0}
         style={style}
         className="group"
         onClick={() => {
-          toggleDirectoryExpanded(item.id);
+          if (item.type === 'directory') {
+            toggleDirectoryExpanded(item.id);
+          }
           setActive(item.id);
         }}
-        css={wrapperCss}
+        css={[
+          ...bgCss,
+          isEdit && tw`border-t-0 border-b-0`,
+          item.id === navigationActiveItemId && tw`border border-blue-600`,
+        ]}
       >
-        <div tw="h-4 w-4">
-          <ExpandedIcon isExpanded={isExpanded} />
-        </div>
-        <div tw="w-4 h-4 mr-1">
-          <FolderIcon isOpen={isExpanded} />
-        </div>
-        {item.name}
-        <Actions
-          css={bgCss}
-          onClick={e => {
-            e.stopPropagation();
-          }}
-        >
-          <ActionIcon
-            title="New File"
-            onClick={() => {
-              if (!isExpanded) {
-                toggleDirectoryExpanded(item.id);
-              }
-              setIsAdding('file');
+        <ItemPrefixIcons
+          type={item.type}
+          name={item.name}
+          isExpanded={isExpanded}
+        />
+        {isEdit ? (
+          <NameInput
+            value={editName}
+            onChange={e => setEditName(e.target.value)}
+            autoFocus
+            type="text"
+            onFocus={e => {
+              const dotIdx = editName.lastIndexOf('.');
+              e.target.setSelectionRange(
+                0,
+                dotIdx === -1 ? editName.length : dotIdx
+              );
             }}
-          >
-            <NewFileIcon />
-          </ActionIcon>
-          <ActionIcon
-            title="New Directory"
-            onClick={() => {
-              if (!isExpanded) {
-                toggleDirectoryExpanded(item.id);
+            onKeyDown={e => {
+              if (e.key === 'Enter') {
+                commitEdit();
               }
-              setIsAdding('directory');
+              if (e.key === 'Escape') {
+                hideEdit();
+              }
+              e.stopPropagation();
             }}
-          >
-            <NewDirectoryIcon />
-          </ActionIcon>
-          <ActionIcon title="Edit">
-            <EditIcon />
-          </ActionIcon>
-          <ActionIcon title="Delete">
-            <TrashIcon />
-          </ActionIcon>
-        </Actions>
+            onBlur={commitEdit}
+          />
+        ) : (
+          item.name
+        )}
+        {!isEdit && (
+          <ItemActions
+            css={bgCss}
+            item={item}
+            setIsAdding={setIsAdding}
+            onEdit={startEdit}
+          />
+        )}
       </Wrapper>
-      {isExpanded && (
+      {isExpanded && item.type === 'directory' && (
         <FileExplorerItemList
           isAdding={isAdding}
           nestedLevel={nestedLevel + 1}

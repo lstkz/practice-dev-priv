@@ -1,3 +1,5 @@
+import { WritableDraft } from 'context-api';
+
 export type ExplorerItemType = FileItemType | DirectoryItemType;
 
 export interface FileItemType {
@@ -27,3 +29,7 @@ export type ExplorerItemTypeExtended =
   | DirectoryItemTypeExtended;
 
 export type NewFileType = 'file' | 'directory';
+
+export type WritableFileItem =
+  | WritableDraft<FileItemType>
+  | WritableDraft<DirectoryItemType>;

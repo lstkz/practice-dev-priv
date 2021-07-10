@@ -1,7 +1,6 @@
 import React from 'react';
-import { ExpandedIcon } from './icons/ExpandedIcon';
-import { FileIcon } from './icons/FileIcon';
-import { FolderIcon } from './icons/FolderIcon';
+import { ItemPrefixIcons } from './ItemPrefixIcons';
+import { NameInput } from './NameInput';
 import { NewFileType } from './types';
 
 interface AddNewItemProps {
@@ -27,38 +26,14 @@ export function AddNewItem(props: AddNewItemProps) {
       style={{
         paddingLeft: nestedLevel + 'rem',
       }}
-      tw="flex items-center text-gray-300 select-none focus:outline-none border border-transparent bg-indigo-700 "
+      tw="flex items-center text-gray-300 select-none focus:outline-none border border-transparent bg-indigo-700 h-6"
     >
-      <div tw=" flex">
-        {type === 'directory' && (
-          <>
-            <div tw="h-4 w-4">
-              <ExpandedIcon isExpanded={false} />
-            </div>
-            <div tw="w-4 h-4 mr-1">
-              <FolderIcon isOpen={false} />
-            </div>
-          </>
-        )}
-        {type === 'file' && (
-          <>
-            <div tw="w-4 h-4 mr-1 ml-4">
-              <FileIcon name={value} />
-            </div>
-          </>
-        )}
-      </div>
-      <input
+      <ItemPrefixIcons type={type} name={value} />
+      <NameInput
         value={value}
         onChange={e => setValue(e.target.value)}
         autoFocus
         type="text"
-        tw="px-0 h-auto w-auto min-w-0 bg-indigo-800 border-gray-500 focus:outline-none focus:ring-0 focus:border-gray-500 text-sm text-gray-300 flex-1"
-        style={{
-          marginLeft: -1,
-          paddingTop: 1 / 16 + 'rem',
-          paddingBottom: 1 / 16 + 'rem',
-        }}
         onKeyDown={e => {
           if (e.key === 'Enter') {
             commit();
@@ -66,6 +41,7 @@ export function AddNewItem(props: AddNewItemProps) {
           if (e.key === 'Escape') {
             onNewCancelled();
           }
+          e.stopPropagation();
         }}
         onBlur={commit}
       />

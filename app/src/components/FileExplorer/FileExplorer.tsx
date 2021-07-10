@@ -12,9 +12,11 @@ import { FileExplorerItemList } from './FileExplorerItemList';
 import { NewDirectoryIcon } from './icons/NewDirectoryIcon';
 import { NewFileIcon } from './icons/NewFileIcon';
 import {
+  DirectoryItemType,
   ExplorerItemType,
   ExplorerItemTypeExtended,
   NewFileType,
+  WritableFileItem,
 } from './types';
 import { doFn } from '../../common/helper';
 
@@ -30,13 +32,39 @@ interface State {
   expandedDirectories: Record<string, boolean>;
 }
 
+interface ItemAPI {
+  rename: () => void;
+  confirmDelete: () => void;
+}
+
 interface Actions {
   toggleDirectoryExpanded: (id: string) => void;
   setActive: (id: string) => void;
+  removeItem: (id: string) => void;
+  updateItemName: (id: string, name: string) => void;
   addNew: (type: NewFileType, name: string, parentId: string | null) => void;
+  registerItem: (id: string, api: ItemAPI | null) => void;
 }
 
 const [Provider, useContext] = createModuleContext<State, Actions>();
+
+function _findItem(
+  id: string,
+  items: WritableFileItem[]
+): { items: WritableFileItem[]; item: WritableFileItem } {
+  for (const item of items) {
+    if (item.id === id) {
+      return { items, item };
+    }
+    if (item.type === 'directory') {
+      const ret = _findItem(id, item.content);
+      if (ret) {
+        return ret;
+      }
+    }
+  }
+  return null!;
+}
 
 export function FileExplorer(props: FileExplorerProps) {
   const [state, setState] = useImmer<State>({
@@ -46,6 +74,8 @@ export function FileExplorer(props: FileExplorerProps) {
     navigationActiveItemId: null,
     expandedDirectories: {},
   });
+  const wrapperRef = React.useRef<HTMLDivElement>(null!);
+  const itemApiRef = React.useRef<Record<string, ItemAPI>>({});
   const [isAdding, setIsAdding] = React.useState<NewFileType | null>(null);
   const {
     activeItemId,
@@ -54,6 +84,13 @@ export function FileExplorer(props: FileExplorerProps) {
     items,
   } = state;
   const actions = useActions<Actions>({
+    registerItem: (id, api) => {
+      if (api) {
+        itemApiRef.current[id] = api;
+      } else {
+        delete itemApiRef.current[id];
+      }
+    },
     toggleDirectoryExpanded: id => {
       setState(draft => {
         if (draft.expandedDirectories[id]) {
@@ -82,21 +119,24 @@ export function FileExplorer(props: FileExplorerProps) {
             : { type, name, id };
         let rootItems = draft.items;
         if (parentId) {
-          const travel = (items: typeof rootItems) => {
-            items.forEach(item => {
-              if (item.type === 'directory') {
-                if (item.id === parentId) {
-                  rootItems = item.content;
-                } else {
-                  travel(item.content);
-                }
-              }
-            });
-          };
-          travel(draft.items);
+          const parent = _findItem(parentId, draft.items).item;
+          rootItems = (parent as DirectoryItemType).content;
         }
         rootItems.push(newItem);
         sortItemsInline(rootItems);
+      });
+    },
+    removeItem: id => {
+      setState(draft => {
+        const { item, items } = _findItem(id, draft.items);
+        items.splice(items.indexOf(item), 1);
+      });
+    },
+    updateItemName: (id, name) => {
+      setState(draft => {
+        _findItem(id, draft.items).item.name = name;
+        draft.activeItemId = id;
+        draft.navigationActiveItemId = id;
       });
     },
   });
@@ -123,6 +163,7 @@ export function FileExplorer(props: FileExplorerProps) {
   return (
     <Provider state={state} actions={actions}>
       <div
+        ref={wrapperRef}
         tw="text-sm text-gray-400"
         onFocus={() => {
           setState(draft => {
@@ -188,6 +229,20 @@ export function FileExplorer(props: FileExplorerProps) {
                   });
                 }
                 return true;
+              }
+              case 'Enter': {
+                const id = navigationActiveItemId || activeItemId;
+                if (id) {
+                  itemApiRef.current[id]?.rename();
+                }
+                return;
+              }
+              case 'Delete': {
+                const id = navigationActiveItemId || activeItemId;
+                if (id) {
+                  itemApiRef.current[id]?.confirmDelete();
+                }
+                return;
               }
             }
           });
