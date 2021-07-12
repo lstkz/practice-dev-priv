@@ -95,9 +95,9 @@ export function SolutionsTab() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <Link passHref href={createUrl({ name: 'challenge', id: 1 })}>
-                    <a tw="text-gray-700 font-semibold">{item.challenge}</a>
+                    <a tw="text-gray-800 font-semibold">{item.challenge}</a>
                   </Link>
-                  <p className="text-base font-medium text-gray-600 truncate">
+                  <p className="text-sm font-medium text-gray-500 truncate leading-snug">
                     {item.name}
                   </p>
                   <p className="text-sm text-gray-500 truncate">

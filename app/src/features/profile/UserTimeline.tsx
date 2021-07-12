@@ -1,10 +1,11 @@
 import React from 'react';
 import { CheckIcon, ThumbUpIcon, UserIcon } from '@heroicons/react/solid';
+import tw from 'twin.macro';
 
 const eventTypes = {
-  applied: { icon: UserIcon, bgColorClass: 'bg-gray-400' },
-  advanced: { icon: ThumbUpIcon, bgColorClass: 'bg-blue-500' },
-  completed: { icon: CheckIcon, bgColorClass: 'bg-green-500' },
+  applied: { icon: UserIcon, bgColorClass: tw`bg-gray-400` },
+  advanced: { icon: ThumbUpIcon, bgColorClass: tw`bg-blue-500` },
+  completed: { icon: CheckIcon, bgColorClass: tw`bg-green-500` },
 };
 
 const timeline = [
@@ -50,10 +51,6 @@ const timeline = [
   },
 ];
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(' ');
-}
-
 export function UserTimeline() {
   return (
     <section
@@ -80,10 +77,10 @@ export function UserTimeline() {
                   <div className="relative flex space-x-3">
                     <div>
                       <span
-                        className={classNames(
+                        css={[
                           item.type.bgColorClass,
-                          'h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white'
-                        )}
+                          tw`h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white`,
+                        ]}
                       >
                         <item.type.icon
                           className="w-5 h-5 text-white"

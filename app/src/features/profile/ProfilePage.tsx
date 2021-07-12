@@ -8,6 +8,7 @@ import { Tabs } from '../../components/Tabs';
 import { OverviewTab } from './OverviewTab';
 import { SolutionsTab } from './SolutionsTab';
 import { SubmissionsTab } from './SubmissionsTab';
+import { FollowersTab } from './FollowersTab';
 
 export function ProfilePage() {
   const {} = useProfileActions();
@@ -49,6 +50,7 @@ export function ProfilePage() {
                 {tab === 'overview' && <OverviewTab />}
                 {tab === 'solutions' && <SolutionsTab />}
                 {tab === 'submissions' && <SubmissionsTab />}
+                {tab === 'followers' && <FollowersTab />}
               </div>
             </div>
           </div>

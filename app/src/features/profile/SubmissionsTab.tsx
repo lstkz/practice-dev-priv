@@ -86,7 +86,7 @@ export function SubmissionsTab() {
                 </Badge>
                 <div className="flex-1 min-w-0">
                   <Link passHref href={createUrl({ name: 'challenge', id: 1 })}>
-                    <a tw="text-gray-700 font-semibold">{item.challenge}</a>
+                    <a tw="text-gray-800 font-semibold">{item.challenge}</a>
                   </Link>
                   <p className="text-sm text-gray-500 truncate">
                     18:00 3/7/2020
