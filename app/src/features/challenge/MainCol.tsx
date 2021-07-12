@@ -10,7 +10,7 @@ export function MainCol() {
         background: '#011627',
       }}
     >
-      <div tw="flex space-x-0.5">
+      <div tw="flex space-x-0.5 overflow-hidden">
         <FileTab name="index.tsx" isActive hasChanges />
         <FileTab name="Button.tsx" />
         <FileTab name="util.ts" hasChanges />

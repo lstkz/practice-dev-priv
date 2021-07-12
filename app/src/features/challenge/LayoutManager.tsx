@@ -1,11 +1,20 @@
 import React from 'react';
 import tw from 'twin.macro';
-import { IS_SSR } from '../../config';
+import { createCookie } from '../../common/cookie';
 import { useGetter } from '../../hooks/useGetter';
 import { useLayoutEffectFix } from '../../hooks/useLayoutEffectFix';
+import {
+  LEFT_COOKIE_NAME,
+  LEFT_MIN,
+  MAIN_MIN,
+  RIGHT_COOKIE_NAME,
+  RIGHT_MIN,
+} from './const';
 import { Resizer } from './Resizer';
 
 interface LayoutManagerProps {
+  initialLeftSidebar: number;
+  initialRightSidebar: number;
   left: React.ReactNode;
   hasLeft: boolean;
   main: React.ReactNode;
@@ -13,35 +22,30 @@ interface LayoutManagerProps {
   hasRight: boolean;
 }
 
-const LEFT_MIN = 200;
-const MAIN_MIN = 300;
-const RIGHT_MIN = 300;
-const LEFT_DEFAULT = 300;
-const RIGHT_DEFAULT = 400;
-
-function getLocalStorageSize(type: 'left' | 'right', defaultSize: number) {
-  if (IS_SSR) {
-    return defaultSize;
-  }
-  return Number(localStorage['sidebar_' + type]) || defaultSize;
-}
 function saveLocalStorageSize(type: 'left' | 'right', value: number) {
-  localStorage['sidebar_' + type] = value;
+  createCookie(
+    type === 'left' ? LEFT_COOKIE_NAME : RIGHT_COOKIE_NAME,
+    String(value)
+  );
 }
 
 export function LayoutManager(props: LayoutManagerProps) {
-  const { hasLeft, left, main, right, hasRight } = props;
+  const {
+    hasLeft,
+    left,
+    main,
+    right,
+    hasRight,
+    initialLeftSidebar,
+    initialRightSidebar,
+  } = props;
   const ref = React.useRef<HTMLDivElement | null>(null);
   const [size, setSize] = React.useState({
     width: 0,
     height: 1280,
   });
-  const [leftSize, setLeftSize] = React.useState(LEFT_DEFAULT);
-  const [rightSize, setRightSize] = React.useState(RIGHT_DEFAULT);
-  useLayoutEffectFix(() => {
-    setLeftSize(getLocalStorageSize('left', LEFT_DEFAULT));
-    setRightSize(getLocalStorageSize('right', RIGHT_DEFAULT));
-  }, []);
+  const [leftSize, setLeftSize] = React.useState(initialLeftSidebar);
+  const [rightSize, setRightSize] = React.useState(initialRightSidebar);
   const getLeftSize = useGetter(leftSize);
   const getRightSize = useGetter(rightSize);
 

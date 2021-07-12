@@ -1,5 +1,3 @@
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid';
 import React from 'react';
 import tw, { styled } from 'twin.macro';

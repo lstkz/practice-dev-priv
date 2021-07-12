@@ -10,7 +10,12 @@ import { LayoutManager } from './LayoutManager';
 
 export function ChallengePage() {
   const {} = useChallengeActions();
-  const { leftSidebarTab, rightSidebarTab } = useChallengeState();
+  const {
+    leftSidebarTab,
+    rightSidebarTab,
+    initialLeftSidebar,
+    initialRightSidebar,
+  } = useChallengeState();
 
   return (
     <div tw="h-full flex flex-col">
@@ -18,6 +23,8 @@ export function ChallengePage() {
       <div tw="flex" style={{ height: `calc(100% - 2.5rem)` }}>
         <LeftSidebar />
         <LayoutManager
+          initialLeftSidebar={initialLeftSidebar}
+          initialRightSidebar={initialRightSidebar}
           left={<LeftCol />}
           hasLeft={leftSidebarTab != null}
           main={<MainCol />}
