@@ -1,7 +1,7 @@
 import React from 'react';
-// import { ChevronRightIcon } from '@heroicons/react/solid';
 import { LandingHeader } from './LandingHeader';
 import { LoginForm } from './LoginForm';
+import { ProductHunt } from './ProductHunt';
 import { ReactLogo } from './ReactLogo';
 import { TsLogo } from './TsLogo';
 
@@ -44,21 +44,9 @@ export function MainSection() {
         <main className="mt-16 sm:mt-24">
           <div className="mx-auto max-w-7xl">
             <div className="lg:grid lg:grid-cols-12 lg:gap-8">
-              <div className="px-4 sm:px-6 sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left lg:flex lg:items-center">
+              <div className="px-4 sm:px-6 sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left lg:flex lg:items-center relative">
                 <div>
-                  {/* <a
-                    href="#"
-                    className="inline-flex items-center text-white bg-gray-900 rounded-full p-1 pr-2 sm:text-base lg:text-sm xl:text-base hover:text-gray-200"
-                  >
-                    <span className="px-3 py-0.5 text-white text-xs font-semibold leading-5 uppercase tracking-wide bg-indigo-500 rounded-full">
-                      We're hiring
-                    </span>
-                    <span className="ml-4 text-sm">Visit our careers page</span>
-                    <ChevronRightIcon
-                      className="ml-2 w-5 h-5 text-gray-500"
-                      aria-hidden="true"
-                    />
-                  </a> */}
+                  <ProductHunt tw="lg:absolute  top-1 hidden lg:block" />
                   <h1 className="mt-4 text-4xl tracking-tight font-extrabold text-white sm:mt-5 sm:leading-none lg:mt-6 lg:text-5xl xl:text-6xl">
                     <span className="md:block">Boost your</span>{' '}
                     <span className="text-indigo-400 md:block">
@@ -92,6 +80,9 @@ export function MainSection() {
                         </span>
                       </div>
                     </div>
+                  </div>
+                  <div tw="lg:hidden flex justify-center mt-8">
+                    <ProductHunt />
                   </div>
                 </div>
               </div>
