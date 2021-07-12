@@ -11,9 +11,11 @@ export interface BaseButtonProps {
   focusBg?: 'gray-800' | 'gray-900';
 }
 
-interface ButtonProps {
+interface ButtonProps
+  extends Pick<React.HTMLAttributes<HTMLElement>, 'onFocus' | 'onBlur'> {
   children?: React.ReactNode;
   className?: string;
+  css?: any;
   type: 'primary' | 'dark' | 'white' | 'light';
   htmlType?: 'button' | 'submit' | 'reset';
   disabled?: boolean;
@@ -85,6 +87,7 @@ export const Button = React.forwardRef((props: ButtonProps, ref: any) => {
     href,
     onClick,
     className,
+    ...rest
   } = props;
   const inner = (
     <>
@@ -103,7 +106,7 @@ export const Button = React.forwardRef((props: ButtonProps, ref: any) => {
   });
   if (href) {
     return (
-      <Link href={href} passHref>
+      <Link href={href} passHref {...rest}>
         <a
           data-test={testId}
           ref={ref}
@@ -118,6 +121,7 @@ export const Button = React.forwardRef((props: ButtonProps, ref: any) => {
   }
   return (
     <button
+      {...rest}
       disabled={isDisabled}
       css={css}
       type={htmlType}
