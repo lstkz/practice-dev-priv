@@ -6,6 +6,7 @@ import tw, { styled } from 'twin.macro';
 import { Button, getBaseButtonStyles } from '../../components/Button';
 import Select from '../../components/Select';
 import { SolutionOptions } from './SolutionOptions';
+import { TabLoader } from './TabLoader';
 import { TabTitle } from './TabTitle';
 
 interface Solution {
@@ -80,17 +81,7 @@ export function SolutionsTab() {
   }, []);
   const title = <TabTitle>Solutions</TabTitle>;
   if (!isLoaded) {
-    return (
-      <div tw="h-full">
-        {title}
-        <div tw="flex h-3/4 items-center justify-center">
-          <FontAwesomeIcon
-            tw="text-indigo-300 text-5xl animate-spin-slow "
-            icon={faSpinner}
-          />
-        </div>
-      </div>
-    );
+    return <TabLoader>{title}</TabLoader>;
   }
 
   return (
@@ -155,10 +146,6 @@ export function SolutionsTab() {
                 </div>
                 <div tw="flex items-center">
                   <SolutionOptions />
-                  {/* <Button type="light" size="small" focusBg="gray-900">
-                    Load
-                  </Button>
-                  <SolutionOptions /> */}
                 </div>
               </div>
             </li>
