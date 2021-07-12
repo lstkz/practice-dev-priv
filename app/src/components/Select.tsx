@@ -39,7 +39,8 @@ export default function Select(props: SelectProps) {
             <Listbox.Button
               css={[
                 ...getBaseButtonStyles(buttonProps),
-                tw`w-full pl-3 pr-10 py-2 justify-start border-none`,
+                tw`w-full pl-3 pr-10 py-2 justify-start`,
+                buttonProps.type !== 'white' && tw`border-none`,
               ]}
             >
               <span tw="block truncate">{selected?.label ?? '-'}</span>

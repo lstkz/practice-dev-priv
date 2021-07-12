@@ -4,7 +4,7 @@ import tw from 'twin.macro';
 interface Tab<T> {
   name: T;
   title: string;
-  count?: number;
+  count?: number | string;
 }
 
 interface TabsProps<T> {
@@ -20,9 +20,9 @@ export function Tabs<T extends string = string>(props: TabsProps<T>) {
     <ScrollContainer
       vertical={false}
       horizontal
-      className="border-b border-gray-200 flex-1"
+      className="border-b border-gray-200 flex-1 -mb-px "
     >
-      <nav className="-mb-px flex" aria-label="Tabs">
+      <nav className="flex" aria-label="Tabs">
         {tabs.map(tab => (
           <a
             onClick={() => {
@@ -33,7 +33,7 @@ export function Tabs<T extends string = string>(props: TabsProps<T>) {
             tabIndex={0}
             key={tab.name}
             css={[
-              tw`border-transparent text-gray-500  whitespace-nowrap flex py-2 px-5 border-b-2 font-medium text-sm flex-grow justify-center`,
+              tw`border-transparent text-gray-500  whitespace-nowrap flex py-2 px-5 border-b-2 font-medium text-sm flex-grow justify-center `,
               tab.name === selected
                 ? tw`border-indigo-500 text-indigo-600`
                 : tw`cursor-pointer hover:text-gray-700 hover:border-gray-200`,
