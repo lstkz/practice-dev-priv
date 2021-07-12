@@ -53,7 +53,7 @@ export function SolutionsTab() {
   const [sortBy, setSortBy] = React.useState('best');
 
   return (
-    <div className=" px-4 py-5 sm:px-6">
+    <div className="px-4 py-5 sm:px-6">
       <div style={{ maxWidth: 120 }}>
         <Select
           type="white"
@@ -82,7 +82,7 @@ export function SolutionsTab() {
             <li key={i} className="py-4">
               <div className="flex items-center space-x-4">
                 <div tw="flex flex-col ml-2">
-                  <span tw="text-base text-center font-bold text-indigo-700 py-1">
+                  <span tw="text-base text-center font-bold text-gray-700 py-1">
                     10
                   </span>
                 </div>
@@ -95,9 +95,9 @@ export function SolutionsTab() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <Link passHref href={createUrl({ name: 'challenge', id: 1 })}>
-                    <a tw="text-indigo-700 font-semibold">{item.challenge}</a>
+                    <a tw="text-gray-700 font-semibold">{item.challenge}</a>
                   </Link>
-                  <p className="text-base font-medium text-gray-800 truncate">
+                  <p className="text-base font-medium text-gray-600 truncate">
                     {item.name}
                   </p>
                   <p className="text-sm text-gray-500 truncate">
@@ -112,8 +112,8 @@ export function SolutionsTab() {
           ))}
         </ul>
       </div>
-      <div className="mt-6">
-        <Button type="primary" block>
+      <div className="mt-6 text-center">
+        <Button type="primary" tw="px-10">
           Load More
         </Button>
       </div>

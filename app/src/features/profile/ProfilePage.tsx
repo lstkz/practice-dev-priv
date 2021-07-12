@@ -7,6 +7,7 @@ import { ProfileHeader } from './ProfileHeader';
 import { Tabs } from '../../components/Tabs';
 import { OverviewTab } from './OverviewTab';
 import { SolutionsTab } from './SolutionsTab';
+import { SubmissionsTab } from './SubmissionsTab';
 
 export function ProfilePage() {
   const {} = useProfileActions();
@@ -47,6 +48,7 @@ export function ProfilePage() {
               <div>
                 {tab === 'overview' && <OverviewTab />}
                 {tab === 'solutions' && <SolutionsTab />}
+                {tab === 'submissions' && <SubmissionsTab />}
               </div>
             </div>
           </div>

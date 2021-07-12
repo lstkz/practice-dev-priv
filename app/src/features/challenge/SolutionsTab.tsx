@@ -1,6 +1,8 @@
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid';
+import Link from 'next/link';
 import React from 'react';
 import tw, { styled } from 'twin.macro';
+import { createUrl } from '../../common/url';
 import { Button, getBaseButtonStyles } from '../../components/Button';
 import Select from '../../components/Select';
 import { SolutionOptions } from './SolutionOptions';
@@ -136,7 +138,16 @@ export function SolutionsTab() {
                     {item.name}
                   </p>
                   <p className="text-sm text-gray-400 whitespace-nowrap truncate">
-                    by {'@' + item.handle}
+                    by{' '}
+                    <Link
+                      passHref
+                      href={createUrl({
+                        name: 'profile',
+                        username: item.handle,
+                      })}
+                    >
+                      <a>{'@' + item.handle}</a>
+                    </Link>
                   </p>
                   <p className="text-sm text-gray-400 truncate">
                     18:00 3/7/2020

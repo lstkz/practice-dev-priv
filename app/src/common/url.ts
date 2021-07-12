@@ -39,6 +39,10 @@ export type UrlOptions =
   | {
       name: 'challenge';
       id: number;
+    }
+  | {
+      name: 'profile';
+      username: string;
     };
 
 export function createUrl(options: UrlOptions) {
@@ -51,6 +55,8 @@ export function createUrl(options: UrlOptions) {
       return '/module/' + options.id;
     case 'challenge':
       return '/challenge/' + options.id;
+    case 'profile':
+      return '/profile/' + options.username;
     default:
       return '/' + options.name;
   }
