@@ -11,8 +11,8 @@ const items = [
   { name: 'Report', href: '#', css: tw`text-red-500` },
 ];
 
-export default function SolutionButton() {
-  const focusFixCss = tw`relative focus:bg-indigo-500  focus:ring-0 focus:outline-none focus:ring-offset-0`;
+export function SolutionOptions() {
+  const focusFixCss = tw`relative focus:ring-0 focus:outline-none focus:ring-offset-0`;
   const [isFocused1, setIsFocused1] = React.useState(false);
   const [isFocused2, setIsFocused2] = React.useState(false);
   return (
@@ -56,8 +56,8 @@ export default function SolutionButton() {
                 setIsFocused2(false);
               }}
             >
-              <span className="sr-only">Open options</span>
-              <ChevronDownIcon className="h-5 w-5" aria-hidden="true" />
+              <span tw="sr-only">Open options</span>
+              <ChevronDownIcon tw="h-5 w-5" aria-hidden="true" />
             </Menu.Button>
             <Transition
               show={open}

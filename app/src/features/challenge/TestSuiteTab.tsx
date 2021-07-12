@@ -6,6 +6,9 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import tw from 'twin.macro';
+import { Button } from '../../components/Button';
+import { ModalRef } from '../../components/Modal';
+import { SolutionModal } from './SolutionModal';
 import { TabTitle } from './TabTitle';
 
 export interface Step {
@@ -75,6 +78,7 @@ const tests: TestInfo[] = [
 ];
 
 export function TestSuiteTab() {
+  const modalRef = React.useRef<ModalRef>(null!);
   return (
     <div>
       <TabTitle>Test Suite</TabTitle>
@@ -119,6 +123,18 @@ export function TestSuiteTab() {
       <div tw="bg-green-200 text-green-600 font-bold text-center rounded-sm p-1 mt-3">
         PASS
       </div>
+      <Button
+        tw="mt-2"
+        block
+        type="light"
+        focusBg="gray-900"
+        onClick={() => {
+          modalRef.current.open();
+        }}
+      >
+        Share Your Solution!
+      </Button>
+      <SolutionModal ref={modalRef} />
     </div>
   );
 }

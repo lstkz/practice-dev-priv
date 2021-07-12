@@ -5,8 +5,7 @@ import React from 'react';
 import tw, { styled } from 'twin.macro';
 import { Button, getBaseButtonStyles } from '../../components/Button';
 import Select from '../../components/Select';
-import SolutionButton from './SolutionOptions';
-import SolutionOptions from './SolutionOptions';
+import { SolutionOptions } from './SolutionOptions';
 import { TabTitle } from './TabTitle';
 
 interface Solution {
@@ -155,7 +154,7 @@ export function SolutionsTab() {
                   </p>
                 </div>
                 <div tw="flex items-center">
-                  <SolutionButton />
+                  <SolutionOptions />
                   {/* <Button type="light" size="small" focusBg="gray-900">
                     Load
                   </Button>
