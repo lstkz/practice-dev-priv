@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { createUrl } from '../common/url';
 import { Button } from './Button';
 import Footer from '../features/landing/Footer';
+import logo from '../../public/logo.png';
 
 const navigation = [
   { name: 'Dashboard', href: '#', current: true },
@@ -47,7 +48,7 @@ export default function Dashboard(props: DashboardProps) {
                         <span className="sr-only">Practice.dev</span>
                         <img
                           className="h-6 w-auto"
-                          src={require('../../public/logo.png')}
+                          src={logo.src}
                           alt="practice.dev"
                         />
                       </a>
