@@ -1,27 +1,24 @@
 {
+  "extends": "../../base.tsconfig.json",
   "compilerOptions": {
-    "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
     "noEmit": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "node",
+    "allowJs": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "downlevelIteration": true,
-    "checkJs": true,
     "jsx": "preserve"
   },
+  "references": [],
   "include": [
+    "src",
+    "scripts",
+    "jest.config.js",
+    "postcss.config.js",
+    "tailwind.config.js",
+    "__tests__",
+    "next.config.js",
     "next-env.d.ts",
-    "**/*.ts",
-    "**/*.js",
-    "**/*.tsx",
-    "next.config.js"
+    ".eslintrc.js"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["tests", "dist", "build"]
 }

@@ -2,9 +2,12 @@
   "name": "app",
   "version": "0.0.0",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
+    "start": "ts-node -T --project ./node.tsconfig.json scripts/start",
+    "start:test": "E2E_TESTS=1 yarn run dev",
+    "dev": "ts-node -T --project ./node.tsconfig.json scripts/dev",
+    "build": "rm -rf ./next && ts-node -T --project ./node.tsconfig.json scripts/build",
+    "test": "yarn run lint && yarn run tsc",
+    "lint": "eslint . --ext .ts"
   },
   "license": "MIT",
   "dependencies": {

@@ -13,6 +13,7 @@
     "apollo-server-micro": "^2.22.2",
     "aws-sdk": "^2.903.0",
     "bcryptjs": "^2.4.3",
+    "config": "*",
     "date-fns": "^2.21.3",
     "deepmerge": "^4.2.2",
     "dotenv": "^8.2.0",

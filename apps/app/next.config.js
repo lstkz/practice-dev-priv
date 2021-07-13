@@ -1,6 +1,18 @@
+/* eslint-disable no-undef */
+
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const path = require('path');
 const withTM = require('next-transpile-modules')(['context-api']);
+
+function getEnv() {
+  const ret = {};
+  Object.keys(process.env).forEach(name => {
+    if (name.startsWith('PD_PUBLIC_')) {
+      ret[name.replace('PD_PUBLIC_', '')] = process.env[name];
+    }
+  });
+  return ret;
+}
 
 module.exports = withTM({
   typescript: {
@@ -10,6 +22,7 @@ module.exports = withTM({
     ignoreDuringBuilds: true,
   },
   webpack5: true,
+  env: getEnv(),
   webpack: (config, options) => {
     config.module.rules.push({
       test: /\.graphql?$/,
@@ -21,7 +34,7 @@ module.exports = withTM({
           {
             from: path.join(
               __dirname,
-              '../../node_modules/onigasm/lib/onigasm.wasm'
+              './node_modules/onigasm/lib/onigasm.wasm'
             ),
             to: path.join(__dirname, 'public/onigasm.wasm'),
           },

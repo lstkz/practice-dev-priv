@@ -1,8 +1,6 @@
 import { toApolloError } from 'apollo-server';
 import * as z from 'zod';
 import crypto from 'crypto';
-import { EMAIL_SENDER } from '../config';
-import { ses } from '../aws';
 
 export function safeExtend<T, U>(obj: T, values: U): T & U {
   return Object.assign(obj, values);
@@ -38,7 +36,7 @@ export function randomInt() {
 export function validate<T>(schema: z.ZodObject<any, any, T>, input: T) {
   try {
     schema.parse(input);
-  } catch (e) {
+  } catch (e: any) {
     throw toApolloError(e, 'VALIDATION_ERROR');
   }
 }
@@ -52,22 +50,22 @@ export function sendEmail({
   subject: string;
   message: string;
 }) {
-  return ses
-    .sendEmail({
-      Source: EMAIL_SENDER,
-      Destination: {
-        ToAddresses: [to],
-      },
-      Message: {
-        Subject: {
-          Data: subject,
-        },
-        Body: {
-          Html: {
-            Data: message,
-          },
-        },
-      },
-    })
-    .promise();
+  // return ses
+  //   .sendEmail({
+  //     Source: EMAIL_SENDER,
+  //     Destination: {
+  //       ToAddresses: [to],
+  //     },
+  //     Message: {
+  //       Subject: {
+  //         Data: subject,
+  //       },
+  //       Body: {
+  //         Html: {
+  //           Data: message,
+  //         },
+  //       },
+  //     },
+  //   })
+  //   .promise();
 }

@@ -8,8 +8,9 @@
     "tsc": "tsc"
   },
   "workspaces": [
-    "apps",
-    "packages"
+    "apps/api",
+    "apps/front",
+    "packages/*"
   ],
   "dependencies": {
     "@types/node": "^14.14.37",

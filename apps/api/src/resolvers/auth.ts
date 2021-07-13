@@ -17,7 +17,7 @@ import {
   ResetPasswordCodeCollection,
   ResetPasswordCodeModel,
 } from '../collections/ResetPasswordCode';
-import { BASE_APP_URL } from '../config';
+import { config } from 'config';
 
 async function _createAuthData(user: UserModel): Promise<AuthResult> {
   const accessToken: AccessTokenModel = {
@@ -34,7 +34,7 @@ async function _createAuthData(user: UserModel): Promise<AuthResult> {
 function _validate<T>(schema: z.ZodObject<any, any, T>, input: T) {
   try {
     schema.parse(input);
-  } catch (e) {
+  } catch (e: any) {
     throw toApolloError(e, 'VALIDATION_ERROR');
   }
 }
@@ -102,7 +102,7 @@ export const resolvers: Resolvers = {
         userId: existing._id,
       };
       await ResetPasswordCodeCollection.insertOne(passwordCode);
-      const resetUrl = `${BASE_APP_URL}/reset-password/${passwordCode._id}`;
+      const resetUrl = `${config.appBaseUrl}/reset-password/${passwordCode._id}`;
       await sendEmail({
         subject: 'Reset your password',
         message: `Click <a href=${resetUrl}>here<a/> to reset your password 

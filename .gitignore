@@ -31,5 +31,10 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 
+*/config/prod.ts
+*/config/dev.ts
+*/config/*.key.txt
+*/config/stage.ts
+
 # vercel
 .vercel
