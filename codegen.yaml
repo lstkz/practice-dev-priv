@@ -3,7 +3,7 @@ hooks:
   afterAllFileWrite:
     - prettier --write
 schema:
-  - ./api/src/schema.graphql
+  - ./apps/api/src/schema.graphql
 generates:
   app/src/generated.tsx:
     plugins:
@@ -11,9 +11,9 @@ generates:
       - typescript-operations
       - typescript-react-apollo
     documents:
-      - ./app/src/pages/**/*.ts*
-      - ./app/src/components/**/*.ts*
-      - ./app/src/features/**/*.ts*
+      - ./apps/app/src/pages/**/*.ts*
+      - ./apps/app/src/components/**/*.ts*
+      - ./apps/app/src/features/**/*.ts*
   api/src/generated.ts:
     plugins:
       - typescript

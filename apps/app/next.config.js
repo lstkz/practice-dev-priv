@@ -1,10 +1,6 @@
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const path = require('path');
-const withTM = require('next-transpile-modules')([
-  'api',
-  'mongodb2',
-  'context-api',
-]);
+const withTM = require('next-transpile-modules')(['context-api']);
 
 module.exports = withTM({
   typescript: {
@@ -25,7 +21,7 @@ module.exports = withTM({
           {
             from: path.join(
               __dirname,
-              '../node_modules/onigasm/lib/onigasm.wasm'
+              '../../node_modules/onigasm/lib/onigasm.wasm'
             ),
             to: path.join(__dirname, 'public/onigasm.wasm'),
           },

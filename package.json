@@ -8,10 +8,8 @@
     "tsc": "tsc"
   },
   "workspaces": [
-    "api",
-    "app",
-    "mongodb2",
-    "context-api"
+    "apps",
+    "packages"
   ],
   "dependencies": {
     "@types/node": "^14.14.37",

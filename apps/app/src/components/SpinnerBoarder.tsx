@@ -14,7 +14,7 @@ export function SpinnerBoarder(props: SpinnerBoarderProps) {
         className,
         tw`inline-block border-current rounded-full animate-spin`,
         size === 'sm' && tw`w-4 h-4 border`,
-        !size && tw`w-8 h-8 border-`,
+        !size && tw`w-8 h-8 border`,
       ]}
       style={{
         borderRightColor: 'transparent',
