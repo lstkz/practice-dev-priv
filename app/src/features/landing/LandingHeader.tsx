@@ -49,7 +49,8 @@ export function LandingHeader() {
                   name: 'login',
                 })}
                 tw="ml-2"
-                type="dark"
+                type="gray"
+                focusBg="gray-800"
               >
                 Log in
               </Button>

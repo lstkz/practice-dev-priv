@@ -4,7 +4,7 @@ import tw from 'twin.macro';
 import { SpinnerBoarder } from './SpinnerBoarder';
 
 export interface BaseButtonProps {
-  type: 'primary' | 'dark' | 'white' | 'light';
+  type: 'primary' | 'dark' | 'gray' | 'white' | 'light';
   disabled?: boolean;
   block?: boolean;
   size?: 'small' | 'default' | 'large';
@@ -12,23 +12,19 @@ export interface BaseButtonProps {
 }
 
 interface ButtonProps
-  extends Pick<React.HTMLAttributes<HTMLElement>, 'onFocus' | 'onBlur'> {
+  extends Pick<React.HTMLAttributes<HTMLElement>, 'onFocus' | 'onBlur'>,
+    BaseButtonProps {
   children?: React.ReactNode;
   className?: string;
   css?: any;
-  type: 'primary' | 'dark' | 'white' | 'light';
   htmlType?: 'button' | 'submit' | 'reset';
-  disabled?: boolean;
-  block?: boolean;
   icon?: React.ReactNode;
   loading?: boolean;
   href?: string;
-  size?: 'small' | 'default' | 'large';
   onClick?: (
     e: React.MouseEvent<HTMLAnchorElement | HTMLDivElement, MouseEvent>
   ) => void;
   testId?: string;
-  focusBg?: 'gray-800' | 'gray-900';
 }
 
 export function getBaseButtonStyles(props: BaseButtonProps) {
@@ -38,10 +34,15 @@ export function getBaseButtonStyles(props: BaseButtonProps) {
     tw`focus:( outline-none ring-2 ring-offset-2 )`,
     block && tw`w-full`,
     disabled && tw`hover:cursor-default`,
-    type === 'dark' && [
+    type === 'gray' && [
       tw`text-white bg-gray-600`,
       tw`hover:( bg-gray-700 )`,
-      tw`focus:( ring-gray-700 ring-offset-gray-400 )`,
+      tw`focus:( ring-gray-700 )`,
+    ],
+    type === 'dark' && [
+      tw`text-white bg-gray-800`,
+      tw`hover:( bg-gray-900 )`,
+      tw`focus:( ring-gray-900  )`,
     ],
     type === 'primary' && [
       tw`text-white bg-indigo-600 `,

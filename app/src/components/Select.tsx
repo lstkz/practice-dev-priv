@@ -12,6 +12,7 @@ function classNames(...classes: any[]) {
 interface Option {
   value: any;
   label: string;
+  searchLabel?: string;
 }
 
 interface SelectProps extends BaseButtonProps {
@@ -19,6 +20,21 @@ interface SelectProps extends BaseButtonProps {
   value: any;
   options: Option[];
   onChange: (value: any) => void;
+}
+
+function OptionLabel({ option }: { option?: Option }) {
+  if (!option) {
+    return <>-</>;
+  }
+  if (option.searchLabel) {
+    return (
+      <>
+        <span tw="sr-only">{option.searchLabel}</span>
+        <span aria-hidden>{option.label}</span>
+      </>
+    );
+  }
+  return <>{option.label}</>;
 }
 
 export default function Select(props: SelectProps) {
@@ -41,9 +57,13 @@ export default function Select(props: SelectProps) {
                 ...getBaseButtonStyles(buttonProps),
                 tw`w-full pl-3 pr-10 py-2 justify-start`,
                 buttonProps.type !== 'white' && tw`border-none`,
+                buttonProps.type === 'white' &&
+                  tw`focus:ring-indigo-500 focus:border-indigo-500 focus:ring-offset-0 focus:ring-1 shadow-sm`,
               ]}
             >
-              <span tw="block truncate">{selected?.label ?? '-'}</span>
+              <span tw="block truncate">
+                <OptionLabel option={selected} />
+              </span>
               <span tw="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                 <SelectorIcon
                   css={[
@@ -85,7 +105,7 @@ export default function Select(props: SelectProps) {
                             'block truncate'
                           )}
                         >
-                          {option.label}
+                          <OptionLabel option={option} />
                         </span>
 
                         {selected ? (

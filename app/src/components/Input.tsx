@@ -3,7 +3,7 @@ import * as React from 'react';
 import tw from 'twin.macro';
 
 type BaseProps = Pick<
-  React.InputHTMLAttributes<HTMLInputElement>,
+  React.InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement>,
   | 'value'
   | 'placeholder'
   | 'onChange'
@@ -28,6 +28,8 @@ export interface InputProps extends BaseProps {
   noLabel?: boolean;
   testId?: string;
   inputRef?: React.LegacyRef<any>;
+  multiline?: boolean;
+  rows?: number;
 }
 
 interface InputFeedbackProps {
@@ -67,8 +69,15 @@ export function Input(props: InputProps) {
     inputClassName,
     noLabel,
     type = 'text',
+    multiline,
+    rows,
     ...rest
   } = props;
+  const css = [
+    tw`block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md`,
+    state === 'error' &&
+      tw`border-red-300 text-red-900 placeholder-red-300 focus:outline-none focus:ring-red-500 focus:border-red-500`,
+  ];
   return (
     <div className={className}>
       {label && (
@@ -83,18 +92,25 @@ export function Input(props: InputProps) {
         </label>
       )}
       <div className="relative rounded-md shadow-sm">
-        <input
-          {...rest}
-          ref={inputRef}
-          data-test={testId}
-          className={inputClassName}
-          type={type}
-          css={[
-            tw`block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md`,
-            state === 'error' &&
-              tw`border-red-300 text-red-900 placeholder-red-300 focus:outline-none focus:ring-red-500 focus:border-red-500`,
-          ]}
-        />
+        {multiline ? (
+          <textarea
+            {...rest}
+            ref={inputRef}
+            data-test={testId}
+            className={inputClassName}
+            css={css}
+            rows={rows}
+          />
+        ) : (
+          <input
+            {...rest}
+            ref={inputRef}
+            data-test={testId}
+            className={inputClassName}
+            type={type}
+            css={css}
+          />
+        )}
         {state === 'error' && (
           <div tw="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
             <ExclamationCircleIcon

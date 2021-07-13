@@ -120,6 +120,12 @@ export type DefaultAuthResultFragment = { __typename?: 'AuthResult' } & Pick<
   'token'
 > & { user: { __typename?: 'User' } & AllUserPropsFragment };
 
+export type GetSettingsQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetSettingsQuery = { __typename?: 'Query' } & {
+  me: { __typename?: 'User' } & Pick<User, 'id'>;
+};
+
 export type AppDataQueryVariables = Exact<{ [key: string]: never }>;
 
 export type AppDataQuery = { __typename?: 'Query' } & {
@@ -461,6 +467,61 @@ export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = Apollo.BaseMutationOptions<
   RegisterMutation,
   RegisterMutationVariables
+>;
+export const GetSettingsDocument = gql`
+  query GetSettings {
+    me {
+      id
+    }
+  }
+`;
+
+/**
+ * __useGetSettingsQuery__
+ *
+ * To run a query within a React component, call `useGetSettingsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSettingsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetSettingsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetSettingsQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetSettingsQuery,
+    GetSettingsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetSettingsQuery, GetSettingsQueryVariables>(
+    GetSettingsDocument,
+    options
+  );
+}
+export function useGetSettingsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetSettingsQuery,
+    GetSettingsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<GetSettingsQuery, GetSettingsQueryVariables>(
+    GetSettingsDocument,
+    options
+  );
+}
+export type GetSettingsQueryHookResult = ReturnType<typeof useGetSettingsQuery>;
+export type GetSettingsLazyQueryHookResult = ReturnType<
+  typeof useGetSettingsLazyQuery
+>;
+export type GetSettingsQueryResult = Apollo.QueryResult<
+  GetSettingsQuery,
+  GetSettingsQueryVariables
 >;
 export const AppDataDocument = gql`
   query AppData {
