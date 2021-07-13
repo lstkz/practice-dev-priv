@@ -12,6 +12,7 @@ type BaseProps = Pick<
   | 'id'
   | 'autoComplete'
   | 'maxLength'
+  | 'disabled'
   | 'onKeyPress'
   | 'aria-invalid'
   | 'aria-describedby'
@@ -73,10 +74,12 @@ export function Input(props: InputProps) {
     rows,
     ...rest
   } = props;
+  const { disabled } = rest;
   const css = [
     tw`block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md`,
     state === 'error' &&
       tw`border-red-300 text-red-900 placeholder-red-300 focus:outline-none focus:ring-red-500 focus:border-red-500`,
+    disabled && tw`bg-gray-100`,
   ];
   return (
     <div className={className}>

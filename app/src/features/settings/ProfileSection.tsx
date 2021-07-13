@@ -33,24 +33,25 @@ export function ProfileSection() {
       desc="This information will be displayed publicly so be careful what you share."
     >
       <FormProvider {...formMethods}>
-        <div tw="space-y-6">
-          <div className="mt-6 flex flex-col lg:flex-row">
+        <div tw="space-y-6 mt-6 ">
+          <div className="flex flex-col lg:flex-row">
             <div className="flex-grow space-y-6">
               <ContextInput label="Name" name="name" />
-              <div>
-                <Select
-                  type="white"
-                  label="Country"
-                  onChange={() => {}}
-                  options={countryOptions}
-                  value="PL"
-                />
-              </div>
+              <ContextInput multiline label="About" name="about" rows={3} />
             </div>
+
             <UserPhoto />
           </div>
+          <div>
+            <Select
+              type="white"
+              label="Country"
+              onChange={() => {}}
+              options={countryOptions}
+              value="PL"
+            />
+          </div>
           <ContextInput label="URL" name="url" />
-          <ContextInput multiline label="About" name="about" rows={3} />
         </div>
       </FormProvider>
     </SavableSection>
