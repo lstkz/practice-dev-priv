@@ -5,5 +5,5 @@
     "noEmit": true,
     "module": "CommonJS"
   },
-  "include": ["scripts/**"]
+  "include": ["scripts"]
 }

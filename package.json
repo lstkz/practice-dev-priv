@@ -2,6 +2,8 @@
   "name": "typescript-nextjs-graphql-mongo-starter",
   "private": true,
   "scripts": {
+    "start:app": "cd apps/app && yarn start",
+    "start:api": "cd apps/api && yarn start",
     "generate": "graphql-codegen",
     "g": "yarn run generate",
     "lint": "eslint . --ext .ts --ext .tsx",
@@ -9,7 +11,7 @@
   },
   "workspaces": [
     "apps/api",
-    "apps/front",
+    "apps/app",
     "packages/*"
   ],
   "dependencies": {
