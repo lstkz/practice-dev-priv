@@ -10,6 +10,7 @@
     "@types/bcryptjs": "^2.4.2",
     "@types/node": "^14.14.37",
     "apollo-server": "^2.22.2",
+    "aws-sdk": "^2.945.0",
     "bcryptjs": "^2.4.3",
     "config": "*",
     "date-fns": "^2.21.3",
