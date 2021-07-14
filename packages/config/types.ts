@@ -2,6 +2,10 @@ export interface AppConfig {
   logLevel: 'debug' | 'info';
   appBaseUrl: string;
   apiBaseUrl: string;
+  gcp: {
+    project: string;
+    region: string;
+  };
   mongodb: {
     url: string;
     dbName: string;

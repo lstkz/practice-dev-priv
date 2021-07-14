@@ -2,6 +2,7 @@
 
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const path = require('path');
+const fs = require('fs');
 const withTM = require('next-transpile-modules')(['context-api']);
 
 function getEnv() {
@@ -12,6 +13,21 @@ function getEnv() {
     }
   });
   return ret;
+}
+
+function getOnigasmPath() {
+  const path1 = path.join(__dirname, './node_modules/onigasm/lib/onigasm.wasm');
+  const path2 = path.join(
+    __dirname,
+    '../../node_modules/onigasm/lib/onigasm.wasm'
+  );
+  if (fs.existsSync(path1)) {
+    return path1;
+  }
+  if (fs.existsSync(path2)) {
+    return path2;
+  }
+  throw new Error('Cannot locale onigasm.wasm');
 }
 
 module.exports = withTM({
@@ -32,10 +48,7 @@ module.exports = withTM({
       new CopyWebpackPlugin({
         patterns: [
           {
-            from: path.join(
-              __dirname,
-              './node_modules/onigasm/lib/onigasm.wasm'
-            ),
+            from: getOnigasmPath(),
             to: path.join(__dirname, 'public/onigasm.wasm'),
           },
         ],

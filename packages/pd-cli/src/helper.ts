@@ -1,6 +1,5 @@
 import path from 'path';
 import fs from 'fs';
-import AWS from 'aws-sdk';
 import { ChildProcess } from 'child_process';
 import { libs, rootPath, apps, rootApps } from './config';
 
@@ -57,31 +56,6 @@ export function cpToPromise(cp: ChildProcess) {
   });
 }
 
-export async function getStack(stackName: string) {
-  const cf = new AWS.CloudFormation();
-  const { Stacks: stacks } = await cf
-    .describeStacks({
-      StackName: stackName,
-    })
-    .promise();
-  const stack = stacks && stacks[0];
-  if (!stack) {
-    throw new Error(`Stack ${stackName} not found`);
-  }
-  return stack;
-}
-
-export function getStackOutput(stack: AWS.CloudFormation.Stack, name: string) {
-  const output = (stack.Outputs || []).find(x => x.OutputKey === name);
-  if (!output) {
-    throw new Error(`Output not found: ${name}`);
-  }
-  if (!output.OutputValue) {
-    throw new Error(`Output not set: ${output}`);
-  }
-  return output.OutputValue;
-}
-
 export function walk(dir: string) {
   const results: string[] = [];
   const list = fs.readdirSync(dir);
@@ -106,26 +80,4 @@ export function getModulePath(moduleNr: number) {
   }
   const modulePath = path.join(modules, moduleName);
   return { moduleName, modulePath };
-}
-
-export async function checkS3KeyExists(
-  s3: AWS.S3,
-  bucketName: string,
-  key: string
-) {
-  return await s3
-    .headObject({
-      Bucket: bucketName,
-      Key: key,
-    })
-    .promise()
-    .then(
-      () => true,
-      err => {
-        if (err.code === 'NotFound') {
-          return false;
-        }
-        throw err;
-      }
-    );
 }

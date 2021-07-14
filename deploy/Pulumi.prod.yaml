@@ -1,0 +1,3 @@
+config:
+  gcp:project: practice-dev-prod
+  pulumi:template: gcp-typescript

@@ -4,6 +4,10 @@ export const config: AppConfig = {
   logLevel: 'debug',
   appBaseUrl: 'http://app.example.org',
   apiBaseUrl: 'http://api.example.org',
+  gcp: {
+    project: 'xyz',
+    region: 'europe-west1',
+  },
   mongodb: {
     url: 'mongodb://localhost:27017',
     dbName: 'fs',

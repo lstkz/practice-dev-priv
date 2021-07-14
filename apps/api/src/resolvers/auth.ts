@@ -10,7 +10,7 @@ import {
   AccessTokenCollection,
   AccessTokenModel,
 } from '../collections/AccessToken';
-import { AuthenticationError, toApolloError } from 'apollo-server-micro';
+import { AuthenticationError, toApolloError } from 'apollo-server';
 import { mapUser } from '../common/mapper';
 import * as z from 'zod';
 import {
