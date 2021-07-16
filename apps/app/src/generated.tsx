@@ -37,6 +37,7 @@ export type Mutation = {
   forgotPassword?: Maybe<Scalars['Void']>;
   resetPassword: AuthResult;
   confirmEmail: AuthResult;
+  logout?: Maybe<Scalars['Void']>;
 };
 
 export type MutationLoginArgs = {

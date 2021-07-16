@@ -4,6 +4,7 @@ import { Resolvers as BaseResolvers } from './generated';
 export type AppContext = {
   getUser: () => AppUser;
   getUserOrAnonymous: () => AppUser | null;
+  getToken: () => string;
 };
 
 export interface AppUser {

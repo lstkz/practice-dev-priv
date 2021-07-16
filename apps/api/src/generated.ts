@@ -43,6 +43,7 @@ export type Mutation = {
   forgotPassword?: Maybe<Scalars['Void']>;
   resetPassword: AuthResult;
   confirmEmail: AuthResult;
+  logout?: Maybe<Scalars['Void']>;
 };
 
 export type MutationLoginArgs = {
@@ -279,6 +280,7 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationConfirmEmailArgs, 'code'>
   >;
+  logout?: Resolver<Maybe<ResolversTypes['Void']>, ParentType, ContextType>;
 };
 
 export type QueryResolvers<
