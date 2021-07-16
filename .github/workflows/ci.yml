@@ -75,7 +75,7 @@ jobs:
       - name: install yarn
         run: yarn install --frozen-lockfile
 
-      - name: test front
+      - name: test app
         run: |
-          cd apps/front
+          cd apps/app
           yarn run test
