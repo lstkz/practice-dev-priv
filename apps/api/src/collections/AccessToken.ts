@@ -6,6 +6,5 @@ export interface AccessTokenModel {
   userId: ObjectID;
 }
 
-export const AccessTokenCollection = createCollection<AccessTokenModel>(
-  'accessToken'
-);
+export const AccessTokenCollection =
+  createCollection<AccessTokenModel>('accessToken');

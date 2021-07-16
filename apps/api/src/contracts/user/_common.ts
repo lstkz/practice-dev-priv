@@ -1,4 +1,4 @@
-import { randomSalt, createPasswordHash } from '../../common/helper';
+import { randomSalt, createPasswordHash, randomInt } from '../../common/helper';
 import { UserCollection, UserModel } from '../../collections/User';
 import { ObjectID } from 'mongodb';
 import { AppError } from '../../common/errors';
@@ -61,4 +61,24 @@ export async function generateAuthData(user: UserModel): Promise<AuthData> {
     user: mapUser(user),
     token: await createToken(user._id, null),
   };
+}
+
+export async function getNextUsername(username: string) {
+  const MAX_TRIES = 100;
+  const getUsername = (i: number) => {
+    if (i < MAX_TRIES / 2) {
+      return i === 1 ? username : `${username}${i}`;
+    }
+    return `user${randomInt() % 1e6}`;
+  };
+  for (let i = 1; i < MAX_TRIES; i++) {
+    const targetUsername = getUsername(i);
+    const count = await UserCollection.countDocuments({
+      username_lowered: targetUsername,
+    });
+    if (!count) {
+      return targetUsername;
+    }
+  }
+  throw new Error('Cannot generate username for: ' + username);
 }

@@ -2,6 +2,7 @@ import { toApolloError } from 'apollo-server';
 import * as z from 'zod';
 import crypto from 'crypto';
 import cryptoAsync from 'mz/crypto';
+import { Response } from 'node-fetch';
 
 const SECURITY = {
   SALT_LENGTH: 64,
@@ -91,4 +92,25 @@ export async function createPasswordHash(password: string, salt: string) {
 
 export function getCurrentDate() {
   return new Date(Date.now());
+}
+
+export async function getResponseBody<T = any>(opName: string, res: Response) {
+  if (res.status < 200 || res.status >= 300) {
+    const msg = `${opName} failed with code: ${res.status}`;
+    console.error(msg, {
+      responseText: await res.text(),
+    });
+    throw new Error(msg);
+  }
+  const body = await res.json();
+  if (body.error) {
+    const msg = `${opName} failed with code: ${
+      body.error_description || body.error
+    }`;
+    console.error(msg, {
+      body,
+    });
+    throw new Error(msg);
+  }
+  return body as T;
 }

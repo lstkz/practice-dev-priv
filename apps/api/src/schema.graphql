@@ -8,6 +8,10 @@ type Query {
 type Mutation {
   login(values: LoginInput!): AuthResult!
   register(values: RegisterInput!): AuthResult!
+  loginGithub(code: String!): AuthResult!
+  loginGoogle(accessToken: String!): AuthResult!
+  registerGithub(code: String!): AuthResult!
+  registerGoogle(accessToken: String!): AuthResult!
   forgotPassword(email: String!): Void
   resetPassword(code: String!, newPassword: String!): AuthResult!
   confirmEmail(code: String!): AuthResult!
