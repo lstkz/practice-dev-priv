@@ -92,10 +92,6 @@ export function createTaskBinding<T extends AppTaskType>(
 
 AWS.config.update({ region: config.aws.region });
 
-export const ses = new AWS.SES({
-  region: config.aws.sesRegion,
-});
-
 export const s3 = new AWS.S3();
 
 export const ec2 = new AWS.EC2();

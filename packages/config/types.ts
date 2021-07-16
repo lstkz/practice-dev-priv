@@ -15,7 +15,6 @@ export interface AppConfig {
   };
   aws: {
     region: string;
-    sesRegion: string;
   };
   adminToken: string;
   api: {
@@ -25,7 +24,6 @@ export interface AppConfig {
   web: {
     port: number;
   };
-  emailSender: string;
   mixpanel: {
     apiKey: string | -1;
   };
@@ -41,5 +39,14 @@ export interface AppConfig {
   google: {
     clientId: string;
     clientSecret: string;
+  };
+  mailjet: {
+    publicKey: string;
+    privateKey: string;
+    senderEmail: string;
+    senderName: string;
+    templates: {
+      actionButton: number;
+    };
   };
 }

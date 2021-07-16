@@ -14,15 +14,22 @@ export interface AppUser {
 
 export type Resolvers = BaseResolvers<AppContext>;
 
+export type EmailTemplate = {
+  type: 'actionButton';
+  variables: {
+    subject: string;
+    title: string;
+    content: string;
+    link_text: string;
+    link_url: string;
+  };
+};
+
 export interface SendEmailTask {
   type: 'SendEmail';
   payload: {
     to: string;
-    subject: string;
-    template: {
-      name: 'ButtonAction';
-      params: ButtonActionTemplateProps;
-    };
+    template: EmailTemplate;
   };
 }
 

@@ -11,7 +11,10 @@ export const {
   collections: () => [
     require('./collections/AccessToken'),
     require('./collections/User'),
+    require('./collections/ConfirmEmailCode'),
+    require('./collections/Flag'),
     require('./collections/ResetPasswordCode'),
+    require('./collections/User'),
     // APPEND
   ],
   uri: config.mongodb.url,

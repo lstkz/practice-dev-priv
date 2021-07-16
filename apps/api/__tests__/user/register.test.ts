@@ -1,7 +1,13 @@
 import { gql } from 'apollo-server';
+import { mocked } from 'ts-jest/utils';
 import { register } from '../../src/contracts/user/register';
 import { apolloServer } from '../../src/server';
 import { setupDb } from '../helper';
+import { dispatchEvent } from '../../src/dispatch';
+
+jest.mock('../../src/dispatch');
+
+const mocked_dispatchEvent = mocked(dispatchEvent);
 
 setupDb();
 
@@ -54,6 +60,7 @@ it('register user successfully', async () => {
   expect(user.isVerified).toEqual(false);
   expect(user.email).toEqual('user1@example.com');
   expect(user.username).toEqual('user1');
+  expect(mocked_dispatchEvent).toBeCalled();
 });
 
 it('register user successfully #graphql', async () => {
