@@ -64,13 +64,14 @@ export async function generateAuthData(user: UserModel): Promise<AuthData> {
 }
 
 export async function getNextUsername(username: string) {
+  const MAX_TRIES = 100;
   const getUsername = (i: number) => {
-    if (i < 50) {
+    if (i < MAX_TRIES / 2) {
       return i === 1 ? username : `${username}${i}`;
     }
     return `user${randomInt() % 1e6}`;
   };
-  for (let i = 1; i < 50; i++) {
+  for (let i = 1; i < MAX_TRIES; i++) {
     const targetUsername = getUsername(i);
     const count = await UserCollection.countDocuments({
       username_lowered: targetUsername,
