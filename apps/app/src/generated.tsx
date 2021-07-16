@@ -34,6 +34,10 @@ export type Mutation = {
   __typename?: 'Mutation';
   login: AuthResult;
   register: AuthResult;
+  loginGithub: AuthResult;
+  loginGoogle: AuthResult;
+  registerGithub: AuthResult;
+  registerGoogle: AuthResult;
   forgotPassword?: Maybe<Scalars['Void']>;
   resetPassword: AuthResult;
   confirmEmail: AuthResult;
@@ -46,6 +50,22 @@ export type MutationLoginArgs = {
 
 export type MutationRegisterArgs = {
   values: RegisterInput;
+};
+
+export type MutationLoginGithubArgs = {
+  code: Scalars['String'];
+};
+
+export type MutationLoginGoogleArgs = {
+  accessToken: Scalars['String'];
+};
+
+export type MutationRegisterGithubArgs = {
+  code: Scalars['String'];
+};
+
+export type MutationRegisterGoogleArgs = {
+  accessToken: Scalars['String'];
 };
 
 export type MutationForgotPasswordArgs = {
