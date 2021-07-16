@@ -41,6 +41,31 @@ export function validate<T>(schema: z.ZodObject<any, any, T>, input: T) {
   }
 }
 
+export function sleep(timeout: number) {
+  return new Promise(resolve => setTimeout(resolve, timeout));
+}
+
+export function getDuration(n: number, type: 's' | 'm' | 'h' | 'd') {
+  const seconds = 1000;
+  const minutes = seconds * 60;
+  const hours = minutes * 60;
+  const days = 24 * hours;
+  switch (type) {
+    case 's': {
+      return n * seconds;
+    }
+    case 'm': {
+      return n * minutes;
+    }
+    case 'h': {
+      return n * hours;
+    }
+    case 'd': {
+      return n * days;
+    }
+  }
+}
+
 export function sendEmail({
   to,
   subject,

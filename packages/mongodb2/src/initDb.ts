@@ -12,9 +12,10 @@ export interface InitOptions {
   collections: () => any[];
 }
 
+let client: MongoClient | null = null;
+let isCreated = false;
+
 export function initDb(options: InitOptions) {
-  let client: MongoClient | null = null;
-  let isCreated = false;
   const createCollections = async () => {
     if (isCreated) {
       return;
