@@ -46,5 +46,10 @@ export const UserCollection = safeExtend(
         username_lowered: username.toLowerCase(),
       });
     },
+    findOneByUsernameOrEmail(usernameOrEmail: string) {
+      return usernameOrEmail.includes('@')
+        ? this.findOneByEmail(usernameOrEmail)
+        : this.findOneByUsername(usernameOrEmail);
+    },
   }
 );
