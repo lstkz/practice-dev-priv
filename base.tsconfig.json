@@ -31,6 +31,9 @@
     "noUnusedLocals": true,
     "downlevelIteration": true,
     "noUnusedParameters": false,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "config": ["./packages/config"]
+    }
   }
 }

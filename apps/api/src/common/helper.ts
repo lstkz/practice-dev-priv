@@ -2,6 +2,8 @@ import { toApolloError } from 'apollo-server';
 import * as z from 'zod';
 import crypto from 'crypto';
 import cryptoAsync from 'mz/crypto';
+import { config } from 'config';
+import { ses } from '../lib';
 
 const SECURITY = {
   SALT_LENGTH: 64,
@@ -82,24 +84,24 @@ export function sendEmail({
   subject: string;
   message: string;
 }) {
-  // return ses
-  //   .sendEmail({
-  //     Source: EMAIL_SENDER,
-  //     Destination: {
-  //       ToAddresses: [to],
-  //     },
-  //     Message: {
-  //       Subject: {
-  //         Data: subject,
-  //       },
-  //       Body: {
-  //         Html: {
-  //           Data: message,
-  //         },
-  //       },
-  //     },
-  //   })
-  //   .promise();
+  return ses
+    .sendEmail({
+      Source: config.emailSender,
+      Destination: {
+        ToAddresses: [to],
+      },
+      Message: {
+        Subject: {
+          Data: subject,
+        },
+        Body: {
+          Html: {
+            Data: message,
+          },
+        },
+      },
+    })
+    .promise();
 }
 
 export async function randomSalt() {

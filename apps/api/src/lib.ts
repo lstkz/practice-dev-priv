@@ -107,12 +107,14 @@ export const { createContract } = initialize({
 });
 
 declare module 'schema/src/StringSchema' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface StringSchema<TReq, TNull, TOutput> {
     objectId(): StringSchema<TReq, TNull, ObjectID>;
   }
 }
 
 declare module 'schema/src/ObjectSchema' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ObjectSchema<TReq, TNull, TKeys> {
     appUser(): ObjectSchema<TReq, TNull, AppUser>;
   }
