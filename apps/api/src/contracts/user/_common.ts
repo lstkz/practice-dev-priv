@@ -35,6 +35,9 @@ export async function createUser(
     isVerified: values.isVerified,
     githubId: values.githubId,
   };
+  if (!user.githubId) {
+    delete user.githubId;
+  }
   if (await UserCollection.findOneByEmail(values.email)) {
     throw new AppError('Email already registered');
   }

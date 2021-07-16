@@ -5,13 +5,10 @@ import { resolvers } from './resolvers';
 import { AppContext, AppUser } from './types';
 import { UserCollection } from './collections/User';
 import { AccessTokenCollection } from './collections/AccessToken';
-import { IncomingMessage } from 'http';
 import util from 'util';
 import { ValidationError } from 'schema';
 
 export const apolloServer = new ApolloServer({
-  // debug: process.env.NODE_ENV === 'development',
-  // debug: true,
   subscriptions: {
     path: '/subscriptions',
     onConnect: connectionParams => {
@@ -20,13 +17,7 @@ export const apolloServer = new ApolloServer({
   },
   typeDefs,
   resolvers,
-  context: async ({
-    req,
-    connection,
-  }: {
-    req: IncomingMessage;
-    connection: any;
-  }): Promise<AppContext> => {
+  context: async ({ req, connection }): Promise<AppContext> => {
     const token = connection
       ? connection.context.authorization
       : req?.headers['authorization'];

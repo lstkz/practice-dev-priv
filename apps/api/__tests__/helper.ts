@@ -22,3 +22,13 @@ export function setupDb() {
     return disconnect(true);
   });
 }
+
+export function getTokenOptions(token: string) {
+  return {
+    req: {
+      headers: {
+        authorization: token,
+      },
+    },
+  };
+}
