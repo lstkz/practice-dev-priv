@@ -8,7 +8,11 @@ export interface UserModel {
   email_lowered: string;
   username: string;
   username_lowered: string;
+  salt: string;
+  isVerified: boolean;
+  isAdmin?: boolean;
   password: string;
+  githubId?: number;
 }
 
 export const UserCollection = safeExtend(
@@ -24,6 +28,13 @@ export const UserCollection = safeExtend(
         username_lowered: 1,
       },
       unique: true,
+    },
+    {
+      key: {
+        githubId: 1,
+      },
+      unique: true,
+      sparse: true,
     },
   ]),
   {

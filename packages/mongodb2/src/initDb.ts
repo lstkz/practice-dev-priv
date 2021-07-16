@@ -36,9 +36,9 @@ export function initDb(options: InitOptions) {
         useUnifiedTopology: true,
         ...(options.options ?? {}),
       });
+      await client.connect();
+      await createCollections();
     }
-    await client.connect();
-    await createCollections();
     return client;
   };
 
@@ -62,7 +62,11 @@ export function initDb(options: InitOptions) {
 
   const getDb = () => {
     const client = getClient();
-    return client.db(options.dbName);
+    return client.db(
+      process.env.JEST_WORKER_ID
+        ? `jest-${options.dbName}-${process.env.JEST_WORKER_ID}`
+        : options.dbName
+    );
   };
 
   const withTransaction = async <T extends () => Promise<void>>(

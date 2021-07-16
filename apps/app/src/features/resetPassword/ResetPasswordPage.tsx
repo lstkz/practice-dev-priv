@@ -22,13 +22,13 @@ const schema = z.object({
   confirmPassword: z.string().nonempty({ message: 'This field is required.' }),
 });
 
-gql`
-  mutation Login($username: String!, $password: String!) {
-    login(username: $username, password: $password) {
-      ...DefaultAuthResult
-    }
-  }
-`;
+// gql`
+//   mutation Login($username: String!, $password: String!) {
+//     login(username: $username, password: $password) {
+//       ...DefaultAuthResult
+//     }
+//   }
+// `;
 
 export function ResetPasswordPage() {
   const [state, setState] = useImmer<State>(

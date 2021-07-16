@@ -27,8 +27,8 @@ const schema = z.object({
 });
 
 gql`
-  mutation Login($username: String!, $password: String!) {
-    login(username: $username, password: $password) {
+  mutation Login($loginValues: LoginInput!) {
+    login(values: $loginValues) {
       ...DefaultAuthResult
     }
   }
