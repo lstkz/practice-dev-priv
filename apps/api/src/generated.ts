@@ -42,6 +42,7 @@ export type Mutation = {
   register: AuthResult;
   forgotPassword?: Maybe<Scalars['Void']>;
   resetPassword: AuthResult;
+  confirmEmail: AuthResult;
 };
 
 export type MutationLoginArgs = {
@@ -59,6 +60,10 @@ export type MutationForgotPasswordArgs = {
 export type MutationResetPasswordArgs = {
   code: Scalars['String'];
   newPassword: Scalars['String'];
+};
+
+export type MutationConfirmEmailArgs = {
+  code: Scalars['String'];
 };
 
 export type Query = {
@@ -267,6 +272,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationResetPasswordArgs, 'code' | 'newPassword'>
+  >;
+  confirmEmail?: Resolver<
+    ResolversTypes['AuthResult'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationConfirmEmailArgs, 'code'>
   >;
 };
 

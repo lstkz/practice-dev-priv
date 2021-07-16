@@ -17,7 +17,6 @@ export const config: AppConfig = {
   adminToken: 'admin-test',
   aws: {
     region: 'test',
-    sesRegion: 'test',
   },
   api: {
     port: 3000,
@@ -26,7 +25,6 @@ export const config: AppConfig = {
   web: {
     port: 4000,
   },
-  emailSender: 'test@example.org',
   bugsnag: {
     apiKey: -1,
     workerKey: -1,
@@ -42,5 +40,14 @@ export const config: AppConfig = {
   google: {
     clientId: 'mocked',
     clientSecret: 'mocked',
+  },
+  mailjet: {
+    privateKey: 'privateKey',
+    publicKey: 'publicKey',
+    senderEmail: 'sender@example.org',
+    senderName: 'name',
+    templates: {
+      actionButton: 123,
+    },
   },
 };

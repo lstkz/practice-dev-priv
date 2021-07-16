@@ -2,8 +2,6 @@ import { toApolloError } from 'apollo-server';
 import * as z from 'zod';
 import crypto from 'crypto';
 import cryptoAsync from 'mz/crypto';
-import { config } from 'config';
-import { ses } from '../lib';
 
 const SECURITY = {
   SALT_LENGTH: 64,
@@ -75,35 +73,6 @@ export function getDuration(n: number, type: 's' | 'm' | 'h' | 'd') {
   }
 }
 
-export function sendEmail({
-  to,
-  subject,
-  message,
-}: {
-  to: string;
-  subject: string;
-  message: string;
-}) {
-  return ses
-    .sendEmail({
-      Source: config.emailSender,
-      Destination: {
-        ToAddresses: [to],
-      },
-      Message: {
-        Subject: {
-          Data: subject,
-        },
-        Body: {
-          Html: {
-            Data: message,
-          },
-        },
-      },
-    })
-    .promise();
-}
-
 export async function randomSalt() {
   const buffer = await cryptoAsync.randomBytes(SECURITY.SALT_LENGTH);
   return buffer.toString('hex');
@@ -118,4 +87,8 @@ export async function createPasswordHash(password: string, salt: string) {
     'sha1'
   );
   return hash.toString('hex');
+}
+
+export function getCurrentDate() {
+  return new Date(Date.now());
 }
