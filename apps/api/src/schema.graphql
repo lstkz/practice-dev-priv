@@ -11,6 +11,7 @@ type Mutation {
   forgotPassword(email: String!): Void
   resetPassword(code: String!, newPassword: String!): AuthResult!
   confirmEmail(code: String!): AuthResult!
+  logout: Void
 }
 
 type Subscription {

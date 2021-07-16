@@ -44,6 +44,12 @@ export const apolloServer = new ApolloServer({
       getUserOrAnonymous: () => {
         return user;
       },
+      getToken: () => {
+        if (!token) {
+          throw new AuthenticationError('Access token required');
+        }
+        return token;
+      },
     };
   },
   formatError: err => {
