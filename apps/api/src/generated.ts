@@ -31,6 +31,11 @@ export type AuthResult = {
   user: User;
 };
 
+export type LoginInput = {
+  usernameOrEmail: Scalars['String'];
+  password: Scalars['String'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   login: AuthResult;
@@ -40,8 +45,7 @@ export type Mutation = {
 };
 
 export type MutationLoginArgs = {
-  username: Scalars['String'];
-  password: Scalars['String'];
+  values: LoginInput;
 };
 
 export type MutationRegisterArgs = {
@@ -78,6 +82,9 @@ export type User = {
   __typename?: 'User';
   id: Scalars['String'];
   username: Scalars['String'];
+  email: Scalars['String'];
+  isAdmin?: Maybe<Scalars['Boolean']>;
+  isVerified: Scalars['Boolean'];
 };
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
@@ -198,28 +205,30 @@ export type DirectiveResolverFn<
 export type ResolversTypes = {
   AuthResult: ResolverTypeWrapper<AuthResult>;
   String: ResolverTypeWrapper<Scalars['String']>;
+  LoginInput: LoginInput;
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
   RegisterInput: RegisterInput;
   Subscription: ResolverTypeWrapper<{}>;
   User: ResolverTypeWrapper<User>;
-  Void: ResolverTypeWrapper<Scalars['Void']>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  Void: ResolverTypeWrapper<Scalars['Void']>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   AuthResult: AuthResult;
   String: Scalars['String'];
+  LoginInput: LoginInput;
   Mutation: {};
   Query: {};
   Float: Scalars['Float'];
   RegisterInput: RegisterInput;
   Subscription: {};
   User: User;
-  Void: Scalars['Void'];
   Boolean: Scalars['Boolean'];
+  Void: Scalars['Void'];
 };
 
 export type AuthResultResolvers<
@@ -239,7 +248,7 @@ export type MutationResolvers<
     ResolversTypes['AuthResult'],
     ParentType,
     ContextType,
-    RequireFields<MutationLoginArgs, 'username' | 'password'>
+    RequireFields<MutationLoginArgs, 'values'>
   >;
   register?: Resolver<
     ResolversTypes['AuthResult'],
@@ -287,6 +296,9 @@ export type UserResolvers<
 > = {
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  isAdmin?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  isVerified?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

@@ -56,7 +56,7 @@ export class CodeEditor {
   private highlighter: Highlighter = null!;
   private models: Record<string, editor.ITextModel> = {};
 
-  constructor(private monaco: Monaco, private wrapper: HTMLDivElement) {
+  constructor(private monaco: Monaco, wrapper: HTMLDivElement) {
     this.editor = createEditor(monaco, wrapper);
     this.themer = new Themer();
     this.themer.loadTheme(DarkThemeNew as any);

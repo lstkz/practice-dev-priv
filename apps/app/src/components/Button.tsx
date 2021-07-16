@@ -75,6 +75,7 @@ export function getFocusBgTw(focusBg: FocusBg | undefined) {
   if (focusBg === 'gray-900') {
     return tw`ring-offset-gray-900`;
   }
+  return null;
 }
 
 export const Button = React.forwardRef((props: ButtonProps, ref: any) => {

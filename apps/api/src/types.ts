@@ -36,12 +36,26 @@ export interface ButtonActionTemplateProps {
 
 export type AppTask = SendEmailTask;
 
-export interface TestEvent {
-  type: 'Test';
-  payload: { foo: string };
+export interface UserRegisteredEvent {
+  type: 'UserRegistered';
+  payload: { userId: string };
 }
 
-export type AppEvent = TestEvent;
+export interface UserEmailVerifiedEvent {
+  type: 'UserEmailVerified';
+  payload: { userId: string };
+}
+
+export interface UserEmailUpdatedEvent {
+  type: 'UserEmailUpdated';
+  payload: { userId: string };
+}
+
+export type AppEvent =
+  | UserRegisteredEvent
+  | UserEmailVerifiedEvent
+  | UserEmailUpdatedEvent;
+
 type ExtractType<T> = T extends { type: infer S } ? S : never;
 
 export type AppEventType = ExtractType<Pick<AppEvent, 'type'>>;

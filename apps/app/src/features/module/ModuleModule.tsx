@@ -2,8 +2,6 @@ import React from 'react';
 import { gql } from '@apollo/client';
 import { InferGetServerSidePropsType } from 'next';
 import { useImmer, createModuleContext, useActions } from 'context-api';
-import { GetModuleDocument, GetModuleQuery } from '../../generated';
-import { getApolloClient } from '../../getApolloClient';
 import { ModulePage } from './ModulePage';
 import { createGetServerSideProps } from '../../common/helper';
 
@@ -19,7 +17,7 @@ const [Provider, useContext] = createModuleContext<State, Actions>();
 
 export function ModuleModule(props: ModuleSSRProps) {
   const {} = props;
-  const [state, setState, getState] = useImmer<State>(
+  const [state] = useImmer<State>(
     {
       foo: false,
     },
@@ -56,7 +54,7 @@ gql`
   }
 `;
 
-export const getServerSideProps = createGetServerSideProps(async ctx => {
+export const getServerSideProps = createGetServerSideProps(async _ctx => {
   // const client = getApolloClient(ctx);
   // const ret = await client.query<GetModuleQuery>({
   //   query: GetModuleDocument,

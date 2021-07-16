@@ -1,76 +1,13 @@
-import { ApolloServer, AuthenticationError } from 'apollo-server-express';
 import express from 'express';
 import 'graphql-import-node';
 import stoppable from 'stoppable';
-import typeDefs from './schema.graphql';
-import { resolvers } from './resolvers';
 import { connect } from './db';
-import { AppContext, AppUser } from './types';
-import { UserCollection } from './collections/User';
-import { AccessTokenCollection } from './collections/AccessToken';
-import { IncomingMessage } from 'http';
 import util from 'util';
 import { getDuration } from './common/helper';
 import { addShownDownAction, setupGracefulShutdown } from './shutdown';
 import { config } from 'config';
 import { ampq } from './lib';
-
-const apolloServer = new ApolloServer({
-  subscriptions: {
-    path: '/subscriptions',
-    onConnect: connectionParams => {
-      return connectionParams;
-    },
-  },
-  typeDefs,
-  resolvers,
-  context: async ({
-    req,
-    connection,
-  }: {
-    req: IncomingMessage;
-    connection: any;
-  }): Promise<AppContext> => {
-    const token = connection
-      ? connection.context.authorization
-      : req.headers['authorization'];
-    let user: AppUser = null!;
-    if (token) {
-      const existing = await AccessTokenCollection.findById(token);
-      if (!existing) {
-        throw new AuthenticationError('Invalid access token');
-      }
-      const dbUser = await UserCollection.findByIdOrThrow(existing.userId);
-      user = {
-        email: dbUser.email,
-        id: dbUser._id,
-        username: dbUser.username,
-      };
-    }
-    return {
-      getUser: () => {
-        if (!user) {
-          throw new AuthenticationError('Access token required');
-        }
-        return user;
-      },
-      getUserOrAnonymous: () => {
-        return user;
-      },
-    };
-  },
-  formatError: err => {
-    console.error(util.inspect(err, { depth: 10 }));
-    console.error(err.name);
-    console.error(err);
-    // if (err instanceof ZodError) {
-    //   const newErr = new ValidationError(err.message);
-    //   throw newErr;
-    // }
-    return err;
-    // throw err;
-  },
-});
+import { apolloServer } from './server';
 
 async function start() {
   await Promise.all([connect(), ampq.connect(['publish'])]);

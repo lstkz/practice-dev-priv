@@ -6,7 +6,7 @@ type Query {
 }
 
 type Mutation {
-  login(username: String!, password: String!): AuthResult!
+  login(values: LoginInput!): AuthResult!
   register(values: RegisterInput!): AuthResult!
   forgotPassword(email: String!): Void
   resetPassword(code: String!, newPassword: String!): AuthResult!
@@ -24,10 +24,18 @@ type AuthResult {
 type User {
   id: String!
   username: String!
+  email: String!
+  isAdmin: Boolean
+  isVerified: Boolean!
 }
 
 input RegisterInput {
   username: String!
   email: String!
+  password: String!
+}
+
+input LoginInput {
+  usernameOrEmail: String!
   password: String!
 }

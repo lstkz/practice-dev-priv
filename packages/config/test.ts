@@ -6,11 +6,22 @@ export const config: AppConfig = {
   apiBaseUrl: 'http://api.example.org',
   mongodb: {
     url: 'mongodb://localhost:27017',
-    dbName: 'fs',
+    dbName: 'pd-test',
+  },
+  rabbit: {
+    hosts: ['localhost'],
+    username: 'guest',
+    password: 'guest',
+    prefetchLimit: 10,
   },
   adminToken: 'admin-test',
+  aws: {
+    region: 'test',
+    sesRegion: 'test',
+  },
   api: {
     port: 3000,
+    eventQueueSuffix: 'app',
   },
   web: {
     port: 4000,

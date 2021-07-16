@@ -4,7 +4,7 @@ import Path from 'path';
 import {
   BaseBinding,
   CreateEventBindingOptions,
-  CreateRpcBindingOptions,
+  CreateGraphqlBindingOptions,
   CreateTaskBindingOptions,
 } from '../lib';
 
@@ -28,15 +28,15 @@ const bindings: any[] = R.flatMap(
   file => require(file)
 );
 
-export function getBindings(type: 'rpc'): CreateRpcBindingOptions[];
 export function getBindings(type: 'event'): CreateEventBindingOptions<any>[];
 export function getBindings(type: 'task'): CreateTaskBindingOptions<any>[];
+export function getBindings(type: 'graphql'): CreateGraphqlBindingOptions[];
 export function getBindings(
-  type: 'rpc' | 'event' | 'task'
+  type: 'event' | 'task' | 'graphql'
 ):
-  | CreateRpcBindingOptions[]
   | CreateEventBindingOptions<any>[]
-  | CreateTaskBindingOptions<any>[] {
+  | CreateTaskBindingOptions<any>[]
+  | CreateGraphqlBindingOptions[] {
   return R.pipe(
     bindings,
     R.flatMap(obj => Object.values(obj) as BaseBinding<string, any>[]),

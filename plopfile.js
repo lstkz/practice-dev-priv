@@ -91,16 +91,6 @@ module.exports = function generate(plop) {
     fs.writeFileSync(targetPath, content);
   });
 
-  plop.setActionType('addToResolversFile', function (answers, config, plop) {
-    const targetPath = path.join(__dirname, 'api/src/resolvers/index.ts');
-    let content = fs.readFileSync(targetPath, 'utf8');
-    content = content.replace(
-      /( *)(\/\/ APPEND)/,
-      `$1require('./${answers.name}').resolvers,\n$1$2`
-    );
-    fs.writeFileSync(targetPath, content);
-  });
-
   plop.setGenerator('collection', {
     prompts: [
       {
@@ -123,24 +113,27 @@ module.exports = function generate(plop) {
     ],
   });
 
-  plop.setGenerator('resolver', {
+  plop.setGenerator('contract', {
     prompts: [
       {
         type: 'input',
+        name: 'ns',
+        message: 'choose ns name in camelCase (e.g. user)',
+        basePath: '.',
+      },
+      {
+        type: 'input',
         name: 'name',
-        message: 'choose feature name in PascalCase (e.g. SolutionVote)',
+        message: 'choose contract name in camelCase (e.g. registerUser)',
         basePath: '.',
       },
     ],
     actions: [
       {
         type: 'addMany',
-        destination: path.join(__dirname, 'api/src/resolvers'),
-        base: '.blueprints/resolver',
-        templateFiles: '.blueprints/resolver/**/**',
-      },
-      {
-        type: 'addToResolversFile',
+        destination: path.join(__dirname, 'apps/api/src/contracts'),
+        base: '.blueprints/contract',
+        templateFiles: '.blueprints/contract/**/**',
       },
     ],
   });

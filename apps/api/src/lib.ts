@@ -1,22 +1,18 @@
-import { ContractMeta, initialize } from 'contract';
+import { initialize } from 'contract';
 import { ObjectSchema, StringSchema } from 'schema';
 import AWS from 'aws-sdk';
-import { AppEvent, AppEventType, AppTask, AppTaskType, AppUser } from './types';
+import {
+  AppEvent,
+  AppEventType,
+  AppTask,
+  AppTaskType,
+  AppUser,
+  Resolvers,
+} from './types';
 import { config } from 'config';
 import { Ampq } from './ampq/Ampq';
 import { ObjectID } from 'mongodb';
 import { addShownDownAction } from './shutdown';
-
-export interface CreateRpcBindingOptions {
-  verified?: true;
-  injectUser?: boolean;
-  pro?: boolean;
-  public?: true;
-  admin?: true;
-  wrapAsValues?: true;
-  signature: string;
-  handler: ((...args: any[]) => any) & ContractMeta<any>;
-}
 
 export interface BaseBinding<T, U> {
   isBinding: boolean;
@@ -24,13 +20,22 @@ export interface BaseBinding<T, U> {
   options: U;
 }
 
-export interface RpcBinding
-  extends BaseBinding<'rpc', CreateRpcBindingOptions> {}
+export interface CreateGraphqlBindingOptions {
+  public?: true;
+  verified?: true;
+  admin?: true;
+  resolver: Resolvers;
+}
 
-export function createRpcBinding(options: CreateRpcBindingOptions): RpcBinding {
+export interface GraphqlBinding
+  extends BaseBinding<'graphql', CreateGraphqlBindingOptions> {}
+
+export function createGraphqlBinding(
+  options: CreateGraphqlBindingOptions
+): GraphqlBinding {
   return {
     isBinding: true,
-    type: 'rpc',
+    type: 'graphql',
     options,
   };
 }
@@ -102,12 +107,14 @@ export const { createContract } = initialize({
 });
 
 declare module 'schema/src/StringSchema' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface StringSchema<TReq, TNull, TOutput> {
     objectId(): StringSchema<TReq, TNull, ObjectID>;
   }
 }
 
 declare module 'schema/src/ObjectSchema' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ObjectSchema<TReq, TNull, TKeys> {
     appUser(): ObjectSchema<TReq, TNull, AppUser>;
   }

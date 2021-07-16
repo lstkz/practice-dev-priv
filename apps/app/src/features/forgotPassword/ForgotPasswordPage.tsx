@@ -1,5 +1,4 @@
 import React from 'react';
-import { gql } from '@apollo/client';
 import { useImmer } from 'context-api';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -23,13 +22,13 @@ const schema = z.object({
   username: z.string().nonempty({ message: 'This field is required.' }),
 });
 
-gql`
-  mutation Login($username: String!, $password: String!) {
-    login(username: $username, password: $password) {
-      ...DefaultAuthResult
-    }
-  }
-`;
+// gql`
+//   mutation Login($username: String!, $password: String!) {
+//     login(username: $username, password: $password) {
+//       ...DefaultAuthResult
+//     }
+//   }
+// `;
 
 export function ForgotPasswordPage() {
   const [state, setState] = useImmer<State>(
@@ -70,7 +69,7 @@ export function ForgotPasswordPage() {
         <FormProvider {...formMethods}>
           <form
             tw="space-y-6"
-            onSubmit={handleSubmit(async values => {
+            onSubmit={handleSubmit(async _values => {
               try {
                 setState(draft => {
                   draft.isSuccess = true;

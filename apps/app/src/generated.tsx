@@ -25,6 +25,11 @@ export type AuthResult = {
   user: User;
 };
 
+export type LoginInput = {
+  usernameOrEmail: Scalars['String'];
+  password: Scalars['String'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   login: AuthResult;
@@ -34,8 +39,7 @@ export type Mutation = {
 };
 
 export type MutationLoginArgs = {
-  username: Scalars['String'];
-  password: Scalars['String'];
+  values: LoginInput;
 };
 
 export type MutationRegisterArgs = {
@@ -72,6 +76,9 @@ export type User = {
   __typename?: 'User';
   id: Scalars['String'];
   username: Scalars['String'];
+  email: Scalars['String'];
+  isAdmin?: Maybe<Scalars['Boolean']>;
+  isVerified: Scalars['Boolean'];
 };
 
 export type GetChallengeQueryVariables = Exact<{ [key: string]: never }>;
@@ -81,8 +88,7 @@ export type GetChallengeQuery = { __typename?: 'Query' } & {
 };
 
 export type LoginMutationVariables = Exact<{
-  username: Scalars['String'];
-  password: Scalars['String'];
+  loginValues: LoginInput;
 }>;
 
 export type LoginMutation = { __typename?: 'Mutation' } & {
@@ -210,8 +216,8 @@ export type GetChallengeQueryResult = Apollo.QueryResult<
   GetChallengeQueryVariables
 >;
 export const LoginDocument = gql`
-  mutation Login($username: String!, $password: String!) {
-    login(username: $username, password: $password) {
+  mutation Login($loginValues: LoginInput!) {
+    login(values: $loginValues) {
       ...DefaultAuthResult
     }
   }
@@ -235,8 +241,7 @@ export type LoginMutationFn = Apollo.MutationFunction<
  * @example
  * const [loginMutation, { data, loading, error }] = useLoginMutation({
  *   variables: {
- *      username: // value for 'username'
- *      password: // value for 'password'
+ *      loginValues: // value for 'loginValues'
  *   },
  * });
  */
