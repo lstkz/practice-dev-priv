@@ -38,10 +38,10 @@ export type Mutation = {
   loginGoogle: AuthResult;
   registerGithub: AuthResult;
   registerGoogle: AuthResult;
-  forgotPassword?: Maybe<Scalars['Void']>;
-  resetPassword: AuthResult;
   confirmEmail: AuthResult;
   logout?: Maybe<Scalars['Void']>;
+  resetPassword?: Maybe<Scalars['Void']>;
+  confirmResetPassword: AuthResult;
 };
 
 export type MutationLoginArgs = {
@@ -68,17 +68,17 @@ export type MutationRegisterGoogleArgs = {
   accessToken: Scalars['String'];
 };
 
-export type MutationForgotPasswordArgs = {
-  email: Scalars['String'];
+export type MutationConfirmEmailArgs = {
+  code: Scalars['String'];
 };
 
 export type MutationResetPasswordArgs = {
-  code: Scalars['String'];
-  newPassword: Scalars['String'];
+  usernameOrEmail: Scalars['String'];
 };
 
-export type MutationConfirmEmailArgs = {
+export type MutationConfirmResetPasswordArgs = {
   code: Scalars['String'];
+  newPassword: Scalars['String'];
 };
 
 export type Query = {

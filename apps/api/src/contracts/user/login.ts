@@ -18,9 +18,9 @@ export const login = createContract('user.login')
   })
   .returns<AuthData>()
   .fn(async values => {
-    const user = values.usernameOrEmail.includes('@')
-      ? await UserCollection.findOneByEmail(values.usernameOrEmail)
-      : await UserCollection.findOneByUsername(values.usernameOrEmail);
+    const user = await UserCollection.findOneByUsernameOrEmail(
+      values.usernameOrEmail
+    );
     if (!user) {
       throw new AppError(INVALID_CRED);
     }

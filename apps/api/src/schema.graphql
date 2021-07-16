@@ -12,10 +12,10 @@ type Mutation {
   loginGoogle(accessToken: String!): AuthResult!
   registerGithub(code: String!): AuthResult!
   registerGoogle(accessToken: String!): AuthResult!
-  forgotPassword(email: String!): Void
-  resetPassword(code: String!, newPassword: String!): AuthResult!
   confirmEmail(code: String!): AuthResult!
   logout: Void
+  resetPassword(usernameOrEmail: String!): Void
+  confirmResetPassword(code: String!, newPassword: String!): AuthResult!
 }
 
 type Subscription {

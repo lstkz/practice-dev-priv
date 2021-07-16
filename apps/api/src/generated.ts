@@ -44,10 +44,10 @@ export type Mutation = {
   loginGoogle: AuthResult;
   registerGithub: AuthResult;
   registerGoogle: AuthResult;
-  forgotPassword?: Maybe<Scalars['Void']>;
-  resetPassword: AuthResult;
   confirmEmail: AuthResult;
   logout?: Maybe<Scalars['Void']>;
+  resetPassword?: Maybe<Scalars['Void']>;
+  confirmResetPassword: AuthResult;
 };
 
 export type MutationLoginArgs = {
@@ -74,17 +74,17 @@ export type MutationRegisterGoogleArgs = {
   accessToken: Scalars['String'];
 };
 
-export type MutationForgotPasswordArgs = {
-  email: Scalars['String'];
+export type MutationConfirmEmailArgs = {
+  code: Scalars['String'];
 };
 
 export type MutationResetPasswordArgs = {
-  code: Scalars['String'];
-  newPassword: Scalars['String'];
+  usernameOrEmail: Scalars['String'];
 };
 
-export type MutationConfirmEmailArgs = {
+export type MutationConfirmResetPasswordArgs = {
   code: Scalars['String'];
+  newPassword: Scalars['String'];
 };
 
 export type Query = {
@@ -306,18 +306,6 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationRegisterGoogleArgs, 'accessToken'>
   >;
-  forgotPassword?: Resolver<
-    Maybe<ResolversTypes['Void']>,
-    ParentType,
-    ContextType,
-    RequireFields<MutationForgotPasswordArgs, 'email'>
-  >;
-  resetPassword?: Resolver<
-    ResolversTypes['AuthResult'],
-    ParentType,
-    ContextType,
-    RequireFields<MutationResetPasswordArgs, 'code' | 'newPassword'>
-  >;
   confirmEmail?: Resolver<
     ResolversTypes['AuthResult'],
     ParentType,
@@ -325,6 +313,18 @@ export type MutationResolvers<
     RequireFields<MutationConfirmEmailArgs, 'code'>
   >;
   logout?: Resolver<Maybe<ResolversTypes['Void']>, ParentType, ContextType>;
+  resetPassword?: Resolver<
+    Maybe<ResolversTypes['Void']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationResetPasswordArgs, 'usernameOrEmail'>
+  >;
+  confirmResetPassword?: Resolver<
+    ResolversTypes['AuthResult'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationConfirmResetPasswordArgs, 'code' | 'newPassword'>
+  >;
 };
 
 export type QueryResolvers<
