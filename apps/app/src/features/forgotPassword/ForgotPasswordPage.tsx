@@ -1,5 +1,4 @@
 import React from 'react';
-import { gql } from '@apollo/client';
 import { useImmer } from 'context-api';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -70,7 +69,7 @@ export function ForgotPasswordPage() {
         <FormProvider {...formMethods}>
           <form
             tw="space-y-6"
-            onSubmit={handleSubmit(async values => {
+            onSubmit={handleSubmit(async _values => {
               try {
                 setState(draft => {
                   draft.isSuccess = true;

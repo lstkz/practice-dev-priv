@@ -8,7 +8,7 @@ import { useLoginMutation } from '../../generated';
 import { ContextInput } from '../../components/ContextInput';
 import { Button } from '../../components/Button';
 import { Alert } from '../../components/Alert';
-import { useAuthActions } from '../../components/AuthModule';
+// import { useAuthActions } from '../../components/AuthModule';
 import Link from 'next/link';
 import { AuthSocialButtons } from '../../components/AuthSocialButtons';
 import { Separator } from '../../components/Separator';
@@ -46,8 +46,8 @@ export function LoginPage() {
     resolver: zodResolver(schema),
   });
   const { handleSubmit } = formMethods;
-  const [login, { loading }] = useLoginMutation();
-  const { loginUser } = useAuthActions();
+  const [, { loading }] = useLoginMutation();
+  // const { loginUser } = useAuthActions();
 
   return (
     <FullPageForm
@@ -62,12 +62,12 @@ export function LoginPage() {
       <FormProvider {...formMethods}>
         <form
           tw="space-y-6"
-          onSubmit={handleSubmit(async values => {
+          onSubmit={handleSubmit(async _values => {
             try {
-              const ret = await login({
-                variables: values,
-              });
-              loginUser(ret.data!.login!);
+              // const ret = await login({
+              //   variables: values as any,
+              // });
+              // loginUser(ret.data!.login! as any);
               setState(draft => {
                 draft.error = '';
               });

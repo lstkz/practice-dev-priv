@@ -82,7 +82,7 @@ export function RegisterPage() {
                   registerValues: R.omit(values, ['confirmPassword']),
                 },
               });
-              loginUser(ret.data!.register!);
+              loginUser(ret.data!.register! as any);
             } catch (e) {
               setState(draft => {
                 draft.error = e.message;

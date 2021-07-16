@@ -2,6 +2,14 @@
   "extends": "../../base.tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "lib": [
+      "dom",
+      "DOM.Iterable",
+      "es6",
+      "ES2017.object",
+      "ES2016.Array.Include",
+      "ES2021"
+    ],
     "noEmit": true,
     "allowJs": true,
     "resolveJsonModule": true,
@@ -18,7 +26,8 @@
     "__tests__",
     "next.config.js",
     "next-env.d.ts",
-    ".eslintrc.js"
+    ".eslintrc.js",
+    "default.d.ts"
   ],
   "exclude": ["tests", "dist", "build"]
 }

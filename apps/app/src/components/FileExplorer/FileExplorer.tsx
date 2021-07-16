@@ -77,12 +77,8 @@ export function FileExplorer(props: FileExplorerProps) {
   const wrapperRef = React.useRef<HTMLDivElement>(null!);
   const itemApiRef = React.useRef<Record<string, ItemAPI>>({});
   const [isAdding, setIsAdding] = React.useState<NewFileType | null>(null);
-  const {
-    activeItemId,
-    navigationActiveItemId,
-    expandedDirectories,
-    items,
-  } = state;
+  const { activeItemId, navigationActiveItemId, expandedDirectories, items } =
+    state;
   const actions = useActions<Actions>({
     registerItem: (id, api) => {
       if (api) {
@@ -232,16 +228,17 @@ export function FileExplorer(props: FileExplorerProps) {
                 if (id) {
                   itemApiRef.current[id]?.rename();
                 }
-                return;
+                return true;
               }
               case 'Delete': {
                 const id = navigationActiveItemId || activeItemId;
                 if (id) {
                   itemApiRef.current[id]?.confirmDelete();
                 }
-                return;
+                return true;
               }
             }
+            return false;
           });
           if (shouldPrevent) {
             e.preventDefault();

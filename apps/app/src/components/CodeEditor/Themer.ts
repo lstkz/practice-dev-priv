@@ -23,7 +23,7 @@ export class Themer {
     this.settings = settings;
     this.map = new Map();
     this.scopeCache = new Map();
-    for (const token of settings.tokenColors) {
+    for (const token of this.settings.tokenColors) {
       if (!token.scope) {
         continue;
       }

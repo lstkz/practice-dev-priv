@@ -59,7 +59,7 @@ self.addEventListener('message', async event => {
           return Babel.transform(code, {
             filename,
             presets,
-          });
+          }) as any;
         },
       },
     ],
