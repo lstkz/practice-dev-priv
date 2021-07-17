@@ -15,10 +15,7 @@ export function useAuthForm(options: UseAuthFormOptions) {
   const [error, setError] = React.useState('');
   const authActions = useAuthActions();
 
-  const onSubmit = async (e?: React.FormEvent<any>) => {
-    if (e) {
-      e.preventDefault();
-    }
+  const onSubmit = async () => {
     setIsSubmitting(true);
     setError('');
     try {
