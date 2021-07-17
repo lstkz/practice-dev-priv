@@ -8,8 +8,8 @@ import { useLoginMutation } from '../../generated';
 import { ContextInput } from '../../components/ContextInput';
 import { Button } from '../../components/Button';
 import { Alert } from '../../components/Alert';
-import { useAuthActions } from '../../components/AuthModule';
 import { FullPageForm } from '../../components/FullPageForm';
+import { useAuthActions } from '../AuthModule';
 
 type State = {
   error: string;

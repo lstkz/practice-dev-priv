@@ -13,6 +13,18 @@ module.exports = {
       animation: {
         'spin-slow': 'spin 3s linear infinite',
       },
+      colors: {
+        alpha: {
+          black30: 'rgba(0, 0, 0, 0.3)',
+          black80: 'rgba(0, 0, 0, 0.8)',
+          black20: 'rgba(255, 255, 255, 0.2)',
+          white90: 'rgba(255, 255, 255, 0.9)',
+          white10: 'rgba(255, 255, 255, 0.1)',
+          white20: 'rgba(255, 255, 255, 0.2)',
+          white60: 'rgba(255, 255, 255, 0.6)',
+          white07: 'rgba(255, 255, 255, 0.075)',
+        },
+      },
     },
     container: {
       center: true,

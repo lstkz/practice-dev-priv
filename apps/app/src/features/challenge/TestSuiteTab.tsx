@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import tw from 'twin.macro';
 import { Button } from '../../components/Button';
-import { ModalRef } from '../../components/Modal';
+import { ModalRef } from '../../components/GenericModal';
 import { SolutionModal } from './SolutionModal';
 import { TabTitle } from './TabTitle';
 

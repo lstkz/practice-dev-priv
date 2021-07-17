@@ -11,8 +11,8 @@ import tw from 'twin.macro';
 import { Button } from '../../components/Button';
 import { FormPage } from '../../components/FormPage';
 import { Alert } from '../../components/Alert';
-import { useAuthActions } from '../../components/AuthModule';
 import Link from 'next/link';
+import { useAuthActions } from '../AuthModule';
 
 type State = {
   error: string;

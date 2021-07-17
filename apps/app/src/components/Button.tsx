@@ -3,12 +3,16 @@ import React from 'react';
 import tw from 'twin.macro';
 import { SpinnerBoarder } from './SpinnerBoarder';
 
+export type FocusBg = 'gray-800' | 'gray-900' | 'red-600';
+export type RingColor = 'white';
+
 export interface BaseButtonProps {
   type: 'primary' | 'dark' | 'gray' | 'white' | 'light';
   disabled?: boolean;
   block?: boolean;
   size?: 'small' | 'default' | 'large';
-  focusBg?: 'gray-800' | 'gray-900';
+  focusBg?: FocusBg;
+  ring?: RingColor;
 }
 
 interface ButtonProps
@@ -28,7 +32,7 @@ interface ButtonProps
 }
 
 export function getBaseButtonStyles(props: BaseButtonProps) {
-  const { type, block, disabled, focusBg, size } = props;
+  const { type, block, disabled, focusBg, size, ring } = props;
   return [
     tw`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md justify-center`,
     tw`focus:( outline-none ring-2 ring-offset-2 )`,
@@ -63,10 +67,16 @@ export function getBaseButtonStyles(props: BaseButtonProps) {
     size === 'small' && tw`text-sm px-2 py-1 rounded`,
     size === 'large' && tw`px-5 py-3 text-base`,
     getFocusBgTw(focusBg),
+    getRing(ring),
   ];
 }
 
-export type FocusBg = 'gray-800' | 'gray-900';
+export function getRing(color: RingColor | undefined) {
+  if (color === 'white') {
+    return tw`focus:ring-white`;
+  }
+  return null;
+}
 
 export function getFocusBgTw(focusBg: FocusBg | undefined) {
   if (focusBg === 'gray-800') {
@@ -74,6 +84,9 @@ export function getFocusBgTw(focusBg: FocusBg | undefined) {
   }
   if (focusBg === 'gray-900') {
     return tw`ring-offset-gray-900`;
+  }
+  if (focusBg === 'red-600') {
+    return tw`ring-offset-red-600`;
   }
   return null;
 }

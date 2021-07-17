@@ -8,6 +8,7 @@ import { createUrl } from '../common/url';
 import { Button } from './Button';
 import Footer from '../features/landing/Footer';
 import logo from '../../public/logo.png';
+import { useUser } from 'src/features/AuthModule';
 
 const navigation = [
   { name: 'Dashboard', href: '#', current: true },
@@ -22,7 +23,7 @@ interface DashboardProps {
 
 export default function Dashboard(props: DashboardProps) {
   const { children } = props;
-  const isLoggedIn = false;
+  const user = useUser();
   return (
     <>
       <Disclosure as="nav" className="bg-gray-800">
@@ -75,7 +76,7 @@ export default function Dashboard(props: DashboardProps) {
                   </div>
                 </div>
                 <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                  {isLoggedIn ? (
+                  {user ? (
                     <ProfileDropdown />
                   ) : (
                     <div tw="space-x-4">

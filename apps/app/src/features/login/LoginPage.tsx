@@ -103,7 +103,7 @@ export function LoginPage() {
         </form>
       </FormProvider>
       <Separator tw="mt-6">Or continue with</Separator>
-      <AuthSocialButtons tw="mt-6" />
+      <AuthSocialButtons tw="mt-6" source="login" />
     </FullPageForm>
   );
 }

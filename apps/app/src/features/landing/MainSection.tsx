@@ -1,6 +1,6 @@
 import React from 'react';
 import { LandingHeader } from './LandingHeader';
-import { LoginForm } from './LoginForm';
+import { RegisterForm } from './RegisterForm';
 import { ProductHunt } from './ProductHunt';
 import { ReactLogo } from './ReactLogo';
 import { TsLogo } from './TsLogo';
@@ -86,7 +86,7 @@ export function MainSection() {
                   </div>
                 </div>
               </div>
-              <LoginForm />
+              <RegisterForm />
             </div>
           </div>
         </main>

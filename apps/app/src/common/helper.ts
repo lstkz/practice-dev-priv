@@ -47,3 +47,23 @@ export const clearAccessToken = () => {
 export function doFn<T>(fn: () => T): T {
   return fn();
 }
+
+export function safeAssign<T>(obj: T, values: Partial<T>) {
+  return Object.assign(obj, values);
+}
+
+export function safeExtend<T, U>(obj: T, values: U): T & U {
+  return Object.assign(obj, values);
+}
+
+export function safeKeys<T>(obj: T): Array<keyof T> {
+  return Object.keys(obj) as any;
+}
+
+export function getErrorMessage(e: any) {
+  if (e?.status === 0) {
+    return 'Cannot connect to API';
+  }
+  const message = e?.response?.error || e.message;
+  return message.replace('ContractError: ', '');
+}

@@ -5,10 +5,11 @@ import { Input, InputProps } from './Input';
 
 interface ContextInputProps extends InputProps {
   name: string;
+  limitMax?: boolean;
 }
 
 export function ContextInput(props: ContextInputProps) {
-  const { name, ...rest } = props;
+  const { name, limitMax, maxLength, ...rest } = props;
   const { value, error, hasError, updateValue, blur } = useContextMethods({
     name,
   });
@@ -16,6 +17,7 @@ export function ContextInput(props: ContextInputProps) {
     <div className="w-full">
       <Input
         {...rest}
+        maxLength={limitMax ? 100 : maxLength}
         name={name}
         value={value?.toString() ?? ''}
         onBlur={blur}

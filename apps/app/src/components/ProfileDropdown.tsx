@@ -1,19 +1,22 @@
 import { Fragment } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import tw from 'twin.macro';
+import { useAuthActions } from 'src/features/AuthModule';
 
 interface MenuLinkProps {
   active: boolean;
   children: React.ReactNode;
+  onClick?: () => void;
 }
 
 function MenuLink(props: MenuLinkProps) {
-  const { active, children } = props;
+  const { active, children, onClick } = props;
   return (
     <a
-      href="#"
+      tabIndex={0}
+      onClick={onClick}
       css={[
-        tw`block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50`,
+        tw`block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer`,
         active && tw`bg-gray-100 hover:bg-gray-100`,
       ]}
     >
@@ -23,12 +26,13 @@ function MenuLink(props: MenuLinkProps) {
 }
 
 export function ProfileDropdown() {
+  const { logout } = useAuthActions();
   return (
     <Menu as="div" className="ml-3 relative">
       {({ open }) => (
         <>
           <div>
-            <Menu.Button className="bg-gray-800 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+            <Menu.Button className="bg-gray-800 flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
               <span className="sr-only">Open user menu</span>
               <img
                 className="h-8 w-8 rounded-full"
@@ -60,7 +64,11 @@ export function ProfileDropdown() {
                 {({ active }) => <MenuLink active={active}>Settings</MenuLink>}
               </Menu.Item>
               <Menu.Item>
-                {({ active }) => <MenuLink active={active}> Sign out</MenuLink>}
+                {({ active }) => (
+                  <MenuLink onClick={logout} active={active}>
+                    Sign out
+                  </MenuLink>
+                )}
               </Menu.Item>
             </Menu.Items>
           </Transition>
