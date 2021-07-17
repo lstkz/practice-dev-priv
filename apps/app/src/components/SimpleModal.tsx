@@ -11,17 +11,26 @@ interface SimpleModalProps
 }
 
 export function SimpleModal(props: SimpleModalProps) {
-  const { isOpen, close, icon, title, description, ...rest } = props;
+  const { isOpen, close, icon, title, description, bgColor, ...rest } = props;
   return (
     <Modal
       {...rest}
+      bgColor={bgColor}
       isOpen={isOpen}
       close={close}
       footer={
         <Button
           testId="close-btn"
           type="white"
-          focusBg="red-600"
+          focusBg={
+            bgColor === 'danger'
+              ? 'red-600'
+              : bgColor === 'success'
+              ? 'red-600'
+              : bgColor === 'primary'
+              ? 'indigo-600'
+              : undefined
+          }
           ring="white"
           onClick={() => close('close-button')}
         >

@@ -1,4 +1,7 @@
 import React from 'react';
+import { createGetServerSideProps } from 'src/common/helper';
+import { createUrl } from 'src/common/url';
+import { getApolloClient } from 'src/getApolloClient';
 import CTASection from './CTASection';
 import { FAQSection } from './FAQSection';
 import Footer from './Footer';
@@ -29,3 +32,20 @@ export function LandingPage() {
     </>
   );
 }
+
+export const getServerSideProps = createGetServerSideProps(async ctx => {
+  const client = getApolloClient(ctx);
+  if (client.hasAccessToken()) {
+    const query = ctx.resolvedUrl.split('?')[1];
+    const base = createUrl({ name: 'modules' });
+    return {
+      redirect: {
+        destination: query ? base + '?' + query : base,
+      },
+      props: {},
+    };
+  }
+  return {
+    props: {},
+  };
+});

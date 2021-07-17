@@ -3,7 +3,12 @@ import React from 'react';
 import tw from 'twin.macro';
 import { SpinnerBoarder } from './SpinnerBoarder';
 
-export type FocusBg = 'gray-800' | 'gray-900' | 'red-600';
+export type FocusBg =
+  | 'gray-800'
+  | 'gray-900'
+  | 'red-600'
+  | 'green-600'
+  | 'indigo-600';
 export type RingColor = 'white';
 
 export interface BaseButtonProps {
@@ -87,6 +92,12 @@ export function getFocusBgTw(focusBg: FocusBg | undefined) {
   }
   if (focusBg === 'red-600') {
     return tw`ring-offset-red-600`;
+  }
+  if (focusBg === 'green-600') {
+    return tw`ring-offset-green-600`;
+  }
+  if (focusBg === 'indigo-600') {
+    return tw`ring-offset-indigo-600`;
   }
   return null;
 }
