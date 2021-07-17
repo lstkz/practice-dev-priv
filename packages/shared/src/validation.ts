@@ -2,11 +2,14 @@ import { S } from 'schema';
 
 export const PASSWORD_MIN_LENGTH = 5;
 export const getPasswordSchema = () => S.string().min(PASSWORD_MIN_LENGTH);
+export const USERNAME_MIN_LENGTH = 3;
+export const USERNAME_MAX_LENGTH = 20;
+export const USERNAME_REGEX = /^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,30}$/i;
 export const getUsernameSchema = () =>
   S.string()
     .trim()
-    .regex(/^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,20}$/i)
-    .min(3)
-    .max(20);
+    .regex(USERNAME_REGEX)
+    .min(USERNAME_MIN_LENGTH)
+    .max(USERNAME_MAX_LENGTH);
 
 export const EMAIL_REGEX = /^[a-zA-Z0-9._\-+]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;

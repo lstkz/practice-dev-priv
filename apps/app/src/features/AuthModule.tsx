@@ -1,8 +1,10 @@
 import React from 'react';
 import { useImmer, createModuleContext, useActions } from 'context-api';
-import { AuthResult, User } from '../generated';
+import { AuthResult, useLogoutMutation, User } from '../generated';
 import { clearAccessToken, setAccessToken } from '../common/helper';
 import { useRouter } from 'next/dist/client/router';
+import { createUrl } from 'src/common/url';
+import { gql } from '@apollo/client';
 
 interface Actions {
   logout: () => void;
@@ -20,6 +22,12 @@ export interface AuthProps {
   initialUser: User | null;
 }
 
+gql`
+  mutation Logout {
+    logout
+  }
+`;
+
 export function AuthModule(props: AuthProps) {
   const { children, initialUser } = props;
   const [state, setState] = useImmer<State>(
@@ -29,18 +37,22 @@ export function AuthModule(props: AuthProps) {
     'AuthModule'
   );
   const router = useRouter();
-
+  const [logout] = useLogoutMutation();
   const actions = useActions<Actions>({
     logout: () => {
-      clearAccessToken();
-      void router.push('/');
+      void logout()
+        .catch(() => {})
+        .then(() => {
+          clearAccessToken();
+          return router.push('/');
+        });
     },
     loginUser: data => {
       setAccessToken(data.token);
       setState(draft => {
         draft.user = data.user;
       });
-      void router.push('/');
+      void router.push(createUrl({ name: 'modules' }));
     },
   });
 

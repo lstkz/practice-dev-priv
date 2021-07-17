@@ -6,7 +6,7 @@ import '@fortawesome/fontawesome-svg-core/styles.css';
 import { getApolloClient } from '../getApolloClient';
 import { AppDataDocument, AppDataQuery, User } from '../generated';
 import React from 'react';
-import { AuthModule } from '../components/AuthModule';
+import { AuthModule } from 'src/features/AuthModule';
 
 config.autoAddCss = false;
 
@@ -39,6 +39,9 @@ gql`
   fragment allUserProps on User {
     id
     username
+    email
+    isAdmin
+    isVerified
   }
 `;
 

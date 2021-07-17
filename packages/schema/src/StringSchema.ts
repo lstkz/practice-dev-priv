@@ -55,7 +55,7 @@ export class StringSchema<
         }
       },
     });
-    return (this as any) as StringSchema<TReq, TNull, TOutput>;
+    return this as any as StringSchema<TReq, TNull, TOutput>;
   }
 
   output<T>(convert: (input: string) => T) {
@@ -80,7 +80,7 @@ export class StringSchema<
         }
       },
     });
-    return (this as any) as StringSchema<TReq, TNull, T>;
+    return this as any as StringSchema<TReq, TNull, T>;
   }
 
   min(min: number) {
@@ -161,7 +161,7 @@ export class StringSchema<
     return this;
   }
 
-  regex(reg: RegExp) {
+  regex(reg: RegExp, errorMessage?: string) {
     this.validators.push({
       type: 'string.regex',
       validate: (value: string, path) => {
@@ -170,7 +170,7 @@ export class StringSchema<
             stop: true,
             error: {
               type: 'string.regex',
-              message: `must match regex ${reg}`,
+              message: errorMessage ?? `must match regex ${reg}`,
               path,
               value,
             },
@@ -216,7 +216,7 @@ export class StringSchema<
         return null;
       },
     });
-    return (this as any) as StringSchema<false, TNull>;
+    return this as any as StringSchema<false, TNull>;
   }
 
   nullEmpty() {
@@ -232,10 +232,10 @@ export class StringSchema<
         return null;
       },
     });
-    return (this as any) as StringSchema<TReq, false>;
+    return this as any as StringSchema<TReq, false>;
   }
 
   nullable() {
-    return (super.nullable() as any) as StringSchema<TReq, true>;
+    return super.nullable() as any as StringSchema<TReq, true>;
   }
 }

@@ -3,6 +3,7 @@ import 'graphql-import-node';
 import stoppable from 'stoppable';
 import { connect } from './db';
 import util from 'util';
+import cors from 'cors';
 import { getDuration } from './common/helper';
 import { addShownDownAction, setupGracefulShutdown } from './shutdown';
 import { config } from 'config';
@@ -12,6 +13,7 @@ import { apolloServer } from './server';
 async function start() {
   await Promise.all([connect(), ampq.connect(['publish'])]);
   const app = express();
+  app.use(cors());
   apolloServer.applyMiddleware({ app });
   const httpServer = await app.listen(config.api.port, '0.0.0.0', () => {
     console.log(
