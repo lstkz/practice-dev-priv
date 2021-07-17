@@ -16,7 +16,8 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "paths": {
-      "context-api": ["../../packages/context-api"]
+      "context-api": ["../../packages/context-api"],
+      "shared": ["../../packages/shared"]
     }
   },
   "references": [],

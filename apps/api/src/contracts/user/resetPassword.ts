@@ -28,7 +28,7 @@ export const resetPassword = createContract('user.resetPassword')
       expireAt: new Date(Date.now() + getDuration(1, 'd')),
     };
     await ResetPasswordCodeCollection.insertOne(resetPasswordCode);
-    const url = `${config.appBaseUrl}/reset-password/${code}`;
+    const url = `${config.appBaseUrl}/confirm-reset-password/${code}`;
     await dispatchTask({
       type: 'SendEmail',
       payload: {

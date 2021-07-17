@@ -1,89 +1,98 @@
 import React from 'react';
-// import { gql } from '@apollo/client';
 import { useImmer } from 'context-api';
 import { FormProvider, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { useLoginMutation } from '../../generated';
 import { ContextInput } from '../../components/ContextInput';
 import { Button } from '../../components/Button';
 import { Alert } from '../../components/Alert';
+import Link from 'next/link';
+import { createUrl } from '../../common/url';
 import { FullPageForm } from '../../components/FullPageForm';
-import { useAuthActions } from '../AuthModule';
+import { MailIcon } from '@heroicons/react/outline';
+import { Validator } from 'src/common/Validator';
+import { gql } from '@apollo/client';
+import { useResetPasswordMutation } from '../../generated';
+import { getErrorMessage } from 'src/common/helper';
 
 type State = {
   error: string;
+  isSuccess: boolean;
 };
 
-type FormValues = z.infer<typeof schema>;
+interface FormValues {
+  usernameOrEmail: string;
+}
 
-const schema = z.object({
-  password: z.string().nonempty({ message: 'This field is required.' }),
-  confirmPassword: z.string().nonempty({ message: 'This field is required.' }),
-});
-
-// gql`
-//   mutation Login($username: String!, $password: String!) {
-//     login(username: $username, password: $password) {
-//       ...DefaultAuthResult
-//     }
-//   }
-// `;
+gql`
+  mutation ResetPassword($usernameOrEmail: String!) {
+    resetPassword(usernameOrEmail: $usernameOrEmail)
+  }
+`;
 
 export function ResetPasswordPage() {
   const [state, setState] = useImmer<State>(
     {
       error: '',
+      isSuccess: false,
     },
-    'ResetPasswordModule'
+    'ForgotPasswordModule'
   );
   const { error } = state;
+  const [resetPassword, { loading }] = useResetPasswordMutation();
   const formMethods = useForm<FormValues>({
-    resolver: zodResolver(schema),
+    resolver: data => {
+      return new Validator(data).required('usernameOrEmail').validate();
+    },
   });
+
   const { handleSubmit } = formMethods;
-  const [login, { loading }] = useLoginMutation();
-  const { loginUser } = useAuthActions();
 
   return (
-    <FullPageForm title="Set New Password">
-      <FormProvider {...formMethods}>
-        <form
-          tw="space-y-6"
-          onSubmit={handleSubmit(async values => {
-            try {
-              const ret = await login({
-                variables: values as any,
-              });
-              loginUser(ret.data!.login! as any);
-              setState(draft => {
-                draft.error = '';
-              });
-            } catch (e: any) {
-              setState(draft => {
-                draft.error = e.message;
-              });
-            }
-          })}
-        >
-          {error && <Alert>{error}</Alert>}
-          <ContextInput
-            label="Password"
-            name="password"
-            type="password"
-            autoComplete="new-password"
-          />
-          <ContextInput
-            label="Confirm Password"
-            name="confirmPassword"
-            type="password"
-            autoComplete="new-password"
-          />
-          <Button type="primary" block htmlType="submit" loading={loading}>
-            Change password
-          </Button>
-        </form>
-      </FormProvider>
+    <FullPageForm
+      title="Reset your password"
+      bottom={
+        <>
+          Not Registered? Create an account{' '}
+          <Link href={createUrl({ name: 'register' })}> here</Link>.
+        </>
+      }
+    >
+      {state.isSuccess ? (
+        <div>
+          <div tw="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100">
+            <MailIcon tw="h-8 w-8 text-green-600" aria-hidden="true" />
+          </div>
+          <div tw="text-center mt-3 text-gray-600">
+            An email has been sent to your email address with further
+            instruction how to reset your password. Please check your email.
+          </div>
+        </div>
+      ) : (
+        <FormProvider {...formMethods}>
+          <form
+            tw="space-y-6"
+            onSubmit={handleSubmit(async values => {
+              try {
+                await resetPassword({
+                  variables: values,
+                });
+                setState(draft => {
+                  draft.isSuccess = true;
+                });
+              } catch (e: any) {
+                setState(draft => {
+                  draft.error = getErrorMessage(e);
+                });
+              }
+            })}
+          >
+            {error && <Alert>{error}</Alert>}
+            <ContextInput label="Username or Email" name="usernameOrEmail" />
+            <Button type="primary" block htmlType="submit" loading={loading}>
+              Reset password
+            </Button>
+          </form>
+        </FormProvider>
+      )}
     </FullPageForm>
   );
 }
