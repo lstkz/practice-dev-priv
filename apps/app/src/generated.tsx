@@ -107,6 +107,38 @@ export type User = {
   isVerified: Scalars['Boolean'];
 };
 
+export type LoginGithubMutationVariables = Exact<{
+  code: Scalars['String'];
+}>;
+
+export type LoginGithubMutation = { __typename?: 'Mutation' } & {
+  loginGithub: { __typename?: 'AuthResult' } & DefaultAuthResultFragment;
+};
+
+export type RegisterGithubMutationVariables = Exact<{
+  code: Scalars['String'];
+}>;
+
+export type RegisterGithubMutation = { __typename?: 'Mutation' } & {
+  registerGithub: { __typename?: 'AuthResult' } & DefaultAuthResultFragment;
+};
+
+export type LoginGoogleMutationVariables = Exact<{
+  accessToken: Scalars['String'];
+}>;
+
+export type LoginGoogleMutation = { __typename?: 'Mutation' } & {
+  loginGoogle: { __typename?: 'AuthResult' } & DefaultAuthResultFragment;
+};
+
+export type RegisterGoogleMutationVariables = Exact<{
+  accessToken: Scalars['String'];
+}>;
+
+export type RegisterGoogleMutation = { __typename?: 'Mutation' } & {
+  registerGoogle: { __typename?: 'AuthResult' } & DefaultAuthResultFragment;
+};
+
 export type LogoutMutationVariables = Exact<{ [key: string]: never }>;
 
 export type LogoutMutation = { __typename?: 'Mutation' } & Pick<
@@ -194,6 +226,210 @@ export const DefaultAuthResultFragmentDoc = gql`
   }
   ${AllUserPropsFragmentDoc}
 `;
+export const LoginGithubDocument = gql`
+  mutation LoginGithub($code: String!) {
+    loginGithub(code: $code) {
+      ...DefaultAuthResult
+    }
+  }
+  ${DefaultAuthResultFragmentDoc}
+`;
+export type LoginGithubMutationFn = Apollo.MutationFunction<
+  LoginGithubMutation,
+  LoginGithubMutationVariables
+>;
+
+/**
+ * __useLoginGithubMutation__
+ *
+ * To run a mutation, you first call `useLoginGithubMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLoginGithubMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [loginGithubMutation, { data, loading, error }] = useLoginGithubMutation({
+ *   variables: {
+ *      code: // value for 'code'
+ *   },
+ * });
+ */
+export function useLoginGithubMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    LoginGithubMutation,
+    LoginGithubMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<LoginGithubMutation, LoginGithubMutationVariables>(
+    LoginGithubDocument,
+    options
+  );
+}
+export type LoginGithubMutationHookResult = ReturnType<
+  typeof useLoginGithubMutation
+>;
+export type LoginGithubMutationResult =
+  Apollo.MutationResult<LoginGithubMutation>;
+export type LoginGithubMutationOptions = Apollo.BaseMutationOptions<
+  LoginGithubMutation,
+  LoginGithubMutationVariables
+>;
+export const RegisterGithubDocument = gql`
+  mutation RegisterGithub($code: String!) {
+    registerGithub(code: $code) {
+      ...DefaultAuthResult
+    }
+  }
+  ${DefaultAuthResultFragmentDoc}
+`;
+export type RegisterGithubMutationFn = Apollo.MutationFunction<
+  RegisterGithubMutation,
+  RegisterGithubMutationVariables
+>;
+
+/**
+ * __useRegisterGithubMutation__
+ *
+ * To run a mutation, you first call `useRegisterGithubMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRegisterGithubMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [registerGithubMutation, { data, loading, error }] = useRegisterGithubMutation({
+ *   variables: {
+ *      code: // value for 'code'
+ *   },
+ * });
+ */
+export function useRegisterGithubMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    RegisterGithubMutation,
+    RegisterGithubMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    RegisterGithubMutation,
+    RegisterGithubMutationVariables
+  >(RegisterGithubDocument, options);
+}
+export type RegisterGithubMutationHookResult = ReturnType<
+  typeof useRegisterGithubMutation
+>;
+export type RegisterGithubMutationResult =
+  Apollo.MutationResult<RegisterGithubMutation>;
+export type RegisterGithubMutationOptions = Apollo.BaseMutationOptions<
+  RegisterGithubMutation,
+  RegisterGithubMutationVariables
+>;
+export const LoginGoogleDocument = gql`
+  mutation LoginGoogle($accessToken: String!) {
+    loginGoogle(accessToken: $accessToken) {
+      ...DefaultAuthResult
+    }
+  }
+  ${DefaultAuthResultFragmentDoc}
+`;
+export type LoginGoogleMutationFn = Apollo.MutationFunction<
+  LoginGoogleMutation,
+  LoginGoogleMutationVariables
+>;
+
+/**
+ * __useLoginGoogleMutation__
+ *
+ * To run a mutation, you first call `useLoginGoogleMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLoginGoogleMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [loginGoogleMutation, { data, loading, error }] = useLoginGoogleMutation({
+ *   variables: {
+ *      accessToken: // value for 'accessToken'
+ *   },
+ * });
+ */
+export function useLoginGoogleMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    LoginGoogleMutation,
+    LoginGoogleMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<LoginGoogleMutation, LoginGoogleMutationVariables>(
+    LoginGoogleDocument,
+    options
+  );
+}
+export type LoginGoogleMutationHookResult = ReturnType<
+  typeof useLoginGoogleMutation
+>;
+export type LoginGoogleMutationResult =
+  Apollo.MutationResult<LoginGoogleMutation>;
+export type LoginGoogleMutationOptions = Apollo.BaseMutationOptions<
+  LoginGoogleMutation,
+  LoginGoogleMutationVariables
+>;
+export const RegisterGoogleDocument = gql`
+  mutation RegisterGoogle($accessToken: String!) {
+    registerGoogle(accessToken: $accessToken) {
+      ...DefaultAuthResult
+    }
+  }
+  ${DefaultAuthResultFragmentDoc}
+`;
+export type RegisterGoogleMutationFn = Apollo.MutationFunction<
+  RegisterGoogleMutation,
+  RegisterGoogleMutationVariables
+>;
+
+/**
+ * __useRegisterGoogleMutation__
+ *
+ * To run a mutation, you first call `useRegisterGoogleMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRegisterGoogleMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [registerGoogleMutation, { data, loading, error }] = useRegisterGoogleMutation({
+ *   variables: {
+ *      accessToken: // value for 'accessToken'
+ *   },
+ * });
+ */
+export function useRegisterGoogleMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    RegisterGoogleMutation,
+    RegisterGoogleMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    RegisterGoogleMutation,
+    RegisterGoogleMutationVariables
+  >(RegisterGoogleDocument, options);
+}
+export type RegisterGoogleMutationHookResult = ReturnType<
+  typeof useRegisterGoogleMutation
+>;
+export type RegisterGoogleMutationResult =
+  Apollo.MutationResult<RegisterGoogleMutation>;
+export type RegisterGoogleMutationOptions = Apollo.BaseMutationOptions<
+  RegisterGoogleMutation,
+  RegisterGoogleMutationVariables
+>;
 export const LogoutDocument = gql`
   mutation Logout {
     logout

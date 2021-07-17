@@ -8,7 +8,7 @@ import { gql } from '@apollo/client';
 
 interface Actions {
   logout: () => void;
-  loginUser: (data: AuthResult) => void;
+  loginUser: (data: AuthResult, redirectUrl?: string) => void;
 }
 
 interface State {
@@ -47,12 +47,12 @@ export function AuthModule(props: AuthProps) {
           return router.push('/');
         });
     },
-    loginUser: data => {
+    loginUser: (data, redirectUrl) => {
       setAccessToken(data.token);
       setState(draft => {
         draft.user = data.user;
       });
-      void router.push(createUrl({ name: 'modules' }));
+      void router.push(redirectUrl ?? createUrl({ name: 'modules' }));
     },
   });
 

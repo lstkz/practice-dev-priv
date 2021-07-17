@@ -73,7 +73,7 @@ export function RegisterForm() {
           <div tw="px-4 py-8 sm:px-10">
             <div>
               <p tw="text-sm font-medium text-gray-700">Sign up with</p>
-              <AuthSocialButtons tw="mt-1" />
+              <AuthSocialButtons tw="mt-1" source="register" />
             </div>
             <Separator tw="mt-6">Or</Separator>
             <div tw="mt-6">

@@ -7,6 +7,7 @@ import { getApolloClient } from '../getApolloClient';
 import { AppDataDocument, AppDataQuery, User } from '../generated';
 import React from 'react';
 import { AuthModule } from 'src/features/AuthModule';
+import { ErrorModalModule } from 'src/features/ErrorModalModule';
 
 config.autoAddCss = false;
 
@@ -24,8 +25,11 @@ export default function App({
   return (
     <ApolloProvider client={client}>
       <AuthModule initialUser={initialUser}>
-        <Component {...pageProps} />
+        <ErrorModalModule>
+          <Component {...pageProps} />
+        </ErrorModalModule>
       </AuthModule>
+      <div id="portals" />
     </ApolloProvider>
   );
 }
@@ -52,10 +56,17 @@ App.getInitialProps = async ({ ctx }: AppContext) => {
       initialUser: null,
     };
   }
-  const ret = await client.query<AppDataQuery>({
-    query: AppDataDocument,
-  });
-  return {
-    initialUser: ret.data.me,
-  };
+  try {
+    const ret = await client.query<AppDataQuery>({
+      query: AppDataDocument,
+    });
+    return {
+      initialUser: ret.data.me,
+    };
+  } catch (e) {
+    console.error(e);
+    return {
+      initialUser: null,
+    };
+  }
 };

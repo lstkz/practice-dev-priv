@@ -5,11 +5,12 @@ import { useAuthActions } from 'src/features/AuthModule';
 import { clearAccessToken } from 'src/services/Storage';
 
 interface UseAuthFormOptions {
+  redirectUrl?: string;
   submit: () => Promise<AuthData>;
 }
 
 export function useAuthForm(options: UseAuthFormOptions) {
-  const { submit } = options;
+  const { submit, redirectUrl } = options;
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [error, setError] = React.useState('');
   const authActions = useAuthActions();
@@ -23,7 +24,7 @@ export function useAuthForm(options: UseAuthFormOptions) {
     try {
       clearAccessToken();
       const ret = await submit();
-      await authActions.loginUser(ret);
+      await authActions.loginUser(ret, redirectUrl);
     } catch (e) {
       setError(getErrorMessage(e));
       setIsSubmitting(false);

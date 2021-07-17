@@ -2,7 +2,7 @@ import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Modal, ModalRef, ModalTitle } from '../../components/Modal';
+import { Modal, ModalRef, ModalTitle } from '../../components/GenericModal';
 import { ContextInput } from '../../components/ContextInput';
 import { Button } from '../../components/Button';
 
