@@ -1,1 +1,4 @@
-export { LandingPage as default } from '../features/landing/LandingPage';
+export {
+  LandingPage as default,
+  getServerSideProps,
+} from '../features/landing/LandingPage';

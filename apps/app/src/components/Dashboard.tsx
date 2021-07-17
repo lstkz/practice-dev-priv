@@ -9,6 +9,7 @@ import { Button } from './Button';
 import Footer from '../features/landing/Footer';
 import logo from '../../public/logo.png';
 import { useUser } from 'src/features/AuthModule';
+import { VerifyAccountAlert } from './VerifyAccountAlert';
 
 const navigation = [
   { name: 'Dashboard', href: '#', current: true },
@@ -122,7 +123,10 @@ export default function Dashboard(props: DashboardProps) {
           </>
         )}
       </Disclosure>
-      <div tw="bg-gray-50 flex-1">{children}</div>
+      <div tw="bg-gray-50 flex-1">
+        {user && !user.isVerified && <VerifyAccountAlert />}
+        {children}
+      </div>
       <Footer />
     </>
   );

@@ -8,6 +8,8 @@ import { AppDataDocument, AppDataQuery, User } from '../generated';
 import React from 'react';
 import { AuthModule } from 'src/features/AuthModule';
 import { ErrorModalModule } from 'src/features/ErrorModalModule';
+import { clearAccessToken, getAccessToken } from 'src/common/helper';
+import { ConfirmEmailChecker } from 'src/features/ConfirmEmailChecker';
 
 config.autoAddCss = false;
 
@@ -22,11 +24,17 @@ export default function App({
   initialUser,
   pageProps,
 }: AppProps & GlobalProps) {
+  React.useEffect(() => {
+    if (!initialUser && getAccessToken()) {
+      clearAccessToken();
+    }
+  }, []);
   return (
     <ApolloProvider client={client}>
       <AuthModule initialUser={initialUser}>
         <ErrorModalModule>
           <Component {...pageProps} />
+          <ConfirmEmailChecker />
         </ErrorModalModule>
       </AuthModule>
       <div id="portals" />

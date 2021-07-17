@@ -86,6 +86,8 @@ export function Modal(props: ModalProps) {
             tw`relative flex flex-col w-full bg-white outline-none mx-auto my-7 shadow-lg md:shadow-2xl`,
             bgColor && tw`text-gray-100`,
             bgColor === 'danger' && tw`bg-red-700`,
+            bgColor === 'success' && tw`bg-green-700`,
+            bgColor === 'primary' && tw`bg-indigo-700`,
             (size === 'md' || !size) && tw`md:max-w-xl`,
             size !== 'full' && tw`rounded-xl`,
           ]}

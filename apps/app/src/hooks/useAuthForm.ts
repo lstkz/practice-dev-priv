@@ -1,8 +1,7 @@
 import React from 'react';
 import { AuthData } from 'shared';
-import { getErrorMessage } from 'src/common/helper';
+import { clearAccessToken, getErrorMessage } from 'src/common/helper';
 import { useAuthActions } from 'src/features/AuthModule';
-import { clearAccessToken } from 'src/services/Storage';
 
 interface UseAuthFormOptions {
   redirectUrl?: string;
