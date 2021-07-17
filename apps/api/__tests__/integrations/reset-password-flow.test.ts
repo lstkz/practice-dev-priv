@@ -21,7 +21,9 @@ it('should reset password #integration', async () => {
   expect(mocked_sendMailjetEmail).toBeCalled();
   const options = mocked_sendMailjetEmail.mock.calls[0][0];
   expect(options.template.type).toEqual('actionButton');
-  const exec = /reset-password\/(.+)/.exec(options.template.variables.link_url);
+  const exec = /confirm-reset-password\/(.+)/.exec(
+    options.template.variables.link_url
+  );
   expect(exec).toBeDefined();
   const code = exec![1];
   await confirmResetPassword(code, 'newPass123');

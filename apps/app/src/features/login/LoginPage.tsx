@@ -75,7 +75,7 @@ export function LoginPage() {
             Sign in
           </Button>
           <div tw="flex items-center justify-end">
-            <Link passHref href={createUrl({ name: 'forgot-password' })}>
+            <Link passHref href={createUrl({ name: 'reset-password' })}>
               <a tw="font-medium text-indigo-600 hover:text-indigo-500 text-sm">
                 Forgot your password?
               </a>

@@ -14,6 +14,7 @@ generates:
       - ./apps/app/src/pages/**/*.ts*
       - ./apps/app/src/components/**/*.ts*
       - ./apps/app/src/features/**/*.ts*
+      - ./apps/app/src/hooks/**/*.ts*
   apps/api/src/generated.ts:
     plugins:
       - typescript
