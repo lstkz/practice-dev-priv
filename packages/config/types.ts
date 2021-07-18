@@ -2,6 +2,7 @@ export interface AppConfig {
   logLevel: 'debug' | 'info';
   appBaseUrl: string;
   apiBaseUrl: string;
+  cdnBaseUrl: string;
   rabbit: {
     hosts: string[];
     username: string;
@@ -15,6 +16,7 @@ export interface AppConfig {
   };
   aws: {
     region: string;
+    s3Bucket: string;
   };
   adminToken: string;
   api: {
