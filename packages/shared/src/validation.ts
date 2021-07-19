@@ -15,4 +15,4 @@ export const getUsernameSchema = () =>
 export const EMAIL_REGEX = /^[a-zA-Z0-9._\-+]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
 export const URL_REGEX =
-  /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%_\+.~#?&//=]{1,256}\.[a-z]{1,10}\b(\/[-a-zA-Z0-9@:%_+.~#?&//=]*)?$/;
+  /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%_+.~#?&//=]{1,256}\.[a-z]{1,10}\b(\/[-a-zA-Z0-9@:%_+.~#?&//=]*)?$/;

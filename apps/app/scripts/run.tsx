@@ -20,6 +20,7 @@ export function runScript(
       PD_PUBLIC_GOOGLE_CLIENT_ID: config.google.clientId,
       PD_PUBLIC_API_URL: config.apiBaseUrl,
       PD_PUBLIC_PROTECTED_BASE_URL: config.apiBaseUrl,
+      PD_PUBLIC_CDN_BASE_URL: config.cdnBaseUrl,
     },
   });
 

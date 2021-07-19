@@ -190,6 +190,7 @@ export type User = {
   id: Scalars['String'];
   username: Scalars['String'];
   email: Scalars['String'];
+  avatarId?: Maybe<Scalars['String']>;
   isAdmin?: Maybe<Scalars['Boolean']>;
   isVerified: Scalars['Boolean'];
 };
@@ -565,6 +566,7 @@ export type UserResolvers<
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  avatarId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   isAdmin?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   isVerified?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

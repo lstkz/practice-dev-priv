@@ -1,9 +1,10 @@
 import React, { Fragment } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import tw from 'twin.macro';
-import { useAuthActions } from 'src/features/AuthModule';
+import { useAuthActions, useUser } from 'src/features/AuthModule';
 import Link from 'next/link';
 import { createUrl } from 'src/common/url';
+import { UserAvatar } from './UserAvatar';
 
 interface MenuLinkProps {
   href?: string;
@@ -38,6 +39,7 @@ function MenuLink(props: MenuLinkProps) {
 
 export function ProfileDropdown() {
   const { logout } = useAuthActions();
+  const user = useUser();
   return (
     <Menu as="div" className="ml-3 relative">
       {({ open }) => (
@@ -45,11 +47,7 @@ export function ProfileDropdown() {
           <div>
             <Menu.Button className="bg-gray-800 flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
               <span className="sr-only">Open user menu</span>
-              <img
-                className="h-8 w-8 rounded-full"
-                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                alt=""
-              />
+              <UserAvatar user={user} />
             </Menu.Button>
           </div>
           <Transition

@@ -1,4 +1,5 @@
 import { GetServerSideProps } from 'next';
+import { CDN_BASE_URL } from 'src/config';
 import { createCookie, readCookie, removeCookie } from './cookie';
 
 export class UnreachableCaseError extends Error {
@@ -66,4 +67,8 @@ export function getErrorMessage(e: any) {
   }
   const message = e?.response?.error || e.message;
   return message.replace('ContractError: ', '');
+}
+
+export function getAvatarUrl(avatarId: string, size: 80 | 280) {
+  return CDN_BASE_URL + `/avatars/${avatarId}-${size}x${size}.png`;
 }
