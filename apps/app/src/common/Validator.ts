@@ -27,7 +27,7 @@ export class Validator<T extends object> {
 
   regex(field: keyof T, regex: RegExp, message: string) {
     const value: any = this.data[field];
-    if (!this.errors[field] && !regex.test(value ?? '')) {
+    if (value && !this.errors[field] && !regex.test(value ?? '')) {
       this.errors[field] = message;
     }
     return this;

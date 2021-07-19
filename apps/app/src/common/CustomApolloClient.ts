@@ -1,5 +1,6 @@
 import {
   ApolloClient,
+  ApolloLink,
   HttpLink,
   InMemoryCache,
   NormalizedCacheObject,
@@ -19,10 +20,27 @@ export class CustomApolloClient extends ApolloClient<NormalizedCacheObject> {
   private ctx?: GetServerSidePropsContext | NextPageContext;
 
   constructor(ctx?: GetServerSidePropsContext | NextPageContext) {
-    const httpLink = new HttpLink({
-      uri: API_URL + '/graphql',
-      fetch: fetch as any,
+    const cleanTypeName = new ApolloLink((operation, forward) => {
+      if (operation.variables) {
+        const omitTypename = (key: any, value: any) =>
+          key === '__typename' ? undefined : value;
+        operation.variables = JSON.parse(
+          JSON.stringify(operation.variables),
+          omitTypename
+        );
+      }
+      return forward(operation).map(data => {
+        return data;
+      });
     });
+
+    const httpLink = ApolloLink.from([
+      cleanTypeName,
+      new HttpLink({
+        uri: API_URL + '/graphql',
+        fetch: fetch as any,
+      }),
+    ]);
 
     const authLink = setContext((_, { headers }) => {
       if (!this.hasAccessToken()) {
