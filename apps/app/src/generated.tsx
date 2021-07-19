@@ -50,6 +50,7 @@ export type Mutation = {
   updateMyProfile: MyProfile;
   completeAvatarUpload: AvatarUploadResult;
   deleteAvatar?: Maybe<Scalars['Void']>;
+  changeUsername?: Maybe<Scalars['Void']>;
 };
 
 export type MutationLoginArgs = {
@@ -91,6 +92,10 @@ export type MutationConfirmResetPasswordArgs = {
 
 export type MutationUpdateMyProfileArgs = {
   values: UpdateProfileInput;
+};
+
+export type MutationChangeUsernameArgs = {
+  username: Scalars['String'];
 };
 
 export type MyProfile = {
