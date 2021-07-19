@@ -31,6 +31,11 @@ export type AuthResult = {
   user: User;
 };
 
+export type AvatarUploadResult = {
+  __typename?: 'AvatarUploadResult';
+  avatarId: Scalars['String'];
+};
+
 export type LoginInput = {
   usernameOrEmail: Scalars['String'];
   password: Scalars['String'];
@@ -49,6 +54,8 @@ export type Mutation = {
   resetPassword?: Maybe<Scalars['Void']>;
   confirmResetPassword: AuthResult;
   updateMyProfile: MyProfile;
+  completeAvatarUpload: AvatarUploadResult;
+  deleteAvatar?: Maybe<Scalars['Void']>;
 };
 
 export type MutationLoginArgs = {
@@ -100,11 +107,24 @@ export type MyProfile = {
   url?: Maybe<Scalars['String']>;
 };
 
+export type PresignedPost = {
+  __typename?: 'PresignedPost';
+  url: Scalars['String'];
+  fields: Array<PresignedPostField>;
+};
+
+export type PresignedPostField = {
+  __typename?: 'PresignedPostField';
+  name: Scalars['String'];
+  value: Scalars['String'];
+};
+
 export type Query = {
   __typename?: 'Query';
   me: User;
   ping: Scalars['Float'];
   getMyProfile: MyProfile;
+  getAvatarUploadUrl: PresignedPost;
 };
 
 export type RegisterInput = {
@@ -252,9 +272,12 @@ export type DirectiveResolverFn<
 export type ResolversTypes = {
   AuthResult: ResolverTypeWrapper<AuthResult>;
   String: ResolverTypeWrapper<Scalars['String']>;
+  AvatarUploadResult: ResolverTypeWrapper<AvatarUploadResult>;
   LoginInput: LoginInput;
   Mutation: ResolverTypeWrapper<{}>;
   MyProfile: ResolverTypeWrapper<MyProfile>;
+  PresignedPost: ResolverTypeWrapper<PresignedPost>;
+  PresignedPostField: ResolverTypeWrapper<PresignedPostField>;
   Query: ResolverTypeWrapper<{}>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
   RegisterInput: RegisterInput;
@@ -269,9 +292,12 @@ export type ResolversTypes = {
 export type ResolversParentTypes = {
   AuthResult: AuthResult;
   String: Scalars['String'];
+  AvatarUploadResult: AvatarUploadResult;
   LoginInput: LoginInput;
   Mutation: {};
   MyProfile: MyProfile;
+  PresignedPost: PresignedPost;
+  PresignedPostField: PresignedPostField;
   Query: {};
   Float: Scalars['Float'];
   RegisterInput: RegisterInput;
@@ -288,6 +314,14 @@ export type AuthResultResolvers<
 > = {
   token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type AvatarUploadResultResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['AvatarUploadResult'] = ResolversParentTypes['AvatarUploadResult']
+> = {
+  avatarId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -356,6 +390,16 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationUpdateMyProfileArgs, 'values'>
   >;
+  completeAvatarUpload?: Resolver<
+    ResolversTypes['AvatarUploadResult'],
+    ParentType,
+    ContextType
+  >;
+  deleteAvatar?: Resolver<
+    Maybe<ResolversTypes['Void']>,
+    ParentType,
+    ContextType
+  >;
 };
 
 export type MyProfileResolvers<
@@ -369,6 +413,28 @@ export type MyProfileResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type PresignedPostResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['PresignedPost'] = ResolversParentTypes['PresignedPost']
+> = {
+  url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  fields?: Resolver<
+    Array<ResolversTypes['PresignedPostField']>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PresignedPostFieldResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['PresignedPostField'] = ResolversParentTypes['PresignedPostField']
+> = {
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  value?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type QueryResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']
@@ -376,6 +442,11 @@ export type QueryResolvers<
   me?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   ping?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   getMyProfile?: Resolver<ResolversTypes['MyProfile'], ParentType, ContextType>;
+  getAvatarUploadUrl?: Resolver<
+    ResolversTypes['PresignedPost'],
+    ParentType,
+    ContextType
+  >;
 };
 
 export type SubscriptionResolvers<
@@ -409,8 +480,11 @@ export interface VoidScalarConfig
 
 export type Resolvers<ContextType = any> = {
   AuthResult?: AuthResultResolvers<ContextType>;
+  AvatarUploadResult?: AvatarUploadResultResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   MyProfile?: MyProfileResolvers<ContextType>;
+  PresignedPost?: PresignedPostResolvers<ContextType>;
+  PresignedPostField?: PresignedPostFieldResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   User?: UserResolvers<ContextType>;

@@ -4,6 +4,7 @@ type Query {
   me: User!
   ping: Float!
   getMyProfile: MyProfile!
+  getAvatarUploadUrl: PresignedPost!
 }
 
 type Mutation {
@@ -18,10 +19,26 @@ type Mutation {
   resetPassword(usernameOrEmail: String!): Void
   confirmResetPassword(code: String!, newPassword: String!): AuthResult!
   updateMyProfile(values: UpdateProfileInput!): MyProfile!
+  completeAvatarUpload: AvatarUploadResult!
+  deleteAvatar: Void
 }
 
 type Subscription {
   mock: String!
+}
+
+type AvatarUploadResult {
+  avatarId: String!
+}
+
+type PresignedPostField {
+  name: String!
+  value: String!
+}
+
+type PresignedPost {
+  url: String!
+  fields: [PresignedPostField!]!
 }
 
 type AuthResult {

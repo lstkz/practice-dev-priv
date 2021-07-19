@@ -25,6 +25,11 @@ export type AuthResult = {
   user: User;
 };
 
+export type AvatarUploadResult = {
+  __typename?: 'AvatarUploadResult';
+  avatarId: Scalars['String'];
+};
+
 export type LoginInput = {
   usernameOrEmail: Scalars['String'];
   password: Scalars['String'];
@@ -43,6 +48,8 @@ export type Mutation = {
   resetPassword?: Maybe<Scalars['Void']>;
   confirmResetPassword: AuthResult;
   updateMyProfile: MyProfile;
+  completeAvatarUpload: AvatarUploadResult;
+  deleteAvatar?: Maybe<Scalars['Void']>;
 };
 
 export type MutationLoginArgs = {
@@ -94,11 +101,24 @@ export type MyProfile = {
   url?: Maybe<Scalars['String']>;
 };
 
+export type PresignedPost = {
+  __typename?: 'PresignedPost';
+  url: Scalars['String'];
+  fields: Array<PresignedPostField>;
+};
+
+export type PresignedPostField = {
+  __typename?: 'PresignedPostField';
+  name: Scalars['String'];
+  value: Scalars['String'];
+};
+
 export type Query = {
   __typename?: 'Query';
   me: User;
   ping: Scalars['Float'];
   getMyProfile: MyProfile;
+  getAvatarUploadUrl: PresignedPost;
 };
 
 export type RegisterInput = {
