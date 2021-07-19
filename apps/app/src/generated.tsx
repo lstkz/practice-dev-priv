@@ -25,6 +25,11 @@ export type AuthResult = {
   user: User;
 };
 
+export type AvatarUploadResult = {
+  __typename?: 'AvatarUploadResult';
+  avatarId: Scalars['String'];
+};
+
 export type LoginInput = {
   usernameOrEmail: Scalars['String'];
   password: Scalars['String'];
@@ -43,6 +48,7 @@ export type Mutation = {
   resetPassword?: Maybe<Scalars['Void']>;
   confirmResetPassword: AuthResult;
   updateMyProfile: MyProfile;
+  completeAvatarUpload: AvatarUploadResult;
 };
 
 export type MutationLoginArgs = {

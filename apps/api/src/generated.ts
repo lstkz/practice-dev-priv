@@ -31,6 +31,11 @@ export type AuthResult = {
   user: User;
 };
 
+export type AvatarUploadResult = {
+  __typename?: 'AvatarUploadResult';
+  avatarId: Scalars['String'];
+};
+
 export type LoginInput = {
   usernameOrEmail: Scalars['String'];
   password: Scalars['String'];
@@ -49,6 +54,7 @@ export type Mutation = {
   resetPassword?: Maybe<Scalars['Void']>;
   confirmResetPassword: AuthResult;
   updateMyProfile: MyProfile;
+  completeAvatarUpload: AvatarUploadResult;
 };
 
 export type MutationLoginArgs = {
@@ -265,6 +271,7 @@ export type DirectiveResolverFn<
 export type ResolversTypes = {
   AuthResult: ResolverTypeWrapper<AuthResult>;
   String: ResolverTypeWrapper<Scalars['String']>;
+  AvatarUploadResult: ResolverTypeWrapper<AvatarUploadResult>;
   LoginInput: LoginInput;
   Mutation: ResolverTypeWrapper<{}>;
   MyProfile: ResolverTypeWrapper<MyProfile>;
@@ -284,6 +291,7 @@ export type ResolversTypes = {
 export type ResolversParentTypes = {
   AuthResult: AuthResult;
   String: Scalars['String'];
+  AvatarUploadResult: AvatarUploadResult;
   LoginInput: LoginInput;
   Mutation: {};
   MyProfile: MyProfile;
@@ -305,6 +313,14 @@ export type AuthResultResolvers<
 > = {
   token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type AvatarUploadResultResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['AvatarUploadResult'] = ResolversParentTypes['AvatarUploadResult']
+> = {
+  avatarId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -372,6 +388,11 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationUpdateMyProfileArgs, 'values'>
+  >;
+  completeAvatarUpload?: Resolver<
+    ResolversTypes['AvatarUploadResult'],
+    ParentType,
+    ContextType
   >;
 };
 
@@ -453,6 +474,7 @@ export interface VoidScalarConfig
 
 export type Resolvers<ContextType = any> = {
   AuthResult?: AuthResultResolvers<ContextType>;
+  AvatarUploadResult?: AvatarUploadResultResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   MyProfile?: MyProfileResolvers<ContextType>;
   PresignedPost?: PresignedPostResolvers<ContextType>;

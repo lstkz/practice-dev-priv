@@ -2,7 +2,7 @@ import { S } from 'schema';
 import { createContract, createGraphqlBinding, s3 } from '../../lib';
 import { PresignedPost } from '../../generated';
 import { config } from 'config';
-import { getUserAvatarUploadKey, randomString } from '../../common/helper';
+import { getUserAvatarUploadKey } from '../../common/helper';
 
 export const getAvatarUploadUrl = createContract('user.getAvatarUploadUrl')
   .params('user')
@@ -11,12 +11,11 @@ export const getAvatarUploadUrl = createContract('user.getAvatarUploadUrl')
   })
   .returns<PresignedPost>()
   .fn(async user => {
-    const name = randomString(10);
     const uploadUrl = await s3.createPresignedPost({
       Bucket: config.aws.s3Bucket,
       Conditions: [['content-length-range', 0, 3 * 1024 * 1024]],
       Fields: {
-        key: getUserAvatarUploadKey(user.id.toHexString()) + '/' + name,
+        key: getUserAvatarUploadKey(user.id.toHexString()),
         'Content-Type': 'image/png',
       },
     });

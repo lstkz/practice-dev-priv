@@ -19,6 +19,7 @@ export interface UserModel {
   isVerified: boolean;
   isAdmin?: boolean;
   password: string;
+  avatarId?: string;
   githubId?: number;
   profile?: UserProfile;
 }

@@ -116,5 +116,9 @@ export async function getResponseBody<T = any>(opName: string, res: Response) {
 }
 
 export function getUserAvatarUploadKey(userId: string) {
-  return `cdn/avatar/${userId}`;
+  return `avatar-upload/${userId}`;
+}
+
+export function doFn<T>(fn: () => T) {
+  return fn();
 }
