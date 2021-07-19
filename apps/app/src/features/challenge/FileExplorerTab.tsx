@@ -28,7 +28,6 @@ export function FileExplorerTab() {
         content: [],
       };
     });
-    console.log({ elements });
     const elementMap = R.indexBy(elements, x => x.id);
     const mappedMap = R.indexBy(mapped, x => x.id);
     mapped.forEach(item => {
@@ -42,6 +41,5 @@ export function FileExplorerTab() {
   if (!isLoaded) {
     return null;
   }
-  console.log({ items });
   return <FileExplorer items={items} />;
 }
