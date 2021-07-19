@@ -85,3 +85,11 @@ it('should change the email #graphql', async () => {
   );
   expect(res.errors).toBeFalsy();
 });
+
+it('should return an error if confirmed multiple times', async () => {
+  await ConfirmEmailChangeCollection.insertOne(validProps);
+  await confirmChangeEmail(await getAppUser(1), '123');
+  await expect(confirmChangeEmail(await getAppUser(1), '123')).rejects.toThrow(
+    'You have already confirmed the new email.'
+  );
+});

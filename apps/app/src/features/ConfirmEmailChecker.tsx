@@ -6,7 +6,10 @@ import { useErrorModalActions } from './ErrorModalModule';
 import { SimpleModal } from 'src/components/SimpleModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { gql } from '@apollo/client';
-import { useConfirmEmailMutation } from '../generated';
+import {
+  useConfirmChangeEmailMutation,
+  useConfirmEmailMutation,
+} from '../generated';
 import { useAuthActions } from './AuthModule';
 
 gql`
@@ -17,6 +20,12 @@ gql`
   }
 `;
 
+gql`
+  mutation ConfirmChangeEmail($code: String!) {
+    confirmChangeEmail(code: $code)
+  }
+`;
+
 export function ConfirmEmailChecker() {
   const router = useRouter();
   const errorModalActions = useErrorModalActions();
@@ -24,11 +33,13 @@ export function ConfirmEmailChecker() {
     null | 'confirmed' | 'confirmed-new'
   >(null);
   const [confirmEmail] = useConfirmEmailMutation();
+  const [confirmChangeEmail] = useConfirmChangeEmailMutation();
   const { loginUser } = useAuthActions();
   React.useEffect(() => {
     const getQuery = (name: string) =>
       Array.isArray(router.query[name]) ? null : (router.query[name] as string);
     const confirmEmailCode = getQuery('confirm-email');
+    const confirmNewEmailCode = getQuery('confirm-new-email');
     if (confirmEmailCode) {
       void router.replace({
         pathname: router.pathname,
@@ -42,6 +53,21 @@ export function ConfirmEmailChecker() {
         .then(ret => {
           loginUser(ret.data!.confirmEmail, false);
           setVisibleModal('confirmed');
+        })
+        .catch(errorModalActions.show);
+    }
+    if (confirmNewEmailCode) {
+      void router.replace({
+        pathname: router.pathname,
+        query: R.omit(router.query, ['confirm-new-email']),
+      });
+      confirmChangeEmail({
+        variables: {
+          code: confirmNewEmailCode,
+        },
+      })
+        .then(() => {
+          setVisibleModal('confirmed-new');
         })
         .catch(errorModalActions.show);
     }
@@ -60,7 +86,17 @@ export function ConfirmEmailChecker() {
         title="Confirmed!"
         icon={<FontAwesomeIcon size="4x" icon={faCheckCircle} />}
         header="Confirm account"
-        description={<>Your e-mail has been confirmed.</>}
+        description={<>Your email has been confirmed.</>}
+        close={closeModal}
+      />
+      <SimpleModal
+        testId="new-email-confirmed-modal"
+        isOpen={visibleModal === 'confirmed-new'}
+        bgColor="primary"
+        title="Confirmed!"
+        icon={<FontAwesomeIcon size="4x" icon={faCheckCircle} />}
+        header="Email change"
+        description={<>Your new email address has been confirmed.</>}
         close={closeModal}
       />
     </>

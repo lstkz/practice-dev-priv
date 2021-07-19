@@ -2,8 +2,8 @@ import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { SavableSection } from './SavableSection';
-import { ContextInput } from '../../components/ContextInput';
+import { SavableSection } from '../SavableSection';
+import { ContextInput } from '../../../components/ContextInput';
 
 type FormValues = z.infer<typeof schema>;
 

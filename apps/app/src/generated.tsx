@@ -236,6 +236,15 @@ export type ConfirmEmailMutation = { __typename?: 'Mutation' } & {
   confirmEmail: { __typename?: 'AuthResult' } & DefaultAuthResultFragment;
 };
 
+export type ConfirmChangeEmailMutationVariables = Exact<{
+  code: Scalars['String'];
+}>;
+
+export type ConfirmChangeEmailMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'confirmChangeEmail'
+>;
+
 export type GetChallengeQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetChallengeQuery = { __typename?: 'Query' } & {
@@ -287,6 +296,14 @@ export type ResetPasswordMutation = { __typename?: 'Mutation' } & Pick<
   Mutation,
   'resetPassword'
 >;
+
+export type ChangeEmailMutationVariables = Exact<{
+  email: Scalars['String'];
+}>;
+
+export type ChangeEmailMutation = { __typename?: 'Mutation' } & {
+  changeEmail: { __typename?: 'OkResult' } & Pick<OkResult, 'ok'>;
+};
 
 export type GetMyProfileQueryVariables = Exact<{ [key: string]: never }>;
 
@@ -684,6 +701,54 @@ export type ConfirmEmailMutationOptions = Apollo.BaseMutationOptions<
   ConfirmEmailMutation,
   ConfirmEmailMutationVariables
 >;
+export const ConfirmChangeEmailDocument = gql`
+  mutation ConfirmChangeEmail($code: String!) {
+    confirmChangeEmail(code: $code)
+  }
+`;
+export type ConfirmChangeEmailMutationFn = Apollo.MutationFunction<
+  ConfirmChangeEmailMutation,
+  ConfirmChangeEmailMutationVariables
+>;
+
+/**
+ * __useConfirmChangeEmailMutation__
+ *
+ * To run a mutation, you first call `useConfirmChangeEmailMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useConfirmChangeEmailMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [confirmChangeEmailMutation, { data, loading, error }] = useConfirmChangeEmailMutation({
+ *   variables: {
+ *      code: // value for 'code'
+ *   },
+ * });
+ */
+export function useConfirmChangeEmailMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    ConfirmChangeEmailMutation,
+    ConfirmChangeEmailMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    ConfirmChangeEmailMutation,
+    ConfirmChangeEmailMutationVariables
+  >(ConfirmChangeEmailDocument, options);
+}
+export type ConfirmChangeEmailMutationHookResult = ReturnType<
+  typeof useConfirmChangeEmailMutation
+>;
+export type ConfirmChangeEmailMutationResult =
+  Apollo.MutationResult<ConfirmChangeEmailMutation>;
+export type ConfirmChangeEmailMutationOptions = Apollo.BaseMutationOptions<
+  ConfirmChangeEmailMutation,
+  ConfirmChangeEmailMutationVariables
+>;
 export const GetChallengeDocument = gql`
   query GetChallenge {
     me {
@@ -1050,6 +1115,56 @@ export type ResetPasswordMutationResult =
 export type ResetPasswordMutationOptions = Apollo.BaseMutationOptions<
   ResetPasswordMutation,
   ResetPasswordMutationVariables
+>;
+export const ChangeEmailDocument = gql`
+  mutation ChangeEmail($email: String!) {
+    changeEmail(email: $email) {
+      ok
+    }
+  }
+`;
+export type ChangeEmailMutationFn = Apollo.MutationFunction<
+  ChangeEmailMutation,
+  ChangeEmailMutationVariables
+>;
+
+/**
+ * __useChangeEmailMutation__
+ *
+ * To run a mutation, you first call `useChangeEmailMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useChangeEmailMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [changeEmailMutation, { data, loading, error }] = useChangeEmailMutation({
+ *   variables: {
+ *      email: // value for 'email'
+ *   },
+ * });
+ */
+export function useChangeEmailMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    ChangeEmailMutation,
+    ChangeEmailMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<ChangeEmailMutation, ChangeEmailMutationVariables>(
+    ChangeEmailDocument,
+    options
+  );
+}
+export type ChangeEmailMutationHookResult = ReturnType<
+  typeof useChangeEmailMutation
+>;
+export type ChangeEmailMutationResult =
+  Apollo.MutationResult<ChangeEmailMutation>;
+export type ChangeEmailMutationOptions = Apollo.BaseMutationOptions<
+  ChangeEmailMutation,
+  ChangeEmailMutationVariables
 >;
 export const GetMyProfileDocument = gql`
   query GetMyProfile {
