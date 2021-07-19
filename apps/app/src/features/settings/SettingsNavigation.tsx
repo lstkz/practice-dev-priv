@@ -10,35 +10,34 @@ import Link from 'next/link';
 import React from 'react';
 import { createUrl } from 'src/common/url';
 import tw from 'twin.macro';
-import { SettingsTab } from './SettingsModule';
 
 const subNavigation = [
   {
-    name: 'profile' as SettingsTab,
+    name: 'profile',
     label: 'Profile',
     href: createUrl({ name: 'settings' }),
     icon: UserCircleIcon,
   },
   {
-    name: 'account' as SettingsTab,
+    name: 'account',
     label: 'Account',
     href: createUrl({ name: 'settings', sub: 'account' }),
     icon: CogIcon,
   },
   {
-    name: 'password' as SettingsTab,
+    name: 'password',
     label: 'Password',
     href: createUrl({ name: 'settings', sub: 'password' }),
     icon: KeyIcon,
   },
   {
-    name: 'notifications' as SettingsTab,
+    name: 'notifications',
     label: 'Notifications',
     href: createUrl({ name: 'settings', sub: 'notifications' }),
     icon: BellIcon,
   },
   {
-    name: 'crypto' as SettingsTab,
+    name: 'crypto',
     label: 'Crypto',
     href: createUrl({ name: 'settings', sub: 'crypto' }),
     icon: CurrencyDollarIcon,
