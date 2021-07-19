@@ -2,6 +2,13 @@ import { ObjectID } from 'mongodb';
 import { safeExtend } from '../common/helper';
 import { createCollection } from '../db';
 
+export interface UserProfile {
+  name?: string;
+  about?: string;
+  country?: string;
+  url?: string;
+}
+
 export interface UserModel {
   _id: ObjectID;
   email: string;
@@ -13,6 +20,7 @@ export interface UserModel {
   isAdmin?: boolean;
   password: string;
   githubId?: number;
+  profile?: UserProfile;
 }
 
 export const UserCollection = safeExtend(
