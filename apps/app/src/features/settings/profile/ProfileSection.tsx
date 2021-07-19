@@ -3,12 +3,12 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { SavableSection } from '../SavableSection';
 import { ContextInput } from '../../../components/ContextInput';
 import { UserPhoto } from '../UserPhoto';
-import Select from '../../../components/Select';
 import { countryList, URL_REGEX } from 'shared';
 import { Validator } from 'src/common/Validator';
 import { gql } from '@apollo/client';
 import { useUpdateMyProfileMutation } from 'src/generated';
 import { useErrorModalActions } from 'src/features/ErrorModalModule';
+import { ContextSelect } from 'src/components/ContextSelect';
 
 interface FormValues {
   name?: string | null;
@@ -83,12 +83,11 @@ export function ProfileSection(props: ProfileSectionProps) {
               <UserPhoto />
             </div>
             <div>
-              <Select
+              <ContextSelect
+                name="country"
                 type="white"
                 label="Country"
-                onChange={() => {}}
                 options={countryOptions}
-                value="PL"
               />
             </div>
             <ContextInput label="URL" name="url" />
