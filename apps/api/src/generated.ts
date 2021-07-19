@@ -48,6 +48,7 @@ export type Mutation = {
   logout?: Maybe<Scalars['Void']>;
   resetPassword?: Maybe<Scalars['Void']>;
   confirmResetPassword: AuthResult;
+  updateMyProfile: MyProfile;
 };
 
 export type MutationLoginArgs = {
@@ -87,10 +88,23 @@ export type MutationConfirmResetPasswordArgs = {
   newPassword: Scalars['String'];
 };
 
+export type MutationUpdateMyProfileArgs = {
+  values: UpdateProfileInput;
+};
+
+export type MyProfile = {
+  __typename?: 'MyProfile';
+  name?: Maybe<Scalars['String']>;
+  about?: Maybe<Scalars['String']>;
+  country?: Maybe<Scalars['String']>;
+  url?: Maybe<Scalars['String']>;
+};
+
 export type Query = {
   __typename?: 'Query';
   me: User;
   ping: Scalars['Float'];
+  getMyProfile: MyProfile;
 };
 
 export type RegisterInput = {
@@ -102,6 +116,13 @@ export type RegisterInput = {
 export type Subscription = {
   __typename?: 'Subscription';
   mock: Scalars['String'];
+};
+
+export type UpdateProfileInput = {
+  name?: Maybe<Scalars['String']>;
+  about?: Maybe<Scalars['String']>;
+  country?: Maybe<Scalars['String']>;
+  url?: Maybe<Scalars['String']>;
 };
 
 export type User = {
@@ -233,10 +254,12 @@ export type ResolversTypes = {
   String: ResolverTypeWrapper<Scalars['String']>;
   LoginInput: LoginInput;
   Mutation: ResolverTypeWrapper<{}>;
+  MyProfile: ResolverTypeWrapper<MyProfile>;
   Query: ResolverTypeWrapper<{}>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
   RegisterInput: RegisterInput;
   Subscription: ResolverTypeWrapper<{}>;
+  UpdateProfileInput: UpdateProfileInput;
   User: ResolverTypeWrapper<User>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Void: ResolverTypeWrapper<Scalars['Void']>;
@@ -248,10 +271,12 @@ export type ResolversParentTypes = {
   String: Scalars['String'];
   LoginInput: LoginInput;
   Mutation: {};
+  MyProfile: MyProfile;
   Query: {};
   Float: Scalars['Float'];
   RegisterInput: RegisterInput;
   Subscription: {};
+  UpdateProfileInput: UpdateProfileInput;
   User: User;
   Boolean: Scalars['Boolean'];
   Void: Scalars['Void'];
@@ -325,6 +350,23 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationConfirmResetPasswordArgs, 'code' | 'newPassword'>
   >;
+  updateMyProfile?: Resolver<
+    ResolversTypes['MyProfile'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationUpdateMyProfileArgs, 'values'>
+  >;
+};
+
+export type MyProfileResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['MyProfile'] = ResolversParentTypes['MyProfile']
+> = {
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  about?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  country?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type QueryResolvers<
@@ -333,6 +375,7 @@ export type QueryResolvers<
 > = {
   me?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   ping?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  getMyProfile?: Resolver<ResolversTypes['MyProfile'], ParentType, ContextType>;
 };
 
 export type SubscriptionResolvers<
@@ -367,6 +410,7 @@ export interface VoidScalarConfig
 export type Resolvers<ContextType = any> = {
   AuthResult?: AuthResultResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
+  MyProfile?: MyProfileResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   User?: UserResolvers<ContextType>;

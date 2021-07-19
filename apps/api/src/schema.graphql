@@ -3,6 +3,7 @@ scalar Void
 type Query {
   me: User!
   ping: Float!
+  getMyProfile: MyProfile!
 }
 
 type Mutation {
@@ -16,6 +17,7 @@ type Mutation {
   logout: Void
   resetPassword(usernameOrEmail: String!): Void
   confirmResetPassword(code: String!, newPassword: String!): AuthResult!
+  updateMyProfile(values: UpdateProfileInput!): MyProfile!
 }
 
 type Subscription {
@@ -27,12 +29,26 @@ type AuthResult {
   user: User!
 }
 
+type MyProfile {
+  name: String
+  about: String
+  country: String
+  url: String
+}
+
 type User {
   id: String!
   username: String!
   email: String!
   isAdmin: Boolean
   isVerified: Boolean!
+}
+
+input UpdateProfileInput {
+  name: String
+  about: String
+  country: String
+  url: String
 }
 
 input RegisterInput {

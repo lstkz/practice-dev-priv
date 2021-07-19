@@ -42,6 +42,7 @@ export type Mutation = {
   logout?: Maybe<Scalars['Void']>;
   resetPassword?: Maybe<Scalars['Void']>;
   confirmResetPassword: AuthResult;
+  updateMyProfile: MyProfile;
 };
 
 export type MutationLoginArgs = {
@@ -81,10 +82,23 @@ export type MutationConfirmResetPasswordArgs = {
   newPassword: Scalars['String'];
 };
 
+export type MutationUpdateMyProfileArgs = {
+  values: UpdateProfileInput;
+};
+
+export type MyProfile = {
+  __typename?: 'MyProfile';
+  name?: Maybe<Scalars['String']>;
+  about?: Maybe<Scalars['String']>;
+  country?: Maybe<Scalars['String']>;
+  url?: Maybe<Scalars['String']>;
+};
+
 export type Query = {
   __typename?: 'Query';
   me: User;
   ping: Scalars['Float'];
+  getMyProfile: MyProfile;
 };
 
 export type RegisterInput = {
@@ -96,6 +110,13 @@ export type RegisterInput = {
 export type Subscription = {
   __typename?: 'Subscription';
   mock: Scalars['String'];
+};
+
+export type UpdateProfileInput = {
+  name?: Maybe<Scalars['String']>;
+  about?: Maybe<Scalars['String']>;
+  country?: Maybe<Scalars['String']>;
+  url?: Maybe<Scalars['String']>;
 };
 
 export type User = {

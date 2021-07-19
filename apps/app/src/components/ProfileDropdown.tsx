@@ -1,17 +1,20 @@
-import { Fragment } from 'react';
+import React, { Fragment } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import tw from 'twin.macro';
 import { useAuthActions } from 'src/features/AuthModule';
+import Link from 'next/link';
+import { createUrl } from 'src/common/url';
 
 interface MenuLinkProps {
+  href?: string;
   active: boolean;
   children: React.ReactNode;
   onClick?: () => void;
 }
 
 function MenuLink(props: MenuLinkProps) {
-  const { active, children, onClick } = props;
-  return (
+  const { active, children, onClick, href } = props;
+  const inner = (
     <a
       tabIndex={0}
       onClick={onClick}
@@ -23,6 +26,14 @@ function MenuLink(props: MenuLinkProps) {
       {children}
     </a>
   );
+  if (href) {
+    return (
+      <Link href={href} passHref>
+        {inner}
+      </Link>
+    );
+  }
+  return inner;
 }
 
 export function ProfileDropdown() {
@@ -61,7 +72,14 @@ export function ProfileDropdown() {
                 )}
               </Menu.Item>
               <Menu.Item>
-                {({ active }) => <MenuLink active={active}>Settings</MenuLink>}
+                {({ active }) => (
+                  <MenuLink
+                    active={active}
+                    href={createUrl({ name: 'settings' })}
+                  >
+                    Settings
+                  </MenuLink>
+                )}
               </Menu.Item>
               <Menu.Item>
                 {({ active }) => (

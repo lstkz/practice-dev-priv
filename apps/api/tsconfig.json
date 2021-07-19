@@ -4,7 +4,10 @@
     "noEmit": true,
     "lib": ["es6", "ES2017.object", "ES2016.Array.Include"],
     "target": "es2018",
-    "module": "commonjs"
+    "module": "commonjs",
+    "paths": {
+      "shared": ["../../packages/shared"]
+    }
   },
   "include": [
     "__tests__/**/*",
