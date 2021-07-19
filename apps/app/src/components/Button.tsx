@@ -52,6 +52,7 @@ export function getBaseButtonStyles(props: BaseButtonProps) {
       tw`text-white bg-gray-800`,
       tw`hover:( bg-gray-900 )`,
       tw`focus:( ring-gray-900  )`,
+      tw`disabled:( bg-gray-500 )`,
     ],
     type === 'primary' && [
       tw`text-white bg-indigo-600 `,

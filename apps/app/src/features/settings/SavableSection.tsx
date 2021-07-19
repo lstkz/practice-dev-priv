@@ -6,10 +6,27 @@ interface SavableSectionProps {
   title: React.ReactNode;
   desc?: React.ReactNode;
   children: React.ReactNode;
+  isLoading?: boolean;
 }
 
 export function SavableSection(props: SavableSectionProps) {
-  const { id, title, desc, children } = props;
+  const { id, title, desc, children, isLoading } = props;
+  const [isSaved, setIsSaved] = React.useState(false);
+  const timeoutRef = React.useRef<any>(null);
+  React.useEffect(() => {
+    if (isLoading) {
+      setIsSaved(true);
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => {
+        setIsSaved(false);
+      }, 2000);
+    }
+  }, [isLoading]);
+  React.useEffect(() => {
+    return () => {
+      clearTimeout(timeoutRef.current);
+    };
+  }, []);
   return (
     <section aria-labelledby={id}>
       <div className="shadow sm:rounded-md sm:overflow-hidden">
@@ -23,7 +40,16 @@ export function SavableSection(props: SavableSectionProps) {
           {children}
         </div>
         <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
-          <Button type="dark">Save</Button>
+          <div tw="inline-block">
+            <Button
+              htmlType="submit"
+              type="dark"
+              loading={isLoading}
+              disabled={isSaved}
+            >
+              {isSaved ? 'Saved!' : 'Save'}
+            </Button>
+          </div>
         </div>
       </div>
     </section>

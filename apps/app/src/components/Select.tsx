@@ -15,7 +15,7 @@ interface Option {
   searchLabel?: string;
 }
 
-interface SelectProps extends BaseButtonProps {
+export interface SelectProps extends BaseButtonProps {
   label: React.ReactNode;
   value: any;
   options: Option[];
@@ -39,10 +39,10 @@ function OptionLabel({ option }: { option?: Option }) {
 
 export default function Select(props: SelectProps) {
   const { options, value, label, onChange, ...buttonProps } = props;
-  const selected = React.useMemo(() => options.find(x => x.value === value), [
-    options,
-    value,
-  ]);
+  const selected = React.useMemo(
+    () => options.find(x => x.value === value),
+    [options, value]
+  );
 
   return (
     <Listbox value={value} onChange={onChange}>

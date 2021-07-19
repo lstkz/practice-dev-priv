@@ -287,10 +287,24 @@ export type ResetPasswordMutation = { __typename?: 'Mutation' } & Pick<
   'resetPassword'
 >;
 
-export type GetSettingsQueryVariables = Exact<{ [key: string]: never }>;
+export type GetMyProfileQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetSettingsQuery = { __typename?: 'Query' } & {
-  me: { __typename?: 'User' } & Pick<User, 'id'>;
+export type GetMyProfileQuery = { __typename?: 'Query' } & {
+  getMyProfile: { __typename?: 'MyProfile' } & Pick<
+    MyProfile,
+    'name' | 'about' | 'country' | 'url'
+  >;
+};
+
+export type UpdateMyProfileMutationVariables = Exact<{
+  values: UpdateProfileInput;
+}>;
+
+export type UpdateMyProfileMutation = { __typename?: 'Mutation' } & {
+  updateMyProfile: { __typename?: 'MyProfile' } & Pick<
+    MyProfile,
+    'name' | 'about' | 'country' | 'url'
+  >;
 };
 
 export type RegisterMutationVariables = Exact<{
@@ -1001,60 +1015,118 @@ export type ResetPasswordMutationOptions = Apollo.BaseMutationOptions<
   ResetPasswordMutation,
   ResetPasswordMutationVariables
 >;
-export const GetSettingsDocument = gql`
-  query GetSettings {
-    me {
-      id
+export const GetMyProfileDocument = gql`
+  query GetMyProfile {
+    getMyProfile {
+      name
+      about
+      country
+      url
     }
   }
 `;
 
 /**
- * __useGetSettingsQuery__
+ * __useGetMyProfileQuery__
  *
- * To run a query within a React component, call `useGetSettingsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetSettingsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetMyProfileQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMyProfileQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetSettingsQuery({
+ * const { data, loading, error } = useGetMyProfileQuery({
  *   variables: {
  *   },
  * });
  */
-export function useGetSettingsQuery(
+export function useGetMyProfileQuery(
   baseOptions?: Apollo.QueryHookOptions<
-    GetSettingsQuery,
-    GetSettingsQueryVariables
+    GetMyProfileQuery,
+    GetMyProfileQueryVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<GetSettingsQuery, GetSettingsQueryVariables>(
-    GetSettingsDocument,
+  return Apollo.useQuery<GetMyProfileQuery, GetMyProfileQueryVariables>(
+    GetMyProfileDocument,
     options
   );
 }
-export function useGetSettingsLazyQuery(
+export function useGetMyProfileLazyQuery(
   baseOptions?: Apollo.LazyQueryHookOptions<
-    GetSettingsQuery,
-    GetSettingsQueryVariables
+    GetMyProfileQuery,
+    GetMyProfileQueryVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<GetSettingsQuery, GetSettingsQueryVariables>(
-    GetSettingsDocument,
+  return Apollo.useLazyQuery<GetMyProfileQuery, GetMyProfileQueryVariables>(
+    GetMyProfileDocument,
     options
   );
 }
-export type GetSettingsQueryHookResult = ReturnType<typeof useGetSettingsQuery>;
-export type GetSettingsLazyQueryHookResult = ReturnType<
-  typeof useGetSettingsLazyQuery
+export type GetMyProfileQueryHookResult = ReturnType<
+  typeof useGetMyProfileQuery
 >;
-export type GetSettingsQueryResult = Apollo.QueryResult<
-  GetSettingsQuery,
-  GetSettingsQueryVariables
+export type GetMyProfileLazyQueryHookResult = ReturnType<
+  typeof useGetMyProfileLazyQuery
+>;
+export type GetMyProfileQueryResult = Apollo.QueryResult<
+  GetMyProfileQuery,
+  GetMyProfileQueryVariables
+>;
+export const UpdateMyProfileDocument = gql`
+  mutation UpdateMyProfile($values: UpdateProfileInput!) {
+    updateMyProfile(values: $values) {
+      name
+      about
+      country
+      url
+    }
+  }
+`;
+export type UpdateMyProfileMutationFn = Apollo.MutationFunction<
+  UpdateMyProfileMutation,
+  UpdateMyProfileMutationVariables
+>;
+
+/**
+ * __useUpdateMyProfileMutation__
+ *
+ * To run a mutation, you first call `useUpdateMyProfileMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateMyProfileMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateMyProfileMutation, { data, loading, error }] = useUpdateMyProfileMutation({
+ *   variables: {
+ *      values: // value for 'values'
+ *   },
+ * });
+ */
+export function useUpdateMyProfileMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    UpdateMyProfileMutation,
+    UpdateMyProfileMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    UpdateMyProfileMutation,
+    UpdateMyProfileMutationVariables
+  >(UpdateMyProfileDocument, options);
+}
+export type UpdateMyProfileMutationHookResult = ReturnType<
+  typeof useUpdateMyProfileMutation
+>;
+export type UpdateMyProfileMutationResult =
+  Apollo.MutationResult<UpdateMyProfileMutation>;
+export type UpdateMyProfileMutationOptions = Apollo.BaseMutationOptions<
+  UpdateMyProfileMutation,
+  UpdateMyProfileMutationVariables
 >;
 export const RegisterDocument = gql`
   mutation Register($registerValues: RegisterInput!) {

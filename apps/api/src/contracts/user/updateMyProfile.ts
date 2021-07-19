@@ -1,5 +1,5 @@
 import { S } from 'schema';
-import { countryList } from 'shared';
+import { countryList, URL_REGEX } from 'shared';
 import { UserCollection, UserProfile } from '../../collections/User';
 import { createContract, createGraphqlBinding } from '../../lib';
 
@@ -14,7 +14,7 @@ export const updateMyProfile = createContract('user.updateMyProfile')
         .optional()
         .nullable()
         .literal(...countryList.map(x => x.code)),
-      url: S.string().optional().nullable().max(60),
+      url: S.string().regex(URL_REGEX).optional().nullable().max(60),
     }),
   })
   .returns<UserProfile>()
