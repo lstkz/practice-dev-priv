@@ -1,32 +1,47 @@
+import React from 'react';
+import * as R from 'remeda';
+import {
+  DirectoryItemType,
+  ExplorerItemType,
+} from 'src/components/FileExplorer/types';
 import { FileExplorer } from '../../components/FileExplorer/FileExplorer';
+import { useEditorState } from './editor/EditorModule';
 
 export function FileExplorerTab() {
-  return (
-    <FileExplorer
-      items={[
-        { id: '1', type: 'file', name: 'index.tsx' },
-        { id: '2', type: 'file', name: 'index.html' },
-        { id: '3', type: 'file', name: 'style.css' },
-        {
-          id: '4',
-          type: 'directory',
-          name: 'components',
-          content: [
-            { id: '5', type: 'file', name: 'Button.tsx' },
-            { id: '6', type: 'file', name: 'Select.tsx' },
-            { id: '7', type: 'file', name: 'Input.tsx' },
-          ],
-        },
-        {
-          id: '8',
-          type: 'directory',
-          name: 'common',
-          content: [
-            { id: '9', type: 'file', name: 'utils.ts' },
-            { id: '10', type: 'file', name: 'helper.ts' },
-          ],
-        },
-      ]}
-    />
-  );
+  const { elements, isLoaded } = useEditorState();
+  const items = React.useMemo(() => {
+    if (!isLoaded) {
+      return [];
+    }
+    const mapped: ExplorerItemType[] = elements.map(elem => {
+      if (elem.type === 'file') {
+        return {
+          id: elem.id,
+          type: 'file',
+          name: elem.name,
+        };
+      }
+      return {
+        id: elem.id,
+        type: 'directory',
+        name: elem.name,
+        content: [],
+      };
+    });
+    console.log({ elements });
+    const elementMap = R.indexBy(elements, x => x.id);
+    const mappedMap = R.indexBy(mapped, x => x.id);
+    mapped.forEach(item => {
+      const element = elementMap[item.id];
+      if (element.parentId) {
+        (mappedMap[element.parentId] as DirectoryItemType).content.push(item);
+      }
+    });
+    return mapped.filter(item => !elementMap[item.id].parentId);
+  }, [elements, isLoaded]);
+  if (!isLoaded) {
+    return null;
+  }
+  console.log({ items });
+  return <FileExplorer items={items} />;
 }

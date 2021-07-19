@@ -1,5 +1,5 @@
 import React from 'react';
-import { EditorWrapper } from './EditorWrapper';
+import { EditorWrapper } from './editor/EditorWrapper';
 import { FileTab } from './FileTab';
 
 export function MainCol() {
