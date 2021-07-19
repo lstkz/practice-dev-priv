@@ -6,6 +6,7 @@ export interface ConfirmEmailChangeModel {
   userId: ObjectID;
   newEmail: string;
   expireAt: Date;
+  isUsed?: boolean;
 }
 
 export const ConfirmEmailChangeCollection =
