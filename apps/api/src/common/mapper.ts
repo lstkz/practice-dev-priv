@@ -8,5 +8,6 @@ export function mapUser(user: UserModel): User {
     username: user.username,
     isVerified: user.isVerified,
     isAdmin: user.isAdmin,
+    avatarId: user.avatarId,
   };
 }

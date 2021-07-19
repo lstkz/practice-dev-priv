@@ -2,7 +2,7 @@ import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { SavableSection } from '../SavableSection';
 import { ContextInput } from '../../../components/ContextInput';
-import { UserPhoto } from '../UserPhoto';
+import { UserPhoto } from './UserPhoto';
 import { countryList, URL_REGEX } from 'shared';
 import { Validator } from 'src/common/Validator';
 import { gql } from '@apollo/client';

@@ -6,7 +6,9 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
 export interface ModalProps {
   children: React.ReactNode;
   noBgClose?: boolean;
+  noClose?: boolean;
   testId?: string;
+  wrapperCss?: any;
 }
 
 export interface ModalRef {
@@ -30,7 +32,7 @@ export function ModalTitle(props: ModalTitleProps) {
 }
 
 export const Modal = React.forwardRef<ModalRef, ModalProps>((props, ref) => {
-  const { children, noBgClose } = props;
+  const { children, noBgClose, wrapperCss, noClose } = props;
   const [open, setOpen] = React.useState(false);
   React.useImperativeHandle(ref, () => {
     return {
@@ -84,14 +86,19 @@ export const Modal = React.forwardRef<ModalRef, ModalProps>((props, ref) => {
             leaveFrom="opacity-100 translate-y-0 sm:scale-100"
             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
           >
-            <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-3 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6 relative">
-              <button
-                onClick={() => setOpen(false)}
-                tw="absolute right-2 top-2 focus:outline-none w-4 h-4 flex items-center justify-center hover:text-gray-600 focus-visible:text-gray-600 focus-visible:outline-black"
-              >
-                <span tw="sr-only">Close</span>
-                <FontAwesomeIcon icon={faTimes} />
-              </button>
+            <div
+              tw="inline-block align-bottom bg-white rounded-lg px-4 pt-3 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6 relative"
+              css={[wrapperCss]}
+            >
+              {!noClose && (
+                <button
+                  onClick={() => setOpen(false)}
+                  tw="absolute right-2 top-2 focus:outline-none w-4 h-4 flex items-center justify-center hover:text-gray-600 focus-visible:text-gray-600 focus-visible:outline-black"
+                >
+                  <span tw="sr-only">Close</span>
+                  <FontAwesomeIcon icon={faTimes} />
+                </button>
+              )}
               {children}
             </div>
           </Transition.Child>

@@ -54,6 +54,7 @@ gql`
     email
     isAdmin
     isVerified
+    avatarId
   }
 `;
 

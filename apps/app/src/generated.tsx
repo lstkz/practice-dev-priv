@@ -184,6 +184,7 @@ export type User = {
   id: Scalars['String'];
   username: Scalars['String'];
   email: Scalars['String'];
+  avatarId?: Maybe<Scalars['String']>;
   isAdmin?: Maybe<Scalars['Boolean']>;
   isVerified: Scalars['Boolean'];
 };
@@ -307,6 +308,40 @@ export type UpdateMyProfileMutation = { __typename?: 'Mutation' } & {
   >;
 };
 
+export type GetAvatarUploadUrlQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetAvatarUploadUrlQuery = { __typename?: 'Query' } & {
+  getAvatarUploadUrl: { __typename?: 'PresignedPost' } & Pick<
+    PresignedPost,
+    'url'
+  > & {
+      fields: Array<
+        { __typename?: 'PresignedPostField' } & Pick<
+          PresignedPostField,
+          'name' | 'value'
+        >
+      >;
+    };
+};
+
+export type CompleteAvatarUploadMutationVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type CompleteAvatarUploadMutation = { __typename?: 'Mutation' } & {
+  completeAvatarUpload: { __typename?: 'AvatarUploadResult' } & Pick<
+    AvatarUploadResult,
+    'avatarId'
+  >;
+};
+
+export type DeleteAvatarMutationVariables = Exact<{ [key: string]: never }>;
+
+export type DeleteAvatarMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'deleteAvatar'
+>;
+
 export type RegisterMutationVariables = Exact<{
   registerValues: RegisterInput;
 }>;
@@ -328,7 +363,7 @@ export type AppDataQuery = { __typename?: 'Query' } & {
 
 export type AllUserPropsFragment = { __typename?: 'User' } & Pick<
   User,
-  'id' | 'username' | 'email' | 'isAdmin' | 'isVerified'
+  'id' | 'username' | 'email' | 'isAdmin' | 'isVerified' | 'avatarId'
 >;
 
 export const AllUserPropsFragmentDoc = gql`
@@ -338,6 +373,7 @@ export const AllUserPropsFragmentDoc = gql`
     email
     isAdmin
     isVerified
+    avatarId
   }
 `;
 export const DefaultAuthResultFragmentDoc = gql`
@@ -1127,6 +1163,163 @@ export type UpdateMyProfileMutationResult =
 export type UpdateMyProfileMutationOptions = Apollo.BaseMutationOptions<
   UpdateMyProfileMutation,
   UpdateMyProfileMutationVariables
+>;
+export const GetAvatarUploadUrlDocument = gql`
+  query GetAvatarUploadUrl {
+    getAvatarUploadUrl {
+      url
+      fields {
+        name
+        value
+      }
+    }
+  }
+`;
+
+/**
+ * __useGetAvatarUploadUrlQuery__
+ *
+ * To run a query within a React component, call `useGetAvatarUploadUrlQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAvatarUploadUrlQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAvatarUploadUrlQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetAvatarUploadUrlQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetAvatarUploadUrlQuery,
+    GetAvatarUploadUrlQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetAvatarUploadUrlQuery,
+    GetAvatarUploadUrlQueryVariables
+  >(GetAvatarUploadUrlDocument, options);
+}
+export function useGetAvatarUploadUrlLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetAvatarUploadUrlQuery,
+    GetAvatarUploadUrlQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetAvatarUploadUrlQuery,
+    GetAvatarUploadUrlQueryVariables
+  >(GetAvatarUploadUrlDocument, options);
+}
+export type GetAvatarUploadUrlQueryHookResult = ReturnType<
+  typeof useGetAvatarUploadUrlQuery
+>;
+export type GetAvatarUploadUrlLazyQueryHookResult = ReturnType<
+  typeof useGetAvatarUploadUrlLazyQuery
+>;
+export type GetAvatarUploadUrlQueryResult = Apollo.QueryResult<
+  GetAvatarUploadUrlQuery,
+  GetAvatarUploadUrlQueryVariables
+>;
+export const CompleteAvatarUploadDocument = gql`
+  mutation CompleteAvatarUpload {
+    completeAvatarUpload {
+      avatarId
+    }
+  }
+`;
+export type CompleteAvatarUploadMutationFn = Apollo.MutationFunction<
+  CompleteAvatarUploadMutation,
+  CompleteAvatarUploadMutationVariables
+>;
+
+/**
+ * __useCompleteAvatarUploadMutation__
+ *
+ * To run a mutation, you first call `useCompleteAvatarUploadMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCompleteAvatarUploadMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [completeAvatarUploadMutation, { data, loading, error }] = useCompleteAvatarUploadMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useCompleteAvatarUploadMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    CompleteAvatarUploadMutation,
+    CompleteAvatarUploadMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    CompleteAvatarUploadMutation,
+    CompleteAvatarUploadMutationVariables
+  >(CompleteAvatarUploadDocument, options);
+}
+export type CompleteAvatarUploadMutationHookResult = ReturnType<
+  typeof useCompleteAvatarUploadMutation
+>;
+export type CompleteAvatarUploadMutationResult =
+  Apollo.MutationResult<CompleteAvatarUploadMutation>;
+export type CompleteAvatarUploadMutationOptions = Apollo.BaseMutationOptions<
+  CompleteAvatarUploadMutation,
+  CompleteAvatarUploadMutationVariables
+>;
+export const DeleteAvatarDocument = gql`
+  mutation DeleteAvatar {
+    deleteAvatar
+  }
+`;
+export type DeleteAvatarMutationFn = Apollo.MutationFunction<
+  DeleteAvatarMutation,
+  DeleteAvatarMutationVariables
+>;
+
+/**
+ * __useDeleteAvatarMutation__
+ *
+ * To run a mutation, you first call `useDeleteAvatarMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteAvatarMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteAvatarMutation, { data, loading, error }] = useDeleteAvatarMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useDeleteAvatarMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    DeleteAvatarMutation,
+    DeleteAvatarMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    DeleteAvatarMutation,
+    DeleteAvatarMutationVariables
+  >(DeleteAvatarDocument, options);
+}
+export type DeleteAvatarMutationHookResult = ReturnType<
+  typeof useDeleteAvatarMutation
+>;
+export type DeleteAvatarMutationResult =
+  Apollo.MutationResult<DeleteAvatarMutation>;
+export type DeleteAvatarMutationOptions = Apollo.BaseMutationOptions<
+  DeleteAvatarMutation,
+  DeleteAvatarMutationVariables
 >;
 export const RegisterDocument = gql`
   mutation Register($registerValues: RegisterInput!) {
