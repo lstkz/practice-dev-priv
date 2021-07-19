@@ -56,6 +56,7 @@ export type Mutation = {
   updateMyProfile: MyProfile;
   completeAvatarUpload: AvatarUploadResult;
   deleteAvatar?: Maybe<Scalars['Void']>;
+  changeUsername?: Maybe<Scalars['Void']>;
 };
 
 export type MutationLoginArgs = {
@@ -97,6 +98,10 @@ export type MutationConfirmResetPasswordArgs = {
 
 export type MutationUpdateMyProfileArgs = {
   values: UpdateProfileInput;
+};
+
+export type MutationChangeUsernameArgs = {
+  username: Scalars['String'];
 };
 
 export type MyProfile = {
@@ -399,6 +404,12 @@ export type MutationResolvers<
     Maybe<ResolversTypes['Void']>,
     ParentType,
     ContextType
+  >;
+  changeUsername?: Resolver<
+    Maybe<ResolversTypes['Void']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationChangeUsernameArgs, 'username'>
   >;
 };
 
