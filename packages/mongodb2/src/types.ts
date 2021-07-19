@@ -43,6 +43,7 @@ import {
   ChangeStream,
   AggregationCursor,
 } from 'mongodb';
+export { ObjectID } from 'mongodb';
 
 type ExtractId<T> = T extends { _id: infer U } ? U : never;
 
