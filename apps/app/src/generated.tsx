@@ -51,6 +51,8 @@ export type Mutation = {
   completeAvatarUpload: AvatarUploadResult;
   deleteAvatar?: Maybe<Scalars['Void']>;
   changeUsername?: Maybe<Scalars['Void']>;
+  changeEmail: OkResult;
+  confirmChangeEmail?: Maybe<Scalars['Void']>;
 };
 
 export type MutationLoginArgs = {
@@ -98,12 +100,25 @@ export type MutationChangeUsernameArgs = {
   username: Scalars['String'];
 };
 
+export type MutationChangeEmailArgs = {
+  email: Scalars['String'];
+};
+
+export type MutationConfirmChangeEmailArgs = {
+  code: Scalars['String'];
+};
+
 export type MyProfile = {
   __typename?: 'MyProfile';
   name?: Maybe<Scalars['String']>;
   about?: Maybe<Scalars['String']>;
   country?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
+};
+
+export type OkResult = {
+  __typename?: 'OkResult';
+  ok: Scalars['Boolean'];
 };
 
 export type PresignedPost = {

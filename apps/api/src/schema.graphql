@@ -22,10 +22,16 @@ type Mutation {
   completeAvatarUpload: AvatarUploadResult!
   deleteAvatar: Void
   changeUsername(username: String!): Void
+  changeEmail(email: String!): OkResult!
+  confirmChangeEmail(code: String!): Void
 }
 
 type Subscription {
   mock: String!
+}
+
+type OkResult {
+  ok: Boolean!
 }
 
 type AvatarUploadResult {

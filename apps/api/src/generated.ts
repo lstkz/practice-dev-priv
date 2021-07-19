@@ -57,6 +57,8 @@ export type Mutation = {
   completeAvatarUpload: AvatarUploadResult;
   deleteAvatar?: Maybe<Scalars['Void']>;
   changeUsername?: Maybe<Scalars['Void']>;
+  changeEmail: OkResult;
+  confirmChangeEmail?: Maybe<Scalars['Void']>;
 };
 
 export type MutationLoginArgs = {
@@ -104,12 +106,25 @@ export type MutationChangeUsernameArgs = {
   username: Scalars['String'];
 };
 
+export type MutationChangeEmailArgs = {
+  email: Scalars['String'];
+};
+
+export type MutationConfirmChangeEmailArgs = {
+  code: Scalars['String'];
+};
+
 export type MyProfile = {
   __typename?: 'MyProfile';
   name?: Maybe<Scalars['String']>;
   about?: Maybe<Scalars['String']>;
   country?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
+};
+
+export type OkResult = {
+  __typename?: 'OkResult';
+  ok: Scalars['Boolean'];
 };
 
 export type PresignedPost = {
@@ -281,6 +296,8 @@ export type ResolversTypes = {
   LoginInput: LoginInput;
   Mutation: ResolverTypeWrapper<{}>;
   MyProfile: ResolverTypeWrapper<MyProfile>;
+  OkResult: ResolverTypeWrapper<OkResult>;
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   PresignedPost: ResolverTypeWrapper<PresignedPost>;
   PresignedPostField: ResolverTypeWrapper<PresignedPostField>;
   Query: ResolverTypeWrapper<{}>;
@@ -289,7 +306,6 @@ export type ResolversTypes = {
   Subscription: ResolverTypeWrapper<{}>;
   UpdateProfileInput: UpdateProfileInput;
   User: ResolverTypeWrapper<User>;
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Void: ResolverTypeWrapper<Scalars['Void']>;
 };
 
@@ -301,6 +317,8 @@ export type ResolversParentTypes = {
   LoginInput: LoginInput;
   Mutation: {};
   MyProfile: MyProfile;
+  OkResult: OkResult;
+  Boolean: Scalars['Boolean'];
   PresignedPost: PresignedPost;
   PresignedPostField: PresignedPostField;
   Query: {};
@@ -309,7 +327,6 @@ export type ResolversParentTypes = {
   Subscription: {};
   UpdateProfileInput: UpdateProfileInput;
   User: User;
-  Boolean: Scalars['Boolean'];
   Void: Scalars['Void'];
 };
 
@@ -411,6 +428,18 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationChangeUsernameArgs, 'username'>
   >;
+  changeEmail?: Resolver<
+    ResolversTypes['OkResult'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationChangeEmailArgs, 'email'>
+  >;
+  confirmChangeEmail?: Resolver<
+    Maybe<ResolversTypes['Void']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationConfirmChangeEmailArgs, 'code'>
+  >;
 };
 
 export type MyProfileResolvers<
@@ -421,6 +450,14 @@ export type MyProfileResolvers<
   about?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   country?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type OkResultResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['OkResult'] = ResolversParentTypes['OkResult']
+> = {
+  ok?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -494,6 +531,7 @@ export type Resolvers<ContextType = any> = {
   AvatarUploadResult?: AvatarUploadResultResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   MyProfile?: MyProfileResolvers<ContextType>;
+  OkResult?: OkResultResolvers<ContextType>;
   PresignedPost?: PresignedPostResolvers<ContextType>;
   PresignedPostField?: PresignedPostFieldResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;

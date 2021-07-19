@@ -82,7 +82,7 @@ module.exports = function generate(plop) {
   });
 
   plop.setActionType('addToDbFile', function (answers, config, plop) {
-    const targetPath = path.join(__dirname, 'api/src/db.ts');
+    const targetPath = path.join(__dirname, 'apps/api/src/db.ts');
     let content = fs.readFileSync(targetPath, 'utf8');
     content = content.replace(
       /( *)(\/\/ APPEND)/,
@@ -103,7 +103,7 @@ module.exports = function generate(plop) {
     actions: [
       {
         type: 'addMany',
-        destination: path.join(__dirname, 'api/src/collections'),
+        destination: path.join(__dirname, 'apps/api/src/collections'),
         base: '.blueprints/collection',
         templateFiles: '.blueprints/collection/**/**',
       },
