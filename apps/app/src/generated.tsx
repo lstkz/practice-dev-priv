@@ -94,11 +94,24 @@ export type MyProfile = {
   url?: Maybe<Scalars['String']>;
 };
 
+export type PresignedPost = {
+  __typename?: 'PresignedPost';
+  url: Scalars['String'];
+  fields: Array<PresignedPostField>;
+};
+
+export type PresignedPostField = {
+  __typename?: 'PresignedPostField';
+  name: Scalars['String'];
+  value: Scalars['String'];
+};
+
 export type Query = {
   __typename?: 'Query';
   me: User;
   ping: Scalars['Float'];
   getMyProfile: MyProfile;
+  getAvatarUploadUrl: PresignedPost;
 };
 
 export type RegisterInput = {

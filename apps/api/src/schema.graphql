@@ -4,6 +4,7 @@ type Query {
   me: User!
   ping: Float!
   getMyProfile: MyProfile!
+  getAvatarUploadUrl: PresignedPost!
 }
 
 type Mutation {
@@ -22,6 +23,16 @@ type Mutation {
 
 type Subscription {
   mock: String!
+}
+
+type PresignedPostField {
+  name: String!
+  value: String!
+}
+
+type PresignedPost {
+  url: String!
+  fields: [PresignedPostField!]!
 }
 
 type AuthResult {
