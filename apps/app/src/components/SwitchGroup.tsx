@@ -2,7 +2,7 @@ import React from 'react';
 import { Switch } from '@headlessui/react';
 import tw from 'twin.macro';
 
-interface SwitchGroupProps {
+export interface SwitchGroupProps {
   label: React.ReactNode;
   description?: React.ReactNode;
   checked: boolean;

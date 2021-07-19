@@ -314,6 +314,39 @@ export type ChangeUsernameMutation = { __typename?: 'Mutation' } & Pick<
   'changeUsername'
 >;
 
+export type GetNotificationSettingsQueryVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type GetNotificationSettingsQuery = { __typename?: 'Query' } & {
+  getNotificationSettings: { __typename?: 'NotificationSettings' } & Pick<
+    NotificationSettings,
+    'newsletter'
+  >;
+};
+
+export type UpdateNotificationSettingsMutationVariables = Exact<{
+  values: NotificationSettingsInput;
+}>;
+
+export type UpdateNotificationSettingsMutation = { __typename?: 'Mutation' } & {
+  updateNotificationSettings?: Maybe<
+    { __typename?: 'NotificationSettings' } & Pick<
+      NotificationSettings,
+      'newsletter'
+    >
+  >;
+};
+
+export type ChangePasswordMutationVariables = Exact<{
+  password: Scalars['String'];
+}>;
+
+export type ChangePasswordMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'changePassword'
+>;
+
 export type GetMyProfileQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetMyProfileQuery = { __typename?: 'Query' } & {
@@ -1222,6 +1255,162 @@ export type ChangeUsernameMutationResult =
 export type ChangeUsernameMutationOptions = Apollo.BaseMutationOptions<
   ChangeUsernameMutation,
   ChangeUsernameMutationVariables
+>;
+export const GetNotificationSettingsDocument = gql`
+  query GetNotificationSettings {
+    getNotificationSettings {
+      newsletter
+    }
+  }
+`;
+
+/**
+ * __useGetNotificationSettingsQuery__
+ *
+ * To run a query within a React component, call `useGetNotificationSettingsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetNotificationSettingsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetNotificationSettingsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetNotificationSettingsQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetNotificationSettingsQuery,
+    GetNotificationSettingsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetNotificationSettingsQuery,
+    GetNotificationSettingsQueryVariables
+  >(GetNotificationSettingsDocument, options);
+}
+export function useGetNotificationSettingsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetNotificationSettingsQuery,
+    GetNotificationSettingsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetNotificationSettingsQuery,
+    GetNotificationSettingsQueryVariables
+  >(GetNotificationSettingsDocument, options);
+}
+export type GetNotificationSettingsQueryHookResult = ReturnType<
+  typeof useGetNotificationSettingsQuery
+>;
+export type GetNotificationSettingsLazyQueryHookResult = ReturnType<
+  typeof useGetNotificationSettingsLazyQuery
+>;
+export type GetNotificationSettingsQueryResult = Apollo.QueryResult<
+  GetNotificationSettingsQuery,
+  GetNotificationSettingsQueryVariables
+>;
+export const UpdateNotificationSettingsDocument = gql`
+  mutation UpdateNotificationSettings($values: NotificationSettingsInput!) {
+    updateNotificationSettings(values: $values) {
+      newsletter
+    }
+  }
+`;
+export type UpdateNotificationSettingsMutationFn = Apollo.MutationFunction<
+  UpdateNotificationSettingsMutation,
+  UpdateNotificationSettingsMutationVariables
+>;
+
+/**
+ * __useUpdateNotificationSettingsMutation__
+ *
+ * To run a mutation, you first call `useUpdateNotificationSettingsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateNotificationSettingsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateNotificationSettingsMutation, { data, loading, error }] = useUpdateNotificationSettingsMutation({
+ *   variables: {
+ *      values: // value for 'values'
+ *   },
+ * });
+ */
+export function useUpdateNotificationSettingsMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    UpdateNotificationSettingsMutation,
+    UpdateNotificationSettingsMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    UpdateNotificationSettingsMutation,
+    UpdateNotificationSettingsMutationVariables
+  >(UpdateNotificationSettingsDocument, options);
+}
+export type UpdateNotificationSettingsMutationHookResult = ReturnType<
+  typeof useUpdateNotificationSettingsMutation
+>;
+export type UpdateNotificationSettingsMutationResult =
+  Apollo.MutationResult<UpdateNotificationSettingsMutation>;
+export type UpdateNotificationSettingsMutationOptions =
+  Apollo.BaseMutationOptions<
+    UpdateNotificationSettingsMutation,
+    UpdateNotificationSettingsMutationVariables
+  >;
+export const ChangePasswordDocument = gql`
+  mutation ChangePassword($password: String!) {
+    changePassword(password: $password)
+  }
+`;
+export type ChangePasswordMutationFn = Apollo.MutationFunction<
+  ChangePasswordMutation,
+  ChangePasswordMutationVariables
+>;
+
+/**
+ * __useChangePasswordMutation__
+ *
+ * To run a mutation, you first call `useChangePasswordMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useChangePasswordMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [changePasswordMutation, { data, loading, error }] = useChangePasswordMutation({
+ *   variables: {
+ *      password: // value for 'password'
+ *   },
+ * });
+ */
+export function useChangePasswordMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    ChangePasswordMutation,
+    ChangePasswordMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    ChangePasswordMutation,
+    ChangePasswordMutationVariables
+  >(ChangePasswordDocument, options);
+}
+export type ChangePasswordMutationHookResult = ReturnType<
+  typeof useChangePasswordMutation
+>;
+export type ChangePasswordMutationResult =
+  Apollo.MutationResult<ChangePasswordMutation>;
+export type ChangePasswordMutationOptions = Apollo.BaseMutationOptions<
+  ChangePasswordMutation,
+  ChangePasswordMutationVariables
 >;
 export const GetMyProfileDocument = gql`
   query GetMyProfile {
