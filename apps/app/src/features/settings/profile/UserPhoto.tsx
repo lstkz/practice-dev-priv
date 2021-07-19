@@ -53,6 +53,35 @@ export function UserPhoto() {
   const [deleteAvatar] = useDeleteAvatarMutation();
   const { updateUser } = useAuthActions();
 
+  const buttons = (
+    <div tw="space-x-2 mt-2 flex items-center justify-center">
+      <Button
+        htmlType="button"
+        type="white"
+        size="small"
+        onClick={showPhoto}
+        loading={isLoading}
+      >
+        {user.avatarId ? 'Update' : 'Upload'}
+      </Button>
+      {user.avatarId && (
+        <Button
+          htmlType="button"
+          type="white"
+          size="small"
+          onClick={async () => {
+            await deleteAvatar();
+            updateUser({
+              avatarId: null,
+            });
+          }}
+        >
+          Remove
+        </Button>
+      )}
+    </div>
+  );
+
   return (
     <>
       <CropModal
@@ -96,58 +125,16 @@ export function UserPhoto() {
               tw="flex-shrink-0 inline-block rounded-full overflow-hidden h-12 w-12"
               aria-hidden="true"
             >
-              <img tw="rounded-full h-full w-full" src={''} alt="" />
+              <UserAvatar user={user} size="lg" />
             </div>
-            <div tw="ml-5 rounded-md shadow-sm">
-              <div
-                className="group"
-                tw="relative border border-gray-300 rounded-md py-2 px-3 flex items-center justify-center hover:bg-gray-50 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
-              >
-                <label
-                  htmlFor="user-photo"
-                  tw="relative text-sm leading-4 font-medium text-gray-700 pointer-events-none"
-                >
-                  <span>Change</span>
-                  <span tw="sr-only"> user photo</span>
-                </label>
-                <input
-                  id="user-photo"
-                  name="user-photo"
-                  type="file"
-                  tw="absolute w-full h-full opacity-0 cursor-pointer border-gray-300 rounded-md"
-                />
-              </div>
-            </div>
+            <div tw="ml-5 rounded-md shadow-sm">{buttons}</div>
           </div>
         </div>
-        <div tw="hidden relative rounded-full overflow-hidden lg:flex  justify-center">
-          <UserAvatar user={user} size="xl" />
-        </div>
-        <div tw="space-x-2 mt-2 flex items-center justify-center">
-          <Button
-            htmlType="button"
-            type="white"
-            size="small"
-            onClick={showPhoto}
-            loading={isLoading}
-          >
-            {user.avatarId ? 'Update' : 'Upload'}
-          </Button>
-          {user.avatarId && (
-            <Button
-              htmlType="button"
-              type="white"
-              size="small"
-              onClick={async () => {
-                await deleteAvatar();
-                updateUser({
-                  avatarId: null,
-                });
-              }}
-            >
-              Remove
-            </Button>
-          )}
+        <div tw="hidden lg:block">
+          <div tw="relative rounded-full overflow-hidden flex justify-center">
+            <UserAvatar user={user} size="xl" />
+          </div>
+          {buttons}
         </div>
         <input
           key={key}
