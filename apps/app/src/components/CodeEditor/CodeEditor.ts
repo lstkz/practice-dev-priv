@@ -55,8 +55,10 @@ export class CodeEditor {
   private themer: Themer = null!;
   private highlighter: Highlighter = null!;
   private models: Record<string, editor.ITextModel> = {};
+  private monaco: Monaco = null!;
 
-  constructor(private monaco: Monaco, wrapper: HTMLDivElement) {
+  init(monaco: Monaco, wrapper: HTMLDivElement) {
+    this.monaco = monaco;
     this.editor = createEditor(monaco, wrapper);
     this.themer = new Themer();
     this.themer.loadTheme(DarkThemeNew as any);
@@ -77,18 +79,21 @@ export class CodeEditor {
     );
   }
 
-  addFile(fileName: string, source: string) {
+  addFile(fileName: string, source: string, isActive: boolean) {
     const model = this.monaco.editor.createModel(
       source,
       'typescript',
       this.monaco.Uri.parse(fileName)
     );
-    this.editor.setModel(model);
+    if (isActive) {
+      this.editor.setModel(model);
+    }
     this.models[fileName] = model;
   }
 
   dispose() {
     this.highlighter.dispose();
+    this.monaco.editor.getModels().forEach(model => model.dispose());
   }
 
   private changeCommandKeybinding(id: string, keybinding: number) {

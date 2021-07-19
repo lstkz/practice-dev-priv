@@ -12,6 +12,7 @@ import {
   RIGHT_COOKIE_NAME,
   RIGHT_DEFAULT,
 } from './const';
+import { EditorModule } from './editor/EditorModule';
 
 interface Actions {
   setLeftSidebarTab: (leftSidebarTab: LeftSidebarTab | null) => void;
@@ -62,7 +63,9 @@ export function ChallengeModule(props: ChallengeSSRProps) {
 
   return (
     <Provider state={state} actions={actions}>
-      <ChallengePage />
+      <EditorModule challengeId={1}>
+        <ChallengePage />
+      </EditorModule>
     </Provider>
   );
 }
