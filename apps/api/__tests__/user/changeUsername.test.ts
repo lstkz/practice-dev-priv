@@ -32,6 +32,13 @@ it('should change the username', async () => {
   expect(user.username_lowered).toEqual('foo');
 });
 
+it('should change the username (different casing)', async () => {
+  await changeUsername(await getAppUser(1), 'USER1');
+  const user = await UserCollection.findByIdOrThrow(getId(1));
+  expect(user.username).toEqual('USER1');
+  expect(user.username_lowered).toEqual('user1');
+});
+
 it('should change the username #graphql', async () => {
   const res = await apolloServer.executeOperation(
     {

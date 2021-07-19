@@ -13,9 +13,11 @@ export const changeUsername = createContract('user.changeUsername')
   .returns<void>()
   .fn(async (appUser, username) => {
     const user = await UserCollection.findByIdOrThrow(appUser.id);
-    const existing = await UserCollection.findOneByUsername(username);
-    if (existing) {
-      throw new AppError('Username already taken');
+    if (user.username.toLowerCase() !== username.toLowerCase()) {
+      const existing = await UserCollection.findOneByUsername(username);
+      if (existing) {
+        throw new AppError('Username already taken');
+      }
     }
     user.username = username;
     user.username_lowered = username.toLowerCase();
