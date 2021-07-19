@@ -6,7 +6,7 @@ import { SavableSection } from './SavableSection';
 import { ContextInput } from '../../components/ContextInput';
 import { UserPhoto } from './UserPhoto';
 import Select from '../../components/Select';
-import { countryList } from './countryList';
+import { countryList } from 'shared';
 
 type FormValues = z.infer<typeof schema>;
 

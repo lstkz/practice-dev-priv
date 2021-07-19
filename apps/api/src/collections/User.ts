@@ -3,10 +3,10 @@ import { safeExtend } from '../common/helper';
 import { createCollection } from '../db';
 
 export interface UserProfile {
-  name?: string;
-  about?: string;
-  country?: string;
-  url?: string;
+  name?: string | null;
+  about?: string | null;
+  country?: string | null;
+  url?: string | null;
 }
 
 export interface UserModel {
