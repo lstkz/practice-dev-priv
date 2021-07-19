@@ -4,9 +4,9 @@ import { UserCollection, UserProfile } from '../../collections/User';
 import { createContract, createGraphqlBinding } from '../../lib';
 
 export const updateMyProfile = createContract('user.updateMyProfile')
-  .params('user', 'values')
+  .params('appUser', 'values')
   .schema({
-    user: S.object().appUser(),
+    appUser: S.object().appUser(),
     values: S.object().keys({
       name: S.string().optional().nullable().max(100),
       about: S.string().optional().nullable().max(500),
@@ -18,10 +18,10 @@ export const updateMyProfile = createContract('user.updateMyProfile')
     }),
   })
   .returns<UserProfile>()
-  .fn(async (user, values) => {
-    const latest = await UserCollection.findByIdOrThrow(user.id);
-    latest.profile = values;
-    await UserCollection.update(latest, ['profile']);
+  .fn(async (appUser, values) => {
+    const user = await UserCollection.findByIdOrThrow(appUser.id);
+    user.profile = values;
+    await UserCollection.update(user, ['profile']);
     return values;
   });
 

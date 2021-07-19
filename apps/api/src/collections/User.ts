@@ -9,6 +9,10 @@ export interface UserProfile {
   url?: string | null;
 }
 
+export interface NotificationSettings {
+  newsletter: boolean;
+}
+
 export interface UserModel {
   _id: ObjectID;
   email: string;
@@ -22,6 +26,7 @@ export interface UserModel {
   avatarId?: string | null;
   githubId?: number;
   profile?: UserProfile;
+  notificationSettings?: NotificationSettings;
 }
 
 export const UserCollection = safeExtend(

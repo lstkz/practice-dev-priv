@@ -54,6 +54,7 @@ export type Mutation = {
   changeEmail: OkResult;
   confirmChangeEmail?: Maybe<Scalars['Void']>;
   changePassword?: Maybe<Scalars['Void']>;
+  updateNotificationSettings?: Maybe<NotificationSettings>;
 };
 
 export type MutationLoginArgs = {
@@ -113,12 +114,25 @@ export type MutationChangePasswordArgs = {
   password: Scalars['String'];
 };
 
+export type MutationUpdateNotificationSettingsArgs = {
+  values: NotificationSettingsInput;
+};
+
 export type MyProfile = {
   __typename?: 'MyProfile';
   name?: Maybe<Scalars['String']>;
   about?: Maybe<Scalars['String']>;
   country?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
+};
+
+export type NotificationSettings = {
+  __typename?: 'NotificationSettings';
+  newsletter: Scalars['Boolean'];
+};
+
+export type NotificationSettingsInput = {
+  newsletter: Scalars['Boolean'];
 };
 
 export type OkResult = {
@@ -144,6 +158,7 @@ export type Query = {
   ping: Scalars['Float'];
   getMyProfile: MyProfile;
   getAvatarUploadUrl: PresignedPost;
+  getNotificationSettings: NotificationSettings;
 };
 
 export type RegisterInput = {
