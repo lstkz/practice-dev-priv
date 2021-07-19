@@ -5,17 +5,17 @@ import { config } from 'config';
 import { getUserAvatarUploadKey } from '../../common/helper';
 
 export const getAvatarUploadUrl = createContract('user.getAvatarUploadUrl')
-  .params('user')
+  .params('appUser')
   .schema({
-    user: S.object().appUser(),
+    appUser: S.object().appUser(),
   })
   .returns<PresignedPost>()
-  .fn(async user => {
+  .fn(async appUser => {
     const uploadUrl = await s3.createPresignedPost({
       Bucket: config.aws.s3Bucket,
       Conditions: [['content-length-range', 0, 3 * 1024 * 1024]],
       Fields: {
-        key: getUserAvatarUploadKey(user.id.toHexString()),
+        key: getUserAvatarUploadKey(appUser.id.toHexString()),
         'Content-Type': 'image/png',
       },
     });

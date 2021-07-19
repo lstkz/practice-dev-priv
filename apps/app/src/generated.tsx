@@ -49,6 +49,7 @@ export type Mutation = {
   confirmResetPassword: AuthResult;
   updateMyProfile: MyProfile;
   completeAvatarUpload: AvatarUploadResult;
+  deleteAvatar?: Maybe<Scalars['Void']>;
 };
 
 export type MutationLoginArgs = {

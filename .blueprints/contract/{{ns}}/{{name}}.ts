@@ -3,13 +3,13 @@ import { createContract, createGraphqlBinding } from '../../lib';
 
 
 export const {{name}} = createContract('{{ns}}.{{name}}')
-  .params('user', 'values')
+  .params('appUser', 'values')
   .schema({
-    user: S.object().appUser(),
+    appUser: S.object().appUser(),
     values: S.object().keys({
     })
   })
-  .fn(async (user, values) => {
+  .fn(async (appUser, values) => {
 
   });
 

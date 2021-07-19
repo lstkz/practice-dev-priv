@@ -55,6 +55,7 @@ export type Mutation = {
   confirmResetPassword: AuthResult;
   updateMyProfile: MyProfile;
   completeAvatarUpload: AvatarUploadResult;
+  deleteAvatar?: Maybe<Scalars['Void']>;
 };
 
 export type MutationLoginArgs = {
@@ -391,6 +392,11 @@ export type MutationResolvers<
   >;
   completeAvatarUpload?: Resolver<
     ResolversTypes['AvatarUploadResult'],
+    ParentType,
+    ContextType
+  >;
+  deleteAvatar?: Resolver<
+    Maybe<ResolversTypes['Void']>,
     ParentType,
     ContextType
   >;
