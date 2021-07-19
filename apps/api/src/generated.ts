@@ -59,6 +59,7 @@ export type Mutation = {
   changeUsername?: Maybe<Scalars['Void']>;
   changeEmail: OkResult;
   confirmChangeEmail?: Maybe<Scalars['Void']>;
+  changePassword?: Maybe<Scalars['Void']>;
 };
 
 export type MutationLoginArgs = {
@@ -112,6 +113,10 @@ export type MutationChangeEmailArgs = {
 
 export type MutationConfirmChangeEmailArgs = {
   code: Scalars['String'];
+};
+
+export type MutationChangePasswordArgs = {
+  password: Scalars['String'];
 };
 
 export type MyProfile = {
@@ -439,6 +444,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationConfirmChangeEmailArgs, 'code'>
+  >;
+  changePassword?: Resolver<
+    Maybe<ResolversTypes['Void']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationChangePasswordArgs, 'password'>
   >;
 };
 

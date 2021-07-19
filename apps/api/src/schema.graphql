@@ -24,6 +24,7 @@ type Mutation {
   changeUsername(username: String!): Void
   changeEmail(email: String!): OkResult!
   confirmChangeEmail(code: String!): Void
+  changePassword(password: String!): Void
 }
 
 type Subscription {
