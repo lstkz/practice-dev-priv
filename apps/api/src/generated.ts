@@ -60,6 +60,7 @@ export type Mutation = {
   changeEmail: OkResult;
   confirmChangeEmail?: Maybe<Scalars['Void']>;
   changePassword?: Maybe<Scalars['Void']>;
+  updateNotificationSettings?: Maybe<NotificationSettings>;
 };
 
 export type MutationLoginArgs = {
@@ -119,12 +120,25 @@ export type MutationChangePasswordArgs = {
   password: Scalars['String'];
 };
 
+export type MutationUpdateNotificationSettingsArgs = {
+  values: NotificationSettingsInput;
+};
+
 export type MyProfile = {
   __typename?: 'MyProfile';
   name?: Maybe<Scalars['String']>;
   about?: Maybe<Scalars['String']>;
   country?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
+};
+
+export type NotificationSettings = {
+  __typename?: 'NotificationSettings';
+  newsletter: Scalars['Boolean'];
+};
+
+export type NotificationSettingsInput = {
+  newsletter: Scalars['Boolean'];
 };
 
 export type OkResult = {
@@ -150,6 +164,7 @@ export type Query = {
   ping: Scalars['Float'];
   getMyProfile: MyProfile;
   getAvatarUploadUrl: PresignedPost;
+  getNotificationSettings: NotificationSettings;
 };
 
 export type RegisterInput = {
@@ -301,8 +316,10 @@ export type ResolversTypes = {
   LoginInput: LoginInput;
   Mutation: ResolverTypeWrapper<{}>;
   MyProfile: ResolverTypeWrapper<MyProfile>;
-  OkResult: ResolverTypeWrapper<OkResult>;
+  NotificationSettings: ResolverTypeWrapper<NotificationSettings>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  NotificationSettingsInput: NotificationSettingsInput;
+  OkResult: ResolverTypeWrapper<OkResult>;
   PresignedPost: ResolverTypeWrapper<PresignedPost>;
   PresignedPostField: ResolverTypeWrapper<PresignedPostField>;
   Query: ResolverTypeWrapper<{}>;
@@ -322,8 +339,10 @@ export type ResolversParentTypes = {
   LoginInput: LoginInput;
   Mutation: {};
   MyProfile: MyProfile;
-  OkResult: OkResult;
+  NotificationSettings: NotificationSettings;
   Boolean: Scalars['Boolean'];
+  NotificationSettingsInput: NotificationSettingsInput;
+  OkResult: OkResult;
   PresignedPost: PresignedPost;
   PresignedPostField: PresignedPostField;
   Query: {};
@@ -451,6 +470,12 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationChangePasswordArgs, 'password'>
   >;
+  updateNotificationSettings?: Resolver<
+    Maybe<ResolversTypes['NotificationSettings']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationUpdateNotificationSettingsArgs, 'values'>
+  >;
 };
 
 export type MyProfileResolvers<
@@ -461,6 +486,14 @@ export type MyProfileResolvers<
   about?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   country?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type NotificationSettingsResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['NotificationSettings'] = ResolversParentTypes['NotificationSettings']
+> = {
+  newsletter?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -506,6 +539,11 @@ export type QueryResolvers<
     ParentType,
     ContextType
   >;
+  getNotificationSettings?: Resolver<
+    ResolversTypes['NotificationSettings'],
+    ParentType,
+    ContextType
+  >;
 };
 
 export type SubscriptionResolvers<
@@ -542,6 +580,7 @@ export type Resolvers<ContextType = any> = {
   AvatarUploadResult?: AvatarUploadResultResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   MyProfile?: MyProfileResolvers<ContextType>;
+  NotificationSettings?: NotificationSettingsResolvers<ContextType>;
   OkResult?: OkResultResolvers<ContextType>;
   PresignedPost?: PresignedPostResolvers<ContextType>;
   PresignedPostField?: PresignedPostFieldResolvers<ContextType>;

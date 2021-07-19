@@ -5,6 +5,7 @@ type Query {
   ping: Float!
   getMyProfile: MyProfile!
   getAvatarUploadUrl: PresignedPost!
+  getNotificationSettings: NotificationSettings!
 }
 
 type Mutation {
@@ -25,10 +26,21 @@ type Mutation {
   changeEmail(email: String!): OkResult!
   confirmChangeEmail(code: String!): Void
   changePassword(password: String!): Void
+  updateNotificationSettings(
+    values: NotificationSettingsInput!
+  ): NotificationSettings
 }
 
 type Subscription {
   mock: String!
+}
+
+type NotificationSettings {
+  newsletter: Boolean!
+}
+
+input NotificationSettingsInput {
+  newsletter: Boolean!
 }
 
 type OkResult {
