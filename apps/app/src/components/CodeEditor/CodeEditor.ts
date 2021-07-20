@@ -3,6 +3,7 @@ import { Themer } from './Themer';
 import DarkThemeNew from './dark-theme-new.json';
 import { Highlighter } from './Highlighter';
 import { Monaco } from '../../types';
+import { CallbackMap, EditorEventEmitter } from './EditorEventEmitter';
 
 export function createEditor(monaco: Monaco, wrapper: HTMLDivElement) {
   monaco.editor.defineTheme('myCustomTheme', {
@@ -61,7 +62,11 @@ export class CodeEditor {
   private themer: Themer = null!;
   private highlighter: Highlighter = null!;
   private models: Record<string, editor.ITextModel> = {};
+  private modelCommittedText: Record<string, string> = {};
   private monaco: Monaco = null!;
+  private activeId: null | string = null;
+  private dirtyMap: Record<string, boolean> = {};
+  private emitter = new EditorEventEmitter();
 
   init(monaco: Monaco, wrapper: HTMLDivElement) {
     this.monaco = monaco;
@@ -74,6 +79,40 @@ export class CodeEditor {
       'editor.action.triggerSuggest',
       monaco.KeyMod.CtrlCmd | monaco.KeyCode.Space
     );
+    this.editor.onDidChangeModelContent(() => {
+      const model = this.editor.getModel();
+      if (model && this.activeId) {
+        const original = this.modelCommittedText[this.activeId];
+        const current = model.getValue();
+        const hasChanges = original !== current;
+        const isDirty = !!this.dirtyMap[this.activeId];
+        if (isDirty !== hasChanges) {
+          this.emitter.emit('modified', {
+            fileId: this.activeId,
+            hasChanges,
+          });
+          this.dirtyMap[this.activeId] = hasChanges;
+        }
+      }
+    });
+    this.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, () => {
+      const model = this.editor.getModel();
+      if (model && this.activeId && this.dirtyMap[this.activeId]) {
+        const content = model.getValue();
+        this.emitter.emit('saved', {
+          fileId: this.activeId,
+          content,
+        });
+        delete this.dirtyMap[this.activeId];
+      }
+    });
+  }
+
+  addEventListener<T extends keyof CallbackMap>(
+    type: T,
+    callback: CallbackMap[T]
+  ) {
+    this.emitter.addEventListener(type, callback);
   }
 
   async addLib(name: string, url: string) {
@@ -92,6 +131,7 @@ export class CodeEditor {
       this.monaco.Uri.parse(file.path)
     );
     this.models[file.id] = model;
+    this.modelCommittedText[file.id] = file.source;
   }
 
   openFile(fileId: string | null) {
@@ -100,6 +140,7 @@ export class CodeEditor {
     } else {
       this.editor.setModel(this.models[fileId]);
     }
+    this.activeId = fileId;
   }
 
   dispose() {

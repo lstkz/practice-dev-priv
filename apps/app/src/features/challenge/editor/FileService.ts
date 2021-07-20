@@ -87,23 +87,31 @@ export interface DirectoryInfo {
 export type ElementInfo = FileInfo | DirectoryInfo;
 
 export class FileService {
+  elementMap: Record<string, ElementInfo> = {};
+  elementIds: Set<string> = new Set();
+
   constructor(private challengeId: number) {}
 
   async loadElements() {
-    const baseFiles = testFiles[this.challengeId];
-    const localFiles = this.getLocalFiles();
-    const localFilesMap = R.indexBy(localFiles, x => x.id);
-    const ret: ElementInfo[] = [...localFiles];
-    baseFiles.forEach(file => {
-      if (!localFilesMap[file.id]) {
+    const baseElements = testFiles[this.challengeId];
+    const localElements = this.getLocalElements();
+    localElements.forEach(item => {
+      this.elementIds.add(item.id);
+    });
+    const localElementMap = R.indexBy(localElements, x => x.id);
+    console.log(localElements);
+    const ret: ElementInfo[] = [...localElements];
+    baseElements.forEach(file => {
+      if (!localElementMap[file.id]) {
         ret.push(file);
       }
     });
-    return ret;
+    this.elementMap = R.indexBy(ret, x => x.id);
+    return ret.map(R.clone);
   }
 
   async saveFile(id: string, content: string) {
-    const file = this.getLocalElement(id);
+    const file = this.elementMap[id];
     if (!file) {
       throw new Error("Can't find file: " + id);
     }
@@ -111,33 +119,40 @@ export class FileService {
       throw new Error('Not a file');
     }
     file.content = content;
-    localStorage[this.getFileElement(id)] = JSON.stringify(file);
+    localStorage[this.getFileElementKey(id)] = JSON.stringify(file);
+    this.elementIds.add(id);
+    localStorage[this.getChallengeKey()] = JSON.stringify(
+      Array.from(this.elementIds.values())
+    );
   }
 
   private getChallengeKey() {
     return `challenge_elements_${this.challengeId}`;
   }
 
-  private getFileElement(id: string) {
+  private getFileElementKey(id: string) {
     return `${this.getChallengeKey()}_${id}`;
   }
 
   private getLocalElementIds() {
     try {
       const ids: string[] = JSON.parse(localStorage[this.getChallengeKey()]);
+      if (!Array.isArray(ids)) {
+        return [];
+      }
       return ids;
     } catch (e) {
       return [];
     }
   }
-  private getLocalFiles() {
+  private getLocalElements() {
     const ids = this.getLocalElementIds();
     return ids.map(id => this.getLocalElement(id)!).filter(x => x);
   }
   private getLocalElement(id: string) {
     try {
       const element: ElementInfo = JSON.parse(
-        localStorage[this.getFileElement(id)]
+        localStorage[this.getFileElementKey(id)]
       );
       return element;
     } catch (e) {
