@@ -22,6 +22,7 @@ import { doFn } from '../../common/helper';
 
 interface FileExplorerProps {
   items: ExplorerItemType[];
+  onOpenFile: (id: string) => void;
 }
 
 interface State {
@@ -44,6 +45,7 @@ interface Actions {
   updateItemName: (id: string, name: string) => void;
   addNew: (type: NewFileType, name: string, parentId: string | null) => void;
   registerItem: (id: string, api: ItemAPI | null) => void;
+  openFile: (id: string) => void;
 }
 
 const [Provider, useContext] = createModuleContext<State, Actions>();
@@ -67,6 +69,7 @@ function _findItem(
 }
 
 export function FileExplorer(props: FileExplorerProps) {
+  const { onOpenFile } = props;
   const [state, setState] = useImmer<State>({
     hasFocus: false,
     items: React.useMemo(() => sortExplorerItems(props.items), []),
@@ -134,6 +137,9 @@ export function FileExplorer(props: FileExplorerProps) {
         draft.activeItemId = id;
         draft.navigationActiveItemId = id;
       });
+    },
+    openFile: id => {
+      onOpenFile(id);
     },
   });
   const extendedItems = React.useMemo(() => {

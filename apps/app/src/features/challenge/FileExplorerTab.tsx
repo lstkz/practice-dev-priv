@@ -5,10 +5,11 @@ import {
   ExplorerItemType,
 } from 'src/components/FileExplorer/types';
 import { FileExplorer } from '../../components/FileExplorer/FileExplorer';
-import { useEditorState } from './editor/EditorModule';
+import { useEditorActions, useEditorState } from './editor/EditorModule';
 
 export function FileExplorerTab() {
   const { elements, isLoaded } = useEditorState();
+  const { openFile } = useEditorActions();
   const items = React.useMemo(() => {
     if (!isLoaded) {
       return [];
@@ -41,5 +42,5 @@ export function FileExplorerTab() {
   if (!isLoaded) {
     return null;
   }
-  return <FileExplorer items={items} />;
+  return <FileExplorer items={items} onOpenFile={openFile} />;
 }

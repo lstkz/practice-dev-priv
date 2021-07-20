@@ -31,6 +31,7 @@ export function FileExplorerItem(props: FileExplorerItemProps) {
     updateItemName,
     registerItem,
     removeItem,
+    openFile,
   } = useFileExplorerActions();
   const style = {
     paddingLeft: nestedLevel + 'rem',
@@ -91,6 +92,9 @@ export function FileExplorerItem(props: FileExplorerItemProps) {
             toggleDirectoryExpanded(item.id);
           }
           setActive(item.id);
+          if (item.type === 'file') {
+            openFile(item.id);
+          }
         }}
         css={[
           ...bgCss,

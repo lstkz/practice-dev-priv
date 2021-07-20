@@ -50,6 +50,12 @@ export function createEditor(monaco: Monaco, wrapper: HTMLDivElement) {
   return monaco.editor.create(wrapper, properties);
 }
 
+interface EditorFile {
+  id: string;
+  path: string;
+  source: string;
+}
+
 export class CodeEditor {
   private editor: editor.IStandaloneCodeEditor = null!;
   private themer: Themer = null!;
@@ -79,16 +85,21 @@ export class CodeEditor {
     );
   }
 
-  addFile(fileName: string, source: string, isActive: boolean) {
+  addFile(file: EditorFile) {
     const model = this.monaco.editor.createModel(
-      source,
+      file.source,
       'typescript',
-      this.monaco.Uri.parse(fileName)
+      this.monaco.Uri.parse(file.path)
     );
-    if (isActive) {
-      this.editor.setModel(model);
+    this.models[file.id] = model;
+  }
+
+  openFile(fileId: string | null) {
+    if (!fileId) {
+      this.editor.setModel(null);
+    } else {
+      this.editor.setModel(this.models[fileId]);
     }
-    this.models[fileName] = model;
   }
 
   dispose() {
