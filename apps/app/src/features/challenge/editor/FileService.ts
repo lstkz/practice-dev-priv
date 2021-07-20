@@ -1,4 +1,5 @@
 import * as R from 'remeda';
+import { AddNewElementValues } from 'src/types';
 
 const testFiles: Record<number, ElementInfo[]> = {
   1: [
@@ -74,14 +75,14 @@ export interface FileInfo {
   type: 'file';
   name: string;
   content: string;
-  parentId?: string;
+  parentId?: string | null;
 }
 
 export interface DirectoryInfo {
   id: string;
   type: 'directory';
   name: string;
-  parentId?: string;
+  parentId?: string | null;
 }
 
 export type ElementInfo = FileInfo | DirectoryInfo;
@@ -99,7 +100,6 @@ export class FileService {
       this.elementIds.add(item.id);
     });
     const localElementMap = R.indexBy(localElements, x => x.id);
-    console.log(localElements);
     const ret: ElementInfo[] = [...localElements];
     baseElements.forEach(file => {
       if (!localElementMap[file.id]) {
@@ -119,10 +119,44 @@ export class FileService {
       throw new Error('Not a file');
     }
     file.content = content;
-    localStorage[this.getFileElementKey(id)] = JSON.stringify(file);
     this.elementIds.add(id);
+    this.updateFile(id);
+    this.updateIds();
+  }
+
+  addNew(values: AddNewElementValues) {
+    if (values.type === 'file') {
+      this.elementMap[values.id] = {
+        ...values,
+        content: '',
+      } as FileInfo;
+    } else {
+      this.elementMap[values.id] = values as DirectoryInfo;
+    }
+    this.elementIds.add(values.id);
+    this.updateFile(values.id);
+    this.updateIds();
+    return R.clone(this.elementMap[values.id]);
+  }
+
+  removeMultiple(ids: string[]) {
+    ids.forEach(id => {
+      delete this.elementMap[id];
+      this.updateFile(id);
+      this.elementIds.delete(id);
+    });
+    this.updateIds();
+  }
+
+  private updateIds() {
     localStorage[this.getChallengeKey()] = JSON.stringify(
       Array.from(this.elementIds.values())
+    );
+  }
+
+  private updateFile(id: string) {
+    localStorage[this.getFileElementKey(id)] = JSON.stringify(
+      this.elementMap[id]
     );
   }
 

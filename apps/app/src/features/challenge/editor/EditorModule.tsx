@@ -5,11 +5,17 @@ import React from 'react';
 import { CodeEditor } from 'src/components/CodeEditor/CodeEditor';
 import { ElementInfo, FileInfo, FileService } from './FileService';
 import { EditorStateService } from './EditorStateService';
+import { AddNewElementValues } from 'src/types';
+import { FileTreeHelper } from './FileTreeHelper';
+import { doFn } from 'src/common/helper';
 
 interface Actions {
   load: (container: HTMLDivElement) => void;
   openFile: (id: string) => void;
   closeFile: (id: string) => void;
+  addNew: (values: AddNewElementValues) => void;
+  removeElement: (id: string) => void;
+  renameFile: (id: string, name: string) => void;
 }
 
 interface OpenedTab {
@@ -30,16 +36,6 @@ const [Provider, useContext] = createModuleContext<State, Actions>();
 interface EditorModuleProps {
   challengeId: number;
   children: React.ReactNode;
-}
-
-function getPath(id: string, elementMap: Record<string, ElementInfo>) {
-  let file = elementMap[id];
-  const path = [file.name];
-  while (file.parentId) {
-    file = elementMap[file.parentId];
-    path.unshift(file.name);
-  }
-  return './' + path.join('/');
 }
 
 export function EditorModule(props: EditorModuleProps) {
@@ -69,6 +65,11 @@ export function EditorModule(props: EditorModuleProps) {
     });
   };
 
+  const getElementById = (id: string) => {
+    const { elements } = getState();
+    return elements.find(x => x.id === id)!;
+  };
+
   const actions = useActions<Actions>({
     load: async container => {
       const monaco = await loader.init();
@@ -85,12 +86,12 @@ export function EditorModule(props: EditorModuleProps) {
       ]);
       const tabsState = editorStateService.loadTabsState();
       const elements = await fileService.loadElements();
-      const elementMap = R.indexBy(elements, x => x.id);
+      const pathHelper = new FileTreeHelper(elements);
       elements.forEach(element => {
         if (element.type === 'file') {
           codeEditor.addFile({
             id: element.id,
-            path: getPath(element.id, elementMap),
+            path: pathHelper.getPath(element.id),
             source: element.content,
           });
         }
@@ -121,8 +122,7 @@ export function EditorModule(props: EditorModuleProps) {
       });
     },
     openFile: id => {
-      const { elements } = getState();
-      const file = elements.find(x => x.id === id) as FileInfo;
+      const file = getElementById(id) as FileInfo;
       setState(draft => {
         draft.activeTabId = id;
         if (!draft.tabs.some(x => x.id === id)) {
@@ -148,6 +148,56 @@ export function EditorModule(props: EditorModuleProps) {
         codeEditor.openFile(newActiveId);
       }
       syncTabs();
+    },
+    addNew: values => {
+      const newElement = fileService.addNew(values);
+      setState(draft => {
+        draft.elements.push(newElement);
+      });
+      if (values.type === 'directory') {
+        return;
+      }
+      const pathHelper = new FileTreeHelper(getState().elements);
+      codeEditor.addFile({
+        id: values.id,
+        path: pathHelper.getPath(values.id),
+        source: '',
+      });
+      actions.openFile(values.id);
+      requestAnimationFrame(() => {
+        codeEditor.focus();
+      });
+    },
+    removeElement: id => {
+      const element = getElementById(id);
+      const elementsToRemove = doFn(() => {
+        if (element.type === 'directory') {
+          const treeHelper = new FileTreeHelper(getState().elements);
+          return treeHelper.flattenDirectory(id);
+        }
+        return [element];
+      });
+      fileService.removeMultiple(elementsToRemove.map(x => x.id));
+      elementsToRemove.forEach(element => {
+        if (element.type === 'file') {
+          codeEditor.removeFile(element.id);
+        }
+      });
+      const removedMap = R.indexBy(elementsToRemove, x => x.id);
+      setState(draft => {
+        if (draft.activeTabId && removedMap[draft.activeTabId]) {
+          draft.activeTabId = null;
+        }
+        draft.tabs = draft.tabs.filter(x => !removedMap[x.id]);
+        if (!draft.activeTabId && draft.tabs.length) {
+          draft.activeTabId = draft.tabs[0].id;
+        }
+      });
+      codeEditor.openFile(getState().activeTabId);
+      syncTabs();
+    },
+    renameFile: (id, name) => {
+      // TODO
     },
   });
 

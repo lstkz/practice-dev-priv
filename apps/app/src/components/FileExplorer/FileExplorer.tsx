@@ -19,10 +19,14 @@ import {
   WritableFileItem,
 } from './types';
 import { doFn } from '../../common/helper';
+import { AddNewElementValues } from 'src/types';
 
 interface FileExplorerProps {
   items: ExplorerItemType[];
   onOpenFile: (id: string) => void;
+  onRename: (id: string, name: string) => void;
+  onNewFile: (values: AddNewElementValues) => void;
+  onElementRemoved: (id: string) => void;
 }
 
 interface State {
@@ -69,7 +73,7 @@ function _findItem(
 }
 
 export function FileExplorer(props: FileExplorerProps) {
-  const { onOpenFile } = props;
+  const { onOpenFile, onNewFile, onElementRemoved, onRename } = props;
   const [state, setState] = useImmer<State>({
     hasFocus: false,
     items: React.useMemo(() => sortExplorerItems(props.items), []),
@@ -105,8 +109,8 @@ export function FileExplorer(props: FileExplorerProps) {
       });
     },
     addNew: (type, name, parentId) => {
+      const id = uuid.v4();
       setState(draft => {
-        const id = uuid.v4();
         const newItem =
           type === 'directory'
             ? {
@@ -124,12 +128,19 @@ export function FileExplorer(props: FileExplorerProps) {
         rootItems.push(newItem);
         sortItemsInline(rootItems);
       });
+      onNewFile({
+        id,
+        name,
+        parentId,
+        type,
+      });
     },
     removeItem: id => {
       setState(draft => {
         const { item, items } = _findItem(id, draft.items);
         items.splice(items.indexOf(item), 1);
       });
+      onElementRemoved(id);
     },
     updateItemName: (id, name) => {
       setState(draft => {
@@ -137,6 +148,7 @@ export function FileExplorer(props: FileExplorerProps) {
         draft.activeItemId = id;
         draft.navigationActiveItemId = id;
       });
+      onRename(id, name);
     },
     openFile: id => {
       onOpenFile(id);
