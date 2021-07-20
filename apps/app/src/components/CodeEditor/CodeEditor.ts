@@ -134,7 +134,25 @@ export class CodeEditor {
     this.modelCommittedText[file.id] = file.source;
   }
 
+  focus() {
+    this.editor.focus();
+  }
+
+  removeFile(fileId: string) {
+    const model = this.models[fileId];
+    delete this.models[fileId];
+    model.dispose();
+    if (this.activeId === fileId) {
+      this.editor.setModel(null);
+      this.activeId = null;
+    }
+    delete this.dirtyMap[fileId];
+  }
+
   openFile(fileId: string | null) {
+    if (this.activeId === fileId) {
+      return;
+    }
     if (!fileId) {
       this.editor.setModel(null);
     } else {
