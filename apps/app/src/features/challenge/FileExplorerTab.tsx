@@ -9,7 +9,7 @@ import { useEditorActions, useEditorState } from './editor/EditorModule';
 
 export function FileExplorerTab() {
   const { elements, isLoaded } = useEditorState();
-  const { openFile, addNew, removeElement } = useEditorActions();
+  const { openFile, addNew, removeElement, renameFile } = useEditorActions();
   const items = React.useMemo(() => {
     if (!isLoaded) {
       return [];
@@ -48,6 +48,7 @@ export function FileExplorerTab() {
       onOpenFile={openFile}
       onNewFile={addNew}
       onElementRemoved={removeElement}
+      onRename={renameFile}
     />
   );
 }
