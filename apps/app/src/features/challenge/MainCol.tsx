@@ -1,6 +1,6 @@
 import React from 'react';
+import { EditorTabs } from './editor/EditorTabs';
 import { EditorWrapper } from './editor/EditorWrapper';
-import { FileTab } from './FileTab';
 
 export function MainCol() {
   return (
@@ -10,11 +10,7 @@ export function MainCol() {
         background: '#011627',
       }}
     >
-      <div tw="flex space-x-0.5 overflow-hidden">
-        <FileTab name="index.tsx" isActive hasChanges />
-        <FileTab name="Button.tsx" />
-        <FileTab name="util.ts" hasChanges />
-      </div>
+      <EditorTabs />
       <EditorWrapper />
     </div>
   );
