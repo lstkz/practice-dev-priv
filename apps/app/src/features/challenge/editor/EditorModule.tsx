@@ -5,10 +5,12 @@ import React from 'react';
 import { CodeEditor } from 'src/components/CodeEditor/CodeEditor';
 import { FileService } from './FileService';
 import { EditorStateService } from './EditorStateService';
-import { TreeNode } from 'src/types';
+import { LibraryDep, TreeNode } from 'src/types';
 import { doFn } from 'src/common/helper';
 import { FileTreeHelper } from 'src/common/tree';
 import { usePreventEditorNavigation } from './usePreventEditorNavigation';
+import { BrowserPreviewService } from './BrowserPreviewService';
+import { BundlerService } from './BundlerService';
 
 interface Actions {
   load: (container: HTMLDivElement) => void;
@@ -17,6 +19,7 @@ interface Actions {
   addNew: (values: TreeNode) => void;
   removeNode: (id: string) => void;
   renameNode: (id: string, name: string) => void;
+  registerPreviewIFrame: (iframe: HTMLIFrameElement) => void;
 }
 
 interface OpenedTab {
@@ -39,6 +42,21 @@ interface EditorModuleProps {
   children: React.ReactNode;
 }
 
+const libraries: LibraryDep[] = [
+  {
+    name: 'react',
+    types: 'https://cdn.jsdelivr.net/npm/@types/react@17.0.2/index.d.ts',
+    source:
+      'https://unpkg.com/@esm-bundle/react@17.0.2/esm/react.development.js',
+  },
+  {
+    name: 'react-dom',
+    types: 'https://cdn.jsdelivr.net/npm/@types/react-dom@17.0.2/index.d.ts',
+    source:
+      'https://unpkg.com/@esm-bundle/react-dom@17.0.2/esm/react-dom.development.js',
+  },
+];
+
 export function EditorModule(props: EditorModuleProps) {
   const { challengeId, children } = props;
   const [state, setState, getState] = useImmer<State>(
@@ -55,6 +73,14 @@ export function EditorModule(props: EditorModuleProps) {
   const fileService = React.useMemo(() => new FileService(challengeId), []);
   const editorStateService = React.useMemo(
     () => new EditorStateService(challengeId),
+    []
+  );
+  const browserPreviewService = React.useMemo(
+    () => new BrowserPreviewService(),
+    []
+  );
+  const bundlerService = React.useMemo(
+    () => new BundlerService(browserPreviewService, codeEditor),
     []
   );
 
@@ -76,17 +102,12 @@ export function EditorModule(props: EditorModuleProps) {
       const monaco = await loader.init();
       codeEditor.init(monaco, container);
       await Promise.all([
-        codeEditor.addLib(
-          'react',
-          'https://cdn.jsdelivr.net/npm/@types/react@17.0.2/index.d.ts'
-        ),
-        codeEditor.addLib(
-          'react-dom',
-          'https://cdn.jsdelivr.net/npm/@types/react-dom@17.0.2/index.d.ts'
-        ),
+        libraries.map(lib => codeEditor.addLib(lib.name, lib.types)),
       ]);
       const tabsState = editorStateService.loadTabsState();
       const nodes = await fileService.loadNodes();
+      await browserPreviewService.waitForLoad();
+      browserPreviewService.setLibraries(libraries);
       const pathHelper = new FileTreeHelper(nodes);
       await Promise.all(
         nodes.map(async node => {
@@ -99,6 +120,9 @@ export function EditorModule(props: EditorModuleProps) {
           }
         })
       );
+      bundlerService.init();
+      bundlerService.setInputFile('./index.tsx');
+      bundlerService.loadCode();
       codeEditor.addEventListener('modified', ({ fileId, hasChanges }) => {
         setState(draft => {
           if (hasChanges) {
@@ -113,6 +137,7 @@ export function EditorModule(props: EditorModuleProps) {
           delete draft.dirtyMap[fileId];
         });
         void fileService.saveFile(fileId, content);
+        bundlerService.loadCode();
       });
       if (tabsState.activeTabId) {
         codeEditor.openFile(tabsState.activeTabId);
@@ -228,6 +253,9 @@ export function EditorModule(props: EditorModuleProps) {
           codeEditor.changeFilePath(node.id, treeHelper.getPath(node.id));
         }
       });
+    },
+    registerPreviewIFrame: iframe => {
+      browserPreviewService.load(iframe);
     },
   });
 
