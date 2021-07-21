@@ -40,6 +40,7 @@ export function FileExplorerItem(props: FileExplorerItemProps) {
     paddingLeft: nestedLevel + 'rem',
   };
   const [isAdding, setIsAdding] = React.useState<TreeNodeType | null>(null);
+  const locked = lockedNodesMap[item.id];
   const [isEdit, setIsEdit] = React.useState(false);
   const [editName, setEditName] = React.useState('');
   const isActive = item.id === activeItemId;
@@ -61,6 +62,9 @@ export function FileExplorerItem(props: FileExplorerItemProps) {
   React.useEffect(() => {
     registerItem(item.id, {
       confirmDelete: () => {
+        if (locked) {
+          return;
+        }
         if (confirmItemDelete(item)) {
           removeItem(item.id);
         }
@@ -156,7 +160,7 @@ export function FileExplorerItem(props: FileExplorerItemProps) {
             item={item}
             setIsAdding={setIsAdding}
             onEdit={startEdit}
-            locked={lockedNodesMap[item.id]}
+            locked={locked}
           />
         )}
       </Wrapper>

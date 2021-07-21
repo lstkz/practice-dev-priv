@@ -34,9 +34,18 @@ export function FileTab(props: FileTabProps) {
           tw="focus:outline-none hover:text-white absolute right-3 top-0 bottom-0 items-center transform justify-center leading-none hidden group-hover:flex"
           css={[(hasChanges || isActive) && tw`flex`]}
           onClick={e => {
-            onClose();
             e.stopPropagation();
             e.preventDefault();
+            if (hasChanges) {
+              if (
+                !confirm(
+                  'Are you sure you want to close this tab? You will lose unsaved changes.'
+                )
+              ) {
+                return;
+              }
+            }
+            onClose();
           }}
         >
           <CloseIcon css={[hasChanges && tw`hidden group-hover:block`]} />

@@ -161,6 +161,12 @@ export class CodeEditor {
     this.activeId = fileId;
   }
 
+  revertDirty(fileId: string) {
+    delete this.dirtyMap[fileId];
+    const model = this.models[fileId];
+    model.setValue(this.modelCommittedText[fileId]);
+  }
+
   changeFilePath(fileId: string, path: string) {
     const currentModel = this.models[fileId];
     const model = this.monaco.editor.createModel(
