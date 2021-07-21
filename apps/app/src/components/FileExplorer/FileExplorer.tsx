@@ -11,6 +11,7 @@ import { TreeNode, TreeNodeType } from 'src/types';
 import { FileTreeHelper, getVisibleNodes } from 'src/common/tree';
 
 interface FileExplorerProps {
+  lockedNodesMap: Record<string, boolean>;
   items: TreeNode[];
   onOpenFile: (id: string) => void;
   onRename: (id: string, name: string) => void;
@@ -18,11 +19,15 @@ interface FileExplorerProps {
   onRemoved: (id: string) => void;
 }
 
-interface State {
+interface BaseState {
   hasFocus: boolean;
   activeItemId: string | null;
   navigationActiveItemId: string | null;
   expandedDirectories: Record<string, boolean>;
+}
+
+interface State extends BaseState {
+  lockedNodesMap: Record<string, boolean>;
 }
 
 interface ItemAPI {
@@ -43,8 +48,9 @@ interface Actions {
 const [Provider, useContext] = createModuleContext<State, Actions>();
 
 export function FileExplorer(props: FileExplorerProps) {
-  const { onOpenFile, onNewFile, onRemoved, onRename, items } = props;
-  const [state, setState] = useImmer<State>({
+  const { onOpenFile, onNewFile, onRemoved, onRename, items, lockedNodesMap } =
+    props;
+  const [state, setState] = useImmer<BaseState>({
     hasFocus: false,
     activeItemId: null,
     navigationActiveItemId: null,
@@ -110,7 +116,7 @@ export function FileExplorer(props: FileExplorerProps) {
   }, [recNodes, expandedDirectories]);
 
   return (
-    <Provider state={state} actions={actions}>
+    <Provider state={{ ...state, lockedNodesMap }} actions={actions}>
       <div
         ref={wrapperRef}
         tw="text-sm text-gray-400"
