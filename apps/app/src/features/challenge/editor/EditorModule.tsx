@@ -150,6 +150,13 @@ export function EditorModule(props: EditorModuleProps) {
       if (newActiveId !== -1) {
         codeEditor.openFile(newActiveId);
       }
+      const { dirtyMap } = getState();
+      if (dirtyMap[id]) {
+        setState(draft => {
+          delete draft.dirtyMap[id];
+        });
+        codeEditor.revertDirty(id);
+      }
       syncTabs();
     },
     addNew: values => {
