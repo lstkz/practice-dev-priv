@@ -200,7 +200,26 @@ export function EditorModule(props: EditorModuleProps) {
       syncTabs();
     },
     renameNode: (id, name) => {
-      // TODO
+      fileService.renameNode(id, name);
+      setState(draft => {
+        draft.nodes.forEach(item => {
+          if (item.id === id) {
+            item.name = name;
+          }
+        });
+        draft.tabs.forEach(item => {
+          if (item.id === id) {
+            item.name = name;
+          }
+        });
+      });
+      const treeHelper = new FileTreeHelper(getState().nodes);
+      const renameNodes = treeHelper.flattenDirectory(id);
+      renameNodes.forEach(node => {
+        if (node.type === 'file') {
+          codeEditor.changeFilePath(node.id, treeHelper.getPath(node.id));
+        }
+      });
     },
   });
 

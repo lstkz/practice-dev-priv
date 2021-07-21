@@ -74,7 +74,7 @@ export function FileExplorerItem(props: FileExplorerItemProps) {
   const isExpanded = expandedDirectories[item.id];
   const commitEdit = () => {
     const name = editName.trim();
-    if (name) {
+    if (name && item.name !== name) {
       updateItemName(item.id, name);
     }
     hideEdit();
@@ -88,6 +88,9 @@ export function FileExplorerItem(props: FileExplorerItemProps) {
         style={style}
         className="group"
         onClick={() => {
+          if (isEdit) {
+            return;
+          }
           if (item.type === 'directory') {
             toggleDirectoryExpanded(item.id);
           }

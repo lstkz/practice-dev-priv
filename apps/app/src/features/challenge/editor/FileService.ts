@@ -105,23 +105,25 @@ export class FileService {
   }
 
   async saveFile(id: NodeId, content: string) {
-    const file = this.nodeMap[id];
-    if (!file) {
-      throw new Error("Can't find file: " + id);
-    }
-    if (file.type !== 'file') {
-      throw new Error('Not a file');
-    }
+    this.getFileById(id);
     this.nodeIds.add(id);
-    this.updateFile(id);
+    this.updateNode(id);
     this.updateIds();
     this.updateFileContent(id, content);
+  }
+
+  renameNode(id: NodeId, name: string) {
+    const node = this.nodeMap[id];
+    node.name = name;
+    this.nodeIds.add(id);
+    this.updateNode(id);
+    this.updateIds();
   }
 
   addNew(values: TreeNode) {
     this.nodeMap[values.id] = values;
     this.nodeIds.add(values.id);
-    this.updateFile(values.id);
+    this.updateNode(values.id);
     this.updateIds();
     return R.clone(this.nodeMap[values.id]);
   }
@@ -129,11 +131,22 @@ export class FileService {
   removeMultiple(ids: NodeId[]) {
     ids.forEach(id => {
       delete this.nodeMap[id];
-      this.updateFile(id);
+      this.updateNode(id);
       this.nodeIds.delete(id);
       delete localStorage[this.getFileContentKey(id)];
     });
     this.updateIds();
+  }
+
+  private getFileById(id: NodeId) {
+    const file = this.nodeMap[id];
+    if (!file) {
+      throw new Error("Can't find file: " + id);
+    }
+    if (file.type !== 'file') {
+      throw new Error('Not a file');
+    }
+    return file;
   }
 
   private updateFileContent(id: NodeId, content: string) {
@@ -146,7 +159,7 @@ export class FileService {
     );
   }
 
-  private updateFile(id: NodeId) {
+  private updateNode(id: NodeId) {
     localStorage[this.getFileNodeKey(id)] = JSON.stringify(this.nodeMap[id]);
   }
 
