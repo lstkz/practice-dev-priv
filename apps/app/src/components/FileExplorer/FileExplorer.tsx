@@ -1,37 +1,25 @@
 import { createModuleContext, useActions, useImmer } from 'context-api';
+import * as R from 'remeda';
 import * as uuid from 'uuid';
 import React from 'react';
 import { ActionIcon } from './ActionIcon';
-import {
-  createExtendedItems,
-  getDisplayList,
-  sortExplorerItems,
-  sortItemsInline,
-} from './utils';
 import { FileExplorerItemList } from './FileExplorerItemList';
 import { NewDirectoryIcon } from './icons/NewDirectoryIcon';
 import { NewFileIcon } from './icons/NewFileIcon';
-import {
-  DirectoryItemType,
-  ExplorerItemType,
-  ExplorerItemTypeExtended,
-  NewFileType,
-  WritableFileItem,
-} from './types';
 import { doFn } from '../../common/helper';
-import { AddNewElementValues } from 'src/types';
+import { TreeNode, TreeNodeType } from 'src/types';
+import { FileTreeHelper, getVisibleNodes } from 'src/common/tree';
 
 interface FileExplorerProps {
-  items: ExplorerItemType[];
+  items: TreeNode[];
   onOpenFile: (id: string) => void;
   onRename: (id: string, name: string) => void;
-  onNewFile: (values: AddNewElementValues) => void;
+  onNewFile: (node: TreeNode) => void;
   onRemoved: (id: string) => void;
 }
 
 interface State {
   hasFocus: boolean;
-  items: ExplorerItemType[];
   activeItemId: string | null;
   navigationActiveItemId: string | null;
   expandedDirectories: Record<string, boolean>;
@@ -47,30 +35,12 @@ interface Actions {
   setActive: (id: string) => void;
   removeItem: (id: string) => void;
   updateItemName: (id: string, name: string) => void;
-  addNew: (type: NewFileType, name: string, parentId: string | null) => void;
+  addNew: (type: TreeNodeType, name: string, parentId: string | null) => void;
   registerItem: (id: string, api: ItemAPI | null) => void;
   openFile: (id: string) => void;
 }
 
 const [Provider, useContext] = createModuleContext<State, Actions>();
-
-function _findItem(
-  id: string,
-  items: WritableFileItem[]
-): { items: WritableFileItem[]; item: WritableFileItem } {
-  for (const item of items) {
-    if (item.id === id) {
-      return { items, item };
-    }
-    if (item.type === 'directory') {
-      const ret = _findItem(id, item.content);
-      if (ret) {
-        return ret;
-      }
-    }
-  }
-  return null!;
-}
 
 export function FileExplorer(props: FileExplorerProps) {
   const {
@@ -78,19 +48,18 @@ export function FileExplorer(props: FileExplorerProps) {
     onNewFile,
     onRemoved: onElementRemoved,
     onRename,
+    items,
   } = props;
   const [state, setState] = useImmer<State>({
     hasFocus: false,
-    items: React.useMemo(() => sortExplorerItems(props.items), []),
     activeItemId: null,
     navigationActiveItemId: null,
     expandedDirectories: {},
   });
   const wrapperRef = React.useRef<HTMLDivElement>(null!);
   const itemApiRef = React.useRef<Record<string, ItemAPI>>({});
-  const [isAdding, setIsAdding] = React.useState<NewFileType | null>(null);
-  const { activeItemId, navigationActiveItemId, expandedDirectories, items } =
-    state;
+  const [isAdding, setIsAdding] = React.useState<TreeNodeType | null>(null);
+  const { activeItemId, navigationActiveItemId, expandedDirectories } = state;
   const actions = useActions<Actions>({
     registerItem: (id, api) => {
       if (api) {
@@ -115,24 +84,6 @@ export function FileExplorer(props: FileExplorerProps) {
     },
     addNew: (type, name, parentId) => {
       const id = uuid.v4();
-      setState(draft => {
-        const newItem =
-          type === 'directory'
-            ? {
-                type,
-                name,
-                id,
-                content: [],
-              }
-            : { type, name, id };
-        let rootItems = draft.items;
-        if (parentId) {
-          const parent = _findItem(parentId, draft.items).item;
-          rootItems = (parent as DirectoryItemType).content;
-        }
-        rootItems.push(newItem);
-        sortItemsInline(rootItems);
-      });
       onNewFile({
         id,
         name,
@@ -141,15 +92,10 @@ export function FileExplorer(props: FileExplorerProps) {
       });
     },
     removeItem: id => {
-      setState(draft => {
-        const { item, items } = _findItem(id, draft.items);
-        items.splice(items.indexOf(item), 1);
-      });
       onElementRemoved(id);
     },
     updateItemName: (id, name) => {
       setState(draft => {
-        _findItem(id, draft.items).item.name = name;
         draft.activeItemId = id;
         draft.navigationActiveItemId = id;
       });
@@ -159,25 +105,15 @@ export function FileExplorer(props: FileExplorerProps) {
       onOpenFile(id);
     },
   });
-  const extendedItems = React.useMemo(() => {
-    return createExtendedItems(items);
+  const recNodes = React.useMemo(() => {
+    return new FileTreeHelper(items).buildRecTree();
   }, [items]);
   const itemMap = React.useMemo(() => {
-    const itemMap: Record<string, ExplorerItemType> = {};
-    const indexItems = (items: ExplorerItemTypeExtended[]) => {
-      items.forEach(item => {
-        itemMap[item.id] = item;
-        if (item.type === 'directory') {
-          indexItems(item.content);
-        }
-      });
-    };
-    indexItems(extendedItems);
-    return itemMap;
-  }, [extendedItems]);
+    return R.indexBy(items, x => x.id);
+  }, [items]);
   const displayList = React.useMemo(() => {
-    return getDisplayList(items, expandedDirectories);
-  }, [items, expandedDirectories]);
+    return getVisibleNodes(recNodes, expandedDirectories);
+  }, [recNodes, expandedDirectories]);
 
   return (
     <Provider state={state} actions={actions}>
@@ -300,7 +236,7 @@ export function FileExplorer(props: FileExplorerProps) {
               setIsAdding(null);
             }}
             nestedLevel={0}
-            items={items}
+            items={recNodes}
           />
         </div>
       </div>

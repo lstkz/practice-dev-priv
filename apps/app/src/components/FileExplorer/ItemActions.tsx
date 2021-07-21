@@ -6,17 +6,17 @@ import { EditIcon } from './icons/EditIcon';
 import { NewDirectoryIcon } from './icons/NewDirectoryIcon';
 import { TrashIcon } from './icons/TrashIcon';
 import { NewFileIcon } from './icons/NewFileIcon';
-import { ExplorerItemType, NewFileType } from './types';
+import { RecTreeNode, TreeNodeType } from 'src/types';
 
 interface ItemActionsProps {
   css?: CSSProp;
   className?: string;
-  item: ExplorerItemType;
-  setIsAdding: (type: NewFileType) => void;
+  item: RecTreeNode;
+  setIsAdding: (type: TreeNodeType) => void;
   onEdit: () => void;
 }
 
-export function confirmItemDelete(item: ExplorerItemType) {
+export function confirmItemDelete(item: RecTreeNode) {
   return confirm(`Are you sure you want to delete "${item.name}"?`);
 }
 

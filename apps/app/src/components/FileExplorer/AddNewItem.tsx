@@ -1,12 +1,12 @@
 import React from 'react';
+import { TreeNode } from 'src/types';
 import { ItemPrefixIcons } from './ItemPrefixIcons';
 import { NameInput } from './NameInput';
-import { NewFileType } from './types';
 
 interface AddNewItemProps {
   nestedLevel: number;
-  type: NewFileType;
-  onNewAdded: (type: NewFileType, name: string) => void;
+  type: TreeNode['type'];
+  onNewAdded: (type: TreeNode['type'], name: string) => void;
   onNewCancelled: () => void;
 }
 

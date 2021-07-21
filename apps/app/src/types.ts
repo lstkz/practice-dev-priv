@@ -28,6 +28,8 @@ export interface DirectoryNode extends BaseNode {
   type: 'directory';
 }
 
+export type TreeNodeType = TreeNode['type'];
+
 export type RecTreeNode = FileNode | RecDirectoryNode;
 
 export interface RecDirectoryNode extends DirectoryNode {

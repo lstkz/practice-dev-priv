@@ -1,11 +1,11 @@
 import React from 'react';
+import { TreeNodeType } from 'src/types';
 import { ExpandedIcon } from './icons/ExpandedIcon';
 import { FileIcon } from './icons/FileIcon';
 import { FolderIcon } from './icons/FolderIcon';
-import { NewFileType } from './types';
 
 interface ItemPrefixIconsProps {
-  type: NewFileType;
+  type: TreeNodeType;
   name: string;
   isExpanded?: boolean;
 }

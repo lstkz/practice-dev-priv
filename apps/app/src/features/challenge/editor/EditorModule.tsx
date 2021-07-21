@@ -6,8 +6,8 @@ import { CodeEditor } from 'src/components/CodeEditor/CodeEditor';
 import { FileService } from './FileService';
 import { EditorStateService } from './EditorStateService';
 import { TreeNode } from 'src/types';
-import { FileTreeHelper } from './FileTreeHelper';
 import { doFn } from 'src/common/helper';
+import { FileTreeHelper } from 'src/common/tree';
 
 interface Actions {
   load: (container: HTMLDivElement) => void;
@@ -194,6 +194,7 @@ export function EditorModule(props: EditorModuleProps) {
         if (!draft.activeTabId && draft.tabs.length) {
           draft.activeTabId = draft.tabs[0].id;
         }
+        draft.nodes = draft.nodes.filter(x => !removedMap[x.id]);
       });
       codeEditor.openFile(getState().activeTabId);
       syncTabs();
