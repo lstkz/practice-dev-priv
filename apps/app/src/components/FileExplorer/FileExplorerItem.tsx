@@ -25,6 +25,7 @@ export function FileExplorerItem(props: FileExplorerItemProps) {
     navigationActiveItemId,
     expandedDirectories,
     hasFocus,
+    lockedNodesMap,
   } = useFileExplorerState();
   const {
     toggleDirectoryExpanded,
@@ -155,6 +156,7 @@ export function FileExplorerItem(props: FileExplorerItemProps) {
             item={item}
             setIsAdding={setIsAdding}
             onEdit={startEdit}
+            locked={lockedNodesMap[item.id]}
           />
         )}
       </Wrapper>

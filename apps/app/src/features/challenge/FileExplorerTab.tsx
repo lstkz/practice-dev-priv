@@ -10,6 +10,9 @@ export function FileExplorerTab() {
   }
   return (
     <FileExplorer
+      lockedNodesMap={{
+        1: true,
+      }}
       items={nodes}
       onOpenFile={openFile}
       onNewFile={addNew}
