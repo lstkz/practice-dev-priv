@@ -8,6 +8,7 @@ import { EditorStateService } from './EditorStateService';
 import { TreeNode } from 'src/types';
 import { doFn } from 'src/common/helper';
 import { FileTreeHelper } from 'src/common/tree';
+import { usePreventEditorNavigation } from './usePreventEditorNavigation';
 
 interface Actions {
   load: (container: HTMLDivElement) => void;
@@ -223,6 +224,7 @@ export function EditorModule(props: EditorModuleProps) {
     },
   });
 
+  usePreventEditorNavigation(state.dirtyMap);
   React.useEffect(() => {
     return () => {
       codeEditor.dispose();
