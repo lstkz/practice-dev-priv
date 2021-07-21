@@ -32,6 +32,9 @@ const Wrapper = styled.div`
       color: #dcdcdc;
     }
   }
+  .monaco-mouse-cursor-text {
+    box-shadow: none;
+  }
 `;
 
 export function EditorWrapper() {
