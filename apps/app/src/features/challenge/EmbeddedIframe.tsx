@@ -9,5 +9,5 @@ export function EmbeddedIframe() {
     registerPreviewIFrame(iframeRef.current);
   }, []);
 
-  return <iframe ref={iframeRef}></iframe>;
+  return <iframe src="http://localhost:4010" ref={iframeRef}></iframe>;
 }

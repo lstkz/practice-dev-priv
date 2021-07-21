@@ -12,6 +12,7 @@
   "workspaces": [
     "apps/api",
     "apps/app",
+    "apps/iframe",
     "packages/*"
   ],
   "dependencies": {

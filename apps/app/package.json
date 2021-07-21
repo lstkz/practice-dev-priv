@@ -9,7 +9,7 @@
     "test": "yarn run lint && yarn run tsc",
     "lint": "eslint . --ext .ts"
   },
-  "license": "MIT",
+  "license": "UNLICENSED",
   "dependencies": {
     "@apollo/client": "^3.3.13",
     "@apollo/react-components": "^4.0.0",

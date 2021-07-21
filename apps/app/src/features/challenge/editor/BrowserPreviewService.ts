@@ -5,6 +5,7 @@ export class BrowserPreviewService {
   private markLoaded: () => void = null!;
   private loadedPromise: Promise<void> = null!;
   private importMap: Record<string, string> = {};
+  private lastInjectedCode: string | null = null;
 
   constructor() {
     this.loadedPromise = new Promise<void>(resolve => {
@@ -15,6 +16,19 @@ export class BrowserPreviewService {
   load(iframe: HTMLIFrameElement) {
     this.iframe = iframe;
     this.markLoaded();
+
+    window.addEventListener('message', e => {
+      const { type } = e.data;
+      switch (type) {
+        case 'hard-reload': {
+          if (!this.iframe || !this.lastInjectedCode) {
+            return;
+          }
+          this.inject(this.lastInjectedCode);
+          break;
+        }
+      }
+    });
   }
 
   async waitForLoad() {
@@ -34,32 +48,13 @@ export class BrowserPreviewService {
   }
 
   inject(code: string) {
-    const body = this.iframe.contentDocument!.body;
-    if (!body.querySelector('#root')) {
-      this.iframe.contentDocument!.body.innerHTML = `<div id="root"></div>`;
-    }
-    const head = this.iframe.contentDocument!.head;
-    if (!head.querySelector('#__importmap')) {
-      const importScript = document.createElement('script');
-      importScript.setAttribute('type', 'importmap');
-      importScript.setAttribute('id', '__importmap');
-      importScript.innerHTML = JSON.stringify(
-        {
-          imports: this.importMap,
-        },
-        null,
-        2
-      );
-      head.append(importScript);
-    }
-    const existing = head.querySelector('#__app');
-    if (existing) {
-      existing.remove();
-    }
-    const script = document.createElement('script');
-    script.setAttribute('type', 'module');
-    script.setAttribute('id', '__app');
-    script.innerHTML = code;
-    head.append(script);
+    this.lastInjectedCode = code;
+    this.iframe.contentWindow!.postMessage(
+      {
+        type: 'inject',
+        payload: { code, importMap: this.importMap },
+      },
+      '*'
+    );
   }
 }
