@@ -16,9 +16,9 @@ export function RightCol() {
       <WebNavigator shallowHidden={rightSidebarTab !== 'preview'}>
         <EmbeddedIframe />
       </WebNavigator>
-      <WebNavigator shallowHidden={rightSidebarTab !== 'demo'}>
+      {/* <WebNavigator shallowHidden={rightSidebarTab !== 'demo'}>
         <EmbeddedIframe />
-      </WebNavigator>
+      </WebNavigator> */}
     </div>
   );
 }

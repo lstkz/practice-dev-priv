@@ -99,11 +99,12 @@ export class CodeEditor {
       const model = this.editor.getModel();
       if (model && this.activeId && this.dirtyMap[this.activeId]) {
         const content = model.getValue();
+        this.modelCommittedText[this.activeId] = content;
+        delete this.dirtyMap[this.activeId];
         this.emitter.emit('saved', {
           fileId: this.activeId,
           content,
         });
-        delete this.dirtyMap[this.activeId];
       }
     });
   }
@@ -132,6 +133,18 @@ export class CodeEditor {
     );
     this.models[file.id] = model;
     this.modelCommittedText[file.id] = file.source;
+  }
+
+  getFileMap() {
+    const map: Record<string, { code: string }> = {};
+    Object.keys(this.models).forEach(fileId => {
+      const model = this.models[fileId];
+      const content = this.modelCommittedText[fileId];
+      map[model.uri.path.substr(1)] = {
+        code: content,
+      };
+    });
+    return map;
   }
 
   focus() {
