@@ -28,12 +28,18 @@ export function FileExplorerItemList(props: FileExplorerItemListProps) {
     }
   });
   const renderItem = (item: RecTreeNode) => (
-    <FileExplorerItem nestedLevel={nestedLevel} item={item} key={item.id} />
+    <FileExplorerItem
+      folderItems={items}
+      nestedLevel={nestedLevel}
+      item={item}
+      key={item.id}
+    />
   );
   return (
     <>
       {isAdding === 'directory' && (
         <AddNewItem
+          folderItems={items}
           nestedLevel={nestedLevel}
           type={isAdding}
           onNewAdded={onNewAdded!}
@@ -43,6 +49,7 @@ export function FileExplorerItemList(props: FileExplorerItemListProps) {
       {directoryItems.map(renderItem)}
       {isAdding === 'file' && (
         <AddNewItem
+          folderItems={items}
           nestedLevel={nestedLevel}
           type={isAdding}
           onNewAdded={onNewAdded!}

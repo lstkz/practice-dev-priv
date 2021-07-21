@@ -6,8 +6,10 @@ import { confirmItemDelete, ItemActions } from './ItemActions';
 import { NameInput } from './NameInput';
 import { ItemPrefixIcons } from './ItemPrefixIcons';
 import { RecTreeNode, TreeNodeType } from 'src/types';
+import { checkDuplicated } from './utils';
 
 interface FileExplorerItemProps {
+  folderItems: RecTreeNode[];
   item: RecTreeNode;
   nestedLevel: number;
 }
@@ -17,7 +19,7 @@ const Wrapper = styled.div`
 `;
 
 export function FileExplorerItem(props: FileExplorerItemProps) {
-  const { item, nestedLevel } = props;
+  const { item, nestedLevel, folderItems } = props;
   const {
     activeItemId,
     navigationActiveItemId,
@@ -75,6 +77,16 @@ export function FileExplorerItem(props: FileExplorerItemProps) {
   const commitEdit = () => {
     const name = editName.trim();
     if (name && item.name !== name) {
+      if (
+        checkDuplicated({
+          type: item.type,
+          items: folderItems,
+          name,
+          excludeId: item.id,
+        })
+      ) {
+        return;
+      }
       updateItemName(item.id, name);
     }
     hideEdit();

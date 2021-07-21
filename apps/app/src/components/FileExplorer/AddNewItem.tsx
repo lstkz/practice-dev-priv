@@ -1,22 +1,32 @@
 import React from 'react';
-import { TreeNode } from 'src/types';
+import { RecTreeNode, TreeNodeType } from 'src/types';
 import { ItemPrefixIcons } from './ItemPrefixIcons';
 import { NameInput } from './NameInput';
+import { checkDuplicated } from './utils';
 
 interface AddNewItemProps {
+  folderItems: RecTreeNode[];
   nestedLevel: number;
-  type: TreeNode['type'];
-  onNewAdded: (type: TreeNode['type'], name: string) => void;
+  type: TreeNodeType;
+  onNewAdded: (type: TreeNodeType, name: string) => void;
   onNewCancelled: () => void;
 }
 
 export function AddNewItem(props: AddNewItemProps) {
-  const { type, onNewAdded, onNewCancelled, nestedLevel } = props;
+  const { type, onNewAdded, onNewCancelled, nestedLevel, folderItems } = props;
   const [value, setValue] = React.useState('');
   const commit = () => {
     const name = value.trim();
     if (name) {
-      onNewAdded(type, name);
+      if (
+        !checkDuplicated({
+          type,
+          items: folderItems,
+          name,
+        })
+      ) {
+        onNewAdded(type, name);
+      }
     } else {
       onNewCancelled();
     }

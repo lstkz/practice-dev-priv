@@ -43,13 +43,7 @@ interface Actions {
 const [Provider, useContext] = createModuleContext<State, Actions>();
 
 export function FileExplorer(props: FileExplorerProps) {
-  const {
-    onOpenFile,
-    onNewFile,
-    onRemoved: onElementRemoved,
-    onRename,
-    items,
-  } = props;
+  const { onOpenFile, onNewFile, onRemoved, onRename, items } = props;
   const [state, setState] = useImmer<State>({
     hasFocus: false,
     activeItemId: null,
@@ -92,7 +86,7 @@ export function FileExplorer(props: FileExplorerProps) {
       });
     },
     removeItem: id => {
-      onElementRemoved(id);
+      onRemoved(id);
     },
     updateItemName: (id, name) => {
       setState(draft => {
