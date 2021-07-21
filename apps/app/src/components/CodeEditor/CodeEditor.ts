@@ -161,6 +161,20 @@ export class CodeEditor {
     this.activeId = fileId;
   }
 
+  changeFilePath(fileId: string, path: string) {
+    const currentModel = this.models[fileId];
+    const model = this.monaco.editor.createModel(
+      currentModel.getValue(),
+      'typescript',
+      this.monaco.Uri.parse(path)
+    );
+    this.models[fileId] = model;
+    if (this.activeId === fileId) {
+      this.editor.setModel(model);
+    }
+    currentModel.dispose();
+  }
+
   dispose() {
     this.highlighter.dispose();
     this.monaco.editor.getModels().forEach(model => model.dispose());

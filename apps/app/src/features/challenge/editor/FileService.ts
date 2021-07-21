@@ -1,55 +1,63 @@
 import * as R from 'remeda';
-import { AddNewElementValues } from 'src/types';
+import { FileNode, NodeId, TreeNode } from 'src/types';
 
-const testFiles: Record<number, ElementInfo[]> = {
+const testContent: Record<NodeId, string> = {
+  1: `
+  import React from "react";
+  import ReactDOM from "react-dom";
+  
+  function App() {
+    const [count, setCount] = React.useState(0);
+    return (
+      <div>
+        <h2>
+          Count: <span data-test="count">{count}</span>
+        </h2>
+        <button
+          data-test="increase-btn"
+          onClick={() => {
+            setCount(count + 1);
+          }}
+        >
+          increase
+        </button>
+      </div>
+    );
+  }
+  
+  const rootElement = document.getElementById("root")!;
+  ReactDOM.unmountComponentAtNode(rootElement);
+  
+  ReactDOM.render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>,
+    rootElement
+  );
+`.trimStart(),
+  2: `
+export function getFoo() {
+  return 0;
+}
+  `.trimStart(),
+  4: `
+export function Button() {
+  return <button>foo</button>;
+}
+`.trimStart(),
+};
+
+const testFiles: Record<number, TreeNode[]> = {
   1: [
     {
       id: '1',
       type: 'file',
       name: 'index.tsx',
-      content: `
-import React from "react";
-import ReactDOM from "react-dom";
-
-function App() {
-  const [count, setCount] = React.useState(0);
-  return (
-    <div>
-      <h2>
-        Count: <span data-test="count">{count}</span>
-      </h2>
-      <button
-        data-test="increase-btn"
-        onClick={() => {
-          setCount(count + 1);
-        }}
-      >
-        increase
-      </button>
-    </div>
-  );
-}
-
-const rootElement = document.getElementById("root")!;
-ReactDOM.unmountComponentAtNode(rootElement);
-
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  rootElement
-);
-`.trimStart(),
     },
     {
       id: '2',
       type: 'file',
       name: 'foo.ts',
-      content: `
-export function getFoo() {
-  return 0;
-}
-`.trimStart(),
     },
     {
       id: '3',
@@ -61,114 +69,113 @@ export function getFoo() {
       type: 'file',
       name: 'Button.tsx',
       parentId: '3',
-      content: `
-export function Button() {
-return <button>foo</button>;
-}
-`.trimStart(),
     },
   ],
 };
 
-export interface FileInfo {
-  id: string;
-  type: 'file';
-  name: string;
-  content: string;
-  parentId?: string | null;
-}
-
-export interface DirectoryInfo {
-  id: string;
-  type: 'directory';
-  name: string;
-  parentId?: string | null;
-}
-
-export type ElementInfo = FileInfo | DirectoryInfo;
-
 export class FileService {
-  elementMap: Record<string, ElementInfo> = {};
-  elementIds: Set<string> = new Set();
+  private nodeMap: Record<string, TreeNode> = {};
+  private nodeIds: Set<string> = new Set();
 
   constructor(private challengeId: number) {}
 
-  async loadElements() {
-    const baseElements = testFiles[this.challengeId];
-    const localElements = this.getLocalElements();
-    localElements.forEach(item => {
-      this.elementIds.add(item.id);
+  async loadNodes() {
+    const baseNodes = testFiles[this.challengeId];
+    const localNodes = this.getLocalNodes();
+    localNodes.forEach(item => {
+      this.nodeIds.add(item.id);
     });
-    const localElementMap = R.indexBy(localElements, x => x.id);
-    const ret: ElementInfo[] = [...localElements];
-    baseElements.forEach(file => {
+    const localElementMap = R.indexBy(localNodes, x => x.id);
+    const ret: TreeNode[] = [...localNodes];
+    baseNodes.forEach(file => {
       if (!localElementMap[file.id]) {
         ret.push(file);
       }
     });
-    this.elementMap = R.indexBy(ret, x => x.id);
+    this.nodeMap = R.indexBy(ret, x => x.id);
     return ret.map(R.clone);
   }
 
-  async saveFile(id: string, content: string) {
-    const file = this.elementMap[id];
+  async loadFileContent(id: NodeId): Promise<string> {
+    const content = localStorage[this.getFileContentKey(id)];
+    if (content != null) {
+      return content;
+    }
+    return testContent[id] ?? '';
+  }
+
+  async saveFile(id: NodeId, content: string) {
+    this.getFileById(id);
+    this.nodeIds.add(id);
+    this.updateNode(id);
+    this.updateIds();
+    this.updateFileContent(id, content);
+  }
+
+  renameNode(id: NodeId, name: string) {
+    const node = this.nodeMap[id];
+    node.name = name;
+    this.nodeIds.add(id);
+    this.updateNode(id);
+    this.updateIds();
+  }
+
+  addNew(values: TreeNode) {
+    this.nodeMap[values.id] = values;
+    this.nodeIds.add(values.id);
+    this.updateNode(values.id);
+    this.updateIds();
+    return R.clone(this.nodeMap[values.id]);
+  }
+
+  removeMultiple(ids: NodeId[]) {
+    ids.forEach(id => {
+      delete this.nodeMap[id];
+      this.updateNode(id);
+      this.nodeIds.delete(id);
+      delete localStorage[this.getFileContentKey(id)];
+    });
+    this.updateIds();
+  }
+
+  private getFileById(id: NodeId) {
+    const file = this.nodeMap[id];
     if (!file) {
       throw new Error("Can't find file: " + id);
     }
     if (file.type !== 'file') {
       throw new Error('Not a file');
     }
-    file.content = content;
-    this.elementIds.add(id);
-    this.updateFile(id);
-    this.updateIds();
+    return file;
   }
 
-  addNew(values: AddNewElementValues) {
-    if (values.type === 'file') {
-      this.elementMap[values.id] = {
-        ...values,
-        content: '',
-      } as FileInfo;
-    } else {
-      this.elementMap[values.id] = values as DirectoryInfo;
-    }
-    this.elementIds.add(values.id);
-    this.updateFile(values.id);
-    this.updateIds();
-    return R.clone(this.elementMap[values.id]);
-  }
-
-  removeMultiple(ids: string[]) {
-    ids.forEach(id => {
-      delete this.elementMap[id];
-      this.updateFile(id);
-      this.elementIds.delete(id);
-    });
-    this.updateIds();
+  private updateFileContent(id: NodeId, content: string) {
+    localStorage[this.getFileContentKey(id)] = content;
   }
 
   private updateIds() {
     localStorage[this.getChallengeKey()] = JSON.stringify(
-      Array.from(this.elementIds.values())
+      Array.from(this.nodeIds.values())
     );
   }
 
-  private updateFile(id: string) {
-    localStorage[this.getFileElementKey(id)] = JSON.stringify(
-      this.elementMap[id]
-    );
+  private updateNode(id: NodeId) {
+    localStorage[this.getFileNodeKey(id)] = JSON.stringify(this.nodeMap[id]);
   }
 
   private getChallengeKey() {
     return `challenge_elements_${this.challengeId}`;
   }
 
-  private getFileElementKey(id: string) {
+  private getFileNodeKey(id: NodeId) {
     return `${this.getChallengeKey()}_${id}`;
   }
 
-  private getLocalElementIds() {
+  private getFileContentKey(id: NodeId) {
+    return `${this.getChallengeKey()}_${id}_content`;
+  }
+
+  private getLocalNodeIds() {
     try {
       const ids: string[] = JSON.parse(localStorage[this.getChallengeKey()]);
       if (!Array.isArray(ids)) {
@@ -179,16 +186,14 @@ export class FileService {
       return [];
     }
   }
-  private getLocalElements() {
-    const ids = this.getLocalElementIds();
-    return ids.map(id => this.getLocalElement(id)!).filter(x => x);
+  private getLocalNodes() {
+    const ids = this.getLocalNodeIds();
+    return ids.map(id => this.getLocalNode(id)!).filter(x => x);
   }
-  private getLocalElement(id: string) {
+  private getLocalNode(id: string) {
     try {
-      const element: ElementInfo = JSON.parse(
-        localStorage[this.getFileElementKey(id)]
-      );
-      return element;
+      const node: FileNode = JSON.parse(localStorage[this.getFileNodeKey(id)]);
+      return node;
     } catch (e) {
       return null;
     }

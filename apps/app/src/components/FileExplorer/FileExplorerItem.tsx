@@ -2,13 +2,13 @@ import React from 'react';
 import { useFileExplorerActions, useFileExplorerState } from './FileExplorer';
 import { FileExplorerItemList } from './FileExplorerItemList';
 import tw, { styled } from 'twin.macro';
-import { ExplorerItemType, NewFileType } from './types';
 import { confirmItemDelete, ItemActions } from './ItemActions';
 import { NameInput } from './NameInput';
 import { ItemPrefixIcons } from './ItemPrefixIcons';
+import { RecTreeNode, TreeNodeType } from 'src/types';
 
 interface FileExplorerItemProps {
-  item: ExplorerItemType;
+  item: RecTreeNode;
   nestedLevel: number;
 }
 
@@ -36,7 +36,7 @@ export function FileExplorerItem(props: FileExplorerItemProps) {
   const style = {
     paddingLeft: nestedLevel + 'rem',
   };
-  const [isAdding, setIsAdding] = React.useState<NewFileType | null>(null);
+  const [isAdding, setIsAdding] = React.useState<TreeNodeType | null>(null);
   const [isEdit, setIsEdit] = React.useState(false);
   const [editName, setEditName] = React.useState('');
   const isActive = item.id === activeItemId;
@@ -74,7 +74,7 @@ export function FileExplorerItem(props: FileExplorerItemProps) {
   const isExpanded = expandedDirectories[item.id];
   const commitEdit = () => {
     const name = editName.trim();
-    if (name) {
+    if (name && item.name !== name) {
       updateItemName(item.id, name);
     }
     hideEdit();
@@ -88,6 +88,9 @@ export function FileExplorerItem(props: FileExplorerItemProps) {
         style={style}
         className="group"
         onClick={() => {
+          if (isEdit) {
+            return;
+          }
           if (item.type === 'directory') {
             toggleDirectoryExpanded(item.id);
           }
@@ -147,7 +150,7 @@ export function FileExplorerItem(props: FileExplorerItemProps) {
         <FileExplorerItemList
           isAdding={isAdding}
           nestedLevel={nestedLevel + 1}
-          items={item.content}
+          items={item.children}
           onNewAdded={(type, name) => {
             addNew(type, name, item.id);
             setIsAdding(null);

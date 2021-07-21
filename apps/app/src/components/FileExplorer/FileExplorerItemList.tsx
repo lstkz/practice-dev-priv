@@ -1,20 +1,25 @@
 import React from 'react';
+import {
+  FileNode,
+  RecDirectoryNode,
+  RecTreeNode,
+  TreeNodeType,
+} from 'src/types';
 import { AddNewItem } from './AddNewItem';
 import { FileExplorerItem } from './FileExplorerItem';
-import { ExplorerItemType, NewFileType } from './types';
 
 interface FileExplorerItemListProps {
-  items: ExplorerItemType[];
+  items: RecTreeNode[];
   nestedLevel: number;
-  isAdding?: NewFileType | null;
-  onNewAdded?: (type: NewFileType, name: string) => void;
+  isAdding?: TreeNodeType | null;
+  onNewAdded?: (type: TreeNodeType, name: string) => void;
   onNewCancelled?: () => void;
 }
 
 export function FileExplorerItemList(props: FileExplorerItemListProps) {
   const { items, nestedLevel, isAdding, onNewAdded, onNewCancelled } = props;
-  const fileItems: ExplorerItemType[] = [];
-  const directoryItems: ExplorerItemType[] = [];
+  const fileItems: FileNode[] = [];
+  const directoryItems: RecDirectoryNode[] = [];
   items.forEach(item => {
     if (item.type === 'file') {
       fileItems.push(item);
@@ -22,7 +27,7 @@ export function FileExplorerItemList(props: FileExplorerItemListProps) {
       directoryItems.push(item);
     }
   });
-  const renderItem = (item: ExplorerItemType) => (
+  const renderItem = (item: RecTreeNode) => (
     <FileExplorerItem nestedLevel={nestedLevel} item={item} key={item.id} />
   );
   return (
