@@ -8,36 +8,36 @@ import { FileExplorer } from '../../components/FileExplorer/FileExplorer';
 import { useEditorActions, useEditorState } from './editor/EditorModule';
 
 export function FileExplorerTab() {
-  const { elements, isLoaded } = useEditorState();
-  const { openFile, addNew, removeElement, renameFile } = useEditorActions();
+  const { nodes, isLoaded } = useEditorState();
+  const { openFile, addNew, removeNode, renameNode } = useEditorActions();
   const items = React.useMemo(() => {
     if (!isLoaded) {
       return [];
     }
-    const mapped: ExplorerItemType[] = elements.map(elem => {
-      if (elem.type === 'file') {
+    const mapped: ExplorerItemType[] = nodes.map(node => {
+      if (node.type === 'file') {
         return {
-          id: elem.id,
+          id: node.id,
           type: 'file',
-          name: elem.name,
+          name: node.name,
         };
       }
       return {
-        id: elem.id,
+        id: node.id,
         type: 'directory',
-        name: elem.name,
+        name: node.name,
         content: [],
       };
     });
-    const elementMap = R.indexBy(elements, x => x.id);
+    const nodeMap = R.indexBy(nodes, x => x.id);
     const mappedMap = R.indexBy(mapped, x => x.id);
     mapped.forEach(item => {
-      const element = elementMap[item.id];
+      const element = nodeMap[item.id];
       if (element.parentId) {
         (mappedMap[element.parentId] as DirectoryItemType).content.push(item);
       }
     });
-    return mapped.filter(item => !elementMap[item.id].parentId);
+    return mapped.filter(item => !nodeMap[item.id].parentId);
   }, [isLoaded]);
   if (!isLoaded) {
     return null;
@@ -47,8 +47,8 @@ export function FileExplorerTab() {
       items={items}
       onOpenFile={openFile}
       onNewFile={addNew}
-      onElementRemoved={removeElement}
-      onRename={renameFile}
+      onRemoved={removeNode}
+      onRename={renameNode}
     />
   );
 }

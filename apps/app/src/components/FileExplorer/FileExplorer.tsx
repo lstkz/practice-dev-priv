@@ -26,7 +26,7 @@ interface FileExplorerProps {
   onOpenFile: (id: string) => void;
   onRename: (id: string, name: string) => void;
   onNewFile: (values: AddNewElementValues) => void;
-  onElementRemoved: (id: string) => void;
+  onRemoved: (id: string) => void;
 }
 
 interface State {
@@ -73,7 +73,12 @@ function _findItem(
 }
 
 export function FileExplorer(props: FileExplorerProps) {
-  const { onOpenFile, onNewFile, onElementRemoved, onRename } = props;
+  const {
+    onOpenFile,
+    onNewFile,
+    onRemoved: onElementRemoved,
+    onRename,
+  } = props;
   const [state, setState] = useImmer<State>({
     hasFocus: false,
     items: React.useMemo(() => sortExplorerItems(props.items), []),

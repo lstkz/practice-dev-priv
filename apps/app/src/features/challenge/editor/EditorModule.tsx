@@ -3,9 +3,9 @@ import * as R from 'remeda';
 import { createModuleContext, useActions, useImmer } from 'context-api';
 import React from 'react';
 import { CodeEditor } from 'src/components/CodeEditor/CodeEditor';
-import { ElementInfo, FileInfo, FileService } from './FileService';
+import { FileService } from './FileService';
 import { EditorStateService } from './EditorStateService';
-import { AddNewElementValues } from 'src/types';
+import { TreeNode } from 'src/types';
 import { FileTreeHelper } from './FileTreeHelper';
 import { doFn } from 'src/common/helper';
 
@@ -13,9 +13,9 @@ interface Actions {
   load: (container: HTMLDivElement) => void;
   openFile: (id: string) => void;
   closeFile: (id: string) => void;
-  addNew: (values: AddNewElementValues) => void;
-  removeElement: (id: string) => void;
-  renameFile: (id: string, name: string) => void;
+  addNew: (values: TreeNode) => void;
+  removeNode: (id: string) => void;
+  renameNode: (id: string, name: string) => void;
 }
 
 interface OpenedTab {
@@ -26,7 +26,7 @@ interface OpenedTab {
 interface State {
   activeTabId: string | null;
   isLoaded: boolean;
-  elements: ElementInfo[];
+  nodes: TreeNode[];
   tabs: OpenedTab[];
   dirtyMap: Record<string, boolean>;
 }
@@ -44,7 +44,7 @@ export function EditorModule(props: EditorModuleProps) {
     {
       activeTabId: null,
       isLoaded: false,
-      elements: [],
+      nodes: [],
       tabs: [],
       dirtyMap: {},
     },
@@ -65,9 +65,9 @@ export function EditorModule(props: EditorModuleProps) {
     });
   };
 
-  const getElementById = (id: string) => {
-    const { elements } = getState();
-    return elements.find(x => x.id === id)!;
+  const getNodeById = (id: string) => {
+    const { nodes } = getState();
+    return nodes.find(x => x.id === id)!;
   };
 
   const actions = useActions<Actions>({
@@ -85,17 +85,19 @@ export function EditorModule(props: EditorModuleProps) {
         ),
       ]);
       const tabsState = editorStateService.loadTabsState();
-      const elements = await fileService.loadElements();
-      const pathHelper = new FileTreeHelper(elements);
-      elements.forEach(element => {
-        if (element.type === 'file') {
-          codeEditor.addFile({
-            id: element.id,
-            path: pathHelper.getPath(element.id),
-            source: element.content,
-          });
-        }
-      });
+      const nodes = await fileService.loadNodes();
+      const pathHelper = new FileTreeHelper(nodes);
+      await Promise.all(
+        nodes.map(async node => {
+          if (node.type === 'file') {
+            codeEditor.addFile({
+              id: node.id,
+              path: pathHelper.getPath(node.id),
+              source: await fileService.loadFileContent(node.id),
+            });
+          }
+        })
+      );
       codeEditor.addEventListener('modified', ({ fileId, hasChanges }) => {
         setState(draft => {
           if (hasChanges) {
@@ -116,13 +118,13 @@ export function EditorModule(props: EditorModuleProps) {
       }
       setState(draft => {
         draft.isLoaded = true;
-        draft.elements = elements;
+        draft.nodes = nodes;
         draft.tabs = tabsState.tabs;
         draft.activeTabId = tabsState.activeTabId;
       });
     },
     openFile: id => {
-      const file = getElementById(id) as FileInfo;
+      const file = getNodeById(id);
       setState(draft => {
         draft.activeTabId = id;
         if (!draft.tabs.some(x => x.id === id)) {
@@ -150,14 +152,14 @@ export function EditorModule(props: EditorModuleProps) {
       syncTabs();
     },
     addNew: values => {
-      const newElement = fileService.addNew(values);
+      const newNode = fileService.addNew(values);
       setState(draft => {
-        draft.elements.push(newElement);
+        draft.nodes.push(newNode);
       });
       if (values.type === 'directory') {
         return;
       }
-      const pathHelper = new FileTreeHelper(getState().elements);
+      const pathHelper = new FileTreeHelper(getState().nodes);
       codeEditor.addFile({
         id: values.id,
         path: pathHelper.getPath(values.id),
@@ -168,22 +170,22 @@ export function EditorModule(props: EditorModuleProps) {
         codeEditor.focus();
       });
     },
-    removeElement: id => {
-      const element = getElementById(id);
-      const elementsToRemove = doFn(() => {
-        if (element.type === 'directory') {
-          const treeHelper = new FileTreeHelper(getState().elements);
+    removeNode: id => {
+      const node = getNodeById(id);
+      const nodesToRemove = doFn(() => {
+        if (node.type === 'directory') {
+          const treeHelper = new FileTreeHelper(getState().nodes);
           return treeHelper.flattenDirectory(id);
         }
-        return [element];
+        return [node];
       });
-      fileService.removeMultiple(elementsToRemove.map(x => x.id));
-      elementsToRemove.forEach(element => {
-        if (element.type === 'file') {
-          codeEditor.removeFile(element.id);
+      fileService.removeMultiple(nodesToRemove.map(x => x.id));
+      nodesToRemove.forEach(node => {
+        if (node.type === 'file') {
+          codeEditor.removeFile(node.id);
         }
       });
-      const removedMap = R.indexBy(elementsToRemove, x => x.id);
+      const removedMap = R.indexBy(nodesToRemove, x => x.id);
       setState(draft => {
         if (draft.activeTabId && removedMap[draft.activeTabId]) {
           draft.activeTabId = null;
@@ -196,7 +198,7 @@ export function EditorModule(props: EditorModuleProps) {
       codeEditor.openFile(getState().activeTabId);
       syncTabs();
     },
-    renameFile: (id, name) => {
+    renameNode: (id, name) => {
       // TODO
     },
   });

@@ -1,41 +1,42 @@
 import * as R from 'remeda';
-import { ElementInfo } from './FileService';
+import { TreeNode } from 'src/types';
 
 export class FileTreeHelper {
-  private elementMap: Record<string, ElementInfo>;
-  constructor(private elements: ElementInfo[]) {
-    this.elementMap = R.indexBy(elements, x => x.id);
+  private nodeMap: Record<string, TreeNode>;
+
+  constructor(private nodes: TreeNode[]) {
+    this.nodeMap = R.indexBy(nodes, x => x.id);
   }
 
   getPath(id: string) {
-    let file = this.elementMap[id];
+    let file = this.nodeMap[id];
     const path = [file.name];
     while (file.parentId) {
-      file = this.elementMap[file.parentId];
+      file = this.nodeMap[file.parentId];
       path.unshift(file.name);
     }
     return './' + path.join('/');
   }
 
   flattenDirectory(id: string) {
-    const ret: ElementInfo[] = [];
-    const childrenMap: Record<string, ElementInfo[]> = {};
-    this.elements.forEach(element => {
-      if (element.parentId) {
-        if (!childrenMap[element.parentId]) {
-          childrenMap[element.parentId] = [];
+    const ret: TreeNode[] = [];
+    const childrenMap: Record<string, TreeNode[]> = {};
+    this.nodes.forEach(node => {
+      if (node.parentId) {
+        if (!childrenMap[node.parentId]) {
+          childrenMap[node.parentId] = [];
         }
-        childrenMap[element.parentId].push(element);
+        childrenMap[node.parentId].push(node);
       }
     });
-    const travel = (node: ElementInfo) => {
+    const travel = (node: TreeNode) => {
       ret.push(node);
       if (node.type === 'directory') {
         const children = childrenMap[node.id] ?? [];
         children.forEach(travel);
       }
     };
-    travel(this.elementMap[id]);
+    travel(this.nodeMap[id]);
     return ret;
   }
 }
