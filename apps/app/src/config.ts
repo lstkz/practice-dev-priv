@@ -4,6 +4,7 @@ export const API_URL = process.env.API_URL!;
 export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
 export const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID!;
 export const CDN_BASE_URL = process.env.CDN_BASE_URL!;
+export const IFRAME_ORIGIN = process.env.IFRAME_ORIGIN!;
 
 if (!API_URL) {
   throw new Error('API_URL is not set');
@@ -19,4 +20,8 @@ if (!GITHUB_CLIENT_ID) {
 
 if (!CDN_BASE_URL) {
   throw new Error('CDN_BASE_URL is not set');
+}
+
+if (!IFRAME_ORIGIN) {
+  throw new Error('IFRAME_ORIGIN is not set');
 }

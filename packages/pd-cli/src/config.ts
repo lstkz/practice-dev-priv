@@ -1,6 +1,6 @@
 import path from 'path';
 
-export const apps = ['api', 'app'];
+export const apps = ['api', 'app', 'iframe'];
 
 export const libs: string[] = [];
 export const rootApps: string[] = ['deploy'];

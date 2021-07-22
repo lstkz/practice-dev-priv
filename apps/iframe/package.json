@@ -2,8 +2,8 @@
   "name": "iframe",
   "version": "0.0.0",
   "scripts": {
-    "dev": "NODE_ENV=development webpack serve",
-    "build": "NODE_ENV=production webpack"
+    "dev": "ts-node -T --project ./node.tsconfig.json scripts/dev",
+    "build": "rm -rf ./build && ts-node -T --project ./node.tsconfig.json scripts/build"
   },
   "license": "UNLICENSED",
   "dependencies": {
