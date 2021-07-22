@@ -26,6 +26,11 @@ export interface AppConfig {
   web: {
     port: number;
   };
+  iframe: {
+    parentOrigin: string,
+    origin: string;
+    port?: number;
+  };
   mixpanel: {
     apiKey: string | -1;
   };

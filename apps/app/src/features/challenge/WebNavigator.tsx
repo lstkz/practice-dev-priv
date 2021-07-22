@@ -19,7 +19,9 @@ const IconButton = styled.button`
 export function WebNavigator(props: WebNavigatorProps) {
   const { children, shallowHidden } = props;
   return (
-    <div css={[tw`bg-gray-100 flex-1`, shallowHidden && tw`hidden`]}>
+    <div
+      css={[tw`bg-gray-100 flex-1 flex flex-col`, shallowHidden && tw`hidden`]}
+    >
       <div tw="shadow-md flex p-2 items-center space-x-2">
         <IconButton>
           <ArrowLeftIcon />
@@ -42,7 +44,7 @@ export function WebNavigator(props: WebNavigatorProps) {
           }}
         />
       </div>
-      {children}
+      <div tw="flex-1">{children}</div>
     </div>
   );
 }

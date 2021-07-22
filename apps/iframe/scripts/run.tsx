@@ -14,14 +14,8 @@ export function runScript(
     env: {
       ...process.env,
       NODE_ENV: nodeEnv,
-      PD_PUBLIC_MIXPANEL_API_KEY: config.mixpanel.apiKey.toString(),
-      PD_PUBLIC_BUGSNAG_API_KEY: config.bugsnag.frontKey.toString(),
-      PD_PUBLIC_GITHUB_CLIENT_ID: config.github.clientId,
-      PD_PUBLIC_GOOGLE_CLIENT_ID: config.google.clientId,
-      PD_PUBLIC_API_URL: config.apiBaseUrl,
-      PD_PUBLIC_PROTECTED_BASE_URL: config.apiBaseUrl,
-      PD_PUBLIC_CDN_BASE_URL: config.cdnBaseUrl,
-      PD_PUBLIC_IFRAME_ORIGIN: config.iframe.origin,
+      PORT: String(config.iframe.port ?? 4010),
+      PD_PUBLIC_PARENT_ORIGIN: config.iframe.parentOrigin.toString(), 
     },
   });
 

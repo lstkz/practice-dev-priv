@@ -5,6 +5,18 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const __DEV__ = process.env.NODE_ENV === 'development';
 const __PROD__ = process.env.NODE_ENV === 'production';
 
+function getEnv() {
+  const ret = {};
+  Object.keys(process.env).forEach(name => {
+    if (name.startsWith('PD_PUBLIC_')) {
+      ret['process.env.' + name.replace('PD_PUBLIC_', '')] = JSON.stringify(
+        process.env[name]
+      );
+    }
+  });
+  return ret;
+}
+
 module.exports = {
   mode: __DEV__ ? 'development' : 'production',
   target: 'web',
@@ -21,7 +33,7 @@ module.exports = {
   },
   devServer: {
     compress: true,
-    port: 4010,
+    port: process.env.PORT ?? 4010,
     hot: true,
     stats: 'errors-only',
     historyApiFallback: true,
@@ -43,6 +55,10 @@ module.exports = {
     ],
   },
   plugins: [
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+      ...getEnv(),
+    }),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       title: 'Your awesome app',
