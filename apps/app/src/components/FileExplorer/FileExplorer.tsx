@@ -144,6 +144,7 @@ export function FileExplorer(props: FileExplorerProps) {
                     draft.expandedDirectories[navigationActiveItemId] = true;
                   });
                 } else {
+                  actions.openFile(item.id);
                   setState(draft => {
                     draft.activeItemId = navigationActiveItemId;
                     draft.navigationActiveItemId = null;
