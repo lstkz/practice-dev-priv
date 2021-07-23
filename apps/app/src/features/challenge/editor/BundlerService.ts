@@ -25,6 +25,10 @@ export class BundlerService {
     });
   }
 
+  dispose() {
+    this.bundler.dispose();
+  }
+
   private async loadCodeAsync() {
     if (!this.inputFile) {
       throw new Error('inputFile not set');

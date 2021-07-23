@@ -11,3 +11,46 @@ export interface AuthData {
   user: User;
   token: string;
 }
+
+export type IframeMessage = {
+  type: 'inject';
+  payload: { code: string; importMap: Record<string, string> };
+};
+
+export type IframeCallbackMessage = {
+  target: 'preview';
+  type: 'hard-reload';
+};
+
+export type IframeNavigationMessage =
+  | {
+      target: 'navigation';
+      type: 'navigate';
+      payload: { url: string };
+    }
+  | {
+      target: 'navigation';
+      type: 'refresh';
+    }
+  | {
+      target: 'navigation';
+      type: 'go';
+      payload: { diff: number };
+    };
+
+export type IframeNavigationCallbackMessage =
+  | {
+      target: 'navigation';
+      type: 'navigated';
+      payload: { url: string };
+    }
+  | {
+      target: 'navigation';
+      type: 'replaced';
+      payload: { url: string };
+    }
+  | {
+      target: 'navigation';
+      type: 'did-go';
+      payload: { diff: number };
+    };

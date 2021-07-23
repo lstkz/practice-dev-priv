@@ -1,3 +1,5 @@
+import { IframeCallbackMessage, IframeMessage } from 'shared';
+import { IFRAME_ORIGIN } from 'src/config';
 import { LibraryDep } from 'src/types';
 
 export class BrowserPreviewService {
@@ -6,6 +8,7 @@ export class BrowserPreviewService {
   private loadedPromise: Promise<void> = null!;
   private importMap: Record<string, string> = {};
   private lastInjectedCode: string | null = null;
+  private onMessage: (e: MessageEvent<any>) => void = null!;
 
   constructor() {
     this.loadedPromise = new Promise<void>(resolve => {
@@ -16,10 +19,15 @@ export class BrowserPreviewService {
   load(iframe: HTMLIFrameElement) {
     this.iframe = iframe;
     this.markLoaded();
-
-    window.addEventListener('message', e => {
-      const { type } = e.data;
-      switch (type) {
+    this.onMessage = e => {
+      if (e.origin !== IFRAME_ORIGIN) {
+        return;
+      }
+      const action = e.data as IframeCallbackMessage;
+      if (action.target !== 'preview') {
+        return;
+      }
+      switch (action.type) {
         case 'hard-reload': {
           if (!this.iframe || !this.lastInjectedCode) {
             return;
@@ -28,7 +36,12 @@ export class BrowserPreviewService {
           break;
         }
       }
-    });
+    };
+    window.addEventListener('message', this.onMessage);
+  }
+
+  dispose() {
+    window.removeEventListener('message', this.onMessage);
   }
 
   async waitForLoad() {
@@ -49,12 +62,16 @@ export class BrowserPreviewService {
 
   inject(code: string) {
     this.lastInjectedCode = code;
-    this.iframe.contentWindow!.postMessage(
-      {
-        type: 'inject',
-        payload: { code, importMap: this.importMap },
-      },
-      '*'
-    );
+    this.sendMessage({
+      type: 'inject',
+      payload: { code, importMap: this.importMap },
+    });
+  }
+
+  private sendMessage(message: IframeMessage) {
+    if (!this.iframe.contentWindow) {
+      return;
+    }
+    this.iframe.contentWindow.postMessage(message, IFRAME_ORIGIN);
   }
 }
