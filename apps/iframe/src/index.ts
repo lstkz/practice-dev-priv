@@ -1,10 +1,24 @@
-console.log('iframe2');
+import { PARENT_ORIGIN } from './config';
+import {
+  IframeCallbackMessage,
+  IframeMessage,
+  IframeNavigationCallbackMessage,
+} from 'shared';
+import { createNavigationProxy } from './NavigationProxy';
+
+function sendMessage(
+  message: IframeCallbackMessage | IframeNavigationCallbackMessage
+) {
+  if (parent) {
+    parent.postMessage(message, PARENT_ORIGIN);
+  }
+}
 
 window.addEventListener('message', e => {
-  if (e.origin !== 'http://localhost:4001') {
+  if (e.origin !== PARENT_ORIGIN) {
     return;
   }
-  const { type, payload } = e.data;
+  const { type, payload } = e.data as IframeMessage;
   switch (type) {
     case 'inject': {
       const { code, importMap } = payload;
@@ -41,13 +55,11 @@ window.addEventListener('message', e => {
   }
 });
 
-console.log(
-  parent.postMessage(
-    {
-      type: 'hard-reload',
-    },
-    '*'
-  )
-);
+sendMessage({
+  target: 'preview',
+  type: 'hard-reload',
+});
+
+createNavigationProxy();
 
 export {};

@@ -263,6 +263,8 @@ export function EditorModule(props: EditorModuleProps) {
   React.useEffect(() => {
     return () => {
       codeEditor.dispose();
+      browserPreviewService.dispose();
+      bundlerService.dispose();
     };
   }, []);
 
