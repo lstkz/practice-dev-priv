@@ -173,13 +173,25 @@ export function WebNavigator(props: WebNavigatorProps) {
           <input
             ref={urlInputRef}
             css={[
-              tw`h-6 rounded-md border-gray-300 flex-1 text-gray-600 flex-shrink min-w-0`,
+              tw`h-6 rounded-md border-gray-300 flex-1 text-gray-700 flex-shrink min-w-0 text-sm leading-none px-2 py-0`,
               tw`focus:( ring-0 outline-none border-gray-400 bg-gray-50 )`,
             ]}
             type="text"
             defaultValue="/"
-            onChange={() => {
-              //
+            onKeyPress={e => {
+              if (e.key === 'Enter') {
+                let value = (e.target as HTMLInputElement).value.trim();
+                if (value[0] !== '/') {
+                  value = '/' + value;
+                }
+                if (value !== currentUrl) {
+                  sendMessage({
+                    target: 'navigation',
+                    type: 'navigate',
+                    payload: { url: value },
+                  });
+                }
+              }
             }}
           />
         </div>
