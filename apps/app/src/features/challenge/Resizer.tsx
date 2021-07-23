@@ -7,17 +7,24 @@ interface ResizerProps {
   minWidth: number;
   maxWidth: number;
   updateSize: (size: number) => void;
+  onDragging?: (isDragging: boolean) => void;
 }
 
 export function Resizer(props: ResizerProps) {
-  const { type, x, updateSize } = props;
-  const [isDraggingLeft, setIsDraggingLeft] = React.useState(false);
+  const { type, x, updateSize, onDragging } = props;
+  const [isDragging, setIsDragging] = React.useState(false);
   const initialClientXRef = React.useRef(0);
   const initialXRef = React.useRef(0);
   const nodeRef = React.useRef<HTMLDivElement>(null);
 
+  React.useEffect(() => {
+    if (onDragging) {
+      onDragging(isDragging);
+    }
+  }, [isDragging, onDragging]);
+
   const initDragging = (clientX: number) => {
-    setIsDraggingLeft(true);
+    setIsDragging(true);
     initialClientXRef.current = clientX;
     initialXRef.current = x;
   };
@@ -25,7 +32,7 @@ export function Resizer(props: ResizerProps) {
   const getProps = useGetter(props);
 
   React.useEffect(() => {
-    if (!isDraggingLeft) {
+    if (!isDragging) {
       return undefined;
     }
 
@@ -46,7 +53,7 @@ export function Resizer(props: ResizerProps) {
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('touchmove', onMouseMove);
     const cleanup = (e?: Event) => {
-      setIsDraggingLeft(false);
+      setIsDragging(false);
       if (e) {
         e.preventDefault();
       }
@@ -57,7 +64,7 @@ export function Resizer(props: ResizerProps) {
     document.addEventListener('mouseup', cleanup);
     document.addEventListener('touchend', cleanup);
     return cleanup;
-  }, [isDraggingLeft]);
+  }, [isDragging]);
 
   return (
     <div
@@ -78,7 +85,7 @@ export function Resizer(props: ResizerProps) {
         transform: `translateX(${type === 'left' ? '-50%' : '50%'})`,
         top: 0,
         cursor: 'col-resize',
-        opacity: isDraggingLeft ? 1 : undefined,
+        opacity: isDragging ? 1 : undefined,
       }}
     />
   );

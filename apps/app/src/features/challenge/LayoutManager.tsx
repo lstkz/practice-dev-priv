@@ -44,6 +44,7 @@ export function LayoutManager(props: LayoutManagerProps) {
     width: 0,
     height: 1280,
   });
+  const [isDragging, setIsDragging] = React.useState(false);
   const [leftSize, setLeftSize] = React.useState(initialLeftSidebar);
   const [rightSize, setRightSize] = React.useState(initialRightSidebar);
   const getLeftSize = useGetter(leftSize);
@@ -116,11 +117,16 @@ export function LayoutManager(props: LayoutManagerProps) {
           minWidth={RIGHT_MIN}
           maxWidth={size.width - leftSize - MAIN_MIN}
           updateSize={setRightSize}
+          onDragging={setIsDragging}
         />
       )}
       <div
         css={[tw`h-full flex-shrink-0`, !hasRight && tw`overflow-hidden`]}
-        style={{ width: hasRight ? rightSize : 0, height: size.height }}
+        style={{
+          width: hasRight ? rightSize : 0,
+          height: size.height,
+          pointerEvents: isDragging ? 'none' : undefined,
+        }}
       >
         {React.useMemo(() => right, [right])}
       </div>
