@@ -8,6 +8,7 @@ export class BrowserPreviewService {
   private loadedPromise: Promise<void> = null!;
   private importMap: Record<string, string> = {};
   private lastInjectedCode: string | null = null;
+  private lastError: any | null = null;
   private onMessage: (e: MessageEvent<any>) => void = null!;
 
   constructor() {
@@ -29,10 +30,15 @@ export class BrowserPreviewService {
       }
       switch (action.type) {
         case 'hard-reload': {
-          if (!this.iframe || !this.lastInjectedCode) {
+          if (!this.iframe) {
             return;
           }
-          this.inject(this.lastInjectedCode);
+          if (this.lastInjectedCode) {
+            this.inject(this.lastInjectedCode);
+          }
+          if (this.lastError) {
+            this.showError(this.lastError);
+          }
           break;
         }
       }
@@ -61,10 +67,20 @@ export class BrowserPreviewService {
   }
 
   inject(code: string) {
+    this.lastError = null;
     this.lastInjectedCode = code;
     this.sendMessage({
       type: 'inject',
       payload: { code, importMap: this.importMap },
+    });
+  }
+
+  showError(error: any) {
+    this.lastError = error;
+    this.lastInjectedCode = null;
+    this.sendMessage({
+      type: 'error',
+      payload: { error },
     });
   }
 

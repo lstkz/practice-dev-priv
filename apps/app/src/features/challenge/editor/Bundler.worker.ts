@@ -1,28 +1,22 @@
 import * as Babel from '@babel/standalone';
 import { rollup } from 'rollup';
+import { BundlerAction, BundlerCallbackAction, SourceCode } from 'src/types';
 
 declare const self: Worker;
 
-export interface SourceCode {
-  code: string;
+function sendMessage(action: BundlerCallbackAction) {
+  self.postMessage(action);
 }
 
-export interface BundlerRequest {
+interface BuildSourceCodeOptions {
   input: string;
   modules: Record<string, SourceCode>;
-  version: number;
 }
 
-export interface BundlerResponse {
-  code: string;
-  version: number;
-}
-
-self.addEventListener('message', async event => {
-  const { input, version, modules } = event.data as BundlerRequest;
+async function buildSourceCode(options: BuildSourceCodeOptions) {
+  const { input, modules } = options;
   const extensions = ['.ts', '.tsx', '.js', '.jsx'];
-
-  const build = await rollup({
+  return rollup({
     input,
 
     plugins: [
@@ -64,21 +58,41 @@ self.addEventListener('message', async event => {
       },
     ],
   });
-  const { output } = await build.generate({
-    sourcemap: 'inline',
-    inlineDynamicImports: true,
-    format: 'es',
-  });
-  if (output.length !== 1) {
-    throw new Error('Expected single output, got: ' + output.length);
-  }
-  const code =
-    output[0].code + '\n//# sourceMappingURL=' + output[0].map!.toUrl();
+}
 
-  self.postMessage({
-    code,
-    version,
-  } as BundlerResponse);
+self.addEventListener('message', async event => {
+  const action = event.data as BundlerAction;
+  const { input, version, modules } = action.payload;
+
+  try {
+    const build = await buildSourceCode({ input, modules });
+    const { output } = await build.generate({
+      sourcemap: 'inline',
+      inlineDynamicImports: true,
+      format: 'es',
+    });
+    if (output.length !== 1) {
+      throw new Error('Expected single output, got: ' + output.length);
+    }
+    const code =
+      output[0].code + '\n//# sourceMappingURL=' + output[0].map!.toUrl();
+    sendMessage({
+      type: 'bundled',
+      payload: {
+        code,
+        version,
+      },
+    });
+  } catch (e) {
+    console.error('bundler error', e);
+    sendMessage({
+      type: 'error',
+      payload: {
+        error: e,
+        version,
+      },
+    });
+  }
 });
 
 export {};

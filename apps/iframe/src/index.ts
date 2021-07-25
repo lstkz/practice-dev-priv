@@ -14,14 +14,46 @@ function sendMessage(
   }
 }
 
+function showError(content: string) {
+  document.getElementById('__bundler-error')?.remove();
+  const container = document.createElement('div');
+  container.setAttribute('id', '__bundler-error');
+  container.textContent = content;
+  container.style.whiteSpace = 'pre';
+  container.style.fontFamily =
+    'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace';
+  container.style.fontSize = '12px';
+  container.style.background = '#FEF2F2';
+  container.style.color = '#DC2626';
+  container.style.position = 'fixed';
+  container.style.left = '0';
+  container.style.right = '0';
+  container.style.top = '0';
+  container.style.bottom = '0';
+  container.style.padding = '15px';
+  container.style.overflow = 'auto';
+
+  document.body.append(container);
+}
+
+window.addEventListener('error', function (event) {
+  showError(event.error.stack);
+});
+
 window.addEventListener('message', e => {
   if (e.origin !== PARENT_ORIGIN) {
     return;
   }
-  const { type, payload } = e.data as IframeMessage;
-  switch (type) {
+  const action = e.data as IframeMessage;
+  switch (action.type) {
+    case 'error': {
+      const { error } = action.payload;
+      showError(error.message);
+      break;
+    }
     case 'inject': {
-      const { code, importMap } = payload;
+      document.getElementById('__bundler-error')?.remove();
+      const { code, importMap } = action.payload;
       if (!document.body.querySelector('#root')) {
         const root = document.createElement('div');
         root.setAttribute('id', 'root');
