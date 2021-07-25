@@ -91,3 +91,32 @@ export interface Classification {
   end: number;
   scope: string;
 }
+
+export interface SourceCode {
+  code: string;
+}
+
+export interface BundlerAction {
+  type: 'bundle';
+  payload: {
+    input: string;
+    modules: Record<string, SourceCode>;
+    version: number;
+  };
+}
+
+export type BundlerCallbackAction =
+  | {
+      type: 'bundled';
+      payload: {
+        code: string;
+        version: number;
+      };
+    }
+  | {
+      type: 'error';
+      payload: {
+        error: string;
+        version: number;
+      };
+    };

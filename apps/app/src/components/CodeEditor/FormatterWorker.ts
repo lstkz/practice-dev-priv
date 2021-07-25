@@ -42,7 +42,6 @@ self.addEventListener('message', async event => {
         throw new Error('Not supported lang: ' + lang);
     }
   } catch (e) {
-    console.error('formatter worker error', e);
     sendMessage({
       type: 'error',
       payload: {

@@ -12,10 +12,15 @@ export interface AuthData {
   token: string;
 }
 
-export type IframeMessage = {
-  type: 'inject';
-  payload: { code: string; importMap: Record<string, string> };
-};
+export type IframeMessage =
+  | {
+      type: 'inject';
+      payload: { code: string; importMap: Record<string, string> };
+    }
+  | {
+      type: 'error';
+      payload: { error: any };
+    };
 
 export type IframeCallbackMessage = {
   target: 'preview';

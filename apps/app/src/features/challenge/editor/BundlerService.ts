@@ -21,7 +21,7 @@ export class BundlerService {
 
   loadCode() {
     this.loadCodeAsync().catch(e => {
-      console.error('failed to load code', e);
+      this.browserPreviewService.showError(e);
     });
   }
 

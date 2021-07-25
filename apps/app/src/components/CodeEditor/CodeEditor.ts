@@ -105,9 +105,12 @@ export class CodeEditor {
       if (!model || !activeId || !this.dirtyMap[activeId]) {
         return;
       }
-      this.editor
+      void this.editor
         .getAction('editor.action.formatDocument')
         .run()
+        .catch(() => {
+          // ignore
+        })
         .then(() => {
           const content = model.getValue();
           this.modelCommittedText[activeId] = content;
@@ -116,9 +119,6 @@ export class CodeEditor {
             fileId: activeId,
             content,
           });
-        })
-        .catch(e => {
-          console.log('formatting failed', e);
         });
     });
   }
