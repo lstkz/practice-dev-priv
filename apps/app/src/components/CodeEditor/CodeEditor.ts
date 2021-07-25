@@ -4,6 +4,7 @@ import DarkThemeNew from './dark-theme-new.json';
 import { Highlighter } from './Highlighter';
 import { Monaco } from '../../types';
 import { CallbackMap, EditorEventEmitter } from './EditorEventEmitter';
+import { Formatter } from './Formatter';
 
 export function createEditor(monaco: Monaco, wrapper: HTMLDivElement) {
   monaco.editor.defineTheme('myCustomTheme', {
@@ -60,6 +61,7 @@ interface EditorFile {
 export class CodeEditor {
   private editor: editor.IStandaloneCodeEditor = null!;
   private themer: Themer = null!;
+  private formatter: Formatter = null!;
   private highlighter: Highlighter = null!;
   private models: Record<string, editor.ITextModel> = {};
   private modelCommittedText: Record<string, string> = {};
@@ -75,6 +77,7 @@ export class CodeEditor {
     this.themer.loadTheme(DarkThemeNew as any);
     this.themer.injectStyles();
     this.highlighter = new Highlighter(monaco, this.editor, this.themer);
+    this.formatter = new Formatter(monaco);
     this.changeCommandKeybinding(
       'editor.action.triggerSuggest',
       monaco.KeyMod.CtrlCmd | monaco.KeyCode.Space
@@ -95,17 +98,28 @@ export class CodeEditor {
         }
       }
     });
+
     this.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, () => {
       const model = this.editor.getModel();
-      if (model && this.activeId && this.dirtyMap[this.activeId]) {
-        const content = model.getValue();
-        this.modelCommittedText[this.activeId] = content;
-        delete this.dirtyMap[this.activeId];
-        this.emitter.emit('saved', {
-          fileId: this.activeId,
-          content,
-        });
+      const activeId = this.activeId;
+      if (!model || !activeId || !this.dirtyMap[activeId]) {
+        return;
       }
+      this.editor
+        .getAction('editor.action.formatDocument')
+        .run()
+        .then(() => {
+          const content = model.getValue();
+          this.modelCommittedText[activeId] = content;
+          delete this.dirtyMap[activeId];
+          this.emitter.emit('saved', {
+            fileId: activeId,
+            content,
+          });
+        })
+        .catch(e => {
+          console.log('formatting failed', e);
+        });
     });
   }
 
@@ -196,6 +210,7 @@ export class CodeEditor {
 
   dispose() {
     this.highlighter.dispose();
+    this.formatter.dispose();
     this.monaco.editor.getModels().forEach(model => model.dispose());
   }
 

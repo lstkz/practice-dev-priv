@@ -1,7 +1,10 @@
 import type { editor } from 'monaco-editor';
 import { Themer } from './Themer';
-import { HighlighResult } from './HighlighterWorker';
-import { Monaco } from '../../types';
+import {
+  HighlighterAction,
+  HighlighterCallbackAction,
+  Monaco,
+} from '../../types';
 
 const DEBUG_TYPE = true;
 
@@ -18,7 +21,8 @@ export class Highlighter {
       new URL('./HighlighterWorker.ts', import.meta.url)
     );
     this.worker.addEventListener('message', e => {
-      const { classifications, version } = e.data as HighlighResult;
+      const action = e.data as HighlighterCallbackAction;
+      const { classifications, version } = action.payload;
       const currentVersion = this.editor.getModel()?.getVersionId();
       if (currentVersion == null || currentVersion !== version) {
         return;
@@ -56,14 +60,21 @@ export class Highlighter {
     if (currentVersion == null) {
       return;
     }
-    this.worker.postMessage({
-      lang: 'ts',
-      code,
-      version: currentVersion,
+    this.sendMessage({
+      type: 'highlight',
+      payload: {
+        lang: 'ts',
+        code,
+        version: currentVersion,
+      },
     });
   };
 
   dispose() {
     this.worker.terminate();
+  }
+
+  private sendMessage(action: HighlighterAction) {
+    this.worker.postMessage(action);
   }
 }

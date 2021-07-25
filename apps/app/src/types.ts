@@ -41,3 +41,53 @@ export interface LibraryDep {
   types: string;
   source: string;
 }
+
+export type HighlighterAction = {
+  type: 'highlight';
+  payload: {
+    lang: string;
+    code: string;
+    version: number;
+  };
+};
+
+export type HighlighterCallbackAction = {
+  type: 'highlight';
+  payload: {
+    classifications: Classification[];
+    version: number;
+  };
+};
+
+export type FormatterAction = {
+  type: 'format';
+  payload: {
+    lang: string;
+    code: string;
+    version: number;
+  };
+};
+
+export type FormatterCallbackAction =
+  | {
+      type: 'highlight';
+      payload: {
+        code: string;
+        version: number;
+      };
+    }
+  | {
+      type: 'error';
+      payload: {
+        error: any;
+        version: number;
+      };
+    };
+
+export interface Classification {
+  startLine: number;
+  endLine: number;
+  start: number;
+  end: number;
+  scope: string;
+}

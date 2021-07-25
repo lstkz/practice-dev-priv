@@ -1,40 +1,24 @@
 import { Registry } from 'monaco-textmate';
 import { loadWASM } from 'onigasm';
+import {
+  Classification,
+  HighlighterAction,
+  HighlighterCallbackAction,
+} from 'src/types';
 
 declare const self: Worker;
 
-interface Classification {
-  startLine: number;
-  endLine: number;
-  start: number;
-  end: number;
-  scope: string;
-}
-
-export interface HighlighResult {
-  classifications: Classification[];
-  version: number;
+function sendMessage(action: HighlighterCallbackAction) {
+  self.postMessage(action);
 }
 
 const registry = new Registry({
   getGrammarDefinition: async _scopeName => {
-    // if (scopeName === 'source.css') {
-    //   return {
-    //     format: 'json',
-    //     content: cssGrammar,
-    //   }
-    // }
-    // if (scopeName === 'text.html.basic') {
-    //   return {
-    //     format: 'json',
-    //     content: htmlGrammar,
-    //   }
-    // }
     return {
       format: 'plist',
-      content: await fetch(
-        '/grammars/TypeScriptReact.tmLanguage.plist'
-      ).then(x => x.text()),
+      content: await fetch('/grammars/TypeScriptReact.tmLanguage.plist').then(
+        x => x.text()
+      ),
     };
   },
 });
@@ -46,7 +30,8 @@ async function init() {
 }
 
 self.addEventListener('message', async event => {
-  const { lang, code, version } = event.data;
+  const action = event.data as HighlighterAction;
+  const { lang, code, version } = action.payload;
   if (!initPromise) {
     initPromise = init();
   }
@@ -70,9 +55,12 @@ self.addEventListener('message', async event => {
     });
     ruleStack = result.ruleStack;
   }
-  self.postMessage({
-    classifications,
-    version,
+  sendMessage({
+    type: 'highlight',
+    payload: {
+      classifications,
+      version,
+    },
   });
 });
 
