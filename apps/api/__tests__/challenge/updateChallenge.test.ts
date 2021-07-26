@@ -71,6 +71,15 @@ function getValidValues() {
   };
 }
 
+it('should throw if module does not exist', async () => {
+  await expect(
+    updateChallenge({
+      ...getValidValues(),
+      moduleId: 100,
+    })
+  ).rejects.toMatchInlineSnapshot(`[AppError: Module not found]`);
+});
+
 it('should create a new module and update it', async () => {
   await updateChallenge(getValidValues());
   expect(await ChallengeCollection.findByIdOrThrow('1_1'))

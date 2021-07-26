@@ -2,6 +2,8 @@ import { S } from 'schema';
 import { ChallengeCollection } from '../../collections/Challenge';
 import { createContract, createGraphqlBinding } from '../../lib';
 import { getChallengeId } from '../../common/helper';
+import { ModuleCollection } from '../../collections/Module';
+import { AppError } from '../../common/errors';
 
 export const updateChallenge = createContract('challenge.updateChallenge')
   .params('values')
@@ -25,6 +27,10 @@ export const updateChallenge = createContract('challenge.updateChallenge')
     }),
   })
   .fn(async values => {
+    const module = await ModuleCollection.findById(values.moduleId);
+    if (!module) {
+      throw new AppError('Module not found');
+    }
     const id = getChallengeId(values);
     await ChallengeCollection.findOneAndUpdate(
       {
