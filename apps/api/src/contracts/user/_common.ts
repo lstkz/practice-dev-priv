@@ -1,11 +1,21 @@
-import { randomSalt, createPasswordHash, randomInt } from '../../common/helper';
+import {
+  randomSalt,
+  createPasswordHash,
+  randomInt,
+  randomUniqString,
+} from '../../common/helper';
 import { UserCollection, UserModel } from '../../collections/User';
 import { ObjectID } from 'mongodb';
+import { config } from 'config';
 import { AppError } from '../../common/errors';
-import { dispatchEvent } from '../../dispatch';
+import { dispatchEvent, dispatchTask } from '../../dispatch';
 import { AuthData } from 'shared';
 import { mapUser } from '../../common/mapper';
 import { createToken } from './createToken';
+import {
+  ConfirmEmailCodeCollection,
+  ConfirmEmailCodeModel,
+} from '../../collections/ConfirmEmailCode';
 
 interface CreateUserValues {
   userId?: ObjectID;
@@ -81,4 +91,31 @@ export async function getNextUsername(username: string) {
     }
   }
   throw new Error('Cannot generate username for: ' + username);
+}
+
+export async function sendVerificationEmail(user: UserModel) {
+  const code = randomUniqString();
+  const confirmEmailCode: ConfirmEmailCodeModel = {
+    _id: code,
+    userId: user._id,
+  };
+  await ConfirmEmailCodeCollection.insertOne(confirmEmailCode);
+  const confirmLink = `${config.appBaseUrl}?confirm-email=${code}`;
+  await dispatchTask({
+    type: 'SendEmail',
+    payload: {
+      to: user.email,
+      template: {
+        type: 'actionButton',
+        variables: {
+          subject: '👋 Confirm your email',
+          title: 'Almost done.',
+          link_text: 'Confirm',
+          link_url: confirmLink,
+          content:
+            'One more step. Click on the below link to confirm your email.',
+        },
+      },
+    },
+  });
 }
