@@ -7,6 +7,7 @@ import { createModuleContext, useImmer } from 'context-api';
 
 interface Actions {
   show: (message: string | Error, noLog?: boolean) => void;
+  showError: (message: string | Error, noLog?: boolean) => void;
 }
 
 interface State {
@@ -42,6 +43,9 @@ export function ErrorModalModule(props: ErrorModalProps) {
           draft.message =
             typeof message == 'string' ? message : getErrorMessage(message);
         });
+      },
+      showError: (...args) => {
+        actions.show(...args);
       },
     }),
     []
