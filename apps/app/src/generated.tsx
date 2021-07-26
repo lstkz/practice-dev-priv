@@ -55,6 +55,7 @@ export type Mutation = {
   confirmChangeEmail?: Maybe<Scalars['Void']>;
   changePassword?: Maybe<Scalars['Void']>;
   updateNotificationSettings?: Maybe<NotificationSettings>;
+  resendVerificationCode?: Maybe<Scalars['Void']>;
 };
 
 export type MutationLoginArgs = {
