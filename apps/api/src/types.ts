@@ -2,6 +2,7 @@ import { ObjectID } from 'mongodb';
 import { Resolvers as BaseResolvers } from './generated';
 
 export type AppContext = {
+  ensureAdmin: () => void;
   getUser: () => AppUser;
   getUserOrAnonymous: () => AppUser | null;
   getToken: () => string;

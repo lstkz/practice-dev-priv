@@ -36,6 +36,12 @@ export type AvatarUploadResult = {
   avatarId: Scalars['String'];
 };
 
+export type ChallengeFileInput = {
+  name: Scalars['String'];
+  directory: Scalars['String'];
+  s3Key: Scalars['String'];
+};
+
 export type LoginInput = {
   usernameOrEmail: Scalars['String'];
   password: Scalars['String'];
@@ -62,6 +68,8 @@ export type Mutation = {
   changePassword?: Maybe<Scalars['Void']>;
   updateNotificationSettings?: Maybe<NotificationSettings>;
   resendVerificationCode?: Maybe<Scalars['Void']>;
+  updateModule?: Maybe<Scalars['Void']>;
+  updateChallenge?: Maybe<Scalars['Void']>;
 };
 
 export type MutationLoginArgs = {
@@ -125,6 +133,14 @@ export type MutationUpdateNotificationSettingsArgs = {
   values: NotificationSettingsInput;
 };
 
+export type MutationUpdateModuleArgs = {
+  values: UpdateModuleInput;
+};
+
+export type MutationUpdateChallengeArgs = {
+  values: UpdateChallengeInput;
+};
+
 export type MyProfile = {
   __typename?: 'MyProfile';
   name?: Maybe<Scalars['String']>;
@@ -177,6 +193,27 @@ export type RegisterInput = {
 export type Subscription = {
   __typename?: 'Subscription';
   mock: Scalars['String'];
+};
+
+export type UpdateChallengeInput = {
+  challengeId: Scalars['Int'];
+  moduleId: Scalars['Int'];
+  title: Scalars['String'];
+  description: Scalars['String'];
+  difficulty: Scalars['String'];
+  practiceTime: Scalars['Int'];
+  detailsS3Key: Scalars['String'];
+  htmlS3Key: Scalars['String'];
+  files: Array<ChallengeFileInput>;
+};
+
+export type UpdateModuleInput = {
+  id: Scalars['Int'];
+  title: Scalars['String'];
+  description: Scalars['String'];
+  mainTechnology: Scalars['String'];
+  difficulty: Scalars['String'];
+  tags: Array<Scalars['String']>;
 };
 
 export type UpdateProfileInput = {
@@ -320,6 +357,7 @@ export type ResolversTypes = {
   AuthResult: ResolverTypeWrapper<AuthResult>;
   String: ResolverTypeWrapper<Scalars['String']>;
   AvatarUploadResult: ResolverTypeWrapper<AvatarUploadResult>;
+  ChallengeFileInput: ChallengeFileInput;
   LoginInput: LoginInput;
   Mutation: ResolverTypeWrapper<{}>;
   MyProfile: ResolverTypeWrapper<MyProfile>;
@@ -333,6 +371,9 @@ export type ResolversTypes = {
   Float: ResolverTypeWrapper<Scalars['Float']>;
   RegisterInput: RegisterInput;
   Subscription: ResolverTypeWrapper<{}>;
+  UpdateChallengeInput: UpdateChallengeInput;
+  Int: ResolverTypeWrapper<Scalars['Int']>;
+  UpdateModuleInput: UpdateModuleInput;
   UpdateProfileInput: UpdateProfileInput;
   User: ResolverTypeWrapper<User>;
   Void: ResolverTypeWrapper<Scalars['Void']>;
@@ -343,6 +384,7 @@ export type ResolversParentTypes = {
   AuthResult: AuthResult;
   String: Scalars['String'];
   AvatarUploadResult: AvatarUploadResult;
+  ChallengeFileInput: ChallengeFileInput;
   LoginInput: LoginInput;
   Mutation: {};
   MyProfile: MyProfile;
@@ -356,6 +398,9 @@ export type ResolversParentTypes = {
   Float: Scalars['Float'];
   RegisterInput: RegisterInput;
   Subscription: {};
+  UpdateChallengeInput: UpdateChallengeInput;
+  Int: Scalars['Int'];
+  UpdateModuleInput: UpdateModuleInput;
   UpdateProfileInput: UpdateProfileInput;
   User: User;
   Void: Scalars['Void'];
@@ -487,6 +532,18 @@ export type MutationResolvers<
     Maybe<ResolversTypes['Void']>,
     ParentType,
     ContextType
+  >;
+  updateModule?: Resolver<
+    Maybe<ResolversTypes['Void']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationUpdateModuleArgs, 'values'>
+  >;
+  updateChallenge?: Resolver<
+    Maybe<ResolversTypes['Void']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationUpdateChallengeArgs, 'values'>
   >;
 };
 

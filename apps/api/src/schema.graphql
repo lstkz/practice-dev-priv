@@ -30,10 +30,39 @@ type Mutation {
     values: NotificationSettingsInput!
   ): NotificationSettings
   resendVerificationCode: Void
+  updateModule(values: UpdateModuleInput!): Void
+  updateChallenge(values: UpdateChallengeInput!): Void
 }
 
 type Subscription {
   mock: String!
+}
+
+input UpdateModuleInput {
+  id: Int!
+  title: String!
+  description: String!
+  mainTechnology: String!
+  difficulty: String!
+  tags: [String!]!
+}
+
+input UpdateChallengeInput {
+  challengeId: Int!
+  moduleId: Int!
+  title: String!
+  description: String!
+  difficulty: String!
+  practiceTime: Int!
+  detailsS3Key: String!
+  htmlS3Key: String!
+  files: [ChallengeFileInput!]!
+}
+
+input ChallengeFileInput {
+  name: String!
+  directory: String!
+  s3Key: String!
 }
 
 type NotificationSettings {

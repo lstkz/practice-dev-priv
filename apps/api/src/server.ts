@@ -1,7 +1,12 @@
-import { ApolloServer, AuthenticationError } from 'apollo-server-express';
+import {
+  ApolloServer,
+  AuthenticationError,
+  ForbiddenError,
+} from 'apollo-server-express';
 import 'graphql-import-node';
 import typeDefs from './schema.graphql';
 import { resolvers } from './resolvers';
+import { config } from 'config';
 import { AppContext, AppUser } from './types';
 import { UserCollection } from './collections/User';
 import { AccessTokenCollection } from './collections/AccessToken';
@@ -22,19 +27,29 @@ export const apolloServer = new ApolloServer({
       ? connection.context.authorization
       : req?.headers['authorization'];
     let user: AppUser = null!;
+    let isAdmin = false;
     if (token) {
-      const existing = await AccessTokenCollection.findById(token);
-      if (!existing) {
-        throw new AuthenticationError('Invalid access token');
+      if (token === config.adminToken) {
+        isAdmin = true;
+      } else {
+        const existing = await AccessTokenCollection.findById(token);
+        if (!existing) {
+          throw new AuthenticationError('Invalid access token');
+        }
+        const dbUser = await UserCollection.findByIdOrThrow(existing.userId);
+        user = {
+          email: dbUser.email,
+          id: dbUser._id,
+          username: dbUser.username,
+        };
       }
-      const dbUser = await UserCollection.findByIdOrThrow(existing.userId);
-      user = {
-        email: dbUser.email,
-        id: dbUser._id,
-        username: dbUser.username,
-      };
     }
     return {
+      ensureAdmin: () => {
+        if (!isAdmin) {
+          throw new ForbiddenError('No permission');
+        }
+      },
       getUser: () => {
         if (!user) {
           throw new AuthenticationError('Access token required');
