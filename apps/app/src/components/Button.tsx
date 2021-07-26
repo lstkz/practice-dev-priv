@@ -15,7 +15,7 @@ export interface BaseButtonProps {
   type: 'primary' | 'dark' | 'gray' | 'white' | 'light';
   disabled?: boolean;
   block?: boolean;
-  size?: 'small' | 'default' | 'large';
+  size?: 'xs' | 'small' | 'default' | 'large';
   focusBg?: FocusBg;
   ring?: RingColor;
 }
@@ -71,6 +71,7 @@ export function getBaseButtonStyles(props: BaseButtonProps) {
       tw`focus:( ring-indigo-500   )`,
     ],
     size === 'small' && tw`text-sm px-2 py-1 rounded`,
+    size === 'xs' && tw`text-xs px-2 py-1 rounded`,
     size === 'large' && tw`px-5 py-3 text-base`,
     getFocusBgTw(focusBg),
     getRing(ring),

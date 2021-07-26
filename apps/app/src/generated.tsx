@@ -222,6 +222,15 @@ export type RegisterGoogleMutation = { __typename?: 'Mutation' } & {
   registerGoogle: { __typename?: 'AuthResult' } & DefaultAuthResultFragment;
 };
 
+export type ResendVerificationCodeMutationVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type ResendVerificationCodeMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'resendVerificationCode'
+>;
+
 export type LogoutMutationVariables = Exact<{ [key: string]: never }>;
 
 export type LogoutMutation = { __typename?: 'Mutation' } & Pick<
@@ -648,6 +657,53 @@ export type RegisterGoogleMutationResult =
 export type RegisterGoogleMutationOptions = Apollo.BaseMutationOptions<
   RegisterGoogleMutation,
   RegisterGoogleMutationVariables
+>;
+export const ResendVerificationCodeDocument = gql`
+  mutation ResendVerificationCode {
+    resendVerificationCode
+  }
+`;
+export type ResendVerificationCodeMutationFn = Apollo.MutationFunction<
+  ResendVerificationCodeMutation,
+  ResendVerificationCodeMutationVariables
+>;
+
+/**
+ * __useResendVerificationCodeMutation__
+ *
+ * To run a mutation, you first call `useResendVerificationCodeMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useResendVerificationCodeMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [resendVerificationCodeMutation, { data, loading, error }] = useResendVerificationCodeMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useResendVerificationCodeMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    ResendVerificationCodeMutation,
+    ResendVerificationCodeMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    ResendVerificationCodeMutation,
+    ResendVerificationCodeMutationVariables
+  >(ResendVerificationCodeDocument, options);
+}
+export type ResendVerificationCodeMutationHookResult = ReturnType<
+  typeof useResendVerificationCodeMutation
+>;
+export type ResendVerificationCodeMutationResult =
+  Apollo.MutationResult<ResendVerificationCodeMutation>;
+export type ResendVerificationCodeMutationOptions = Apollo.BaseMutationOptions<
+  ResendVerificationCodeMutation,
+  ResendVerificationCodeMutationVariables
 >;
 export const LogoutDocument = gql`
   mutation Logout {
