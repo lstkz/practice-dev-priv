@@ -102,7 +102,11 @@ export class CodeEditor {
     this.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, () => {
       const model = this.editor.getModel();
       const activeId = this.activeId;
-      if (!model || !activeId || !this.dirtyMap[activeId]) {
+      if (!model || !activeId) {
+        return;
+      }
+      if (!this.dirtyMap[activeId]) {
+        this.saveAllNonActiveFiles();
         return;
       }
       void this.editor
@@ -112,6 +116,7 @@ export class CodeEditor {
           // ignore
         })
         .then(() => {
+          this.saveAllNonActiveFiles();
           const content = model.getValue();
           this.modelCommittedText[activeId] = content;
           delete this.dirtyMap[activeId];
@@ -212,6 +217,27 @@ export class CodeEditor {
     this.highlighter.dispose();
     this.formatter.dispose();
     this.monaco.editor.getModels().forEach(model => model.dispose());
+  }
+
+  private saveAllNonActiveFiles() {
+    // TODO: files are not formatted
+    Object.keys(this.models).forEach(modelId => {
+      const model = this.models[modelId];
+      if (modelId === this.activeId || !this.dirtyMap[modelId]) {
+        return;
+      }
+      delete this.dirtyMap[modelId];
+      const content = model.getValue();
+      this.emitter.emit('modified', {
+        fileId: modelId,
+        hasChanges: false,
+      });
+      this.modelCommittedText[modelId] = content;
+      this.emitter.emit('saved', {
+        fileId: modelId,
+        content,
+      });
+    });
   }
 
   private changeCommandKeybinding(id: string, keybinding: number) {
