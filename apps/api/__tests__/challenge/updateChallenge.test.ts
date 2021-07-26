@@ -7,8 +7,6 @@ import { apolloServer } from '../../src/server';
 import { getTokenOptions, setupDb } from '../helper';
 import { registerSampleUsers } from '../seed-data';
 
-jest.mock('../../src/dispatch');
-
 setupDb();
 
 beforeEach(async () => {

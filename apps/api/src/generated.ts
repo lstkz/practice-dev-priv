@@ -36,6 +36,19 @@ export type AvatarUploadResult = {
   avatarId: Scalars['String'];
 };
 
+export type AwsCredentials = {
+  __typename?: 'AwsCredentials';
+  accessKeyId: Scalars['String'];
+  secretAccessKey: Scalars['String'];
+  sessionToken: Scalars['String'];
+};
+
+export type AwsUploadContentAuth = {
+  __typename?: 'AwsUploadContentAuth';
+  bucketName: Scalars['String'];
+  credentials: AwsCredentials;
+};
+
 export type ChallengeFileInput = {
   name: Scalars['String'];
   directory: Scalars['String'];
@@ -182,6 +195,7 @@ export type Query = {
   getMyProfile: MyProfile;
   getAvatarUploadUrl: PresignedPost;
   getNotificationSettings: NotificationSettings;
+  getAwsUploadContentAuth: AwsUploadContentAuth;
 };
 
 export type RegisterInput = {
@@ -357,6 +371,8 @@ export type ResolversTypes = {
   AuthResult: ResolverTypeWrapper<AuthResult>;
   String: ResolverTypeWrapper<Scalars['String']>;
   AvatarUploadResult: ResolverTypeWrapper<AvatarUploadResult>;
+  AwsCredentials: ResolverTypeWrapper<AwsCredentials>;
+  AwsUploadContentAuth: ResolverTypeWrapper<AwsUploadContentAuth>;
   ChallengeFileInput: ChallengeFileInput;
   LoginInput: LoginInput;
   Mutation: ResolverTypeWrapper<{}>;
@@ -384,6 +400,8 @@ export type ResolversParentTypes = {
   AuthResult: AuthResult;
   String: Scalars['String'];
   AvatarUploadResult: AvatarUploadResult;
+  AwsCredentials: AwsCredentials;
+  AwsUploadContentAuth: AwsUploadContentAuth;
   ChallengeFileInput: ChallengeFileInput;
   LoginInput: LoginInput;
   Mutation: {};
@@ -420,6 +438,29 @@ export type AvatarUploadResultResolvers<
   ParentType extends ResolversParentTypes['AvatarUploadResult'] = ResolversParentTypes['AvatarUploadResult']
 > = {
   avatarId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type AwsCredentialsResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['AwsCredentials'] = ResolversParentTypes['AwsCredentials']
+> = {
+  accessKeyId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  secretAccessKey?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  sessionToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type AwsUploadContentAuthResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['AwsUploadContentAuth'] = ResolversParentTypes['AwsUploadContentAuth']
+> = {
+  bucketName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  credentials?: Resolver<
+    ResolversTypes['AwsCredentials'],
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -613,6 +654,11 @@ export type QueryResolvers<
     ParentType,
     ContextType
   >;
+  getAwsUploadContentAuth?: Resolver<
+    ResolversTypes['AwsUploadContentAuth'],
+    ParentType,
+    ContextType
+  >;
 };
 
 export type SubscriptionResolvers<
@@ -648,6 +694,8 @@ export interface VoidScalarConfig
 export type Resolvers<ContextType = any> = {
   AuthResult?: AuthResultResolvers<ContextType>;
   AvatarUploadResult?: AvatarUploadResultResolvers<ContextType>;
+  AwsCredentials?: AwsCredentialsResolvers<ContextType>;
+  AwsUploadContentAuth?: AwsUploadContentAuthResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   MyProfile?: MyProfileResolvers<ContextType>;
   NotificationSettings?: NotificationSettingsResolvers<ContextType>;

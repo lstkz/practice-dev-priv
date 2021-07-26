@@ -6,6 +6,7 @@ type Query {
   getMyProfile: MyProfile!
   getAvatarUploadUrl: PresignedPost!
   getNotificationSettings: NotificationSettings!
+  getAwsUploadContentAuth: AwsUploadContentAuth!
 }
 
 type Mutation {
@@ -36,6 +37,17 @@ type Mutation {
 
 type Subscription {
   mock: String!
+}
+
+type AwsCredentials {
+  accessKeyId: String!
+  secretAccessKey: String!
+  sessionToken: String!
+}
+
+type AwsUploadContentAuth {
+  bucketName: String!
+  credentials: AwsCredentials!
 }
 
 input UpdateModuleInput {
