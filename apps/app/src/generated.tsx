@@ -30,6 +30,12 @@ export type AvatarUploadResult = {
   avatarId: Scalars['String'];
 };
 
+export type ChallengeFileInput = {
+  name: Scalars['String'];
+  directory: Scalars['String'];
+  s3Key: Scalars['String'];
+};
+
 export type LoginInput = {
   usernameOrEmail: Scalars['String'];
   password: Scalars['String'];
@@ -56,6 +62,8 @@ export type Mutation = {
   changePassword?: Maybe<Scalars['Void']>;
   updateNotificationSettings?: Maybe<NotificationSettings>;
   resendVerificationCode?: Maybe<Scalars['Void']>;
+  updateModule?: Maybe<Scalars['Void']>;
+  updateChallenge?: Maybe<Scalars['Void']>;
 };
 
 export type MutationLoginArgs = {
@@ -119,6 +127,14 @@ export type MutationUpdateNotificationSettingsArgs = {
   values: NotificationSettingsInput;
 };
 
+export type MutationUpdateModuleArgs = {
+  values: UpdateModuleInput;
+};
+
+export type MutationUpdateChallengeArgs = {
+  values: UpdateChallengeInput;
+};
+
 export type MyProfile = {
   __typename?: 'MyProfile';
   name?: Maybe<Scalars['String']>;
@@ -171,6 +187,27 @@ export type RegisterInput = {
 export type Subscription = {
   __typename?: 'Subscription';
   mock: Scalars['String'];
+};
+
+export type UpdateChallengeInput = {
+  challengeId: Scalars['Int'];
+  moduleId: Scalars['Int'];
+  title: Scalars['String'];
+  description: Scalars['String'];
+  difficulty: Scalars['String'];
+  practiceTime: Scalars['Int'];
+  detailsS3Key: Scalars['String'];
+  htmlS3Key: Scalars['String'];
+  files: Array<ChallengeFileInput>;
+};
+
+export type UpdateModuleInput = {
+  id: Scalars['Int'];
+  title: Scalars['String'];
+  description: Scalars['String'];
+  mainTechnology: Scalars['String'];
+  difficulty: Scalars['String'];
+  tags: Array<Scalars['String']>;
 };
 
 export type UpdateProfileInput = {

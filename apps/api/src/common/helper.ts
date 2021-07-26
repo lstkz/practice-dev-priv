@@ -122,3 +122,10 @@ export function getUserAvatarUploadKey(userId: string) {
 export function doFn<T>(fn: () => T) {
   return fn();
 }
+
+export function getChallengeId(values: {
+  moduleId: number;
+  challengeId: number;
+}) {
+  return `${values.moduleId}_${values.challengeId}`;
+}

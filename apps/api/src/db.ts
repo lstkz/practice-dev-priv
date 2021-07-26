@@ -16,6 +16,8 @@ export const {
     require('./collections/ResetPasswordCode'),
     require('./collections/User'),
     require('./collections/ConfirmEmailChange'),
+    require('./collections/Module'),
+    require('./collections/Challenge'),
     // APPEND
   ],
   uri: config.mongodb.url,
