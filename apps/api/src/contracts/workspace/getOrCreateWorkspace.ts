@@ -1,4 +1,3 @@
-import { ForbiddenError } from 'apollo-server';
 import { ObjectID } from 'mongodb2';
 import { S } from 'schema';
 import { ChallengeCollection } from '../../collections/Challenge';
