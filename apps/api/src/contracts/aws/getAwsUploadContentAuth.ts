@@ -18,7 +18,7 @@ export const getAwsUploadContentAuth = createContract(
               Version: '2012-10-17',
               Statement: [
                 {
-                  Action: ['s3:PutObject', 's3:GetObject'],
+                  Action: ['s3:*'],
                   Effect: 'Allow',
                   Resource: [baseArn, baseArn + '/*'],
                 },
