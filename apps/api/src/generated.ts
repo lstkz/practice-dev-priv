@@ -55,6 +55,10 @@ export type ChallengeFileInput = {
   s3Key: Scalars['String'];
 };
 
+export type CreateWorkspaceInput = {
+  challengeUniqId: Scalars['String'];
+};
+
 export type LoginInput = {
   usernameOrEmail: Scalars['String'];
   password: Scalars['String'];
@@ -83,6 +87,7 @@ export type Mutation = {
   resendVerificationCode?: Maybe<Scalars['Void']>;
   updateModule?: Maybe<Scalars['Void']>;
   updateChallenge?: Maybe<Scalars['Void']>;
+  getOrCreateWorkspace: Workspace;
 };
 
 export type MutationLoginArgs = {
@@ -152,6 +157,10 @@ export type MutationUpdateModuleArgs = {
 
 export type MutationUpdateChallengeArgs = {
   values: UpdateChallengeInput;
+};
+
+export type MutationGetOrCreateWorkspaceArgs = {
+  values: CreateWorkspaceInput;
 };
 
 export type MyProfile = {
@@ -246,6 +255,27 @@ export type User = {
   isAdmin?: Maybe<Scalars['Boolean']>;
   isVerified: Scalars['Boolean'];
 };
+
+export type Workspace = {
+  __typename?: 'Workspace';
+  id: Scalars['String'];
+  isReady: Scalars['Boolean'];
+  items: Array<WorkspaceItem>;
+};
+
+export type WorkspaceItem = {
+  __typename?: 'WorkspaceItem';
+  id: Scalars['String'];
+  name: Scalars['String'];
+  parentId?: Maybe<Scalars['String']>;
+  hash: Scalars['String'];
+  type: WorkspaceItemType;
+};
+
+export enum WorkspaceItemType {
+  File = 'file',
+  Directory = 'directory',
+}
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
 
@@ -374,6 +404,7 @@ export type ResolversTypes = {
   AwsCredentials: ResolverTypeWrapper<AwsCredentials>;
   AwsUploadContentAuth: ResolverTypeWrapper<AwsUploadContentAuth>;
   ChallengeFileInput: ChallengeFileInput;
+  CreateWorkspaceInput: CreateWorkspaceInput;
   LoginInput: LoginInput;
   Mutation: ResolverTypeWrapper<{}>;
   MyProfile: ResolverTypeWrapper<MyProfile>;
@@ -393,6 +424,9 @@ export type ResolversTypes = {
   UpdateProfileInput: UpdateProfileInput;
   User: ResolverTypeWrapper<User>;
   Void: ResolverTypeWrapper<Scalars['Void']>;
+  Workspace: ResolverTypeWrapper<Workspace>;
+  WorkspaceItem: ResolverTypeWrapper<WorkspaceItem>;
+  WorkspaceItemType: WorkspaceItemType;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -403,6 +437,7 @@ export type ResolversParentTypes = {
   AwsCredentials: AwsCredentials;
   AwsUploadContentAuth: AwsUploadContentAuth;
   ChallengeFileInput: ChallengeFileInput;
+  CreateWorkspaceInput: CreateWorkspaceInput;
   LoginInput: LoginInput;
   Mutation: {};
   MyProfile: MyProfile;
@@ -422,6 +457,8 @@ export type ResolversParentTypes = {
   UpdateProfileInput: UpdateProfileInput;
   User: User;
   Void: Scalars['Void'];
+  Workspace: Workspace;
+  WorkspaceItem: WorkspaceItem;
 };
 
 export type AuthResultResolvers<
@@ -586,6 +623,12 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationUpdateChallengeArgs, 'values'>
   >;
+  getOrCreateWorkspace?: Resolver<
+    ResolversTypes['Workspace'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationGetOrCreateWorkspaceArgs, 'values'>
+  >;
 };
 
 export type MyProfileResolvers<
@@ -691,6 +734,32 @@ export interface VoidScalarConfig
   name: 'Void';
 }
 
+export type WorkspaceResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['Workspace'] = ResolversParentTypes['Workspace']
+> = {
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  isReady?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  items?: Resolver<
+    Array<ResolversTypes['WorkspaceItem']>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type WorkspaceItemResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['WorkspaceItem'] = ResolversParentTypes['WorkspaceItem']
+> = {
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  parentId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  hash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['WorkspaceItemType'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type Resolvers<ContextType = any> = {
   AuthResult?: AuthResultResolvers<ContextType>;
   AvatarUploadResult?: AvatarUploadResultResolvers<ContextType>;
@@ -706,6 +775,8 @@ export type Resolvers<ContextType = any> = {
   Subscription?: SubscriptionResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   Void?: GraphQLScalarType;
+  Workspace?: WorkspaceResolvers<ContextType>;
+  WorkspaceItem?: WorkspaceItemResolvers<ContextType>;
 };
 
 /**

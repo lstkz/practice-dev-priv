@@ -1,5 +1,9 @@
 scalar Void
 
+type Subscription {
+  mock: String!
+}
+
 type Query {
   me: User!
   ping: Float!
@@ -33,10 +37,30 @@ type Mutation {
   resendVerificationCode: Void
   updateModule(values: UpdateModuleInput!): Void
   updateChallenge(values: UpdateChallengeInput!): Void
+  getOrCreateWorkspace(values: CreateWorkspaceInput!): Workspace!
 }
 
-type Subscription {
-  mock: String!
+type Workspace {
+  id: String!
+  isReady: Boolean!
+  items: [WorkspaceItem!]!
+}
+
+enum WorkspaceItemType {
+  file
+  directory
+}
+
+type WorkspaceItem {
+  id: String!
+  name: String!
+  parentId: String
+  hash: String!
+  type: WorkspaceItemType!
+}
+
+input CreateWorkspaceInput {
+  challengeUniqId: String!
 }
 
 type AwsCredentials {

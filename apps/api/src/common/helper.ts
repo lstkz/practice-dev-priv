@@ -50,7 +50,7 @@ export function validate<T>(schema: z.ZodObject<any, any, T>, input: T) {
 }
 
 export function sleep(timeout: number) {
-  return new Promise(resolve => setTimeout(resolve, timeout));
+  return new Promise<void>(resolve => setTimeout(resolve, timeout));
 }
 
 export function getDuration(n: number, type: 's' | 'm' | 'h' | 'd') {
@@ -128,4 +128,13 @@ export function getChallengeId(values: {
   challengeId: number;
 }) {
   return `${values.moduleId}_${values.challengeId}`;
+}
+
+export function renameId<T extends { _id: any }>(
+  obj: T
+): Omit<T, '_id'> & { id: string } {
+  const ret: any = { ...obj };
+  ret.id = ret._id.toString();
+  delete ret._id;
+  return ret;
 }

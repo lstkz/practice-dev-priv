@@ -18,6 +18,8 @@ export const {
     require('./collections/ConfirmEmailChange'),
     require('./collections/Module'),
     require('./collections/Challenge'),
+    require('./collections/Workspace'),
+    require('./collections/WorkspaceItem'),
     // APPEND
   ],
   uri: config.mongodb.url,

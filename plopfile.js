@@ -86,7 +86,7 @@ module.exports = function generate(plop) {
     let content = fs.readFileSync(targetPath, 'utf8');
     content = content.replace(
       /( *)(\/\/ APPEND)/,
-      `$1require('./collections/${answers.name}')\n$1$2`
+      `$1require('./collections/${answers.name}'),\n$1$2`
     );
     fs.writeFileSync(targetPath, content);
   });
