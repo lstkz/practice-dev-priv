@@ -35,6 +35,13 @@ export interface SendEmailTask {
   };
 }
 
+export interface PrepareWorkspaceTask {
+  type: 'PrepareWorkspace';
+  payload: {
+    workspaceId: string;
+  };
+}
+
 export interface ButtonActionTemplateProps {
   unsubscribeLink?: string;
   header: string;
@@ -43,7 +50,7 @@ export interface ButtonActionTemplateProps {
   buttonUrl: string;
 }
 
-export type AppTask = SendEmailTask;
+export type AppTask = SendEmailTask | PrepareWorkspaceTask;
 
 export interface UserRegisteredEvent {
   type: 'UserRegistered';

@@ -87,7 +87,8 @@ export function initDb(options: InitOptions) {
     return R.pipe(
       options.collections(),
       R.map(item => Object.values(item)),
-      R.flatten
+      R.flatten,
+      R.filter((x: any) => x.createCollection)
     ) as any;
   };
 

@@ -42,17 +42,21 @@ export function createGraphqlBinding(
 
 type ExtractPayload<T> = T extends { payload: infer S } ? S : never;
 
-type ExtractEvent<T> = AppEvent extends { type: infer K }
-  ? K extends T
-    ? ExtractPayload<Pick<AppEvent, 'payload'>>
+type ExtractEvent<T> = ExtractPayload<
+  AppEvent extends { type: infer K }
+    ? K extends T
+      ? Pick<AppEvent, 'payload'>
+      : never
     : never
-  : never;
+>;
 
-type ExtractTask<T> = AppTask extends { type: infer K }
-  ? K extends T
-    ? ExtractPayload<Pick<AppTask, 'payload'>>
+type ExtractTask<T> = ExtractPayload<
+  AppTask extends { type: infer K }
+    ? K extends T
+      ? Pick<AppTask, 'payload'>
+      : never
     : never
-  : never;
+>;
 
 export interface CreateEventBindingOptions<T extends AppEventType> {
   type: T;
