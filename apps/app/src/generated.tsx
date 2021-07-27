@@ -30,6 +30,19 @@ export type AvatarUploadResult = {
   avatarId: Scalars['String'];
 };
 
+export type AwsCredentials = {
+  __typename?: 'AwsCredentials';
+  accessKeyId: Scalars['String'];
+  secretAccessKey: Scalars['String'];
+  sessionToken: Scalars['String'];
+};
+
+export type AwsUploadContentAuth = {
+  __typename?: 'AwsUploadContentAuth';
+  bucketName: Scalars['String'];
+  credentials: AwsCredentials;
+};
+
 export type ChallengeFileInput = {
   name: Scalars['String'];
   directory: Scalars['String'];
@@ -176,6 +189,7 @@ export type Query = {
   getMyProfile: MyProfile;
   getAvatarUploadUrl: PresignedPost;
   getNotificationSettings: NotificationSettings;
+  getAwsUploadContentAuth: AwsUploadContentAuth;
 };
 
 export type RegisterInput = {

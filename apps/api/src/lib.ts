@@ -98,6 +98,8 @@ export const ec2 = new AWS.EC2();
 
 export const route53 = new AWS.Route53();
 
+export const sts = new AWS.STS();
+
 export const { createContract } = initialize({
   debug: process.env.NODE_ENV === 'development',
 });
