@@ -26,6 +26,7 @@ export const updateWorkspaceNode = createContract(
       name: S.string()
         .max(FILENAME_MAX_LENGTH)
         .regex(FILENAME_REGEX)
+        .trim()
         .nullable()
         .optional(),
     }),

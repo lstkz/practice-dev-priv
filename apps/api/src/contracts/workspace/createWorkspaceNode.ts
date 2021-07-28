@@ -26,7 +26,7 @@ export const createWorkspaceNode = createContract(
       type: S.enum().values<WorkspaceNodeType>(
         Object.values(WorkspaceNodeType)
       ),
-      name: S.string().max(FILENAME_MAX_LENGTH).regex(FILENAME_REGEX),
+      name: S.string().max(FILENAME_MAX_LENGTH).regex(FILENAME_REGEX).trim(),
     }),
   })
   .returns<void>()

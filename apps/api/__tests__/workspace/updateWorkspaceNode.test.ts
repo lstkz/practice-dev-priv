@@ -19,6 +19,15 @@ beforeEach(async () => {
   await createSampleWorkspaceItems();
 });
 
+it('should throw if no found', async () => {
+  await expect(
+    updateWorkspaceNode(await getAppUser(2), {
+      id: getUUID(1123),
+      name: 'abc',
+    })
+  ).rejects.toMatchInlineSnapshot(`[AppError: Node not found]`);
+});
+
 it('should throw if no permission', async () => {
   await expect(
     updateWorkspaceNode(await getAppUser(2), {
@@ -152,11 +161,57 @@ it('should create a node #graphql', async () => {
       variables: {
         values: {
           id: getUUID(4),
-          parentId: getUUID(2),
+          name: 'new-name',
         },
       },
     },
     getTokenOptions('user1_token')
   );
   expect(res.errors).toBeFalsy();
+  expect(await WorkspaceNodeCollection.findById(getUUID(4)))
+    .toMatchInlineSnapshot(`
+    Object {
+      "_id": "00000000-0000-4000-8000-000000000004",
+      "hash": "123",
+      "name": "new-name",
+      "parentId": "00000000-0000-4000-8000-000000000003",
+      "type": "file",
+      "uniqueKey": "000000000000000000000010_00000000-0000-4000-8000-000000000003_file_new-name",
+      "userId": "000000000000000000000001",
+      "workspaceId": "000000000000000000000010",
+    }
+  `);
+});
+
+it('should create a node and null parentId #graphql', async () => {
+  const res = await apolloServer.executeOperation(
+    {
+      query: gql`
+        mutation ($values: UpdateWorkspaceNodeInput!) {
+          updateWorkspaceNode(values: $values)
+        }
+      `,
+      variables: {
+        values: {
+          id: getUUID(4),
+          parentId: null,
+        },
+      },
+    },
+    getTokenOptions('user1_token')
+  );
+  expect(res.errors).toBeFalsy();
+  expect(await WorkspaceNodeCollection.findById(getUUID(4)))
+    .toMatchInlineSnapshot(`
+    Object {
+      "_id": "00000000-0000-4000-8000-000000000004",
+      "hash": "123",
+      "name": "Button.tsx",
+      "parentId": null,
+      "type": "file",
+      "uniqueKey": "000000000000000000000010__file_button.tsx",
+      "userId": "000000000000000000000001",
+      "workspaceId": "000000000000000000000010",
+    }
+  `);
 });
