@@ -56,7 +56,7 @@ it('should it create credentials if null', async () => {
         "secretAccessKey": "secret1",
         "sessionToken": "token1",
       },
-      "credentialsExpiresAt": "2000-01-01T01:30:00.000Z",
+      "credentialsExpiresAt": "2000-01-01T07:30:00.000Z",
     }
   `);
 });
@@ -82,7 +82,7 @@ it('should it return existing if not expired', async () => {
         "secretAccessKey": "b",
         "sessionToken": "c",
       },
-      "credentialsExpiresAt": "1999-12-31T23:00:10.000Z",
+      "credentialsExpiresAt": "2000-01-01T05:00:10.000Z",
     }
   `);
 });
@@ -108,7 +108,7 @@ it('should it return renew if expired', async () => {
         "secretAccessKey": "secret1",
         "sessionToken": "token1",
       },
-      "credentialsExpiresAt": "2000-01-01T01:30:00.000Z",
+      "credentialsExpiresAt": "2000-01-01T07:30:00.000Z",
     }
   `);
 });
@@ -137,16 +137,16 @@ it('should return credentials #graphql', async () => {
   );
   expect(res.errors).toBeFalsy();
   expect(res.data).toMatchInlineSnapshot(`
-Object {
-  "getWorkspaceS3Auth": Object {
-    "bucketName": "s3-bucket-123",
-    "credentials": Object {
-      "accessKeyId": "key1",
-      "secretAccessKey": "secret1",
-      "sessionToken": "token1",
-    },
-    "credentialsExpiresAt": "2000-01-01T01:30:00.000Z",
-  },
-}
-`);
+    Object {
+      "getWorkspaceS3Auth": Object {
+        "bucketName": "s3-bucket-123",
+        "credentials": Object {
+          "accessKeyId": "key1",
+          "secretAccessKey": "secret1",
+          "sessionToken": "token1",
+        },
+        "credentialsExpiresAt": "2000-01-01T07:30:00.000Z",
+      },
+    }
+  `);
 });
