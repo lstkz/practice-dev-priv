@@ -229,6 +229,11 @@ export type Query = {
   getAvatarUploadUrl: PresignedPost;
   getNotificationSettings: NotificationSettings;
   getAwsUploadContentAuth: AwsUploadContentAuth;
+  getWorkspaceS3Auth: WorkspaceS3Auth;
+};
+
+export type QueryGetWorkspaceS3AuthArgs = {
+  workspaceId: Scalars['String'];
 };
 
 export type RegisterInput = {
@@ -292,6 +297,7 @@ export type Workspace = {
   id: Scalars['String'];
   isReady: Scalars['Boolean'];
   items: Array<WorkspaceNode>;
+  s3Auth: WorkspaceS3Auth;
 };
 
 export type WorkspaceNode = {
@@ -307,6 +313,13 @@ export enum WorkspaceNodeType {
   File = 'file',
   Directory = 'directory',
 }
+
+export type WorkspaceS3Auth = {
+  __typename?: 'WorkspaceS3Auth';
+  bucketName: Scalars['String'];
+  credentials: AwsCredentials;
+  credentialsExpiresAt: Scalars['String'];
+};
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
 
@@ -460,6 +473,7 @@ export type ResolversTypes = {
   Workspace: ResolverTypeWrapper<Workspace>;
   WorkspaceNode: ResolverTypeWrapper<WorkspaceNode>;
   WorkspaceNodeType: WorkspaceNodeType;
+  WorkspaceS3Auth: ResolverTypeWrapper<WorkspaceS3Auth>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -494,6 +508,7 @@ export type ResolversParentTypes = {
   Void: Scalars['Void'];
   Workspace: Workspace;
   WorkspaceNode: WorkspaceNode;
+  WorkspaceS3Auth: WorkspaceS3Auth;
 };
 
 export type AuthResultResolvers<
@@ -755,6 +770,12 @@ export type QueryResolvers<
     ParentType,
     ContextType
   >;
+  getWorkspaceS3Auth?: Resolver<
+    ResolversTypes['WorkspaceS3Auth'],
+    ParentType,
+    ContextType,
+    RequireFields<QueryGetWorkspaceS3AuthArgs, 'workspaceId'>
+  >;
 };
 
 export type SubscriptionResolvers<
@@ -798,6 +819,7 @@ export type WorkspaceResolvers<
     ParentType,
     ContextType
   >;
+  s3Auth?: Resolver<ResolversTypes['WorkspaceS3Auth'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -810,6 +832,24 @@ export type WorkspaceNodeResolvers<
   parentId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   hash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['WorkspaceNodeType'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type WorkspaceS3AuthResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['WorkspaceS3Auth'] = ResolversParentTypes['WorkspaceS3Auth']
+> = {
+  bucketName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  credentials?: Resolver<
+    ResolversTypes['AwsCredentials'],
+    ParentType,
+    ContextType
+  >;
+  credentialsExpiresAt?: Resolver<
+    ResolversTypes['String'],
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -830,6 +870,7 @@ export type Resolvers<ContextType = any> = {
   Void?: GraphQLScalarType;
   Workspace?: WorkspaceResolvers<ContextType>;
   WorkspaceNode?: WorkspaceNodeResolvers<ContextType>;
+  WorkspaceS3Auth?: WorkspaceS3AuthResolvers<ContextType>;
 };
 
 /**

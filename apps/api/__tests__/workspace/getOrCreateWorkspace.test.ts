@@ -8,6 +8,7 @@ import {
 import { getWorkspaceNodeWithUniqueKey } from '../../src/common/workspace-tree';
 import { getOrCreateWorkspace } from '../../src/contracts/workspace/getOrCreateWorkspace';
 import { dispatchTask } from '../../src/dispatch';
+import { sts } from '../../src/lib';
 import { apolloServer } from '../../src/server';
 import { getAppUser, getId, getTokenOptions, setupDb } from '../helper';
 import { createSampleChallenges, registerSampleUsers } from '../seed-data';
@@ -22,6 +23,17 @@ beforeEach(async () => {
   await registerSampleUsers();
   await createSampleChallenges();
   mocked_dispatchTask.mockClear();
+  sts.getFederationToken = () =>
+    ({
+      promise: async () => ({
+        Credentials: {
+          AccessKeyId: 'key1',
+          SecretAccessKey: 'secret1',
+          SessionToken: 'token1',
+        },
+      }),
+    } as any);
+  Date.now = () => 1;
 });
 
 it('should throw if challenge not found', async () => {
@@ -46,6 +58,7 @@ it('should return an existing workspace', async () => {
     dedupKey: `1_2_${getId(1)}_default`,
     isReady: true,
     userId: getId(1),
+    s3Auth: null!,
   });
   await WorkspaceNodeCollection.insertMany([
     getWorkspaceNodeWithUniqueKey({
@@ -87,6 +100,15 @@ Object {
       "workspaceId": "000000000000000000000100",
     },
   ],
+  "s3Auth": Object {
+    "bucketName": "s3-bucket-123",
+    "credentials": Object {
+      "accessKeyId": "key1",
+      "secretAccessKey": "secret1",
+      "sessionToken": "token1",
+    },
+    "credentialsExpiresAt": "1970-01-01T02:30:00.001Z",
+  },
 }
 `);
 });
