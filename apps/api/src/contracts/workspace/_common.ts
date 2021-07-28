@@ -1,6 +1,9 @@
 import { ForbiddenError } from 'apollo-server';
 import { ObjectID } from 'mongodb2';
-import { WorkspaceModel } from '../../collections/Workspace';
+import {
+  WorkspaceCollection,
+  WorkspaceModel,
+} from '../../collections/Workspace';
 import {
   WorkspaceNodeCollection,
   WorkspaceNodeModel,
@@ -55,5 +58,6 @@ export async function renewWorkspaceAuth(workspace: WorkspaceModel) {
     workspace.s3Auth.credentialsExpiresAt.getTime() < Date.now()
   ) {
     workspace.s3Auth = await createWorkspaceS3Auth(workspace._id);
+    await WorkspaceCollection.update(workspace, ['s3Auth']);
   }
 }

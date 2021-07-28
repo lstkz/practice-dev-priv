@@ -1,3 +1,4 @@
+import { config } from 'config';
 import { ObjectID } from 'mongodb2';
 import { S } from 'schema';
 import { ChallengeCollection } from '../../collections/Challenge';
@@ -78,7 +79,13 @@ export const getOrCreateWorkspace = createContract(
     return {
       id: workspace._id.toHexString(),
       isReady: workspace.isReady,
-      items: files.map(renameId),
+      items: files.map(file => {
+        const item = renameId(file);
+        return {
+          ...renameId(file),
+          url: config.cdnBaseUrl + item.s3Key!.replace(/^cdn\//, '/'),
+        };
+      }),
       s3Auth: mapWorkspaceS3Auth(workspace.s3Auth),
     };
   });

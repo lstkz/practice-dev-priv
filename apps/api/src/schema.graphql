@@ -78,6 +78,7 @@ type WorkspaceNode {
   parentId: String
   hash: String!
   type: WorkspaceNodeType!
+  url: String!
 }
 
 input CreateWorkspaceInput {
@@ -98,7 +99,6 @@ type AwsUploadContentAuth {
 type WorkspaceS3Auth {
   bucketName: String!
   credentials: AwsCredentials!
-  credentialsExpiresAt: String!
 }
 
 input UpdateModuleInput {

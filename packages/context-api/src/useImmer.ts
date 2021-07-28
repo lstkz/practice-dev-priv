@@ -14,6 +14,10 @@ export function useImmer(initialValue: any, logName?: string) {
   const ref = React.useRef(state);
   ref.current = state;
   const getState = React.useCallback(() => ref.current, []);
+  if (logName && process.env.NODE_ENV === 'development') {
+    // tslint:disable-next-line:no-console
+    console.log(logName, state);
+  }
   return [
     state,
     React.useCallback(updater => {

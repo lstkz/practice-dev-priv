@@ -307,6 +307,7 @@ export type WorkspaceNode = {
   parentId?: Maybe<Scalars['String']>;
   hash: Scalars['String'];
   type: WorkspaceNodeType;
+  url: Scalars['String'];
 };
 
 export enum WorkspaceNodeType {
@@ -318,7 +319,6 @@ export type WorkspaceS3Auth = {
   __typename?: 'WorkspaceS3Auth';
   bucketName: Scalars['String'];
   credentials: AwsCredentials;
-  credentialsExpiresAt: Scalars['String'];
 };
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
@@ -832,6 +832,7 @@ export type WorkspaceNodeResolvers<
   parentId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   hash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['WorkspaceNodeType'], ParentType, ContextType>;
+  url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -842,11 +843,6 @@ export type WorkspaceS3AuthResolvers<
   bucketName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   credentials?: Resolver<
     ResolversTypes['AwsCredentials'],
-    ParentType,
-    ContextType
-  >;
-  credentialsExpiresAt?: Resolver<
-    ResolversTypes['String'],
     ParentType,
     ContextType
   >;

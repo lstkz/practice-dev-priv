@@ -11,6 +11,8 @@ import { FileTreeHelper } from 'src/common/tree';
 import { usePreventEditorNavigation } from './usePreventEditorNavigation';
 import { BrowserPreviewService } from './BrowserPreviewService';
 import { BundlerService } from './BundlerService';
+import { Workspace, WorkspaceNode, WorkspaceNodeType } from 'src/generated';
+import { S3Service } from './S3Service';
 
 interface Actions {
   load: (container: HTMLDivElement) => void;
@@ -40,6 +42,7 @@ const [Provider, useContext] = createModuleContext<State, Actions>();
 interface EditorModuleProps {
   challengeId: number;
   children: React.ReactNode;
+  workspace: Workspace;
 }
 
 const libraries: LibraryDep[] = [
@@ -57,8 +60,29 @@ const libraries: LibraryDep[] = [
   },
 ];
 
+function mapWorkspaceNodes(nodes: WorkspaceNode[]) {
+  const ret: TreeNode[] = nodes.map(node => {
+    if (node.type === WorkspaceNodeType.Directory) {
+      return {
+        type: 'directory',
+        id: node.id,
+        name: node.name,
+        parentId: node.parentId,
+      };
+    } else {
+      return {
+        type: 'file',
+        id: node.id,
+        name: node.name,
+        parentId: node.parentId,
+      };
+    }
+  });
+  return ret;
+}
+
 export function EditorModule(props: EditorModuleProps) {
-  const { challengeId, children } = props;
+  const { challengeId, children, workspace } = props;
   const [state, setState, getState] = useImmer<State>(
     {
       activeTabId: null,
@@ -69,6 +93,7 @@ export function EditorModule(props: EditorModuleProps) {
     },
     'EditorModule'
   );
+  const s3Service = React.useMemo(() => new S3Service(), []);
   const codeEditor = React.useMemo(() => new CodeEditor(), []);
   const fileService = React.useMemo(() => new FileService(challengeId), []);
   const editorStateService = React.useMemo(
@@ -101,11 +126,12 @@ export function EditorModule(props: EditorModuleProps) {
     load: async container => {
       const monaco = await loader.init();
       codeEditor.init(monaco, container);
-      await Promise.all([
-        libraries.map(lib => codeEditor.addLib(lib.name, lib.types)),
-      ]);
+      await Promise.all(
+        libraries.map(lib => codeEditor.addLib(lib.name, lib.types))
+      );
+      s3Service.init(workspace.id, workspace.s3Auth);
       const tabsState = editorStateService.loadTabsState();
-      const nodes = await fileService.loadNodes();
+      const nodes = mapWorkspaceNodes(workspace.items);
       await browserPreviewService.waitForLoad();
       browserPreviewService.setLibraries(libraries);
       const pathHelper = new FileTreeHelper(nodes);
@@ -115,7 +141,11 @@ export function EditorModule(props: EditorModuleProps) {
             codeEditor.addFile({
               id: node.id,
               path: pathHelper.getPath(node.id),
-              source: await fileService.loadFileContent(node.id),
+              source: await fetch(
+                workspace.items.find(x => x.id === node.id)!.url +
+                  '?c=' +
+                  Date.now()
+              ).then(x => x.text()),
             });
           }
         })
@@ -136,7 +166,8 @@ export function EditorModule(props: EditorModuleProps) {
         setState(draft => {
           delete draft.dirtyMap[fileId];
         });
-        void fileService.saveFile(fileId, content);
+        void s3Service.updateFile(fileId, content);
+        // void fileService.saveFile(fileId, content);
         bundlerService.loadCode();
       });
       if (tabsState.activeTabId) {
