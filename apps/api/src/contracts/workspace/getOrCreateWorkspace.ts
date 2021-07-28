@@ -8,9 +8,44 @@ import {
 import { WorkspaceNodeCollection } from '../../collections/WorkspaceNode';
 import { AppError } from '../../common/errors';
 import { renameId } from '../../common/helper';
+import { mapWorkspaceS3Auth } from '../../common/mapper';
 import { dispatchTask } from '../../dispatch';
 import { Workspace } from '../../generated';
 import { createContract, createGraphqlBinding } from '../../lib';
+import { AppUser } from '../../types';
+import { renewWorkspaceAuth } from './_common';
+
+async function _getOrCreate(
+  appUser: AppUser,
+  {
+    dedupKey,
+    challengeUniqId,
+  }: {
+    dedupKey: string;
+    challengeUniqId: string;
+  }
+) {
+  const existing = await WorkspaceCollection.findOne({ dedupKey });
+  if (existing) {
+    return existing;
+  }
+  const workspace: WorkspaceModel = {
+    _id: new ObjectID(),
+    challengeUniqId: challengeUniqId,
+    userId: appUser.id,
+    dedupKey,
+    isReady: false,
+    s3Auth: null!,
+  };
+  await WorkspaceCollection.insertOne(workspace);
+  await dispatchTask({
+    type: 'PrepareWorkspace',
+    payload: {
+      workspaceId: workspace._id.toHexString(),
+    },
+  });
+  return workspace;
+}
 
 export const getOrCreateWorkspace = createContract(
   'workspace.getOrCreateWorkspace'
@@ -31,35 +66,20 @@ export const getOrCreateWorkspace = createContract(
       throw new AppError('Challenge not found: ' + values.challengeUniqId);
     }
     const dedupKey = `${values.challengeUniqId}_${appUser.id}_default`;
-    const existing = await WorkspaceCollection.findOne({ dedupKey });
-    if (existing) {
-      const files = await WorkspaceNodeCollection.findAll({
-        workspaceId: existing._id,
-      });
-      return {
-        id: existing._id.toHexString(),
-        isReady: existing.isReady,
-        items: files.map(renameId),
-      };
-    }
-    const workspace: WorkspaceModel = {
-      _id: new ObjectID(),
-      challengeUniqId: values.challengeUniqId,
-      userId: appUser.id,
+    const workspace = await _getOrCreate(appUser, {
       dedupKey,
-      isReady: false,
-    };
-    await WorkspaceCollection.insertOne(workspace);
-    await dispatchTask({
-      type: 'PrepareWorkspace',
-      payload: {
-        workspaceId: workspace._id.toHexString(),
-      },
+      challengeUniqId: values.challengeUniqId,
     });
+    await renewWorkspaceAuth(workspace);
+    const files = await WorkspaceNodeCollection.findAll({
+      workspaceId: workspace._id,
+    });
+
     return {
       id: workspace._id.toHexString(),
       isReady: workspace.isReady,
-      items: [],
+      items: files.map(renameId),
+      s3Auth: mapWorkspaceS3Auth(workspace.s3Auth),
     };
   });
 

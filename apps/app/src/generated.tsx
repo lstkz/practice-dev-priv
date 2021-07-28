@@ -223,6 +223,11 @@ export type Query = {
   getAvatarUploadUrl: PresignedPost;
   getNotificationSettings: NotificationSettings;
   getAwsUploadContentAuth: AwsUploadContentAuth;
+  getWorkspaceS3Auth: WorkspaceS3Auth;
+};
+
+export type QueryGetWorkspaceS3AuthArgs = {
+  workspaceId: Scalars['String'];
 };
 
 export type RegisterInput = {
@@ -286,6 +291,7 @@ export type Workspace = {
   id: Scalars['String'];
   isReady: Scalars['Boolean'];
   items: Array<WorkspaceNode>;
+  s3Auth: WorkspaceS3Auth;
 };
 
 export type WorkspaceNode = {
@@ -301,6 +307,13 @@ export enum WorkspaceNodeType {
   File = 'file',
   Directory = 'directory',
 }
+
+export type WorkspaceS3Auth = {
+  __typename?: 'WorkspaceS3Auth';
+  bucketName: Scalars['String'];
+  credentials: AwsCredentials;
+  credentialsExpiresAt: Scalars['String'];
+};
 
 export type LoginGithubMutationVariables = Exact<{
   code: Scalars['String'];

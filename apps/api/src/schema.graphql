@@ -11,6 +11,7 @@ type Query {
   getAvatarUploadUrl: PresignedPost!
   getNotificationSettings: NotificationSettings!
   getAwsUploadContentAuth: AwsUploadContentAuth!
+  getWorkspaceS3Auth(workspaceId: String!): WorkspaceS3Auth!
 }
 
 type Mutation {
@@ -63,6 +64,7 @@ type Workspace {
   id: String!
   isReady: Boolean!
   items: [WorkspaceNode!]!
+  s3Auth: WorkspaceS3Auth!
 }
 
 enum WorkspaceNodeType {
@@ -91,6 +93,12 @@ type AwsCredentials {
 type AwsUploadContentAuth {
   bucketName: String!
   credentials: AwsCredentials!
+}
+
+type WorkspaceS3Auth {
+  bucketName: String!
+  credentials: AwsCredentials!
+  credentialsExpiresAt: String!
 }
 
 input UpdateModuleInput {

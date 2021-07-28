@@ -82,12 +82,14 @@ export async function createSampleWorkspaces() {
       challengeUniqId: '1_2',
       isReady: true,
       userId: getId(1),
+      s3Auth: null!,
     },
     {
       _id: getId(11),
       challengeUniqId: '1_2',
       isReady: true,
       userId: getId(1),
+      s3Auth: null!,
     },
   ]);
 }

@@ -4,6 +4,7 @@ import crypto from 'crypto';
 import cryptoAsync from 'mz/crypto';
 import { Response } from 'node-fetch';
 import { WorkspaceNodeModel } from '../collections/WorkspaceNode';
+import { ObjectID } from 'mongodb2';
 
 const SECURITY = {
   SALT_LENGTH: 64,
@@ -150,5 +151,9 @@ export function revertRenameId<T extends { id: any }>(
 }
 
 export function getWorkspaceNodeS3Key(item: WorkspaceNodeModel) {
-  return `cdn/workspace/${item.workspaceId}/${item._id}`;
+  return `${getWorkspaceS3Prefix(item.workspaceId)}${item._id}`;
+}
+
+export function getWorkspaceS3Prefix(workspaceId: ObjectID) {
+  return `cdn/workspace/${workspaceId}/`;
 }

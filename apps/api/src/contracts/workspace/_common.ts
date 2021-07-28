@@ -1,5 +1,6 @@
 import { ForbiddenError } from 'apollo-server';
 import { ObjectID } from 'mongodb2';
+import { WorkspaceModel } from '../../collections/Workspace';
 import {
   WorkspaceNodeCollection,
   WorkspaceNodeModel,
@@ -7,6 +8,7 @@ import {
 } from '../../collections/WorkspaceNode';
 import { AppError } from '../../common/errors';
 import { AppUser } from '../../types';
+import { createWorkspaceS3Auth } from './createWorkspaceS3Auth';
 
 export async function getNodeByIdWithCheck(appUser: AppUser, id: string) {
   const node = await WorkspaceNodeCollection.findById(id);
@@ -44,5 +46,14 @@ export async function ensureNodeUnique(node: WorkspaceNodeModel) {
   });
   if (existing && existing._id !== node._id) {
     throw new AppError('Duplicated node name in the same folder.');
+  }
+}
+
+export async function renewWorkspaceAuth(workspace: WorkspaceModel) {
+  if (
+    !workspace.s3Auth ||
+    workspace.s3Auth.credentialsExpiresAt.getTime() < Date.now()
+  ) {
+    workspace.s3Auth = await createWorkspaceS3Auth(workspace._id);
   }
 }

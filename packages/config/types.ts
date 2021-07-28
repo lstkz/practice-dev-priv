@@ -14,6 +14,9 @@ export interface AppConfig {
     url: string;
     dbName: string;
   };
+  workspace: {
+    expirationHours: number;
+  };
   aws: {
     region: string;
     s3Bucket: string;
@@ -27,7 +30,7 @@ export interface AppConfig {
     port: number;
   };
   iframe: {
-    parentOrigin: string,
+    parentOrigin: string;
     origin: string;
     port?: number;
   };
