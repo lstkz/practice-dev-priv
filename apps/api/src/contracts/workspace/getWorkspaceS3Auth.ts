@@ -5,6 +5,7 @@ import { AppError } from '../../common/errors';
 import { mapWorkspaceS3Auth } from '../../common/mapper';
 import { WorkspaceS3Auth } from '../../generated';
 import { createContract, createGraphqlBinding } from '../../lib';
+import { renewWorkspaceAuth } from './_common';
 
 export const getWorkspaceS3Auth = createContract('workspace.getWorkspaceS3Auth')
   .params('appUser', 'workspaceId')
@@ -21,6 +22,7 @@ export const getWorkspaceS3Auth = createContract('workspace.getWorkspaceS3Auth')
     if (!workspace.userId.equals(appUser.id)) {
       throw new ForbiddenError('No permission to access this workspace');
     }
+    await renewWorkspaceAuth(workspace);
     return mapWorkspaceS3Auth(workspace.s3Auth)!;
   });
 
