@@ -53,6 +53,15 @@ export type CreateWorkspaceInput = {
   challengeUniqId: Scalars['String'];
 };
 
+export type CreateWorkspaceNodeInput = {
+  id: Scalars['String'];
+  workspaceId: Scalars['String'];
+  name: Scalars['String'];
+  parentId?: Maybe<Scalars['String']>;
+  hash: Scalars['String'];
+  type: WorkspaceNodeType;
+};
+
 export type LoginInput = {
   usernameOrEmail: Scalars['String'];
   password: Scalars['String'];
@@ -82,6 +91,9 @@ export type Mutation = {
   updateModule?: Maybe<Scalars['Void']>;
   updateChallenge?: Maybe<Scalars['Void']>;
   getOrCreateWorkspace: Workspace;
+  createWorkspaceNode?: Maybe<Scalars['Void']>;
+  updateWorkspaceNode?: Maybe<Scalars['Void']>;
+  deleteWorkspaceNode?: Maybe<Scalars['Void']>;
 };
 
 export type MutationLoginArgs = {
@@ -155,6 +167,18 @@ export type MutationUpdateChallengeArgs = {
 
 export type MutationGetOrCreateWorkspaceArgs = {
   values: CreateWorkspaceInput;
+};
+
+export type MutationCreateWorkspaceNodeArgs = {
+  values: CreateWorkspaceNodeInput;
+};
+
+export type MutationUpdateWorkspaceNodeArgs = {
+  values: UpdateWorkspaceNodeInput;
+};
+
+export type MutationDeleteWorkspaceNodeArgs = {
+  id: Scalars['String'];
 };
 
 export type MyProfile = {
@@ -240,6 +264,13 @@ export type UpdateProfileInput = {
   url?: Maybe<Scalars['String']>;
 };
 
+export type UpdateWorkspaceNodeInput = {
+  id: Scalars['String'];
+  name?: Maybe<Scalars['String']>;
+  parentId?: Maybe<Scalars['String']>;
+  hash?: Maybe<Scalars['String']>;
+};
+
 export type User = {
   __typename?: 'User';
   id: Scalars['String'];
@@ -254,19 +285,19 @@ export type Workspace = {
   __typename?: 'Workspace';
   id: Scalars['String'];
   isReady: Scalars['Boolean'];
-  items: Array<WorkspaceItem>;
+  items: Array<WorkspaceNode>;
 };
 
-export type WorkspaceItem = {
-  __typename?: 'WorkspaceItem';
+export type WorkspaceNode = {
+  __typename?: 'WorkspaceNode';
   id: Scalars['String'];
   name: Scalars['String'];
   parentId?: Maybe<Scalars['String']>;
   hash: Scalars['String'];
-  type: WorkspaceItemType;
+  type: WorkspaceNodeType;
 };
 
-export enum WorkspaceItemType {
+export enum WorkspaceNodeType {
   File = 'file',
   Directory = 'directory',
 }

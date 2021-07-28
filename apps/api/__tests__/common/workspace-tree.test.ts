@@ -1,4 +1,4 @@
-import { createWorkspaceItems } from '../../src/common/workspace-tree';
+import { createWorkspaceNodes } from '../../src/common/workspace-tree';
 import { getId } from '../helper';
 
 jest.mock('uuid', () => {
@@ -8,10 +8,10 @@ jest.mock('uuid', () => {
   };
 });
 
-describe('createWorkspaceItems', () => {
+describe('createWorkspaceNodes', () => {
   it('should create a tree without directories', () => {
     expect(
-      createWorkspaceItems(
+      createWorkspaceNodes(
         {
           userId: getId(1),
           workspaceId: getId(2),
@@ -58,7 +58,7 @@ describe('createWorkspaceItems', () => {
   });
   it('should create a tree with directories', () => {
     expect(
-      createWorkspaceItems(
+      createWorkspaceNodes(
         {
           userId: getId(1),
           workspaceId: getId(2),

@@ -19,7 +19,7 @@ export const {
     require('./collections/Module'),
     require('./collections/Challenge'),
     require('./collections/Workspace'),
-    require('./collections/WorkspaceItem'),
+    require('./collections/WorkspaceNode'),
     // APPEND
   ],
   uri: config.mongodb.url,

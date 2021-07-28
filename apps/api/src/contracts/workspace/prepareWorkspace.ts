@@ -4,11 +4,12 @@ import { createContract, createTaskBinding, s3 } from '../../lib';
 import { WorkspaceCollection } from '../../collections/Workspace';
 import { ChallengeCollection } from '../../collections/Challenge';
 import {
-  WorkspaceItemCollection,
-  WorkspaceItemType,
-} from '../../collections/WorkspaceItem';
-import { createWorkspaceItems } from '../../common/workspace-tree';
+  WorkspaceNodeCollection,
+  WorkspaceNodeType,
+} from '../../collections/WorkspaceNode';
+import { createWorkspaceNodes } from '../../common/workspace-tree';
 import { config } from 'config';
+import { getWorkspaceNodeS3Key } from '../../common/helper';
 
 export const prepareWorkspace = createContract('workspace.prepareWorkspace')
   .params('workspaceId')
@@ -23,7 +24,7 @@ export const prepareWorkspace = createContract('workspace.prepareWorkspace')
     const challenge = await ChallengeCollection.findByIdOrThrow(
       workspace.challengeUniqId
     );
-    const workspaceItems = createWorkspaceItems(
+    const workspaceItems = createWorkspaceNodes(
       {
         userId: workspace.userId,
         workspaceId: workspace._id,
@@ -33,24 +34,23 @@ export const prepareWorkspace = createContract('workspace.prepareWorkspace')
 
     await Promise.all(
       workspaceItems.map(async item => {
-        if (item.type === WorkspaceItemType.File) {
+        if (item.type === WorkspaceNodeType.File) {
           if (!item.sourceS3Key) {
             throw new Error('Expected sourceS3Key');
           }
-          const s3Key = `workspace/${item.workspaceId}/${item._id}`;
-          item.s3Key = s3Key;
+          item.s3Key = getWorkspaceNodeS3Key(item);
           await s3
             .copyObject(
               {
                 Bucket: config.aws.s3Bucket,
                 CopySource: item.sourceS3Key,
-                Key: s3Key,
+                Key: item.s3Key,
               },
               undefined
             )
             .promise();
         }
-        await WorkspaceItemCollection.insertOne(item);
+        await WorkspaceNodeCollection.insertOne(item);
       })
     );
     workspace.isReady = true;

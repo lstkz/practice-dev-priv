@@ -2,9 +2,10 @@ import { gql } from 'apollo-server';
 import { mocked } from 'ts-jest/utils';
 import { WorkspaceCollection } from '../../src/collections/Workspace';
 import {
-  WorkspaceItemCollection,
-  WorkspaceItemType,
-} from '../../src/collections/WorkspaceItem';
+  WorkspaceNodeCollection,
+  WorkspaceNodeType,
+} from '../../src/collections/WorkspaceNode';
+import { getWorkspaceNodeWithUniqueKey } from '../../src/common/workspace-tree';
 import { getOrCreateWorkspace } from '../../src/contracts/workspace/getOrCreateWorkspace';
 import { dispatchTask } from '../../src/dispatch';
 import { apolloServer } from '../../src/server';
@@ -46,23 +47,25 @@ it('should return an existing workspace', async () => {
     isReady: true,
     userId: getId(1),
   });
-  await WorkspaceItemCollection.insertMany([
-    {
+  await WorkspaceNodeCollection.insertMany([
+    getWorkspaceNodeWithUniqueKey({
       _id: '1',
       hash: 'h1',
       name: 'file.tsx',
-      type: WorkspaceItemType.File,
+      parentId: null,
+      type: WorkspaceNodeType.File,
       userId: getId(1),
       workspaceId: getId(100),
-    },
-    {
+    }),
+    getWorkspaceNodeWithUniqueKey({
       _id: '2',
       hash: 'h2',
       name: 'file.tsx',
-      type: WorkspaceItemType.File,
+      parentId: null,
+      type: WorkspaceNodeType.File,
       userId: getId(1),
       workspaceId: getId(101),
-    },
+    }),
   ]);
   const ret = await getOrCreateWorkspace(await getAppUser(1), {
     challengeUniqId: '1_2',

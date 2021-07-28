@@ -5,7 +5,7 @@ import {
   WorkspaceCollection,
   WorkspaceModel,
 } from '../../collections/Workspace';
-import { WorkspaceItemCollection } from '../../collections/WorkspaceItem';
+import { WorkspaceNodeCollection } from '../../collections/WorkspaceNode';
 import { AppError } from '../../common/errors';
 import { renameId } from '../../common/helper';
 import { dispatchTask } from '../../dispatch';
@@ -33,7 +33,7 @@ export const getOrCreateWorkspace = createContract(
     const dedupKey = `${values.challengeUniqId}_${appUser.id}_default`;
     const existing = await WorkspaceCollection.findOne({ dedupKey });
     if (existing) {
-      const files = await WorkspaceItemCollection.findAll({
+      const files = await WorkspaceNodeCollection.findAll({
         workspaceId: existing._id,
       });
       return {

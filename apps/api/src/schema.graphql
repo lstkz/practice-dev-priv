@@ -38,25 +38,44 @@ type Mutation {
   updateModule(values: UpdateModuleInput!): Void
   updateChallenge(values: UpdateChallengeInput!): Void
   getOrCreateWorkspace(values: CreateWorkspaceInput!): Workspace!
+  createWorkspaceNode(values: CreateWorkspaceNodeInput!): Void
+  updateWorkspaceNode(values: UpdateWorkspaceNodeInput!): Void
+  deleteWorkspaceNode(id: String!): Void
+}
+
+input UpdateWorkspaceNodeInput {
+  id: String!
+  name: String
+  parentId: String
+  hash: String
+}
+
+input CreateWorkspaceNodeInput {
+  id: String!
+  workspaceId: String!
+  name: String!
+  parentId: String
+  hash: String!
+  type: WorkspaceNodeType!
 }
 
 type Workspace {
   id: String!
   isReady: Boolean!
-  items: [WorkspaceItem!]!
+  items: [WorkspaceNode!]!
 }
 
-enum WorkspaceItemType {
+enum WorkspaceNodeType {
   file
   directory
 }
 
-type WorkspaceItem {
+type WorkspaceNode {
   id: String!
   name: String!
   parentId: String
   hash: String!
-  type: WorkspaceItemType!
+  type: WorkspaceNodeType!
 }
 
 input CreateWorkspaceInput {

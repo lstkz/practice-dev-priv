@@ -1,22 +1,44 @@
 import { ChallengeFile } from '../collections/Challenge';
 import {
-  WorkspaceItemModel,
-  WorkspaceItemType,
-} from '../collections/WorkspaceItem';
+  WorkspaceNodeModel,
+  WorkspaceNodeType,
+} from '../collections/WorkspaceNode';
 import uuid from 'uuid';
 
-export function createWorkspaceItems(
-  baseProps: Pick<WorkspaceItemModel, 'workspaceId' | 'userId'>,
+export function getNodeUniqueKey(
+  node: Pick<WorkspaceNodeModel, 'workspaceId' | 'parentId' | 'type' | 'name'>
+) {
+  const parts = [
+    node.workspaceId,
+    node.parentId ?? '',
+    node.type,
+    node.name.toLowerCase(),
+  ];
+  return parts.join('_');
+}
+
+export function getWorkspaceNodeWithUniqueKey(
+  node: Omit<WorkspaceNodeModel, 'uniqueKey'>
+) {
+  const ret: WorkspaceNodeModel = {
+    ...node,
+    uniqueKey: getNodeUniqueKey(node),
+  };
+  return ret;
+}
+
+export function createWorkspaceNodes(
+  baseProps: Pick<WorkspaceNodeModel, 'workspaceId' | 'userId'>,
   files: ChallengeFile[]
 ) {
-  const items: WorkspaceItemModel[] = [];
-  const directoryMap: Record<string, WorkspaceItemModel> = {};
+  const items: WorkspaceNodeModel[] = [];
+  const directoryMap: Record<string, WorkspaceNodeModel> = {};
   const getDirectoryParts = (directoryPath: string) =>
     directoryPath.split('/').filter(x => x && x !== '.');
   const createDirectories = (directoryPath: string) => {
     const parts = getDirectoryParts(directoryPath);
     const currentParts: string[] = [];
-    let parent: WorkspaceItemModel | null = null;
+    let parent: WorkspaceNodeModel | null = null;
     parts.forEach(part => {
       currentParts.push(part);
       const path = currentParts.join('/');
@@ -26,9 +48,11 @@ export function createWorkspaceItems(
           _id: uuid.v4(),
           hash: 'init',
           name: part,
-          type: WorkspaceItemType.Directory,
+          type: WorkspaceNodeType.Directory,
           parentId: parent?._id ?? null,
+          uniqueKey: '',
         };
+        directoryMap[path].uniqueKey = getNodeUniqueKey(directoryMap[path]);
       }
       parent = directoryMap[path];
     });
@@ -44,15 +68,18 @@ export function createWorkspaceItems(
     return directoryMap[normalizedPath]._id;
   };
   files.forEach(file => {
-    items.push({
+    const node = {
       ...baseProps,
       _id: uuid.v4(),
       hash: 'init',
       name: file.name,
-      type: WorkspaceItemType.File,
+      type: WorkspaceNodeType.File,
       parentId: getParentId(file.directory),
       sourceS3Key: file.s3Key,
-    });
+      uniqueKey: '',
+    };
+    node.uniqueKey = getNodeUniqueKey(node);
+    items.push(node);
   });
   items.push(...Object.values(directoryMap));
   return items;
