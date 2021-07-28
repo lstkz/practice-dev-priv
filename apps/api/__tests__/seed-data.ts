@@ -1,8 +1,14 @@
 import { ChallengeCollection } from '../src/collections/Challenge';
 import { ModuleCollection } from '../src/collections/Module';
+import { WorkspaceCollection } from '../src/collections/Workspace';
+import {
+  WorkspaceNodeCollection,
+  WorkspaceNodeType,
+} from '../src/collections/WorkspaceNode';
+import { getWorkspaceNodeWithUniqueKey } from '../src/common/workspace-tree';
 import { createToken } from '../src/contracts/user/createToken';
 import { createUser } from '../src/contracts/user/_common';
-import { getId } from './helper';
+import { getId, getUUID } from './helper';
 
 export async function registerSampleUsers(isVerified = true) {
   await Promise.all([
@@ -66,5 +72,63 @@ export async function createSampleChallenges() {
         title: 'challenge 2',
       },
     ]),
+  ]);
+}
+
+export async function createSampleWorkspaces() {
+  await WorkspaceCollection.insertMany([
+    {
+      _id: getId(10),
+      challengeUniqId: '1_2',
+      isReady: true,
+      userId: getId(1),
+    },
+    {
+      _id: getId(11),
+      challengeUniqId: '1_2',
+      isReady: true,
+      userId: getId(1),
+    },
+  ]);
+}
+
+export async function createSampleWorkspaceItems() {
+  await WorkspaceNodeCollection.insertMany([
+    getWorkspaceNodeWithUniqueKey({
+      _id: getUUID(1),
+      userId: getId(1),
+      workspaceId: getId(10),
+      parentId: null,
+      hash: '123',
+      type: WorkspaceNodeType.File,
+      name: 'index.tsx',
+    }),
+    getWorkspaceNodeWithUniqueKey({
+      _id: getUUID(2),
+      userId: getId(1),
+      workspaceId: getId(10),
+      parentId: null,
+      hash: '123',
+      type: WorkspaceNodeType.Directory,
+      name: 'components',
+    }),
+    getWorkspaceNodeWithUniqueKey({
+      _id: getUUID(3),
+      userId: getId(1),
+      workspaceId: getId(10),
+      parentId: getUUID(2),
+      hash: '123',
+      type: WorkspaceNodeType.Directory,
+      name: 'forms',
+    }),
+    getWorkspaceNodeWithUniqueKey({
+      _id: getUUID(4),
+      userId: getId(1),
+      workspaceId: getId(10),
+      parentId: getUUID(3),
+      hash: '123',
+      type: WorkspaceNodeType.File,
+      name: 'Button.tsx',
+    }),
   ]);
 }

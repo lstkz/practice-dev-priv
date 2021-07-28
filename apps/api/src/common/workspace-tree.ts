@@ -1,5 +1,6 @@
 import { ChallengeFile } from '../collections/Challenge';
 import {
+  WorkspaceNodeCollection,
   WorkspaceNodeModel,
   WorkspaceNodeType,
 } from '../collections/WorkspaceNode';
@@ -83,4 +84,15 @@ export function createWorkspaceNodes(
   });
   items.push(...Object.values(directoryMap));
   return items;
+}
+
+export async function findNodeAllChildren(parentId: string) {
+  const ret: WorkspaceNodeModel[] = [];
+  const travel = async (parentId: string) => {
+    const children = await WorkspaceNodeCollection.findAll({ parentId });
+    ret.push(...children);
+    await Promise.all(children.map(child => travel(child._id)));
+  };
+  await travel(parentId);
+  return ret;
 }

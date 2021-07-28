@@ -7,7 +7,11 @@ import {
   validateValidParentId,
 } from './_common';
 import { WorkspaceNodeCollection } from '../../collections/WorkspaceNode';
-import { getNodeUniqueKey } from '../../common/workspace-tree';
+import {
+  findNodeAllChildren,
+  getNodeUniqueKey,
+} from '../../common/workspace-tree';
+import { AppError } from '../../common/errors';
 
 export const updateWorkspaceNode = createContract(
   'workspace.updateWorkspaceNode'
@@ -36,6 +40,10 @@ export const updateWorkspaceNode = createContract(
     }
     if (values.parentId) {
       await validateValidParentId(node.workspaceId, values.parentId);
+      const children = await findNodeAllChildren(node._id);
+      if (children.some(x => x._id === values.parentId)) {
+        throw new AppError('Invalid parentId. Parent is a child of this node.');
+      }
       node.parentId = values.parentId;
     } else if (values.parentId === null) {
       node.parentId = null;

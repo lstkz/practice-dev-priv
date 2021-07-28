@@ -1,12 +1,9 @@
 import { gql } from 'apollo-server';
-import { mocked } from 'ts-jest/utils';
-import { WorkspaceCollection } from '../../src/collections/Workspace';
 import {
   WorkspaceNodeCollection,
   WorkspaceNodeType,
 } from '../../src/collections/WorkspaceNode';
 import { createWorkspaceNode } from '../../src/contracts/workspace/createWorkspaceNode';
-import { dispatchTask } from '../../src/dispatch';
 import { apolloServer } from '../../src/server';
 import {
   getAppUser,
@@ -16,32 +13,18 @@ import {
   serializeGraphqlInput,
   setupDb,
 } from '../helper';
-import { createSampleChallenges, registerSampleUsers } from '../seed-data';
-
-jest.mock('../../src/dispatch');
-
-const mocked_dispatchTask = mocked(dispatchTask);
+import {
+  createSampleChallenges,
+  createSampleWorkspaces,
+  registerSampleUsers,
+} from '../seed-data';
 
 setupDb();
 
 beforeEach(async () => {
   await registerSampleUsers();
   await createSampleChallenges();
-  await WorkspaceCollection.insertMany([
-    {
-      _id: getId(10),
-      challengeUniqId: '1_2',
-      isReady: true,
-      userId: getId(1),
-    },
-    {
-      _id: getId(11),
-      challengeUniqId: '1_2',
-      isReady: true,
-      userId: getId(1),
-    },
-  ]);
-  mocked_dispatchTask.mockClear();
+  await createSampleWorkspaces();
 });
 
 function getValidValues() {
@@ -207,6 +190,20 @@ it('should create a nested node', async () => {
       "workspaceId": "000000000000000000000010",
     }
   `);
+});
+
+it('should throw create file and directory with same name', async () => {
+  await createWorkspaceNode(await getAppUser(1), {
+    ...getValidValues(),
+    name: 'foo',
+    type: WorkspaceNodeType.Directory,
+  });
+  await createWorkspaceNode(await getAppUser(1), {
+    ...getValidValues(),
+    id: getUUID(2),
+    name: 'foo',
+    type: WorkspaceNodeType.File,
+  });
 });
 
 it('should create a node #graphql', async () => {
