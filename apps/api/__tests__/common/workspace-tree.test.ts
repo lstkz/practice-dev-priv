@@ -1,4 +1,4 @@
-import { createWorkspaceItems } from '../../src/common/workspace-tree';
+import { createWorkspaceNodes } from '../../src/common/workspace-tree';
 import { getId } from '../helper';
 
 jest.mock('uuid', () => {
@@ -8,10 +8,10 @@ jest.mock('uuid', () => {
   };
 });
 
-describe('createWorkspaceItems', () => {
+describe('createWorkspaceNodes', () => {
   it('should create a tree without directories', () => {
     expect(
-      createWorkspaceItems(
+      createWorkspaceNodes(
         {
           userId: getId(1),
           workspaceId: getId(2),
@@ -40,6 +40,7 @@ describe('createWorkspaceItems', () => {
           "parentId": null,
           "sourceS3Key": "s3key-index",
           "type": "file",
+          "uniqueKey": "000000000000000000000002__file_index.tsx",
           "userId": "000000000000000000000001",
           "workspaceId": "000000000000000000000002",
         },
@@ -50,6 +51,7 @@ describe('createWorkspaceItems', () => {
           "parentId": null,
           "sourceS3Key": "s3key-app",
           "type": "file",
+          "uniqueKey": "000000000000000000000002__file_app.tsx",
           "userId": "000000000000000000000001",
           "workspaceId": "000000000000000000000002",
         },
@@ -58,7 +60,7 @@ describe('createWorkspaceItems', () => {
   });
   it('should create a tree with directories', () => {
     expect(
-      createWorkspaceItems(
+      createWorkspaceNodes(
         {
           userId: getId(1),
           workspaceId: getId(2),
@@ -93,6 +95,7 @@ describe('createWorkspaceItems', () => {
           "parentId": null,
           "sourceS3Key": "",
           "type": "file",
+          "uniqueKey": "000000000000000000000002__file_index.tsx",
           "userId": "000000000000000000000001",
           "workspaceId": "000000000000000000000002",
         },
@@ -103,6 +106,7 @@ describe('createWorkspaceItems', () => {
           "parentId": "mock-6",
           "sourceS3Key": "",
           "type": "file",
+          "uniqueKey": "000000000000000000000002_mock-6_file_app.tsx",
           "userId": "000000000000000000000001",
           "workspaceId": "000000000000000000000002",
         },
@@ -113,6 +117,7 @@ describe('createWorkspaceItems', () => {
           "parentId": "mock-8",
           "sourceS3Key": "",
           "type": "file",
+          "uniqueKey": "000000000000000000000002_mock-8_file_button.tsx",
           "userId": "000000000000000000000001",
           "workspaceId": "000000000000000000000002",
         },
@@ -122,6 +127,7 @@ describe('createWorkspaceItems', () => {
           "name": "components",
           "parentId": null,
           "type": "directory",
+          "uniqueKey": "000000000000000000000002__directory_components",
           "userId": "000000000000000000000001",
           "workspaceId": "000000000000000000000002",
         },
@@ -131,6 +137,7 @@ describe('createWorkspaceItems', () => {
           "name": "main",
           "parentId": "mock-5",
           "type": "directory",
+          "uniqueKey": "000000000000000000000002_mock-5_directory_main",
           "userId": "000000000000000000000001",
           "workspaceId": "000000000000000000000002",
         },
@@ -140,6 +147,7 @@ describe('createWorkspaceItems', () => {
           "name": "foo",
           "parentId": "mock-6",
           "type": "directory",
+          "uniqueKey": "000000000000000000000002_mock-6_directory_foo",
           "userId": "000000000000000000000001",
           "workspaceId": "000000000000000000000002",
         },

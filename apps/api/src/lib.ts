@@ -112,6 +112,7 @@ declare module 'schema/src/StringSchema' {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface StringSchema<TReq, TNull, TOutput> {
     objectId(): StringSchema<TReq, TNull, ObjectID>;
+    uuid(): StringSchema<TReq, TNull, TOutput>;
   }
 }
 
@@ -126,6 +127,12 @@ StringSchema.prototype.objectId = function objectId(this: StringSchema) {
   return this.regex(/^[a-f0-9]{24}$/)
     .input(value => (value?.toHexString ? value.toHexString() : value))
     .output<ObjectID>(value => ObjectID.createFromHexString(value));
+};
+
+StringSchema.prototype.uuid = function uuid(this: StringSchema) {
+  return this.regex(
+    /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}$/
+  );
 };
 
 ObjectSchema.prototype.appUser = function appUser(this: ObjectSchema) {

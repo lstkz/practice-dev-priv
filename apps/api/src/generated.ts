@@ -59,6 +59,15 @@ export type CreateWorkspaceInput = {
   challengeUniqId: Scalars['String'];
 };
 
+export type CreateWorkspaceNodeInput = {
+  id: Scalars['String'];
+  workspaceId: Scalars['String'];
+  name: Scalars['String'];
+  parentId?: Maybe<Scalars['String']>;
+  hash: Scalars['String'];
+  type: WorkspaceNodeType;
+};
+
 export type LoginInput = {
   usernameOrEmail: Scalars['String'];
   password: Scalars['String'];
@@ -88,6 +97,9 @@ export type Mutation = {
   updateModule?: Maybe<Scalars['Void']>;
   updateChallenge?: Maybe<Scalars['Void']>;
   getOrCreateWorkspace: Workspace;
+  createWorkspaceNode?: Maybe<Scalars['Void']>;
+  updateWorkspaceNode?: Maybe<Scalars['Void']>;
+  deleteWorkspaceNode?: Maybe<Scalars['Void']>;
 };
 
 export type MutationLoginArgs = {
@@ -161,6 +173,18 @@ export type MutationUpdateChallengeArgs = {
 
 export type MutationGetOrCreateWorkspaceArgs = {
   values: CreateWorkspaceInput;
+};
+
+export type MutationCreateWorkspaceNodeArgs = {
+  values: CreateWorkspaceNodeInput;
+};
+
+export type MutationUpdateWorkspaceNodeArgs = {
+  values: UpdateWorkspaceNodeInput;
+};
+
+export type MutationDeleteWorkspaceNodeArgs = {
+  id: Scalars['String'];
 };
 
 export type MyProfile = {
@@ -246,6 +270,13 @@ export type UpdateProfileInput = {
   url?: Maybe<Scalars['String']>;
 };
 
+export type UpdateWorkspaceNodeInput = {
+  id: Scalars['String'];
+  name?: Maybe<Scalars['String']>;
+  parentId?: Maybe<Scalars['String']>;
+  hash?: Maybe<Scalars['String']>;
+};
+
 export type User = {
   __typename?: 'User';
   id: Scalars['String'];
@@ -260,19 +291,19 @@ export type Workspace = {
   __typename?: 'Workspace';
   id: Scalars['String'];
   isReady: Scalars['Boolean'];
-  items: Array<WorkspaceItem>;
+  items: Array<WorkspaceNode>;
 };
 
-export type WorkspaceItem = {
-  __typename?: 'WorkspaceItem';
+export type WorkspaceNode = {
+  __typename?: 'WorkspaceNode';
   id: Scalars['String'];
   name: Scalars['String'];
   parentId?: Maybe<Scalars['String']>;
   hash: Scalars['String'];
-  type: WorkspaceItemType;
+  type: WorkspaceNodeType;
 };
 
-export enum WorkspaceItemType {
+export enum WorkspaceNodeType {
   File = 'file',
   Directory = 'directory',
 }
@@ -405,6 +436,7 @@ export type ResolversTypes = {
   AwsUploadContentAuth: ResolverTypeWrapper<AwsUploadContentAuth>;
   ChallengeFileInput: ChallengeFileInput;
   CreateWorkspaceInput: CreateWorkspaceInput;
+  CreateWorkspaceNodeInput: CreateWorkspaceNodeInput;
   LoginInput: LoginInput;
   Mutation: ResolverTypeWrapper<{}>;
   MyProfile: ResolverTypeWrapper<MyProfile>;
@@ -422,11 +454,12 @@ export type ResolversTypes = {
   Int: ResolverTypeWrapper<Scalars['Int']>;
   UpdateModuleInput: UpdateModuleInput;
   UpdateProfileInput: UpdateProfileInput;
+  UpdateWorkspaceNodeInput: UpdateWorkspaceNodeInput;
   User: ResolverTypeWrapper<User>;
   Void: ResolverTypeWrapper<Scalars['Void']>;
   Workspace: ResolverTypeWrapper<Workspace>;
-  WorkspaceItem: ResolverTypeWrapper<WorkspaceItem>;
-  WorkspaceItemType: WorkspaceItemType;
+  WorkspaceNode: ResolverTypeWrapper<WorkspaceNode>;
+  WorkspaceNodeType: WorkspaceNodeType;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -438,6 +471,7 @@ export type ResolversParentTypes = {
   AwsUploadContentAuth: AwsUploadContentAuth;
   ChallengeFileInput: ChallengeFileInput;
   CreateWorkspaceInput: CreateWorkspaceInput;
+  CreateWorkspaceNodeInput: CreateWorkspaceNodeInput;
   LoginInput: LoginInput;
   Mutation: {};
   MyProfile: MyProfile;
@@ -455,10 +489,11 @@ export type ResolversParentTypes = {
   Int: Scalars['Int'];
   UpdateModuleInput: UpdateModuleInput;
   UpdateProfileInput: UpdateProfileInput;
+  UpdateWorkspaceNodeInput: UpdateWorkspaceNodeInput;
   User: User;
   Void: Scalars['Void'];
   Workspace: Workspace;
-  WorkspaceItem: WorkspaceItem;
+  WorkspaceNode: WorkspaceNode;
 };
 
 export type AuthResultResolvers<
@@ -629,6 +664,24 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationGetOrCreateWorkspaceArgs, 'values'>
   >;
+  createWorkspaceNode?: Resolver<
+    Maybe<ResolversTypes['Void']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationCreateWorkspaceNodeArgs, 'values'>
+  >;
+  updateWorkspaceNode?: Resolver<
+    Maybe<ResolversTypes['Void']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationUpdateWorkspaceNodeArgs, 'values'>
+  >;
+  deleteWorkspaceNode?: Resolver<
+    Maybe<ResolversTypes['Void']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationDeleteWorkspaceNodeArgs, 'id'>
+  >;
 };
 
 export type MyProfileResolvers<
@@ -741,22 +794,22 @@ export type WorkspaceResolvers<
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   isReady?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   items?: Resolver<
-    Array<ResolversTypes['WorkspaceItem']>,
+    Array<ResolversTypes['WorkspaceNode']>,
     ParentType,
     ContextType
   >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type WorkspaceItemResolvers<
+export type WorkspaceNodeResolvers<
   ContextType = any,
-  ParentType extends ResolversParentTypes['WorkspaceItem'] = ResolversParentTypes['WorkspaceItem']
+  ParentType extends ResolversParentTypes['WorkspaceNode'] = ResolversParentTypes['WorkspaceNode']
 > = {
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   parentId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   hash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  type?: Resolver<ResolversTypes['WorkspaceItemType'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['WorkspaceNodeType'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -776,7 +829,7 @@ export type Resolvers<ContextType = any> = {
   User?: UserResolvers<ContextType>;
   Void?: GraphQLScalarType;
   Workspace?: WorkspaceResolvers<ContextType>;
-  WorkspaceItem?: WorkspaceItemResolvers<ContextType>;
+  WorkspaceNode?: WorkspaceNodeResolvers<ContextType>;
 };
 
 /**

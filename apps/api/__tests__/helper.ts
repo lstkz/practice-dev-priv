@@ -17,6 +17,10 @@ export function getId(nr: number) {
   return ObjectID.createFromHexString(nr.toString().padStart(24, '0'));
 }
 
+export function getUUID(nr: number) {
+  return `00000000-0000-4000-8000-` + nr.toString().padStart(12, '0');
+}
+
 export function setupDb() {
   beforeAll(initDb);
   beforeEach(resetDb);
@@ -42,4 +46,13 @@ export async function getAppUser(id: number): Promise<AppUser> {
     id: dbUser._id,
     username: dbUser.username,
   };
+}
+
+export function serializeGraphqlInput(values: Record<string, any>) {
+  Object.keys(values).forEach(key => {
+    if (values[key] instanceof ObjectID) {
+      values[key] = values[key].toString();
+    }
+  });
+  return values;
 }

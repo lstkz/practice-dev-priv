@@ -3,6 +3,7 @@ import * as z from 'zod';
 import crypto from 'crypto';
 import cryptoAsync from 'mz/crypto';
 import { Response } from 'node-fetch';
+import { WorkspaceNodeModel } from '../collections/WorkspaceNode';
 
 const SECURITY = {
   SALT_LENGTH: 64,
@@ -137,4 +138,17 @@ export function renameId<T extends { _id: any }>(
   ret.id = ret._id.toString();
   delete ret._id;
   return ret;
+}
+
+export function revertRenameId<T extends { id: any }>(
+  obj: T
+): Omit<T, 'id'> & { _id: string } {
+  const ret: any = { ...obj };
+  ret._id = ret.id.toString();
+  delete ret.id;
+  return ret;
+}
+
+export function getWorkspaceNodeS3Key(item: WorkspaceNodeModel) {
+  return `cdn/workspace/${item.workspaceId}/${item._id}`;
 }

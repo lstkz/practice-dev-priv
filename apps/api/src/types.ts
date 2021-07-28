@@ -76,3 +76,5 @@ type ExtractType<T> = T extends { type: infer S } ? S : never;
 
 export type AppEventType = ExtractType<Pick<AppEvent, 'type'>>;
 export type AppTaskType = ExtractType<Pick<AppTask, 'type'>>;
+
+export type MapProps<T, K> = Omit<T, keyof K> & K;
