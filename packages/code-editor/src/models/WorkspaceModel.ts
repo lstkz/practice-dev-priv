@@ -140,6 +140,7 @@ export class WorkspaceModel {
     });
     this.codeEditor.openFile(this.state.activeTabId);
     this._syncTabs();
+    this.bundlerService.loadCode();
   }
 
   async renameNode(nodeId: string, name: string) {
@@ -163,6 +164,7 @@ export class WorkspaceModel {
         this.codeEditor.changeFilePath(node.id, treeHelper.getPath(node.id));
       }
     });
+    this.bundlerService.loadCode();
   }
 
   openFile(id: string) {

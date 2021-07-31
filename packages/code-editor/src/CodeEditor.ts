@@ -54,6 +54,10 @@ export function createEditor(monaco: Monaco, wrapper: HTMLDivElement) {
   return editor;
 }
 
+function fixFilePath(path: string) {
+  return path.replace(/^\.\//, 'file:///');
+}
+
 interface EditorFile {
   id: string;
   path: string;
@@ -180,7 +184,7 @@ export class CodeEditor {
     const model = this.monaco.editor.createModel(
       file.source,
       'typescript',
-      this.monaco.Uri.parse(file.path.replace(/^\.\//, 'file:///'))
+      this.monaco.Uri.parse(fixFilePath(file.path))
     );
     this.models[file.id] = model;
     this.modelCommittedText[file.id] = file.source;
@@ -236,7 +240,7 @@ export class CodeEditor {
     const model = this.monaco.editor.createModel(
       currentModel.getValue(),
       'typescript',
-      this.monaco.Uri.parse(path)
+      this.monaco.Uri.parse(fixFilePath(path))
     );
     this.models[fileId] = model;
     if (this.activeId === fileId) {
