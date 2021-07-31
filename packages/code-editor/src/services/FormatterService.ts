@@ -5,13 +5,15 @@ interface CallbackDefer {
   reject: (err: any) => void;
 }
 
-export class Formatter {
+export class FormatterService {
   private worker: Worker = null!;
   private version = 0;
   private deferMap: Record<number, CallbackDefer> = {};
 
   constructor(private monaco: Monaco) {
-    this.worker = new Worker(new URL('./FormatterWorker.ts', import.meta.url));
+    this.worker = new Worker(
+      new URL('./FormatterService.worker.ts', import.meta.url)
+    );
     this.worker.addEventListener('message', e => {
       const action = e.data as FormatterCallbackAction;
       const { version } = action.payload;

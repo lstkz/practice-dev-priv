@@ -1,10 +1,10 @@
 import type { editor } from 'monaco-editor';
-import { Themer } from './services/Themer';
+import { ThemeService } from './services/ThemeService';
 import DarkThemeNew from './themes/dark-theme-new.json';
-import { Highlighter } from './services/Highlighter';
+import { HighlighterService } from './services/HighlighterService';
 import { Monaco } from './types';
-import { CallbackMap, EditorEventEmitter } from './lib/EditorEventEmitter';
-import { Formatter } from './services/Formatter';
+import { FormatterService } from './services/FormatterService';
+import { TypedEventEmitter } from './lib/TypedEventEmitter';
 
 export function createEditor(monaco: Monaco, wrapper: HTMLDivElement) {
   monaco.editor.defineTheme('myCustomTheme', {
@@ -58,26 +58,31 @@ interface EditorFile {
   source: string;
 }
 
+export interface CallbackMap {
+  modified: (data: { fileId: string; hasChanges: boolean }) => void;
+  saved: (data: { fileId: string; content: string }) => void;
+}
+
 export class CodeEditor {
   private editor: editor.IStandaloneCodeEditor = null!;
-  private themer: Themer = null!;
-  private formatter: Formatter = null!;
-  private highlighter: Highlighter = null!;
+  private themer: ThemeService = null!;
+  private formatter: FormatterService = null!;
+  private highlighter: HighlighterService = null!;
   private models: Record<string, editor.ITextModel> = {};
   private modelCommittedText: Record<string, string> = {};
   private monaco: Monaco = null!;
   private activeId: null | string = null;
   private dirtyMap: Record<string, boolean> = {};
-  private emitter = new EditorEventEmitter();
+  private emitter = new TypedEventEmitter<CallbackMap>();
 
   init(monaco: Monaco, wrapper: HTMLDivElement) {
     this.monaco = monaco;
     this.editor = createEditor(monaco, wrapper);
-    this.themer = new Themer();
+    this.themer = new ThemeService();
     this.themer.loadTheme(DarkThemeNew as any);
     this.themer.injectStyles();
-    this.highlighter = new Highlighter(monaco, this.editor, this.themer);
-    this.formatter = new Formatter(monaco);
+    this.highlighter = new HighlighterService(monaco, this.editor, this.themer);
+    this.formatter = new FormatterService(monaco);
     this.changeCommandKeybinding(
       'editor.action.triggerSuggest',
       monaco.KeyMod.CtrlCmd | monaco.KeyCode.Space

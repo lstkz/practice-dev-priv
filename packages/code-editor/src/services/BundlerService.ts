@@ -1,10 +1,22 @@
 import { CodeEditor } from '../CodeEditor';
+import { BundlerAction, BundlerCallbackAction, SourceCode } from '../types';
 import { BrowserPreviewService } from './BrowserPreviewService';
-import { Bundler } from './Bundler';
+
+export interface BundleOptions {
+  input: string;
+  modules: Record<string, SourceCode>;
+}
+
+interface CallbackDefer {
+  resolve: (code: string) => void;
+  reject: (err: any) => void;
+}
 
 export class BundlerService {
-  private bundler: Bundler = null!;
   private inputFile: string | null = null;
+  private worker: Worker = null!;
+  private version = 1;
+  private defer: CallbackDefer = null!;
 
   constructor(
     private browserPreviewService: BrowserPreviewService,
@@ -12,7 +24,48 @@ export class BundlerService {
   ) {}
 
   init() {
-    this.bundler = new Bundler();
+    this.worker = new Worker(
+      new URL('./BundlerService.worker.ts', import.meta.url)
+    );
+    this.worker.addEventListener('message', e => {
+      const action = e.data as BundlerCallbackAction;
+      const { version } = action.payload;
+      if (this.version !== version || !this.defer) {
+        return;
+      }
+      switch (action.type) {
+        case 'bundled': {
+          const { code } = action.payload;
+          this.defer.resolve(code);
+          break;
+        }
+        case 'error': {
+          const { error } = action.payload;
+          this.defer.reject(error);
+          break;
+        }
+      }
+    });
+  }
+  private async bundle(options: BundleOptions): Promise<string> {
+    const version = ++this.version;
+    return new Promise<string>((resolve, reject) => {
+      this.defer = {
+        resolve,
+        reject,
+      };
+      this.sendMessage({
+        type: 'bundle',
+        payload: {
+          ...options,
+          version,
+        },
+      });
+    });
+  }
+
+  dispose() {
+    this.worker.terminate();
   }
 
   setInputFile(inputFile: string) {
@@ -25,8 +78,8 @@ export class BundlerService {
     });
   }
 
-  dispose() {
-    this.bundler.dispose();
+  private sendMessage(action: BundlerAction) {
+    this.worker.postMessage(action);
   }
 
   private async loadCodeAsync() {
@@ -34,7 +87,7 @@ export class BundlerService {
       throw new Error('inputFile not set');
     }
     const fileMap = this.codeEditor.getFileMap();
-    const code = await this.bundler.bundle({
+    const code = await this.bundle({
       input: this.inputFile,
       modules: fileMap,
     });
