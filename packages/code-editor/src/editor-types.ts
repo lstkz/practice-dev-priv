@@ -2,6 +2,13 @@
 import type * as monacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
 import { editor as editorBase } from 'monaco-editor';
 
+export enum MarkerSeverity {
+  Hint = 1,
+  Info = 2,
+  Warning = 4,
+  Error = 8,
+}
+
 declare module 'monaco-editor' {
   export namespace editor {
     export interface StandaloneKeybindingService {

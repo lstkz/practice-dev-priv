@@ -1,8 +1,9 @@
+import * as R from 'remeda';
 import type { editor } from 'monaco-editor';
 import { ThemeService } from './services/ThemeService';
 import DarkThemeNew from './themes/dark-theme-new.json';
 import { HighlighterService } from './services/HighlighterService';
-import { Monaco } from './types';
+import { MarkerSeverity, Monaco } from './types';
 import { FormatterService } from './services/FormatterService';
 import { TypedEventEmitter } from './lib/TypedEventEmitter';
 
@@ -68,6 +69,7 @@ export interface CallbackMap {
   modified: (data: { fileId: string; hasChanges: boolean }) => void;
   saved: (data: { fileId: string; content: string }) => void;
   opened: (data: { fileId: string }) => void;
+  errorsChanged: (data: { diffErrorMap: Record<string, boolean> }) => void;
 }
 
 export class CodeEditor {
@@ -80,6 +82,7 @@ export class CodeEditor {
   private monaco: Monaco = null!;
   private activeId: null | string = null;
   private dirtyMap: Record<string, boolean> = {};
+  private errorMap: Record<string, boolean> = {};
   private emitter = new TypedEventEmitter<CallbackMap>();
 
   init(monaco: Monaco, wrapper: HTMLDivElement) {
@@ -162,6 +165,28 @@ export class CodeEditor {
       this.emitter.emit('opened', { fileId });
       return result;
     };
+
+    this.editor.onDidChangeModelDecorations(() => {
+      const markers = monaco.editor.getModelMarkers({});
+      const currentErrorMap = R.pipe(
+        markers,
+        R.filter(x => x.severity === MarkerSeverity.Error),
+        R.indexBy(x => x.resource.toString())
+      );
+      const diffErrorMap: Record<string, boolean> = {};
+      Object.keys(this.models).forEach(fileId => {
+        const model = this.models[fileId];
+        const currentHasError = !!currentErrorMap[model.uri.toString()];
+        const oldHasError = !!this.errorMap[fileId];
+        if (currentHasError != oldHasError) {
+          diffErrorMap[fileId] = currentHasError;
+        }
+      });
+      Object.assign(this.errorMap, diffErrorMap);
+      if (Object.keys(diffErrorMap).length) {
+        this.emitter.emit('errorsChanged', { diffErrorMap });
+      }
+    });
   }
 
   addEventListener<T extends keyof CallbackMap>(

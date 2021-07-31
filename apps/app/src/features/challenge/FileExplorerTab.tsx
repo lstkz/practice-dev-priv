@@ -8,7 +8,7 @@ import {
 
 export function FileExplorerTab() {
   const isLoaded = useIsEditorLoaded();
-  const { nodes } = useWorkspaceState();
+  const { nodes, nodeState } = useWorkspaceState();
   const workspaceModel = useWorkspaceModel();
   if (!isLoaded) {
     return null;
@@ -18,6 +18,7 @@ export function FileExplorerTab() {
       lockedNodesMap={{
         1: true,
       }}
+      nodeState={nodeState}
       items={nodes}
       onOpenFile={id => workspaceModel.openFile(id)}
       onNewFile={values => workspaceModel.addNew(values)}

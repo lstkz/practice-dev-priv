@@ -26,6 +26,7 @@ export function FileExplorerItem(props: FileExplorerItemProps) {
     expandedDirectories,
     hasFocus,
     lockedNodesMap,
+    nodeState,
   } = useFileExplorerState();
   const {
     toggleDirectoryExpanded,
@@ -152,7 +153,9 @@ export function FileExplorerItem(props: FileExplorerItemProps) {
             onBlur={commitEdit}
           />
         ) : (
-          item.name
+          <span css={[nodeState[item.id] && tw`text-red-500`]}>
+            {item.name}
+          </span>
         )}
         {!isEdit && (
           <ItemActions

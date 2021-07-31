@@ -8,12 +8,13 @@ interface FileTabProps {
   name: string;
   isActive?: boolean;
   hasChanges?: boolean;
+  hasError?: boolean;
   onClose: () => void;
   onOpen: () => void;
 }
 
 export function FileTab(props: FileTabProps) {
-  const { name, isActive, hasChanges, onClose, onOpen } = props;
+  const { name, isActive, hasChanges, onClose, onOpen, hasError } = props;
   return (
     <div className="group">
       <div
@@ -28,7 +29,7 @@ export function FileTab(props: FileTabProps) {
         <div tw="w-4 h-4 mr-2">
           <FileIcon name={name} />
         </div>
-        {name}
+        <span css={[hasError && tw`text-red-500`]}>{name}</span>
 
         <button
           tw="focus:outline-none hover:text-white absolute right-3 top-0 bottom-0 items-center transform justify-center leading-none hidden group-hover:flex"

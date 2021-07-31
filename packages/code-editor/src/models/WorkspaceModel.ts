@@ -17,6 +17,7 @@ export interface WorkspaceState {
   nodes: TreeNode[];
   tabs: OpenedTab[];
   dirtyMap: Record<string, boolean>;
+  nodeState: Record<string, 'error'>;
 }
 
 function randomHash() {
@@ -40,6 +41,7 @@ export class WorkspaceModel {
         tabs: [],
         dirtyMap: {},
         nodes: [],
+        nodeState: {},
       },
       'WorkspaceTreeModel'
     );
@@ -106,6 +108,17 @@ export class WorkspaceModel {
     this.codeEditor.addEventListener('opened', ({ fileId }) => {
       this._openTab(fileId);
       this._syncTabs();
+    });
+    this.codeEditor.addEventListener('errorsChanged', ({ diffErrorMap }) => {
+      this.setState(draft => {
+        Object.keys(diffErrorMap).forEach(fileId => {
+          if (diffErrorMap[fileId]) {
+            draft.nodeState[fileId] = 'error';
+          } else {
+            delete draft.nodeState[fileId];
+          }
+        });
+      });
     });
     if (tabsState.activeTabId) {
       this.codeEditor.openFile(tabsState.activeTabId);
