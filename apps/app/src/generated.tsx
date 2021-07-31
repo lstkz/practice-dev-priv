@@ -301,7 +301,6 @@ export type WorkspaceNode = {
   parentId?: Maybe<Scalars['String']>;
   hash: Scalars['String'];
   type: WorkspaceNodeType;
-  url: Scalars['String'];
 };
 
 export enum WorkspaceNodeType {
@@ -392,7 +391,7 @@ export type GetOrCreateWorkspaceMutation = { __typename?: 'Mutation' } & {
       items: Array<
         { __typename?: 'WorkspaceNode' } & Pick<
           WorkspaceNode,
-          'id' | 'name' | 'parentId' | 'hash' | 'type' | 'url'
+          'id' | 'name' | 'parentId' | 'hash' | 'type'
         >
       >;
       s3Auth: { __typename?: 'WorkspaceS3Auth' } & Pick<
@@ -1032,7 +1031,6 @@ export const GetOrCreateWorkspaceDocument = gql`
         parentId
         hash
         type
-        url
       }
       s3Auth {
         bucketName

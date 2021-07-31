@@ -101,7 +101,6 @@ gql`
         parentId
         hash
         type
-        url
       }
       s3Auth {
         bucketName

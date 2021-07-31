@@ -78,7 +78,6 @@ type WorkspaceNode {
   parentId: String
   hash: String!
   type: WorkspaceNodeType!
-  url: String!
 }
 
 input CreateWorkspaceInput {
