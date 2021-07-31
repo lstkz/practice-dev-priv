@@ -16,13 +16,23 @@ export class S3Service {
   }
 
   async updateFile(fileId: string, content: string) {
-    const key = `cdn/workspace/${this.workspaceId}/${fileId}`;
     await this.s3
       .upload({
         Bucket: this.bucketName,
-        Key: key,
+        Key: this._getS3Key(fileId),
         Body: content,
       })
       .promise();
+  }
+
+  async deleteFile(fileId: string) {
+    await this.s3.deleteObject({
+      Bucket: this.bucketName,
+      Key: this._getS3Key(fileId),
+    });
+  }
+
+  private _getS3Key(fileId: string) {
+    return `cdn/workspace/${this.workspaceId}/${fileId}`;
   }
 }

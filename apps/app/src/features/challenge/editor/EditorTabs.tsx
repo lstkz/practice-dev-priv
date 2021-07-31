@@ -1,9 +1,9 @@
-import { useEditorActions, useEditorState } from './EditorModule';
+import { useWorkspaceModel, useWorkspaceState } from './EditorModule';
 import { FileTab } from './FileTab';
 
 export function EditorTabs() {
-  const { tabs, activeTabId: activeFile, dirtyMap } = useEditorState();
-  const { closeFile, openFile } = useEditorActions();
+  const { tabs, activeTabId: activeFile, dirtyMap } = useWorkspaceState();
+  const workspaceModel = useWorkspaceModel();
   return (
     <div tw="flex space-x-0.5 overflow-hidden">
       {tabs.map(tab => (
@@ -11,8 +11,8 @@ export function EditorTabs() {
           key={tab.id}
           name={tab.name}
           isActive={tab.id === activeFile}
-          onOpen={() => openFile(tab.id)}
-          onClose={() => closeFile(tab.id)}
+          onOpen={() => workspaceModel.openFile(tab.id)}
+          onClose={() => workspaceModel.closeFile(tab.id)}
           hasChanges={dirtyMap[tab.id]}
         />
       ))}

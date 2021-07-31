@@ -1,10 +1,15 @@
 import React from 'react';
 import { FileExplorer } from '../../components/FileExplorer/FileExplorer';
-import { useEditorActions, useEditorState } from './editor/EditorModule';
+import {
+  useIsEditorLoaded,
+  useWorkspaceModel,
+  useWorkspaceState,
+} from './editor/EditorModule';
 
 export function FileExplorerTab() {
-  const { nodes, isLoaded } = useEditorState();
-  const { openFile, addNew, removeNode, renameNode } = useEditorActions();
+  const isLoaded = useIsEditorLoaded();
+  const { nodes } = useWorkspaceState();
+  const workspaceModel = useWorkspaceModel();
   if (!isLoaded) {
     return null;
   }
@@ -14,10 +19,10 @@ export function FileExplorerTab() {
         1: true,
       }}
       items={nodes}
-      onOpenFile={openFile}
-      onNewFile={addNew}
-      onRemoved={removeNode}
-      onRename={renameNode}
+      onOpenFile={id => workspaceModel.openFile(id)}
+      onNewFile={values => workspaceModel.addNew(values)}
+      onRemoved={id => workspaceModel.removeNode(id)}
+      onRename={(id, name) => workspaceModel.renameNode(id, name)}
     />
   );
 }

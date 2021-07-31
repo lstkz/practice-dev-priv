@@ -407,6 +407,33 @@ export type GetOrCreateWorkspaceMutation = { __typename?: 'Mutation' } & {
     };
 };
 
+export type UpdateWorkspaceNodeMutationVariables = Exact<{
+  values: UpdateWorkspaceNodeInput;
+}>;
+
+export type UpdateWorkspaceNodeMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'updateWorkspaceNode'
+>;
+
+export type DeleteWorkspaceNodeMutationVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+export type DeleteWorkspaceNodeMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'deleteWorkspaceNode'
+>;
+
+export type CreateWorkspaceNodeMutationVariables = Exact<{
+  values: CreateWorkspaceNodeInput;
+}>;
+
+export type CreateWorkspaceNodeMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'createWorkspaceNode'
+>;
+
 export type ConfirmResetPasswordMutationVariables = Exact<{
   code: Scalars['String'];
   newPassword: Scalars['String'];
@@ -1059,6 +1086,150 @@ export type GetOrCreateWorkspaceMutationResult =
 export type GetOrCreateWorkspaceMutationOptions = Apollo.BaseMutationOptions<
   GetOrCreateWorkspaceMutation,
   GetOrCreateWorkspaceMutationVariables
+>;
+export const UpdateWorkspaceNodeDocument = gql`
+  mutation UpdateWorkspaceNode($values: UpdateWorkspaceNodeInput!) {
+    updateWorkspaceNode(values: $values)
+  }
+`;
+export type UpdateWorkspaceNodeMutationFn = Apollo.MutationFunction<
+  UpdateWorkspaceNodeMutation,
+  UpdateWorkspaceNodeMutationVariables
+>;
+
+/**
+ * __useUpdateWorkspaceNodeMutation__
+ *
+ * To run a mutation, you first call `useUpdateWorkspaceNodeMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateWorkspaceNodeMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateWorkspaceNodeMutation, { data, loading, error }] = useUpdateWorkspaceNodeMutation({
+ *   variables: {
+ *      values: // value for 'values'
+ *   },
+ * });
+ */
+export function useUpdateWorkspaceNodeMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    UpdateWorkspaceNodeMutation,
+    UpdateWorkspaceNodeMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    UpdateWorkspaceNodeMutation,
+    UpdateWorkspaceNodeMutationVariables
+  >(UpdateWorkspaceNodeDocument, options);
+}
+export type UpdateWorkspaceNodeMutationHookResult = ReturnType<
+  typeof useUpdateWorkspaceNodeMutation
+>;
+export type UpdateWorkspaceNodeMutationResult =
+  Apollo.MutationResult<UpdateWorkspaceNodeMutation>;
+export type UpdateWorkspaceNodeMutationOptions = Apollo.BaseMutationOptions<
+  UpdateWorkspaceNodeMutation,
+  UpdateWorkspaceNodeMutationVariables
+>;
+export const DeleteWorkspaceNodeDocument = gql`
+  mutation DeleteWorkspaceNode($id: String!) {
+    deleteWorkspaceNode(id: $id)
+  }
+`;
+export type DeleteWorkspaceNodeMutationFn = Apollo.MutationFunction<
+  DeleteWorkspaceNodeMutation,
+  DeleteWorkspaceNodeMutationVariables
+>;
+
+/**
+ * __useDeleteWorkspaceNodeMutation__
+ *
+ * To run a mutation, you first call `useDeleteWorkspaceNodeMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteWorkspaceNodeMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteWorkspaceNodeMutation, { data, loading, error }] = useDeleteWorkspaceNodeMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteWorkspaceNodeMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    DeleteWorkspaceNodeMutation,
+    DeleteWorkspaceNodeMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    DeleteWorkspaceNodeMutation,
+    DeleteWorkspaceNodeMutationVariables
+  >(DeleteWorkspaceNodeDocument, options);
+}
+export type DeleteWorkspaceNodeMutationHookResult = ReturnType<
+  typeof useDeleteWorkspaceNodeMutation
+>;
+export type DeleteWorkspaceNodeMutationResult =
+  Apollo.MutationResult<DeleteWorkspaceNodeMutation>;
+export type DeleteWorkspaceNodeMutationOptions = Apollo.BaseMutationOptions<
+  DeleteWorkspaceNodeMutation,
+  DeleteWorkspaceNodeMutationVariables
+>;
+export const CreateWorkspaceNodeDocument = gql`
+  mutation CreateWorkspaceNode($values: CreateWorkspaceNodeInput!) {
+    createWorkspaceNode(values: $values)
+  }
+`;
+export type CreateWorkspaceNodeMutationFn = Apollo.MutationFunction<
+  CreateWorkspaceNodeMutation,
+  CreateWorkspaceNodeMutationVariables
+>;
+
+/**
+ * __useCreateWorkspaceNodeMutation__
+ *
+ * To run a mutation, you first call `useCreateWorkspaceNodeMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateWorkspaceNodeMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createWorkspaceNodeMutation, { data, loading, error }] = useCreateWorkspaceNodeMutation({
+ *   variables: {
+ *      values: // value for 'values'
+ *   },
+ * });
+ */
+export function useCreateWorkspaceNodeMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    CreateWorkspaceNodeMutation,
+    CreateWorkspaceNodeMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    CreateWorkspaceNodeMutation,
+    CreateWorkspaceNodeMutationVariables
+  >(CreateWorkspaceNodeDocument, options);
+}
+export type CreateWorkspaceNodeMutationHookResult = ReturnType<
+  typeof useCreateWorkspaceNodeMutation
+>;
+export type CreateWorkspaceNodeMutationResult =
+  Apollo.MutationResult<CreateWorkspaceNodeMutation>;
+export type CreateWorkspaceNodeMutationOptions = Apollo.BaseMutationOptions<
+  CreateWorkspaceNodeMutation,
+  CreateWorkspaceNodeMutationVariables
 >;
 export const ConfirmResetPasswordDocument = gql`
   mutation ConfirmResetPassword($code: String!, $newPassword: String!) {
