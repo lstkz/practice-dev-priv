@@ -19,6 +19,5 @@ export function mapWorkspaceS3Auth(
   return {
     bucketName: auth.bucketName,
     credentials: auth.credentials,
-    credentialsExpiresAt: auth.credentialsExpiresAt.toISOString(),
   };
 }

@@ -4,7 +4,7 @@ import {
   WorkspaceNodeModel,
   WorkspaceNodeType,
 } from '../collections/WorkspaceNode';
-import uuid from 'uuid';
+import * as uuid from 'uuid';
 
 export function getNodeUniqueKey(
   node: Pick<WorkspaceNodeModel, 'workspaceId' | 'parentId' | 'type' | 'name'>

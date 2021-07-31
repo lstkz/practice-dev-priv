@@ -20,7 +20,7 @@ export const createWorkspaceS3Auth = createContract(
         {
           Name: 'file-upload',
           DurationSeconds:
-            getDuration(config.workspace.expirationHours, 'h') * 60 * 60,
+            getDuration(config.workspace.expirationHours, 'h') / 1000,
           Policy: JSON.stringify(
             {
               Version: '2012-10-17',
@@ -39,7 +39,6 @@ export const createWorkspaceS3Auth = createContract(
         undefined
       )
       .promise();
-
     return {
       bucketName: config.aws.s3Bucket,
       credentials: {

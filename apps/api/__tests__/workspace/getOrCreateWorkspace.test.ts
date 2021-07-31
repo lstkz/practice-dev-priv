@@ -107,7 +107,6 @@ Object {
       "secretAccessKey": "secret1",
       "sessionToken": "token1",
     },
-    "credentialsExpiresAt": "1970-01-01T02:30:00.001Z",
   },
 }
 `);

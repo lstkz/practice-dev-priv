@@ -83,7 +83,7 @@ self.addEventListener('message', async event => {
         version,
       },
     });
-  } catch (e) {
+  } catch (e: any) {
     console.error('bundler error', e);
     sendMessage({
       type: 'error',

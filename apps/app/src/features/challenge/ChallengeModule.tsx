@@ -13,6 +13,12 @@ import {
   RIGHT_DEFAULT,
 } from './const';
 import { EditorModule } from './editor/EditorModule';
+import { getApolloClient } from 'src/getApolloClient';
+import {
+  GetOrCreateWorkspaceDocument,
+  GetOrCreateWorkspaceMutation,
+  Workspace,
+} from 'src/generated';
 
 interface Actions {
   setLeftSidebarTab: (leftSidebarTab: LeftSidebarTab | null) => void;
@@ -20,6 +26,7 @@ interface Actions {
 }
 
 interface State {
+  workspace: Workspace;
   initialLeftSidebar: number;
   initialRightSidebar: number;
   leftSidebarTab: LeftSidebarTab | null;
@@ -38,9 +45,10 @@ export type RightSidebarTab = 'preview' | 'demo';
 const [Provider, useContext] = createModuleContext<State, Actions>();
 
 export function ChallengeModule(props: ChallengeSSRProps) {
-  const { initialLeftSidebar, initialRightSidebar } = props;
+  const { initialLeftSidebar, initialRightSidebar, workspace } = props;
   const [state, setState] = useImmer<State>(
     {
+      workspace,
       initialLeftSidebar,
       initialRightSidebar,
       leftSidebarTab: 'details',
@@ -63,7 +71,7 @@ export function ChallengeModule(props: ChallengeSSRProps) {
 
   return (
     <Provider state={state} actions={actions}>
-      <EditorModule challengeId={1}>
+      <EditorModule challengeId={1} workspace={workspace}>
         <ChallengePage />
       </EditorModule>
     </Provider>
@@ -83,9 +91,25 @@ export type ChallengeSSRProps = InferGetServerSidePropsType<
 >;
 
 gql`
-  query GetChallenge {
-    me {
+  mutation GetOrCreateWorkspace {
+    getOrCreateWorkspace(values: { challengeUniqId: "2_1" }) {
       id
+      isReady
+      items {
+        id
+        name
+        parentId
+        hash
+        type
+      }
+      s3Auth {
+        bucketName
+        credentials {
+          accessKeyId
+          secretAccessKey
+          sessionToken
+        }
+      }
     }
   }
 `;
@@ -102,13 +126,13 @@ export const getServerSideProps = createGetServerSideProps(async ctx => {
   const initialLeftSidebar = getCookieNum(LEFT_COOKIE_NAME, LEFT_DEFAULT);
   const initialRightSidebar = getCookieNum(RIGHT_COOKIE_NAME, RIGHT_DEFAULT);
 
-  // const client = getApolloClient(ctx);
-  // const ret = await client.query<GetChallengeQuery>({
-  //   query: GetChallengeDocument,
-  // });
+  const client = getApolloClient(ctx);
+  const ret = await client.mutate<GetOrCreateWorkspaceMutation>({
+    mutation: GetOrCreateWorkspaceDocument,
+  });
   return {
-    // props: ret.data,
     props: {
+      workspace: ret.data!.getOrCreateWorkspace,
       initialLeftSidebar,
       initialRightSidebar,
     },

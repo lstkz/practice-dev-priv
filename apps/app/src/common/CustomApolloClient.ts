@@ -81,7 +81,9 @@ export class CustomApolloClient extends ApolloClient<NormalizedCacheObject> {
             mainLink
           )
         : mainLink,
-      cache: new InMemoryCache(),
+      cache: new InMemoryCache({
+        addTypename: false,
+      }),
     });
     this.accessToken = null;
     this.ctx = ctx;

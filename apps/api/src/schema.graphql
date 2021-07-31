@@ -98,7 +98,6 @@ type AwsUploadContentAuth {
 type WorkspaceS3Auth {
   bucketName: String!
   credentials: AwsCredentials!
-  credentialsExpiresAt: String!
 }
 
 input UpdateModuleInput {

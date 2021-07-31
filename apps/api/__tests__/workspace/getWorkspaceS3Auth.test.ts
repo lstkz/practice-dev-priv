@@ -44,7 +44,7 @@ it('should throw if no permission', async () => {
 });
 
 it('should it create credentials if null', async () => {
-  const workspace = await WorkspaceCollection.findByIdOrThrow(getId(10));
+  let workspace = await WorkspaceCollection.findByIdOrThrow(getId(10));
   workspace.s3Auth = null!;
   await WorkspaceCollection.update(workspace, ['s3Auth']);
   expect(await getWorkspaceS3Auth(await getAppUser(1), getId(10)))
@@ -56,9 +56,10 @@ it('should it create credentials if null', async () => {
         "secretAccessKey": "secret1",
         "sessionToken": "token1",
       },
-      "credentialsExpiresAt": "2000-01-01T07:30:00.000Z",
     }
   `);
+  workspace = await WorkspaceCollection.findByIdOrThrow(getId(10));
+  expect(workspace.s3Auth).toBeTruthy();
 });
 
 it('should it return existing if not expired', async () => {
@@ -82,7 +83,6 @@ it('should it return existing if not expired', async () => {
         "secretAccessKey": "b",
         "sessionToken": "c",
       },
-      "credentialsExpiresAt": "2000-01-01T05:00:10.000Z",
     }
   `);
 });
@@ -108,7 +108,6 @@ it('should it return renew if expired', async () => {
         "secretAccessKey": "secret1",
         "sessionToken": "token1",
       },
-      "credentialsExpiresAt": "2000-01-01T07:30:00.000Z",
     }
   `);
 });
@@ -125,7 +124,6 @@ it('should return credentials #graphql', async () => {
               secretAccessKey
               sessionToken
             }
-            credentialsExpiresAt
           }
         }
       `,
@@ -145,7 +143,6 @@ it('should return credentials #graphql', async () => {
           "secretAccessKey": "secret1",
           "sessionToken": "token1",
         },
-        "credentialsExpiresAt": "2000-01-01T07:30:00.000Z",
       },
     }
   `);

@@ -11,7 +11,8 @@ function createBucketCDN() {
     corsRules: [
       {
         allowedOrigins: ['*'],
-        allowedMethods: ['POST', 'GET'],
+        allowedMethods: ['POST', 'GET', 'PUT', 'DELETE', 'HEAD'],
+        allowedHeaders: ['*'],
       },
     ],
   });

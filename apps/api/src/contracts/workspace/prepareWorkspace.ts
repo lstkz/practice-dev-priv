@@ -43,7 +43,7 @@ export const prepareWorkspace = createContract('workspace.prepareWorkspace')
             .copyObject(
               {
                 Bucket: config.aws.s3Bucket,
-                CopySource: item.sourceS3Key,
+                CopySource: `/${config.aws.s3Bucket}/${item.sourceS3Key}`,
                 Key: item.s3Key,
               },
               undefined

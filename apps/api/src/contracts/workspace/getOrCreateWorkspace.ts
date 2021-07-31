@@ -78,7 +78,7 @@ export const getOrCreateWorkspace = createContract(
     return {
       id: workspace._id.toHexString(),
       isReady: workspace.isReady,
-      items: files.map(renameId),
+      items: files.map(file => renameId(file)),
       s3Auth: mapWorkspaceS3Auth(workspace.s3Auth),
     };
   });

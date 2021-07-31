@@ -318,7 +318,6 @@ export type WorkspaceS3Auth = {
   __typename?: 'WorkspaceS3Auth';
   bucketName: Scalars['String'];
   credentials: AwsCredentials;
-  credentialsExpiresAt: Scalars['String'];
 };
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
@@ -842,11 +841,6 @@ export type WorkspaceS3AuthResolvers<
   bucketName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   credentials?: Resolver<
     ResolversTypes['AwsCredentials'],
-    ParentType,
-    ContextType
-  >;
-  credentialsExpiresAt?: Resolver<
-    ResolversTypes['String'],
     ParentType,
     ContextType
   >;
