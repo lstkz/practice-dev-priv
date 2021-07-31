@@ -33,7 +33,7 @@ export function createEditor(monaco: Monaco, wrapper: HTMLDivElement) {
     target: monaco.languages.typescript.ScriptTarget.Latest,
     allowNonTsExtensions: true,
     moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
-    module: monaco.languages.typescript.ModuleKind.CommonJS,
+    module: monaco.languages.typescript.ModuleKind.ESNext,
     noEmit: true,
     esModuleInterop: true,
     strict: true,
@@ -45,11 +45,17 @@ export function createEditor(monaco: Monaco, wrapper: HTMLDivElement) {
   });
   monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true);
   monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
-    noSemanticValidation: false,
-    noSyntaxValidation: false,
+    // noSemanticValidation: false,
+    // noSyntaxValidation: false,
   });
 
-  return monaco.editor.create(wrapper, properties);
+  const editor = monaco.editor.create(wrapper, properties, {});
+
+  return editor;
+}
+
+function fixFilePath(path: string) {
+  return path.replace(/^\.\//, 'file:///');
 }
 
 interface EditorFile {
@@ -61,6 +67,7 @@ interface EditorFile {
 export interface CallbackMap {
   modified: (data: { fileId: string; hasChanges: boolean }) => void;
   saved: (data: { fileId: string; content: string }) => void;
+  opened: (data: { fileId: string }) => void;
 }
 
 export class CodeEditor {
@@ -131,6 +138,30 @@ export class CodeEditor {
           });
         });
     });
+
+    const codeEditorService = this.editor._codeEditorService;
+    const openEditorBase =
+      codeEditorService.openCodeEditor.bind(codeEditorService);
+    codeEditorService.openCodeEditor = async (input, source) => {
+      const result = await openEditorBase(input, source);
+      if (result) {
+        return result;
+      }
+      const model = monaco.editor.getModel(input.resource);
+      const fileId = Object.keys(this.models).find(
+        fileId => this.models[fileId] === model
+      );
+      if (!fileId) {
+        return result;
+      }
+      this.editor.setModel(monaco.editor.getModel(input.resource));
+      if (input.options?.selection) {
+        this.editor.setSelection(input.options.selection);
+        this.editor.revealLine(input.options.selection.startLineNumber);
+      }
+      this.emitter.emit('opened', { fileId });
+      return result;
+    };
   }
 
   addEventListener<T extends keyof CallbackMap>(
@@ -153,7 +184,7 @@ export class CodeEditor {
     const model = this.monaco.editor.createModel(
       file.source,
       'typescript',
-      this.monaco.Uri.parse(file.path)
+      this.monaco.Uri.parse(fixFilePath(file.path))
     );
     this.models[file.id] = model;
     this.modelCommittedText[file.id] = file.source;
@@ -164,7 +195,7 @@ export class CodeEditor {
     Object.keys(this.models).forEach(fileId => {
       const model = this.models[fileId];
       const content = this.modelCommittedText[fileId];
-      map[model.uri.path.substr(1)] = {
+      map['.' + model.uri.path] = {
         code: content,
       };
     });
@@ -209,7 +240,7 @@ export class CodeEditor {
     const model = this.monaco.editor.createModel(
       currentModel.getValue(),
       'typescript',
-      this.monaco.Uri.parse(path)
+      this.monaco.Uri.parse(fixFilePath(path))
     );
     this.models[fileId] = model;
     if (this.activeId === fileId) {

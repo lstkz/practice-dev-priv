@@ -103,6 +103,10 @@ export class WorkspaceModel {
       this.fileHashMap.set(fileId, newHash);
       this.bundlerService.loadCode();
     });
+    this.codeEditor.addEventListener('opened', ({ fileId }) => {
+      this._openTab(fileId);
+      this._syncTabs();
+    });
     if (tabsState.activeTabId) {
       this.codeEditor.openFile(tabsState.activeTabId);
     }
@@ -136,6 +140,7 @@ export class WorkspaceModel {
     });
     this.codeEditor.openFile(this.state.activeTabId);
     this._syncTabs();
+    this.bundlerService.loadCode();
   }
 
   async renameNode(nodeId: string, name: string) {
@@ -159,19 +164,11 @@ export class WorkspaceModel {
         this.codeEditor.changeFilePath(node.id, treeHelper.getPath(node.id));
       }
     });
+    this.bundlerService.loadCode();
   }
 
   openFile(id: string) {
-    const file = this._getNodeById(id);
-    this.setState(draft => {
-      draft.activeTabId = id;
-      if (!draft.tabs.some(x => x.id === id)) {
-        draft.tabs.push({
-          id: id,
-          name: file.name,
-        });
-      }
-    });
+    this._openTab(id);
     this.codeEditor.openFile(id);
     this._syncTabs();
   }
@@ -234,6 +231,19 @@ export class WorkspaceModel {
 
   private setState(updater: ModelStateUpdater<WorkspaceState>) {
     this.modelState.update(updater);
+  }
+
+  private _openTab(id: string) {
+    const file = this._getNodeById(id);
+    this.setState(draft => {
+      draft.activeTabId = id;
+      if (!draft.tabs.some(x => x.id === id)) {
+        draft.tabs.push({
+          id: id,
+          name: file.name,
+        });
+      }
+    });
   }
 
   private _syncTabs() {
