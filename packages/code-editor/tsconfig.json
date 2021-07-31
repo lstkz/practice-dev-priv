@@ -1,0 +1,18 @@
+{
+  "extends": "../../base.tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "lib": [
+      "dom",
+      "DOM.Iterable",
+      "es6",
+      "ES2017.object",
+      "ES2016.Array.Include",
+      "ES2021"
+    ],
+    "resolveJsonModule": true
+  },
+  "references": [],
+  "include": ["src", "index.ts"],
+  "exclude": []
+}
