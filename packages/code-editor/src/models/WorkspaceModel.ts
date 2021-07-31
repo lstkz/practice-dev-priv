@@ -2,7 +2,7 @@ import * as R from 'remeda';
 import { doFn } from '../lib/helper';
 import { FileTreeHelper } from '../lib/tree';
 import { CodeEditor } from '../CodeEditor';
-import { IAPIService, InitWorkspaceOptions, TreeNode } from 'src/types';
+import { IAPIService, InitWorkspaceOptions, TreeNode } from '../types';
 import { BundlerService } from '../services/BundlerService';
 import { EditorStateService } from '../services/EditorStateService';
 import { ModelState, ModelStateUpdater } from '../lib/ModelState';

@@ -3,11 +3,11 @@ import { createModuleContext, useActions, useImmer } from 'context-api';
 import React from 'react';
 import { LibraryDep } from 'src/types';
 import { usePreventEditorNavigation } from './usePreventEditorNavigation';
-import { Workspace } from 'src/generated';
+import { Workspace, WorkspaceNode, WorkspaceNodeType } from 'src/generated';
 import { APIService } from './APIService';
 import { useApolloClient } from '@apollo/client';
 import { useModelState } from './useModelState';
-import { createCodeEditor, WorkspaceModel } from 'code-editor';
+import { createCodeEditor, TreeNode, WorkspaceModel } from 'code-editor';
 import { IFRAME_ORIGIN } from 'src/config';
 
 interface Actions {
@@ -58,6 +58,27 @@ function useServices(workspace: Workspace, challengeId: number) {
   }, []);
 }
 
+function mapWorkspaceNodes(nodes: WorkspaceNode[]) {
+  const ret: TreeNode[] = nodes.map(node => {
+    if (node.type === WorkspaceNodeType.Directory) {
+      return {
+        type: 'directory',
+        id: node.id,
+        name: node.name,
+        parentId: node.parentId,
+      };
+    } else {
+      return {
+        type: 'file',
+        id: node.id,
+        name: node.name,
+        parentId: node.parentId,
+      };
+    }
+  });
+  return ret;
+}
+
 export function EditorModule(props: EditorModuleProps) {
   const { challengeId, children, workspace } = props;
   const [state, setState] = useImmer<State>(
@@ -80,7 +101,15 @@ export function EditorModule(props: EditorModuleProps) {
       );
       await browserPreviewService.waitForLoad();
       browserPreviewService.setLibraries(libraries);
-      await workspaceModel.init(workspace);
+      const fileHashMap = new Map<string, string>();
+      workspace.items.forEach(item => {
+        fileHashMap.set(item.id, item.hash);
+      });
+      await workspaceModel.init({
+        fileHashMap,
+        nodes: mapWorkspaceNodes(workspace.items),
+        workspaceId: workspace.id,
+      });
       setState(draft => {
         draft.isLoaded = true;
       });

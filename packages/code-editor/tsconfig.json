@@ -1,7 +1,6 @@
 {
   "extends": "../../base.tsconfig.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "lib": [
       "dom",
       "DOM.Iterable",
@@ -10,7 +9,10 @@
       "ES2016.Array.Include",
       "ES2021"
     ],
-    "resolveJsonModule": true
+    "noEmit": true,
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true
   },
   "references": [],
   "include": ["src", "index.ts"],
