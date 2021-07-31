@@ -1,13 +1,11 @@
 import * as R from 'remeda';
-import { doFn } from 'src/common/helper';
-import { FileTreeHelper } from 'src/common/tree';
-import { CodeEditor } from 'src/components/CodeEditor/CodeEditor';
-import { Workspace, WorkspaceNode, WorkspaceNodeType } from 'src/generated';
-import { TreeNode } from 'src/types';
-import { APIService } from './APIService';
-import { BundlerService } from './BundlerService';
-import { EditorStateService } from './EditorStateService';
-import { ModelState, ModelStateUpdater } from './ModelState';
+import { doFn } from '../lib/helper';
+import { FileTreeHelper } from '../lib/tree';
+import { CodeEditor } from '../CodeEditor';
+import { IAPIService, InitWorkspaceOptions, TreeNode } from '../types';
+import { BundlerService } from '../services/BundlerService';
+import { EditorStateService } from '../services/EditorStateService';
+import { ModelState, ModelStateUpdater } from '../lib/ModelState';
 
 interface OpenedTab {
   id: string;
@@ -21,27 +19,6 @@ export interface WorkspaceState {
   dirtyMap: Record<string, boolean>;
 }
 
-function mapWorkspaceNodes(nodes: WorkspaceNode[]) {
-  const ret: TreeNode[] = nodes.map(node => {
-    if (node.type === WorkspaceNodeType.Directory) {
-      return {
-        type: 'directory',
-        id: node.id,
-        name: node.name,
-        parentId: node.parentId,
-      };
-    } else {
-      return {
-        type: 'file',
-        id: node.id,
-        name: node.name,
-        parentId: node.parentId,
-      };
-    }
-  });
-  return ret;
-}
-
 function randomHash() {
   return R.randomString(15);
 }
@@ -49,11 +26,11 @@ function randomHash() {
 export class WorkspaceModel {
   private fileHashMap: Map<string, string> = new Map();
   private modelState: ModelState<WorkspaceState> = null!;
-  private workspace: Workspace = null!;
+  private workspaceId: string = null!;
 
   constructor(
     private codeEditor: CodeEditor,
-    private apiService: APIService,
+    private apiService: IAPIService,
     private editorStateService: EditorStateService,
     private bundlerService: BundlerService
   ) {
@@ -76,20 +53,18 @@ export class WorkspaceModel {
     return this.modelState;
   }
 
-  async init(workspace: Workspace) {
+  async init(options: InitWorkspaceOptions) {
     const tabsState = this.editorStateService.loadTabsState();
-    this.workspace = workspace;
-    workspace.items.forEach(item => {
-      this.fileHashMap.set(item.id, item.hash);
-    });
+    this.workspaceId = options.workspaceId;
+    this.fileHashMap = options.fileHashMap;
     this.setState(draft => {
       draft.activeTabId = tabsState.activeTabId;
       draft.tabs = tabsState.tabs;
-      draft.nodes = mapWorkspaceNodes(workspace.items);
+      draft.nodes = options.nodes;
     });
     const pathHelper = new FileTreeHelper(this.state.nodes);
     await Promise.all(
-      workspace.items.map(async node => {
+      this.state.nodes.map(async node => {
         if (node.type === 'file') {
           this.codeEditor.addFile({
             id: node.id,
@@ -97,7 +72,7 @@ export class WorkspaceModel {
             source: await this.apiService.getFileContent({
               fileId: node.id,
               hash: this.fileHashMap.get(node.id)!,
-              workspaceId: workspace.id,
+              workspaceId: this.workspaceId,
             }),
           });
         }
@@ -229,11 +204,7 @@ export class WorkspaceModel {
     this.fileHashMap.set(nodeId, hash);
     void this.apiService.addNode({
       ...newNode,
-      type:
-        newNode.type === 'directory'
-          ? WorkspaceNodeType.Directory
-          : WorkspaceNodeType.File,
-      workspaceId: this.workspace.id,
+      workspaceId: this.workspaceId,
       hash,
     });
     this.setState(draft => {

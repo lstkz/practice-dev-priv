@@ -7,6 +7,7 @@ const withTM = require('next-transpile-modules')([
   'context-api',
   'schema',
   'shared',
+  'code-editor',
 ]);
 
 function getEnv() {

@@ -1,17 +1,14 @@
 import loader from '@monaco-editor/loader';
 import { createModuleContext, useActions, useImmer } from 'context-api';
 import React from 'react';
-import { CodeEditor } from 'src/components/CodeEditor/CodeEditor';
-import { EditorStateService } from './EditorStateService';
 import { LibraryDep } from 'src/types';
 import { usePreventEditorNavigation } from './usePreventEditorNavigation';
-import { BrowserPreviewService } from './BrowserPreviewService';
-import { BundlerService } from './BundlerService';
-import { Workspace } from 'src/generated';
-import { WorkspaceModel } from './WorkspaceTreeModel';
+import { Workspace, WorkspaceNode, WorkspaceNodeType } from 'src/generated';
 import { APIService } from './APIService';
 import { useApolloClient } from '@apollo/client';
 import { useModelState } from './useModelState';
+import { createCodeEditor, TreeNode, WorkspaceModel } from 'code-editor';
+import { IFRAME_ORIGIN } from 'src/config';
 
 interface Actions {
   load: (container: HTMLDivElement) => void;
@@ -52,29 +49,34 @@ const libraries: LibraryDep[] = [
 function useServices(workspace: Workspace, challengeId: number) {
   const client = useApolloClient();
   return React.useMemo(() => {
-    const codeEditor = new CodeEditor();
     const apiService = new APIService(client, workspace.id, workspace.s3Auth);
-    const editorStateService = new EditorStateService(challengeId);
-    const browserPreviewService = new BrowserPreviewService();
-    const bundlerService = new BundlerService(
-      browserPreviewService,
-      codeEditor
-    );
-    const workspaceModel = new WorkspaceModel(
-      codeEditor,
+    return createCodeEditor({
       apiService,
-      editorStateService,
-      bundlerService
-    );
-    return {
-      codeEditor,
-      apiService,
-      editorStateService,
-      browserPreviewService,
-      bundlerService,
-      workspaceModel,
-    };
+      challengeId,
+      iframeOrigin: IFRAME_ORIGIN,
+    });
   }, []);
+}
+
+function mapWorkspaceNodes(nodes: WorkspaceNode[]) {
+  const ret: TreeNode[] = nodes.map(node => {
+    if (node.type === WorkspaceNodeType.Directory) {
+      return {
+        type: 'directory',
+        id: node.id,
+        name: node.name,
+        parentId: node.parentId,
+      };
+    } else {
+      return {
+        type: 'file',
+        id: node.id,
+        name: node.name,
+        parentId: node.parentId,
+      };
+    }
+  });
+  return ret;
 }
 
 export function EditorModule(props: EditorModuleProps) {
@@ -99,7 +101,15 @@ export function EditorModule(props: EditorModuleProps) {
       );
       await browserPreviewService.waitForLoad();
       browserPreviewService.setLibraries(libraries);
-      await workspaceModel.init(workspace);
+      const fileHashMap = new Map<string, string>();
+      workspace.items.forEach(item => {
+        fileHashMap.set(item.id, item.hash);
+      });
+      await workspaceModel.init({
+        fileHashMap,
+        nodes: mapWorkspaceNodes(workspace.items),
+        workspaceId: workspace.id,
+      });
       setState(draft => {
         draft.isLoaded = true;
       });

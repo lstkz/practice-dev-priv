@@ -1,0 +1,18 @@
+{
+  "name": "code-editor",
+  "version": "0.0.1",
+  "scripts": {
+    "test": "yarn run lint && yarn run tsc",
+    "lint": "eslint . --ext .ts"
+  },
+  "dependencies": {
+    "@babel/standalone": "^7.14.7",
+    "monaco-editor": "^0.24.0",
+    "monaco-textmate": "^3.0.1",
+    "onigasm": "^2.2.5",
+    "rollup": "^2.52.7",
+    "monaco-vscode-textmate-theme-converter": "^0.1.1"
+  },
+  "license": "MIT",
+  "devDependencies": {}
+}

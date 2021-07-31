@@ -1,4 +1,6 @@
-import { BundlerAction, BundlerCallbackAction, SourceCode } from 'src/types';
+import { CodeEditor } from '../CodeEditor';
+import { BundlerAction, BundlerCallbackAction, SourceCode } from '../types';
+import { BrowserPreviewService } from './BrowserPreviewService';
 
 export interface BundleOptions {
   input: string;
@@ -10,13 +12,21 @@ interface CallbackDefer {
   reject: (err: any) => void;
 }
 
-export class Bundler {
+export class BundlerService {
+  private inputFile: string | null = null;
   private worker: Worker = null!;
   private version = 1;
   private defer: CallbackDefer = null!;
 
-  constructor() {
-    this.worker = new Worker(new URL('./Bundler.worker.ts', import.meta.url));
+  constructor(
+    private browserPreviewService: BrowserPreviewService,
+    private codeEditor: CodeEditor
+  ) {}
+
+  init() {
+    this.worker = new Worker(
+      new URL('./BundlerService.worker.ts', import.meta.url)
+    );
     this.worker.addEventListener('message', e => {
       const action = e.data as BundlerCallbackAction;
       const { version } = action.payload;
@@ -37,8 +47,7 @@ export class Bundler {
       }
     });
   }
-
-  async bundle(options: BundleOptions): Promise<string> {
+  private async bundle(options: BundleOptions): Promise<string> {
     const version = ++this.version;
     return new Promise<string>((resolve, reject) => {
       this.defer = {
@@ -59,7 +68,29 @@ export class Bundler {
     this.worker.terminate();
   }
 
+  setInputFile(inputFile: string) {
+    this.inputFile = inputFile;
+  }
+
+  loadCode() {
+    this.loadCodeAsync().catch(e => {
+      this.browserPreviewService.showError(e);
+    });
+  }
+
   private sendMessage(action: BundlerAction) {
     this.worker.postMessage(action);
+  }
+
+  private async loadCodeAsync() {
+    if (!this.inputFile) {
+      throw new Error('inputFile not set');
+    }
+    const fileMap = this.codeEditor.getFileMap();
+    const code = await this.bundle({
+      input: this.inputFile,
+      modules: fileMap,
+    });
+    await this.browserPreviewService.inject(code);
   }
 }

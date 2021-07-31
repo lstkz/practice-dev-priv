@@ -1,5 +1,5 @@
 import React from 'react';
-import { ModelState } from './ModelState';
+import { ModelState } from 'code-editor';
 
 export function useModelState<T>(modelState: ModelState<T>) {
   const [, forceRender] = React.useState(0);

@@ -1,6 +1,6 @@
 import * as Babel from '@babel/standalone';
 import { rollup } from 'rollup';
-import { BundlerAction, BundlerCallbackAction, SourceCode } from 'src/types';
+import { BundlerAction, BundlerCallbackAction, SourceCode } from '../types';
 
 declare const self: Worker;
 

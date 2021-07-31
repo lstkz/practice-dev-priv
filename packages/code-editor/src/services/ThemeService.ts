@@ -14,7 +14,7 @@ interface ThemeSettings {
 
 const DEBUG = false;
 
-export class Themer {
+export class ThemeService {
   private settings: ThemeSettings = null!;
   private map: Map<string, { style: TokenStyle; className: string }> = null!;
   private scopeCache: Map<string, string> = null!;

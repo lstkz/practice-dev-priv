@@ -1,6 +1,6 @@
 import prettier from 'prettier/standalone';
 import parserTypescript from 'prettier/parser-typescript';
-import { FormatterAction, FormatterCallbackAction } from 'src/types';
+import { FormatterAction, FormatterCallbackAction } from '../types';
 
 declare const self: Worker;
 

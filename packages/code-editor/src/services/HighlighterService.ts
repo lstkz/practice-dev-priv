@@ -1,24 +1,20 @@
 import type { editor } from 'monaco-editor';
-import { Themer } from './Themer';
-import {
-  HighlighterAction,
-  HighlighterCallbackAction,
-  Monaco,
-} from '../../types';
+import { ThemeService } from './ThemeService';
+import { HighlighterAction, HighlighterCallbackAction, Monaco } from '../types';
 
 const DEBUG_TYPE = true;
 
-export class Highlighter {
+export class HighlighterService {
   private lastDecorations: string[] = [];
   private worker: Worker = null!;
 
   constructor(
     private monaco: Monaco,
     private editor: editor.IStandaloneCodeEditor,
-    private themer: Themer
+    private themer: ThemeService
   ) {
     this.worker = new Worker(
-      new URL('./HighlighterWorker.ts', import.meta.url)
+      new URL('./HighlighterService.worker.ts', import.meta.url)
     );
     this.worker.addEventListener('message', e => {
       const action = e.data as HighlighterCallbackAction;

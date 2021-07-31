@@ -1,6 +1,5 @@
 import { IframeCallbackMessage, IframeMessage } from 'shared';
-import { IFRAME_ORIGIN } from 'src/config';
-import { LibraryDep } from 'src/types';
+import { LibraryDep } from '../types';
 
 export class BrowserPreviewService {
   private iframe: HTMLIFrameElement = null!;
@@ -11,7 +10,7 @@ export class BrowserPreviewService {
   private lastError: any | null = null;
   private onMessage: (e: MessageEvent<any>) => void = null!;
 
-  constructor() {
+  constructor(private iframeOrigin: string) {
     this.loadedPromise = new Promise<void>(resolve => {
       this.markLoaded = resolve;
     });
@@ -21,7 +20,7 @@ export class BrowserPreviewService {
     this.iframe = iframe;
     this.markLoaded();
     this.onMessage = e => {
-      if (e.origin !== IFRAME_ORIGIN) {
+      if (e.origin !== this.iframeOrigin) {
         return;
       }
       const action = e.data as IframeCallbackMessage;
@@ -88,6 +87,6 @@ export class BrowserPreviewService {
     if (!this.iframe.contentWindow) {
       return;
     }
-    this.iframe.contentWindow.postMessage(message, IFRAME_ORIGIN);
+    this.iframe.contentWindow.postMessage(message, this.iframeOrigin);
   }
 }

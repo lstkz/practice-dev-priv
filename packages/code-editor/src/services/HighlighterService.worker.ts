@@ -4,7 +4,7 @@ import {
   Classification,
   HighlighterAction,
   HighlighterCallbackAction,
-} from 'src/types';
+} from '../types';
 
 declare const self: Worker;
 
