@@ -1,7 +1,10 @@
 {
   "name": "code-editor",
   "version": "0.0.1",
-  "scripts": {},
+  "scripts": {
+    "test": "yarn run lint && yarn run tsc",
+    "lint": "eslint . --ext .ts"
+  },
   "dependencies": {
     "@babel/standalone": "^7.14.7",
     "monaco-editor": "^0.24.0",

@@ -79,3 +79,8 @@ jobs:
         run: |
           cd apps/app
           yarn run test
+
+      - name: test packages/code-editor
+        run: |
+          cd packages/code-editor
+          yarn test

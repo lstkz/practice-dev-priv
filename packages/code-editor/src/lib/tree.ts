@@ -1,5 +1,5 @@
 import * as R from 'remeda';
-import { NodeId, RecDirectoryNode, RecTreeNode, TreeNode } from 'src/types';
+import { NodeId, RecDirectoryNode, RecTreeNode, TreeNode } from '../types';
 
 export class FileTreeHelper {
   private nodeMap: Record<string, TreeNode>;
