@@ -13,8 +13,24 @@ interface BuildSourceCodeOptions {
   modules: Record<string, SourceCode>;
 }
 
+function _getRelativePath(target: string, parent: string) {
+  const target_split = target.split('/');
+  const parent_split = parent.split('/');
+  parent_split.pop();
+  while (target_split[0] === '..') {
+    target_split.shift();
+    parent_split.pop();
+  }
+  if (parent_split[0]) {
+    parent_split.shift();
+  }
+  const base = [...parent_split, ...target_split].filter(x => x !== '.');
+  return ['.', ...base].join('/');
+}
+
 async function buildSourceCode(options: BuildSourceCodeOptions) {
   const { input, modules } = options;
+
   const extensions = ['.ts', '.tsx', '.js', '.jsx'];
   return rollup({
     input,
@@ -22,19 +38,18 @@ async function buildSourceCode(options: BuildSourceCodeOptions) {
     plugins: [
       {
         name: 'test',
-        resolveId(target, _parent) {
+        resolveId(target, parent) {
           if (target[0] !== '.') {
             return false;
           }
+          let path = _getRelativePath(target, parent ?? '');
           for (const ext of extensions) {
-            if (modules[target + ext]) {
-              target += ext;
+            if (modules[path + ext]) {
+              path += ext;
               break;
             }
           }
-          // TODO: handler relative
-
-          return target;
+          return path;
         },
         load: function (id) {
           if (!modules[id]) {
