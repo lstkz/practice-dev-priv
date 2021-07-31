@@ -52,15 +52,6 @@ export class APIService {
     this.bucketName = auth.bucketName;
   }
 
-  // init(workspaceId: string, auth: WorkspaceS3Auth) {
-  //   this.s3 = new S3({
-  //     credentials: auth.credentials,
-  //     region: 'eu-central-1',
-  //   });
-  //   this.bucketName = auth.bucketName;
-  //   this.workspaceId = workspaceId;
-  // }
-
   async getFileContent(options: {
     workspaceId: string;
     fileId: string;
