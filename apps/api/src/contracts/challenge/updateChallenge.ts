@@ -24,6 +24,13 @@ export const updateChallenge = createContract('challenge.updateChallenge')
           s3Key: S.string(),
         })
       ),
+      libraries: S.array().items(
+        S.object().keys({
+          name: S.string(),
+          types: S.string(),
+          source: S.string(),
+        })
+      ),
     }),
   })
   .fn(async values => {

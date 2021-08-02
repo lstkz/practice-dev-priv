@@ -59,3 +59,9 @@ export type IframeNavigationCallbackMessage =
       type: 'did-go';
       payload: { diff: number };
     };
+
+export interface LibraryDefinition {
+  name: string;
+  types: string;
+  source: string;
+}
