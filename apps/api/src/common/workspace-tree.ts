@@ -78,6 +78,7 @@ export function createWorkspaceNodes(
       parentId: getParentId(file.directory),
       sourceS3Key: file.s3Key,
       uniqueKey: '',
+      isLocked: file.isLocked,
     };
     node.uniqueKey = getNodeUniqueKey(node);
     items.push(node);

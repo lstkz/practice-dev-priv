@@ -17,6 +17,7 @@ export interface WorkspaceNodeModel {
   s3Key?: string | null;
   sourceS3Key?: string | null;
   uniqueKey: string;
+  isLocked?: boolean | null;
 }
 
 export const WorkspaceNodeCollection = createCollection<WorkspaceNodeModel>(

@@ -36,6 +36,7 @@ describe('createWorkspaceNodes', () => {
         Object {
           "_id": "mock-1",
           "hash": "init",
+          "isLocked": undefined,
           "name": "index.tsx",
           "parentId": null,
           "sourceS3Key": "s3key-index",
@@ -47,6 +48,7 @@ describe('createWorkspaceNodes', () => {
         Object {
           "_id": "mock-2",
           "hash": "init",
+          "isLocked": undefined,
           "name": "App.tsx",
           "parentId": null,
           "sourceS3Key": "s3key-app",
@@ -91,6 +93,7 @@ describe('createWorkspaceNodes', () => {
         Object {
           "_id": "mock-3",
           "hash": "init",
+          "isLocked": undefined,
           "name": "index.tsx",
           "parentId": null,
           "sourceS3Key": "",
@@ -102,6 +105,7 @@ describe('createWorkspaceNodes', () => {
         Object {
           "_id": "mock-4",
           "hash": "init",
+          "isLocked": undefined,
           "name": "App.tsx",
           "parentId": "mock-6",
           "sourceS3Key": "",
@@ -113,6 +117,7 @@ describe('createWorkspaceNodes', () => {
         Object {
           "_id": "mock-7",
           "hash": "init",
+          "isLocked": undefined,
           "name": "Button.tsx",
           "parentId": "mock-8",
           "sourceS3Key": "",

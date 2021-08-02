@@ -3,6 +3,7 @@ import { createCollection } from '../db';
 
 export interface ChallengeFile {
   name: string;
+  isLocked?: boolean | null;
   directory: string;
   s3Key: string;
 }

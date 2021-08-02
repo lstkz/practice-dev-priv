@@ -22,6 +22,7 @@ export const updateChallenge = createContract('challenge.updateChallenge')
           name: S.string(),
           directory: S.string(),
           s3Key: S.string(),
+          isLocked: S.boolean().optional().nullable(),
         })
       ),
       libraries: S.array().items(
