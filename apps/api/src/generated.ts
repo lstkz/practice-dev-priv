@@ -68,6 +68,19 @@ export type CreateWorkspaceNodeInput = {
   type: WorkspaceNodeType;
 };
 
+export type LibraryDefinition = {
+  __typename?: 'LibraryDefinition';
+  name: Scalars['String'];
+  types: Scalars['String'];
+  source: Scalars['String'];
+};
+
+export type LibraryInput = {
+  name: Scalars['String'];
+  types: Scalars['String'];
+  source: Scalars['String'];
+};
+
 export type LoginInput = {
   usernameOrEmail: Scalars['String'];
   password: Scalars['String'];
@@ -257,6 +270,7 @@ export type UpdateChallengeInput = {
   detailsS3Key: Scalars['String'];
   htmlS3Key: Scalars['String'];
   files: Array<ChallengeFileInput>;
+  libraries: Array<LibraryInput>;
 };
 
 export type UpdateModuleInput = {
@@ -298,6 +312,7 @@ export type Workspace = {
   isReady: Scalars['Boolean'];
   items: Array<WorkspaceNode>;
   s3Auth: WorkspaceS3Auth;
+  libraries: Array<LibraryDefinition>;
 };
 
 export type WorkspaceNode = {
@@ -449,6 +464,8 @@ export type ResolversTypes = {
   ChallengeFileInput: ChallengeFileInput;
   CreateWorkspaceInput: CreateWorkspaceInput;
   CreateWorkspaceNodeInput: CreateWorkspaceNodeInput;
+  LibraryDefinition: ResolverTypeWrapper<LibraryDefinition>;
+  LibraryInput: LibraryInput;
   LoginInput: LoginInput;
   Mutation: ResolverTypeWrapper<{}>;
   MyProfile: ResolverTypeWrapper<MyProfile>;
@@ -485,6 +502,8 @@ export type ResolversParentTypes = {
   ChallengeFileInput: ChallengeFileInput;
   CreateWorkspaceInput: CreateWorkspaceInput;
   CreateWorkspaceNodeInput: CreateWorkspaceNodeInput;
+  LibraryDefinition: LibraryDefinition;
+  LibraryInput: LibraryInput;
   LoginInput: LoginInput;
   Mutation: {};
   MyProfile: MyProfile;
@@ -547,6 +566,16 @@ export type AwsUploadContentAuthResolvers<
     ParentType,
     ContextType
   >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type LibraryDefinitionResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['LibraryDefinition'] = ResolversParentTypes['LibraryDefinition']
+> = {
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  types?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  source?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -819,6 +848,11 @@ export type WorkspaceResolvers<
     ContextType
   >;
   s3Auth?: Resolver<ResolversTypes['WorkspaceS3Auth'], ParentType, ContextType>;
+  libraries?: Resolver<
+    Array<ResolversTypes['LibraryDefinition']>,
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -852,6 +886,7 @@ export type Resolvers<ContextType = any> = {
   AvatarUploadResult?: AvatarUploadResultResolvers<ContextType>;
   AwsCredentials?: AwsCredentialsResolvers<ContextType>;
   AwsUploadContentAuth?: AwsUploadContentAuthResolvers<ContextType>;
+  LibraryDefinition?: LibraryDefinitionResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   MyProfile?: MyProfileResolvers<ContextType>;
   NotificationSettings?: NotificationSettingsResolvers<ContextType>;

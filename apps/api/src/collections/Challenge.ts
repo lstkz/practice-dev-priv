@@ -1,3 +1,4 @@
+import { LibraryDefinition } from 'shared';
 import { createCollection } from '../db';
 
 export interface ChallengeFile {
@@ -17,6 +18,7 @@ export interface ChallengeModel {
   detailsS3Key: string;
   htmlS3Key: string;
   files: ChallengeFile[];
+  libraries: LibraryDefinition[];
 }
 
 export const ChallengeCollection = createCollection<ChallengeModel>(

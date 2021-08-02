@@ -1,6 +1,5 @@
 import { gql } from 'apollo-server';
 import { ChallengeCollection } from '../../src/collections/Challenge';
-import { ModuleCollection } from '../../src/collections/Module';
 import { updateChallenge } from '../../src/contracts/challenge/updateChallenge';
 import { updateModule } from '../../src/contracts/module/updateModule';
 import { apolloServer } from '../../src/server';
@@ -38,6 +37,7 @@ function getValidQuery() {
             { directory: "dir1x", name: "f1x", s3Key: "f1_s3x" }
             { directory: "dir2", name: "f2", s3Key: "f2_s3" }
           ]
+          libraries: [{ name: "lib", source: "source.js", types: "types.ts" }]
         }
       )
     }
@@ -64,6 +64,13 @@ function getValidValues() {
         directory: 'dir2',
         name: 'f2',
         s3Key: 'f2_s3',
+      },
+    ],
+    libraries: [
+      {
+        name: 'lib',
+        source: 'source.js',
+        types: 'types.ts',
       },
     ],
   };
@@ -101,6 +108,13 @@ it('should create a new module and update it', async () => {
         },
       ],
       "htmlS3Key": "h_s3",
+      "libraries": Array [
+        Object {
+          "name": "lib",
+          "source": "source.js",
+          "types": "types.ts",
+        },
+      ],
       "moduleId": 1,
       "practiceTime": 10,
       "title": "t1",
@@ -127,18 +141,33 @@ it('should create a new module and update it', async () => {
         s3Key: 'f2_s3',
       },
     ],
+    libraries: [],
   });
-  expect(await ModuleCollection.findByIdOrThrow(1)).toMatchInlineSnapshot(`
+  expect(await ChallengeCollection.findByIdOrThrow('1_1'))
+    .toMatchInlineSnapshot(`
     Object {
-      "_id": 1,
-      "description": "desc1",
-      "difficulty": "diff1",
-      "mainTechnology": "tech1",
-      "tags": Array [
-        "t1",
-        "t2",
+      "_id": "1_1",
+      "challengeId": 1,
+      "description": "desc1x",
+      "detailsS3Key": "d_s3x",
+      "difficulty": "diff1x",
+      "files": Array [
+        Object {
+          "directory": "dir1x",
+          "name": "f1x",
+          "s3Key": "f1_s3x",
+        },
+        Object {
+          "directory": "dir2",
+          "name": "f2",
+          "s3Key": "f2_s3",
+        },
       ],
-      "title": "t1",
+      "htmlS3Key": "h_s3x",
+      "libraries": Array [],
+      "moduleId": 1,
+      "practiceTime": 20,
+      "title": "t1x",
     }
   `);
 });

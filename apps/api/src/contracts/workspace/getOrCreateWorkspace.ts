@@ -1,6 +1,9 @@
 import { ObjectID } from 'mongodb2';
 import { S } from 'schema';
-import { ChallengeCollection } from '../../collections/Challenge';
+import {
+  ChallengeCollection,
+  ChallengeModel,
+} from '../../collections/Challenge';
 import {
   WorkspaceCollection,
   WorkspaceModel,
@@ -17,6 +20,7 @@ import { renewWorkspaceAuth } from './_common';
 
 async function _getOrCreate(
   appUser: AppUser,
+  challenge: ChallengeModel,
   {
     dedupKey,
     challengeUniqId,
@@ -36,6 +40,7 @@ async function _getOrCreate(
     dedupKey,
     isReady: false,
     s3Auth: null!,
+    libraries: challenge.libraries,
   };
   await WorkspaceCollection.insertOne(workspace);
   await dispatchTask({
@@ -66,7 +71,7 @@ export const getOrCreateWorkspace = createContract(
       throw new AppError('Challenge not found: ' + values.challengeUniqId);
     }
     const dedupKey = `${values.challengeUniqId}_${appUser.id}_default`;
-    const workspace = await _getOrCreate(appUser, {
+    const workspace = await _getOrCreate(appUser, challenge, {
       dedupKey,
       challengeUniqId: values.challengeUniqId,
     });
@@ -80,6 +85,7 @@ export const getOrCreateWorkspace = createContract(
       isReady: workspace.isReady,
       items: files.map(file => renameId(file)),
       s3Auth: mapWorkspaceS3Auth(workspace.s3Auth),
+      libraries: workspace.libraries,
     };
   });
 

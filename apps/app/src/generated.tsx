@@ -62,6 +62,19 @@ export type CreateWorkspaceNodeInput = {
   type: WorkspaceNodeType;
 };
 
+export type LibraryDefinition = {
+  __typename?: 'LibraryDefinition';
+  name: Scalars['String'];
+  types: Scalars['String'];
+  source: Scalars['String'];
+};
+
+export type LibraryInput = {
+  name: Scalars['String'];
+  types: Scalars['String'];
+  source: Scalars['String'];
+};
+
 export type LoginInput = {
   usernameOrEmail: Scalars['String'];
   password: Scalars['String'];
@@ -251,6 +264,7 @@ export type UpdateChallengeInput = {
   detailsS3Key: Scalars['String'];
   htmlS3Key: Scalars['String'];
   files: Array<ChallengeFileInput>;
+  libraries: Array<LibraryInput>;
 };
 
 export type UpdateModuleInput = {
@@ -292,6 +306,7 @@ export type Workspace = {
   isReady: Scalars['Boolean'];
   items: Array<WorkspaceNode>;
   s3Auth: WorkspaceS3Auth;
+  libraries: Array<LibraryDefinition>;
 };
 
 export type WorkspaceNode = {
