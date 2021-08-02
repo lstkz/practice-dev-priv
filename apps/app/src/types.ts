@@ -36,12 +36,6 @@ export interface RecDirectoryNode extends DirectoryNode {
   children: RecTreeNode[];
 }
 
-export interface LibraryDep {
-  name: string;
-  types: string;
-  source: string;
-}
-
 export type HighlighterAction = {
   type: 'highlight';
   payload: {

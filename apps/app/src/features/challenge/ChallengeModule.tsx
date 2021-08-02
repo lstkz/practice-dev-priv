@@ -101,6 +101,7 @@ gql`
         parentId
         hash
         type
+        isLocked
       }
       s3Auth {
         bucketName

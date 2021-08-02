@@ -408,7 +408,7 @@ export type GetOrCreateWorkspaceMutation = { __typename?: 'Mutation' } & {
       items: Array<
         { __typename?: 'WorkspaceNode' } & Pick<
           WorkspaceNode,
-          'id' | 'name' | 'parentId' | 'hash' | 'type'
+          'id' | 'name' | 'parentId' | 'hash' | 'type' | 'isLocked'
         >
       >;
       s3Auth: { __typename?: 'WorkspaceS3Auth' } & Pick<
@@ -1054,6 +1054,7 @@ export const GetOrCreateWorkspaceDocument = gql`
         parentId
         hash
         type
+        isLocked
       }
       s3Auth {
         bucketName

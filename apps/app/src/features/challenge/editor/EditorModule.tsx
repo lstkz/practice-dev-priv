@@ -1,7 +1,6 @@
 import loader from '@monaco-editor/loader';
 import { createModuleContext, useActions, useImmer } from 'context-api';
 import React from 'react';
-import { LibraryDep } from 'src/types';
 import { usePreventEditorNavigation } from './usePreventEditorNavigation';
 import { Workspace, WorkspaceNode, WorkspaceNodeType } from 'src/generated';
 import { APIService } from './APIService';
@@ -17,6 +16,7 @@ interface Actions {
 
 interface State {
   isLoaded: boolean;
+  workspace: Workspace;
 }
 
 interface FinalState extends State {
@@ -30,21 +30,6 @@ interface EditorModuleProps {
   children: React.ReactNode;
   workspace: Workspace;
 }
-
-const libraries: LibraryDep[] = [
-  {
-    name: 'react',
-    types: 'https://cdn.jsdelivr.net/npm/@types/react@17.0.2/index.d.ts',
-    source:
-      'https://unpkg.com/@esm-bundle/react@17.0.2/esm/react.development.js',
-  },
-  {
-    name: 'react-dom',
-    types: 'https://cdn.jsdelivr.net/npm/@types/react-dom@17.0.2/index.d.ts',
-    source:
-      'https://unpkg.com/@esm-bundle/react-dom@17.0.2/esm/react-dom.development.js',
-  },
-];
 
 function useServices(workspace: Workspace, challengeId: number) {
   const client = useApolloClient();
@@ -84,6 +69,7 @@ export function EditorModule(props: EditorModuleProps) {
   const [state, setState] = useImmer<State>(
     {
       isLoaded: false,
+      workspace,
     },
     'EditorModule'
   );
@@ -97,10 +83,10 @@ export function EditorModule(props: EditorModuleProps) {
       const monaco = await loader.init();
       codeEditor.init(monaco, container);
       await Promise.all(
-        libraries.map(lib => codeEditor.addLib(lib.name, lib.types))
+        workspace.libraries.map(lib => codeEditor.addLib(lib.name, lib.types))
       );
       await browserPreviewService.waitForLoad();
-      browserPreviewService.setLibraries(libraries);
+      browserPreviewService.setLibraries(workspace.libraries);
       const fileHashMap = new Map<string, string>();
       workspace.items.forEach(item => {
         fileHashMap.set(item.id, item.hash);
