@@ -65,6 +65,13 @@ type Workspace {
   isReady: Boolean!
   items: [WorkspaceNode!]!
   s3Auth: WorkspaceS3Auth!
+  libraries: [LibraryDefinition!]!
+}
+
+type LibraryDefinition {
+  name: String!
+  types: String!
+  source: String!
 }
 
 enum WorkspaceNodeType {
@@ -119,6 +126,13 @@ input UpdateChallengeInput {
   detailsS3Key: String!
   htmlS3Key: String!
   files: [ChallengeFileInput!]!
+  libraries: [LibraryInput!]!
+}
+
+input LibraryInput {
+  name: String!
+  types: String!
+  source: String!
 }
 
 input ChallengeFileInput {

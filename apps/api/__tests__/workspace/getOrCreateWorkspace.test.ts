@@ -59,6 +59,13 @@ it('should return an existing workspace', async () => {
     isReady: true,
     userId: getId(1),
     s3Auth: null!,
+    libraries: [
+      {
+        name: 'lib',
+        source: 's',
+        types: 't',
+      },
+    ],
   });
   await WorkspaceNodeCollection.insertMany([
     getWorkspaceNodeWithUniqueKey({
@@ -98,6 +105,13 @@ Object {
       "uniqueKey": "000000000000000000000100__file_file.tsx",
       "userId": "000000000000000000000001",
       "workspaceId": "000000000000000000000100",
+    },
+  ],
+  "libraries": Array [
+    Object {
+      "name": "lib",
+      "source": "s",
+      "types": "t",
     },
   ],
   "s3Auth": Object {

@@ -1,4 +1,5 @@
 import { ObjectID } from 'mongodb2';
+import { LibraryDefinition } from 'shared';
 import { createCollection } from '../db';
 
 export interface AwsCredentials {
@@ -20,6 +21,7 @@ export interface WorkspaceModel {
   dedupKey?: string;
   isReady: boolean;
   s3Auth: WorkspaceS3Auth;
+  libraries: LibraryDefinition[];
 }
 
 export const WorkspaceCollection = createCollection<WorkspaceModel>(
