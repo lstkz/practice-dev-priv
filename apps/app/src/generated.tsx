@@ -418,6 +418,12 @@ export type GetOrCreateWorkspaceMutation = { __typename?: 'Mutation' } & {
             'accessKeyId' | 'secretAccessKey' | 'sessionToken'
           >;
         };
+      libraries: Array<
+        { __typename?: 'LibraryDefinition' } & Pick<
+          LibraryDefinition,
+          'name' | 'types' | 'source'
+        >
+      >;
     };
 };
 
@@ -1054,6 +1060,11 @@ export const GetOrCreateWorkspaceDocument = gql`
           secretAccessKey
           sessionToken
         }
+      }
+      libraries {
+        name
+        types
+        source
       }
     }
   }

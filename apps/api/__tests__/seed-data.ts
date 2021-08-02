@@ -70,6 +70,7 @@ export async function createSampleChallenges() {
         moduleId: 1,
         practiceTime: 10,
         title: 'challenge 2',
+        libraries: [],
       },
     ]),
   ]);
@@ -83,6 +84,7 @@ export async function createSampleWorkspaces() {
       isReady: true,
       userId: getId(1),
       s3Auth: null!,
+      libraries: [],
     },
     {
       _id: getId(11),
@@ -90,6 +92,7 @@ export async function createSampleWorkspaces() {
       isReady: true,
       userId: getId(1),
       s3Auth: null!,
+      libraries: [],
     },
   ]);
 }

@@ -110,6 +110,11 @@ gql`
           sessionToken
         }
       }
+      libraries {
+        name
+        types
+        source
+      }
     }
   }
 `;
