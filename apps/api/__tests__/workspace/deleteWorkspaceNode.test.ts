@@ -36,22 +36,31 @@ it('should throw if no permission', async () => {
   );
 });
 
+it('should throw if locked', async () => {
+  const node = await WorkspaceNodeCollection.findByIdOrThrow(getUUID(1));
+  node.isLocked = true;
+  await WorkspaceNodeCollection.update(node, ['isLocked']);
+  await expect(
+    deleteWorkspaceNode(await getAppUser(1), getUUID(1))
+  ).rejects.toMatchInlineSnapshot(`[AppError: Cannot remove locked node]`);
+});
+
 it('should delete a node', async () => {
   await deleteWorkspaceNode(await getAppUser(1), getUUID(1));
   expect(await _getAllIds()).toMatchInlineSnapshot(`
-Array [
-  "00000000-0000-4000-8000-000000000002",
-  "00000000-0000-4000-8000-000000000003",
-  "00000000-0000-4000-8000-000000000004",
-]
-`);
+    Array [
+      "00000000-0000-4000-8000-000000000002",
+      "00000000-0000-4000-8000-000000000003",
+      "00000000-0000-4000-8000-000000000004",
+    ]
+  `);
 });
 
 it('should delete a directory and its children', async () => {
   await deleteWorkspaceNode(await getAppUser(1), getUUID(2));
   expect(await _getAllIds()).toMatchInlineSnapshot(`
-Array [
-  "00000000-0000-4000-8000-000000000001",
-]
-`);
+    Array [
+      "00000000-0000-4000-8000-000000000001",
+    ]
+  `);
 });

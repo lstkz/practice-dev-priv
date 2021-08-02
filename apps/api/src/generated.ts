@@ -53,6 +53,7 @@ export type ChallengeFileInput = {
   name: Scalars['String'];
   directory: Scalars['String'];
   s3Key: Scalars['String'];
+  isLocked?: Maybe<Scalars['Boolean']>;
 };
 
 export type CreateWorkspaceInput = {
@@ -322,6 +323,7 @@ export type WorkspaceNode = {
   parentId?: Maybe<Scalars['String']>;
   hash: Scalars['String'];
   type: WorkspaceNodeType;
+  isLocked?: Maybe<Scalars['Boolean']>;
 };
 
 export enum WorkspaceNodeType {
@@ -462,6 +464,7 @@ export type ResolversTypes = {
   AwsCredentials: ResolverTypeWrapper<AwsCredentials>;
   AwsUploadContentAuth: ResolverTypeWrapper<AwsUploadContentAuth>;
   ChallengeFileInput: ChallengeFileInput;
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   CreateWorkspaceInput: CreateWorkspaceInput;
   CreateWorkspaceNodeInput: CreateWorkspaceNodeInput;
   LibraryDefinition: ResolverTypeWrapper<LibraryDefinition>;
@@ -470,7 +473,6 @@ export type ResolversTypes = {
   Mutation: ResolverTypeWrapper<{}>;
   MyProfile: ResolverTypeWrapper<MyProfile>;
   NotificationSettings: ResolverTypeWrapper<NotificationSettings>;
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   NotificationSettingsInput: NotificationSettingsInput;
   OkResult: ResolverTypeWrapper<OkResult>;
   PresignedPost: ResolverTypeWrapper<PresignedPost>;
@@ -500,6 +502,7 @@ export type ResolversParentTypes = {
   AwsCredentials: AwsCredentials;
   AwsUploadContentAuth: AwsUploadContentAuth;
   ChallengeFileInput: ChallengeFileInput;
+  Boolean: Scalars['Boolean'];
   CreateWorkspaceInput: CreateWorkspaceInput;
   CreateWorkspaceNodeInput: CreateWorkspaceNodeInput;
   LibraryDefinition: LibraryDefinition;
@@ -508,7 +511,6 @@ export type ResolversParentTypes = {
   Mutation: {};
   MyProfile: MyProfile;
   NotificationSettings: NotificationSettings;
-  Boolean: Scalars['Boolean'];
   NotificationSettingsInput: NotificationSettingsInput;
   OkResult: OkResult;
   PresignedPost: PresignedPost;
@@ -865,6 +867,11 @@ export type WorkspaceNodeResolvers<
   parentId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   hash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['WorkspaceNodeType'], ParentType, ContextType>;
+  isLocked?: Resolver<
+    Maybe<ResolversTypes['Boolean']>,
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

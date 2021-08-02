@@ -70,6 +70,18 @@ it('should throw if parent would make a cycle', async () => {
   );
 });
 
+it('should throw if locked', async () => {
+  const node = await WorkspaceNodeCollection.findByIdOrThrow(getUUID(1));
+  node.isLocked = true;
+  await WorkspaceNodeCollection.update(node, ['isLocked']);
+  await expect(
+    updateWorkspaceNode(await getAppUser(1), {
+      id: getUUID(1),
+      hash: 'new-hash',
+    })
+  ).rejects.toMatchInlineSnapshot(`[AppError: Cannot update locked node]`);
+});
+
 it('should update hash', async () => {
   await updateWorkspaceNode(await getAppUser(1), {
     id: getUUID(1),

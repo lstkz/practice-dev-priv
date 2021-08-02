@@ -33,6 +33,9 @@ export const updateWorkspaceNode = createContract(
   })
   .fn(async (appUser, values) => {
     const node = await getNodeByIdWithCheck(appUser, values.id);
+    if (node.isLocked) {
+      throw new AppError('Cannot update locked node');
+    }
     if (values.hash) {
       node.hash = values.hash;
     }

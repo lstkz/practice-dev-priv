@@ -47,6 +47,7 @@ export type ChallengeFileInput = {
   name: Scalars['String'];
   directory: Scalars['String'];
   s3Key: Scalars['String'];
+  isLocked?: Maybe<Scalars['Boolean']>;
 };
 
 export type CreateWorkspaceInput = {
@@ -316,6 +317,7 @@ export type WorkspaceNode = {
   parentId?: Maybe<Scalars['String']>;
   hash: Scalars['String'];
   type: WorkspaceNodeType;
+  isLocked?: Maybe<Scalars['Boolean']>;
 };
 
 export enum WorkspaceNodeType {

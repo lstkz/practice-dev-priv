@@ -76,6 +76,7 @@ it('should return an existing workspace', async () => {
       type: WorkspaceNodeType.File,
       userId: getId(1),
       workspaceId: getId(100),
+      isLocked: true,
     }),
     getWorkspaceNodeWithUniqueKey({
       _id: '2',
@@ -99,6 +100,7 @@ Object {
     Object {
       "hash": "h1",
       "id": "1",
+      "isLocked": true,
       "name": "file.tsx",
       "parentId": null,
       "type": "file",
