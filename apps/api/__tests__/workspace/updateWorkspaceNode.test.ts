@@ -77,7 +77,7 @@ it('should throw if locked', async () => {
   await expect(
     updateWorkspaceNode(await getAppUser(1), {
       id: getUUID(1),
-      hash: 'new-hash',
+      name: 'foo',
     })
   ).rejects.toMatchInlineSnapshot(`[AppError: Cannot update locked node]`);
 });

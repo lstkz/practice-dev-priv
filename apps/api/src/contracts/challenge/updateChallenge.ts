@@ -17,6 +17,7 @@ export const updateChallenge = createContract('challenge.updateChallenge')
       practiceTime: S.number(),
       detailsS3Key: S.string(),
       htmlS3Key: S.string(),
+      solutionUrl: S.string(),
       files: S.array().items(
         S.object().keys({
           name: S.string(),

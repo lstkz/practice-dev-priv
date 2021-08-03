@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "ts-node -T --project ./node.tsconfig.json scripts/dev",
-    "build": "rm -rf ./build && ts-node -T --project ./node.tsconfig.json scripts/build"
+    "build": "rm -rf ./build && ts-node -T --project ./node.tsconfig.json scripts/build",
+    "build-solution": "rm -rf ./build && BUILD_SOLUTION=1 ts-node -T --project ./node.tsconfig.json scripts/build"
   },
   "license": "UNLICENSED",
   "dependencies": {

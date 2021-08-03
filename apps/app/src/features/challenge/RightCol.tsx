@@ -1,6 +1,8 @@
 import React from 'react';
+import { IFRAME_ORIGIN } from 'src/config';
 import { useChallengeState } from './ChallengeModule';
-import { EmbeddedIframe } from './EmbeddedIframe';
+import { PreviewIframe } from './PreviewIframe';
+import { SolutionIframe } from './SolutionIframe';
 import { WebNavigator } from './WebNavigator';
 
 export function RightCol() {
@@ -13,12 +15,15 @@ export function RightCol() {
         pointerEvents: isDragging ? 'none' : undefined,
       }}
     >
-      <WebNavigator shallowHidden={rightSidebarTab !== 'preview'}>
-        <EmbeddedIframe />
+      <WebNavigator
+        shallowHidden={rightSidebarTab !== 'preview'}
+        origin={IFRAME_ORIGIN}
+      >
+        <PreviewIframe />
       </WebNavigator>
-      {/* <WebNavigator shallowHidden={rightSidebarTab !== 'demo'}>
-        <EmbeddedIframe />
-      </WebNavigator> */}
+      <WebNavigator shallowHidden={rightSidebarTab !== 'demo'} origin="*">
+        <SolutionIframe />
+      </WebNavigator>
     </div>
   );
 }

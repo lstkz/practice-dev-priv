@@ -10,11 +10,11 @@ import {
   IframeNavigationCallbackMessage,
   IframeNavigationMessage,
 } from 'shared';
-import { IFRAME_ORIGIN } from 'src/config';
 import tw, { styled } from 'twin.macro';
 
 interface WebNavigatorProps {
   children: React.ReactNode;
+  origin: string;
   shallowHidden: boolean;
 }
 
@@ -37,7 +37,7 @@ interface State {
 const [Provider, useContext] = createModuleContext<State, Actions>();
 
 export function WebNavigator(props: WebNavigatorProps) {
-  const { children, shallowHidden } = props;
+  const { children, shallowHidden, origin } = props;
   const iframeRef = React.useRef(null! as HTMLIFrameElement);
   const urlInputRef = React.useRef(null! as HTMLInputElement);
   const [state, setState, getState] = useImmer<State>(
@@ -52,7 +52,7 @@ export function WebNavigator(props: WebNavigatorProps) {
     if (!iframeRef.current?.contentWindow) {
       return;
     }
-    iframeRef.current.contentWindow.postMessage(message, IFRAME_ORIGIN);
+    iframeRef.current.contentWindow.postMessage(message, origin);
   };
 
   const moveHistory = (diff: number) => {
@@ -68,7 +68,7 @@ export function WebNavigator(props: WebNavigatorProps) {
 
   React.useEffect(() => {
     const onMessage = (e: MessageEvent<any>) => {
-      if (e.origin !== IFRAME_ORIGIN) {
+      if (origin !== '*' && e.origin !== origin) {
         return;
       }
       const action = e.data as IframeNavigationCallbackMessage;

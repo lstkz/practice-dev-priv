@@ -49,6 +49,19 @@ export type AwsUploadContentAuth = {
   credentials: AwsCredentials;
 };
 
+export type Challenge = {
+  __typename?: 'Challenge';
+  challengeId: Scalars['Int'];
+  moduleId: Scalars['Int'];
+  title: Scalars['String'];
+  description: Scalars['String'];
+  difficulty: Scalars['String'];
+  practiceTime: Scalars['Float'];
+  detailsS3Key: Scalars['String'];
+  htmlS3Key: Scalars['String'];
+  solutionUrl: Scalars['String'];
+};
+
 export type ChallengeFileInput = {
   name: Scalars['String'];
   directory: Scalars['String'];
@@ -244,10 +257,15 @@ export type Query = {
   getNotificationSettings: NotificationSettings;
   getAwsUploadContentAuth: AwsUploadContentAuth;
   getWorkspaceS3Auth: WorkspaceS3Auth;
+  getChallenge: Challenge;
 };
 
 export type QueryGetWorkspaceS3AuthArgs = {
   workspaceId: Scalars['String'];
+};
+
+export type QueryGetChallengeArgs = {
+  id: Scalars['String'];
 };
 
 export type RegisterInput = {
@@ -270,6 +288,7 @@ export type UpdateChallengeInput = {
   practiceTime: Scalars['Int'];
   detailsS3Key: Scalars['String'];
   htmlS3Key: Scalars['String'];
+  solutionUrl: Scalars['String'];
   files: Array<ChallengeFileInput>;
   libraries: Array<LibraryInput>;
 };
@@ -463,6 +482,9 @@ export type ResolversTypes = {
   AvatarUploadResult: ResolverTypeWrapper<AvatarUploadResult>;
   AwsCredentials: ResolverTypeWrapper<AwsCredentials>;
   AwsUploadContentAuth: ResolverTypeWrapper<AwsUploadContentAuth>;
+  Challenge: ResolverTypeWrapper<Challenge>;
+  Int: ResolverTypeWrapper<Scalars['Int']>;
+  Float: ResolverTypeWrapper<Scalars['Float']>;
   ChallengeFileInput: ChallengeFileInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   CreateWorkspaceInput: CreateWorkspaceInput;
@@ -478,11 +500,9 @@ export type ResolversTypes = {
   PresignedPost: ResolverTypeWrapper<PresignedPost>;
   PresignedPostField: ResolverTypeWrapper<PresignedPostField>;
   Query: ResolverTypeWrapper<{}>;
-  Float: ResolverTypeWrapper<Scalars['Float']>;
   RegisterInput: RegisterInput;
   Subscription: ResolverTypeWrapper<{}>;
   UpdateChallengeInput: UpdateChallengeInput;
-  Int: ResolverTypeWrapper<Scalars['Int']>;
   UpdateModuleInput: UpdateModuleInput;
   UpdateProfileInput: UpdateProfileInput;
   UpdateWorkspaceNodeInput: UpdateWorkspaceNodeInput;
@@ -501,6 +521,9 @@ export type ResolversParentTypes = {
   AvatarUploadResult: AvatarUploadResult;
   AwsCredentials: AwsCredentials;
   AwsUploadContentAuth: AwsUploadContentAuth;
+  Challenge: Challenge;
+  Int: Scalars['Int'];
+  Float: Scalars['Float'];
   ChallengeFileInput: ChallengeFileInput;
   Boolean: Scalars['Boolean'];
   CreateWorkspaceInput: CreateWorkspaceInput;
@@ -516,11 +539,9 @@ export type ResolversParentTypes = {
   PresignedPost: PresignedPost;
   PresignedPostField: PresignedPostField;
   Query: {};
-  Float: Scalars['Float'];
   RegisterInput: RegisterInput;
   Subscription: {};
   UpdateChallengeInput: UpdateChallengeInput;
-  Int: Scalars['Int'];
   UpdateModuleInput: UpdateModuleInput;
   UpdateProfileInput: UpdateProfileInput;
   UpdateWorkspaceNodeInput: UpdateWorkspaceNodeInput;
@@ -568,6 +589,22 @@ export type AwsUploadContentAuthResolvers<
     ParentType,
     ContextType
   >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ChallengeResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['Challenge'] = ResolversParentTypes['Challenge']
+> = {
+  challengeId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  moduleId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  difficulty?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  practiceTime?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  detailsS3Key?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  htmlS3Key?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  solutionUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -806,6 +843,12 @@ export type QueryResolvers<
     ContextType,
     RequireFields<QueryGetWorkspaceS3AuthArgs, 'workspaceId'>
   >;
+  getChallenge?: Resolver<
+    ResolversTypes['Challenge'],
+    ParentType,
+    ContextType,
+    RequireFields<QueryGetChallengeArgs, 'id'>
+  >;
 };
 
 export type SubscriptionResolvers<
@@ -893,6 +936,7 @@ export type Resolvers<ContextType = any> = {
   AvatarUploadResult?: AvatarUploadResultResolvers<ContextType>;
   AwsCredentials?: AwsCredentialsResolvers<ContextType>;
   AwsUploadContentAuth?: AwsUploadContentAuthResolvers<ContextType>;
+  Challenge?: ChallengeResolvers<ContextType>;
   LibraryDefinition?: LibraryDefinitionResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   MyProfile?: MyProfileResolvers<ContextType>;
