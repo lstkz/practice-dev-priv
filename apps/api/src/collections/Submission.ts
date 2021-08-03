@@ -1,5 +1,5 @@
 import { ObjectID } from 'mongodb2';
-import { SubmissionStatus } from 'shared';
+import { SubmissionStatus, TestInfo } from 'shared';
 import { createCollection } from '../db';
 import { WorkspaceNodeType } from './WorkspaceNode';
 
@@ -21,7 +21,18 @@ export interface SubmissionModel {
   nodes: SubmissionNodeModel[];
   createdAt: Date;
   status: SubmissionStatus;
+  testRun?: TestInfo[] | null | undefined;
+  notifyKey: string;
 }
 
-export const SubmissionCollection =
-  createCollection<SubmissionModel>('submission');
+export const SubmissionCollection = createCollection<SubmissionModel>(
+  'submission',
+  [
+    {
+      key: {
+        notifyKey: 1,
+      },
+      unique: true,
+    },
+  ]
+);

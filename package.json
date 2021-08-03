@@ -13,7 +13,9 @@
     "apps/api",
     "apps/app",
     "apps/iframe",
-    "packages/*"
+    "apps/tester",
+    "packages/*",
+    "packages-pvd/*"
   ],
   "dependencies": {
     "@types/node": "^14.14.37",

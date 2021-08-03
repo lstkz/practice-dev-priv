@@ -1,7 +1,41 @@
-import * as docker from '@pulumi/docker';
+import Path from 'path';
 import * as aws from '@pulumi/aws';
 import * as pulumi from '@pulumi/pulumi';
-import { config, getMaybeStagePasswordEnv } from '../packages/config';
+
+function createTester() {
+  const docsHandlerRole = new aws.iam.Role('testerRole', {
+    assumeRolePolicy: {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Action: 'sts:AssumeRole',
+          Principal: {
+            Service: 'lambda.amazonaws.com',
+          },
+          Effect: 'Allow',
+          Sid: '',
+        },
+      ],
+    },
+  });
+  const lambdaLayer = new aws.lambda.LayerVersion('tester_layer', {
+    compatibleRuntimes: [aws.lambda.Runtime.NodeJS14dX],
+    code: new pulumi.asset.FileArchive(Path.join(__dirname, 'tester-layer')),
+    layerName: 'tester_layer',
+  });
+  const lambda = new aws.lambda.Function('tester', {
+    code: new pulumi.asset.FileArchive(
+      Path.join(__dirname, '../apps/tester/build')
+    ),
+    memorySize: 1024,
+    timeout: 60 * 5,
+    handler: 'tester-lambda.testerHandler',
+    runtime: aws.lambda.Runtime.NodeJS14dX,
+    role: docsHandlerRole.arn,
+    layers: [lambdaLayer.arn],
+  });
+  return lambda;
+}
 
 function createBucketCDN() {
   const cfIdentity = new aws.cloudfront.OriginAccessIdentity(
@@ -90,6 +124,8 @@ function createBucketCDN() {
 }
 
 const { distribution, mainBucket } = createBucketCDN();
+const testerLambda = createTester();
 
 export const bucketName = mainBucket.bucket;
 export const cdnDomain = distribution.domainName;
+export const testerLambdaName = testerLambda.name;

@@ -104,6 +104,8 @@ export const route53 = new AWS.Route53();
 
 export const sts = new AWS.STS();
 
+export const lambda = new AWS.Lambda();
+
 export const { createContract } = initialize({
   debug: process.env.NODE_ENV === 'development',
 });

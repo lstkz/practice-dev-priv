@@ -2,6 +2,7 @@ export interface AppConfig {
   logLevel: 'debug' | 'info';
   appBaseUrl: string;
   apiBaseUrl: string;
+  proxyApiBaseUrl?: string;
   cdnBaseUrl: string;
   rabbit: {
     hosts: string[];
@@ -20,6 +21,7 @@ export interface AppConfig {
   aws: {
     region: string;
     s3Bucket: string;
+    testerLambdaName: string;
   };
   adminToken: string;
   api: {
