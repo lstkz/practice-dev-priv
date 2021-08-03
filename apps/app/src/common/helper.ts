@@ -72,3 +72,7 @@ export function getErrorMessage(e: any) {
 export function getAvatarUrl(avatarId: string, size: 80 | 280) {
   return CDN_BASE_URL + `/avatars/${avatarId}-${size}x${size}.png`;
 }
+
+export function getCDNUrl(s3Key: string) {
+  return CDN_BASE_URL + s3Key.replace(/^cdn/, '');
+}
