@@ -5,13 +5,12 @@ import {
 import { PARENT_ORIGIN } from './config';
 import { getIsNavigate } from './helper';
 
-function sendMessage(message: IframeNavigationCallbackMessage) {
-  if (parent) {
-    parent.postMessage(message, PARENT_ORIGIN);
+export function createNavigationProxy(ignoreParentOrigin = false) {
+  function sendMessage(message: IframeNavigationCallbackMessage) {
+    if (parent) {
+      parent.postMessage(message, ignoreParentOrigin ? '*' : PARENT_ORIGIN);
+    }
   }
-}
-
-export function createNavigationProxy() {
   const isNavigate = getIsNavigate();
   setTimeout(() => {
     if (isNavigate) {
@@ -51,7 +50,7 @@ export function createNavigationProxy() {
       sendMessage({
         target: 'navigation',
         type: 'navigated',
-        payload: { url },
+        payload: { url: url.toString() },
       });
     }
   };
@@ -61,13 +60,13 @@ export function createNavigationProxy() {
       sendMessage({
         target: 'navigation',
         type: 'replaced',
-        payload: { url },
+        payload: { url: url.toString() },
       });
     }
   };
 
   window.addEventListener('message', e => {
-    if (e.origin !== PARENT_ORIGIN) {
+    if (!ignoreParentOrigin && e.origin !== PARENT_ORIGIN) {
       return;
     }
     const action = e.data as IframeNavigationMessage;

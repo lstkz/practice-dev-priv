@@ -49,6 +49,7 @@ export async function createSampleChallenges() {
         description: 'desc',
         detailsS3Key: '',
         difficulty: 'easy',
+        solutionUrl: 'sol',
         files: [
           {
             directory: '.',

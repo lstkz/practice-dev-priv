@@ -12,6 +12,7 @@ type Query {
   getNotificationSettings: NotificationSettings!
   getAwsUploadContentAuth: AwsUploadContentAuth!
   getWorkspaceS3Auth(workspaceId: String!): WorkspaceS3Auth!
+  getChallenge(id: String!): Challenge!
 }
 
 type Mutation {
@@ -58,6 +59,18 @@ input CreateWorkspaceNodeInput {
   parentId: String
   hash: String!
   type: WorkspaceNodeType!
+}
+
+type Challenge {
+  challengeId: Int!
+  moduleId: Int!
+  title: String!
+  description: String!
+  difficulty: String!
+  practiceTime: Float!
+  detailsS3Key: String!
+  htmlS3Key: String!
+  solutionUrl: String!
 }
 
 type Workspace {
@@ -126,6 +139,7 @@ input UpdateChallengeInput {
   practiceTime: Int!
   detailsS3Key: String!
   htmlS3Key: String!
+  solutionUrl: String!
   files: [ChallengeFileInput!]!
   libraries: [LibraryInput!]!
 }

@@ -43,6 +43,19 @@ export type AwsUploadContentAuth = {
   credentials: AwsCredentials;
 };
 
+export type Challenge = {
+  __typename?: 'Challenge';
+  challengeId: Scalars['Int'];
+  moduleId: Scalars['Int'];
+  title: Scalars['String'];
+  description: Scalars['String'];
+  difficulty: Scalars['String'];
+  practiceTime: Scalars['Float'];
+  detailsS3Key: Scalars['String'];
+  htmlS3Key: Scalars['String'];
+  solutionUrl: Scalars['String'];
+};
+
 export type ChallengeFileInput = {
   name: Scalars['String'];
   directory: Scalars['String'];
@@ -238,10 +251,15 @@ export type Query = {
   getNotificationSettings: NotificationSettings;
   getAwsUploadContentAuth: AwsUploadContentAuth;
   getWorkspaceS3Auth: WorkspaceS3Auth;
+  getChallenge: Challenge;
 };
 
 export type QueryGetWorkspaceS3AuthArgs = {
   workspaceId: Scalars['String'];
+};
+
+export type QueryGetChallengeArgs = {
+  id: Scalars['String'];
 };
 
 export type RegisterInput = {
@@ -264,6 +282,7 @@ export type UpdateChallengeInput = {
   practiceTime: Scalars['Int'];
   detailsS3Key: Scalars['String'];
   htmlS3Key: Scalars['String'];
+  solutionUrl: Scalars['String'];
   files: Array<ChallengeFileInput>;
   libraries: Array<LibraryInput>;
 };
@@ -397,7 +416,7 @@ export type ConfirmChangeEmailMutation = { __typename?: 'Mutation' } & Pick<
 >;
 
 export type GetOrCreateWorkspaceMutationVariables = Exact<{
-  [key: string]: never;
+  id: Scalars['String'];
 }>;
 
 export type GetOrCreateWorkspaceMutation = { __typename?: 'Mutation' } & {
@@ -427,6 +446,25 @@ export type GetOrCreateWorkspaceMutation = { __typename?: 'Mutation' } & {
         >
       >;
     };
+};
+
+export type GetChallengeQueryVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+export type GetChallengeQuery = { __typename?: 'Query' } & {
+  getChallenge: { __typename?: 'Challenge' } & Pick<
+    Challenge,
+    | 'challengeId'
+    | 'moduleId'
+    | 'title'
+    | 'description'
+    | 'difficulty'
+    | 'practiceTime'
+    | 'detailsS3Key'
+    | 'htmlS3Key'
+    | 'solutionUrl'
+  >;
 };
 
 export type UpdateWorkspaceNodeMutationVariables = Exact<{
@@ -1044,8 +1082,8 @@ export type ConfirmChangeEmailMutationOptions = Apollo.BaseMutationOptions<
   ConfirmChangeEmailMutationVariables
 >;
 export const GetOrCreateWorkspaceDocument = gql`
-  mutation GetOrCreateWorkspace {
-    getOrCreateWorkspace(values: { challengeUniqId: "2_1" }) {
+  mutation GetOrCreateWorkspace($id: String!) {
+    getOrCreateWorkspace(values: { challengeUniqId: $id }) {
       id
       isReady
       items {
@@ -1090,6 +1128,7 @@ export type GetOrCreateWorkspaceMutationFn = Apollo.MutationFunction<
  * @example
  * const [getOrCreateWorkspaceMutation, { data, loading, error }] = useGetOrCreateWorkspaceMutation({
  *   variables: {
+ *      id: // value for 'id'
  *   },
  * });
  */
@@ -1113,6 +1152,72 @@ export type GetOrCreateWorkspaceMutationResult =
 export type GetOrCreateWorkspaceMutationOptions = Apollo.BaseMutationOptions<
   GetOrCreateWorkspaceMutation,
   GetOrCreateWorkspaceMutationVariables
+>;
+export const GetChallengeDocument = gql`
+  query GetChallenge($id: String!) {
+    getChallenge(id: $id) {
+      challengeId
+      moduleId
+      title
+      description
+      difficulty
+      practiceTime
+      detailsS3Key
+      htmlS3Key
+      solutionUrl
+    }
+  }
+`;
+
+/**
+ * __useGetChallengeQuery__
+ *
+ * To run a query within a React component, call `useGetChallengeQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetChallengeQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetChallengeQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetChallengeQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetChallengeQuery,
+    GetChallengeQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetChallengeQuery, GetChallengeQueryVariables>(
+    GetChallengeDocument,
+    options
+  );
+}
+export function useGetChallengeLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetChallengeQuery,
+    GetChallengeQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<GetChallengeQuery, GetChallengeQueryVariables>(
+    GetChallengeDocument,
+    options
+  );
+}
+export type GetChallengeQueryHookResult = ReturnType<
+  typeof useGetChallengeQuery
+>;
+export type GetChallengeLazyQueryHookResult = ReturnType<
+  typeof useGetChallengeLazyQuery
+>;
+export type GetChallengeQueryResult = Apollo.QueryResult<
+  GetChallengeQuery,
+  GetChallengeQueryVariables
 >;
 export const UpdateWorkspaceNodeDocument = gql`
   mutation UpdateWorkspaceNode($values: UpdateWorkspaceNodeInput!) {

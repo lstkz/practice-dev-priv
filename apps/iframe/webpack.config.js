@@ -20,7 +20,7 @@ function getEnv() {
 module.exports = {
   mode: __DEV__ ? 'development' : 'production',
   target: 'web',
-  entry: './src/index',
+  entry: process.env.BUILD_SOLUTION ? './src/solution-index' : './src/index',
   devtool: __DEV__ ? 'cheap-module-source-map' : false,
   output: {
     filename: '[name].[fullhash].js',
@@ -60,8 +60,9 @@ module.exports = {
       ...getEnv(),
     }),
     new CleanWebpackPlugin(),
-    new HtmlWebpackPlugin({
-      title: 'Your awesome app',
-    }),
-  ],
+    !process.env.BUILD_SOLUTION &&
+      new HtmlWebpackPlugin({
+        title: 'Your awesome app',
+      }),
+  ].filter(Boolean),
 };
