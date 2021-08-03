@@ -48,6 +48,7 @@ export async function createSampleChallenges() {
         challengeId: 2,
         description: 'desc',
         detailsS3Key: '',
+        testS3Key: 't',
         difficulty: 'easy',
         solutionUrl: 'sol',
         files: [
@@ -108,6 +109,7 @@ export async function createSampleWorkspaceItems() {
       hash: '123',
       type: WorkspaceNodeType.File,
       name: 'index.tsx',
+      sourceS3Key: 's1',
     }),
     getWorkspaceNodeWithUniqueKey({
       _id: getUUID(2),
@@ -135,6 +137,7 @@ export async function createSampleWorkspaceItems() {
       hash: '123',
       type: WorkspaceNodeType.File,
       name: 'Button.tsx',
+      sourceS3Key: 's2',
     }),
   ]);
 }

@@ -127,6 +127,7 @@ export type Mutation = {
   createWorkspaceNode?: Maybe<Scalars['Void']>;
   updateWorkspaceNode?: Maybe<Scalars['Void']>;
   deleteWorkspaceNode?: Maybe<Scalars['Void']>;
+  submit?: Maybe<Scalars['Void']>;
 };
 
 export type MutationLoginArgs = {
@@ -214,6 +215,10 @@ export type MutationDeleteWorkspaceNodeArgs = {
   id: Scalars['String'];
 };
 
+export type MutationSubmitArgs = {
+  values: SubmitInput;
+};
+
 export type MyProfile = {
   __typename?: 'MyProfile';
   name?: Maybe<Scalars['String']>;
@@ -274,6 +279,11 @@ export type RegisterInput = {
   password: Scalars['String'];
 };
 
+export type SubmitInput = {
+  workspaceId: Scalars['String'];
+  indexHtmlS3Key: Scalars['String'];
+};
+
 export type Subscription = {
   __typename?: 'Subscription';
   mock: Scalars['String'];
@@ -288,6 +298,7 @@ export type UpdateChallengeInput = {
   practiceTime: Scalars['Int'];
   detailsS3Key: Scalars['String'];
   htmlS3Key: Scalars['String'];
+  testS3Key: Scalars['String'];
   solutionUrl: Scalars['String'];
   files: Array<ChallengeFileInput>;
   libraries: Array<LibraryInput>;
@@ -501,6 +512,7 @@ export type ResolversTypes = {
   PresignedPostField: ResolverTypeWrapper<PresignedPostField>;
   Query: ResolverTypeWrapper<{}>;
   RegisterInput: RegisterInput;
+  SubmitInput: SubmitInput;
   Subscription: ResolverTypeWrapper<{}>;
   UpdateChallengeInput: UpdateChallengeInput;
   UpdateModuleInput: UpdateModuleInput;
@@ -540,6 +552,7 @@ export type ResolversParentTypes = {
   PresignedPostField: PresignedPostField;
   Query: {};
   RegisterInput: RegisterInput;
+  SubmitInput: SubmitInput;
   Subscription: {};
   UpdateChallengeInput: UpdateChallengeInput;
   UpdateModuleInput: UpdateModuleInput;
@@ -763,6 +776,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationDeleteWorkspaceNodeArgs, 'id'>
+  >;
+  submit?: Resolver<
+    Maybe<ResolversTypes['Void']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationSubmitArgs, 'values'>
   >;
 };
 

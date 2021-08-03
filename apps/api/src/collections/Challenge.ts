@@ -18,6 +18,7 @@ export interface ChallengeModel {
   practiceTime: number;
   detailsS3Key: string;
   htmlS3Key: string;
+  testS3Key: string;
   solutionUrl: string;
   files: ChallengeFile[];
   libraries: LibraryDefinition[];

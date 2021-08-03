@@ -32,6 +32,7 @@ function getValidQuery() {
           difficulty: "diff1x"
           detailsS3Key: "d_s3x"
           htmlS3Key: "h_s3x"
+          testS3Key: "t_s3x"
           practiceTime: 20
           solutionUrl: "sol"
           files: [
@@ -54,6 +55,7 @@ function getValidValues() {
     difficulty: 'diff1',
     detailsS3Key: 'd_s3',
     htmlS3Key: 'h_s3',
+    testS3Key: 't_s3',
     solutionUrl: 'sol',
     practiceTime: 10,
     files: [
@@ -120,6 +122,7 @@ it('should create a new module and update it', async () => {
       "moduleId": 1,
       "practiceTime": 10,
       "solutionUrl": "sol",
+      "testS3Key": "t_s3",
       "title": "t1",
     }
   `);
@@ -131,6 +134,7 @@ it('should create a new module and update it', async () => {
     difficulty: 'diff1x',
     detailsS3Key: 'd_s3x',
     htmlS3Key: 'h_s3x',
+    testS3Key: 't_s3x',
     practiceTime: 20,
     solutionUrl: 'sol2',
     files: [
@@ -172,6 +176,7 @@ it('should create a new module and update it', async () => {
       "moduleId": 1,
       "practiceTime": 20,
       "solutionUrl": "sol2",
+      "testS3Key": "t_s3x",
       "title": "t1x",
     }
   `);

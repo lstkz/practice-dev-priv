@@ -65,3 +65,10 @@ export interface LibraryDefinition {
   types: string;
   source: string;
 }
+
+export enum SubmissionStatus {
+  Queued = 'QUEUED',
+  Running = 'RUNNING',
+  Pass = 'PASS',
+  Fail = 'FAIL',
+}
