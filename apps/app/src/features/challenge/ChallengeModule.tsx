@@ -3,7 +3,7 @@ import { gql } from '@apollo/client';
 import { InferGetServerSidePropsType } from 'next';
 import { useImmer, createModuleContext, useActions } from 'context-api';
 import { ChallengePage } from './ChallengePage';
-import { createGetServerSideProps } from '../../common/helper';
+import { createGetServerSideProps, getCDNUrl } from '../../common/helper';
 import { readCookieFromString } from '../../common/cookie';
 import {
   LEFT_COOKIE_NAME,
@@ -30,6 +30,7 @@ interface Actions {
 interface State {
   workspace: Workspace;
   challenge: Challenge;
+  challengeHtml: string;
   initialLeftSidebar: number;
   initialRightSidebar: number;
   leftSidebarTab: LeftSidebarTab | null;
@@ -48,10 +49,16 @@ export type RightSidebarTab = 'preview' | 'demo';
 const [Provider, useContext] = createModuleContext<State, Actions>();
 
 export function ChallengeModule(props: ChallengeSSRProps) {
-  const { initialLeftSidebar, initialRightSidebar, workspace, challenge } =
-    props;
+  const {
+    initialLeftSidebar,
+    initialRightSidebar,
+    workspace,
+    challenge,
+    challengeHtml,
+  } = props;
   const [state, setState] = useImmer<State>(
     {
+      challengeHtml,
       workspace,
       challenge,
       initialLeftSidebar,
@@ -172,8 +179,12 @@ export const getServerSideProps = createGetServerSideProps(async ctx => {
       })
       .then(x => x.data.getChallenge),
   ]);
+  const challengeHtml = await fetch(getCDNUrl(challenge.htmlS3Key)).then(x =>
+    x.text()
+  );
   return {
     props: {
+      challengeHtml,
       workspace,
       challenge,
       initialLeftSidebar,

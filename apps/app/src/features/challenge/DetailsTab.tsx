@@ -1,28 +1,45 @@
 import React from 'react';
+import { getCDNUrl } from 'src/common/helper';
+import { IS_SSR } from 'src/config';
+import { useLayoutEffectFix } from 'src/hooks/useLayoutEffectFix';
 import tw, { styled } from 'twin.macro';
+import { useChallengeState } from './ChallengeModule';
+
+if (!IS_SSR) {
+  window.React = React;
+}
 
 const Wrapper = styled.div`
+  ${tw`text-gray-300`}
+
   h1 {
     ${tw`text-xl font-bold leading-7 text-gray-100 mt-2 text-center`}
   }
 
   p {
-    ${tw`mt-2 text-gray-300`}
+    ${tw`mt-2`}
   }
 `;
 
 export function DetailsTab() {
+  const { challengeHtml, challenge } = useChallengeState();
+  const [details, setDetails] = React.useState<React.ReactNode | null>(null);
+  useLayoutEffectFix(() => {
+    const script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = getCDNUrl(challenge.detailsS3Key);
+    (window as any).ChallengeJSONP = (module: any) => {
+      setDetails(module.Details);
+    };
+    document.body.appendChild(script);
+    return () => {
+      script.remove();
+    };
+  }, []);
   return (
     <Wrapper>
-      <h1>React counter</h1>
-      <p>
-        Create a simple counter component. When clicking on the button the
-        counter should increase by one.
-      </p>
-      <p>
-        You are free to add classes, styles, ids, but don't edit or remove{' '}
-        <code>data-test</code> attributes.
-      </p>
+      <h1>{challenge.title}</h1>
+      {details || <div dangerouslySetInnerHTML={{ __html: challengeHtml }} />}
     </Wrapper>
   );
 }
