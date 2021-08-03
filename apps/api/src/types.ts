@@ -42,6 +42,20 @@ export interface PrepareWorkspaceTask {
   };
 }
 
+export interface TestSubmissionTask {
+  type: 'TestSubmission';
+  payload: {
+    submissionId: string;
+  };
+}
+
+export interface CloneWorkspaceFilesTask {
+  type: 'CloneWorkspaceFiles';
+  payload: {
+    submissionId: string;
+  };
+}
+
 export interface ButtonActionTemplateProps {
   unsubscribeLink?: string;
   header: string;
@@ -50,7 +64,11 @@ export interface ButtonActionTemplateProps {
   buttonUrl: string;
 }
 
-export type AppTask = SendEmailTask | PrepareWorkspaceTask;
+export type AppTask =
+  | SendEmailTask
+  | PrepareWorkspaceTask
+  | TestSubmissionTask
+  | CloneWorkspaceFilesTask;
 
 export interface UserRegisteredEvent {
   type: 'UserRegistered';

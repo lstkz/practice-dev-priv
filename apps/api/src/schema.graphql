@@ -43,6 +43,12 @@ type Mutation {
   createWorkspaceNode(values: CreateWorkspaceNodeInput!): Void
   updateWorkspaceNode(values: UpdateWorkspaceNodeInput!): Void
   deleteWorkspaceNode(id: String!): Void
+  submit(values: SubmitInput!): Void
+}
+
+input SubmitInput {
+  workspaceId: String!
+  indexHtmlS3Key: String!
 }
 
 input UpdateWorkspaceNodeInput {
@@ -139,6 +145,7 @@ input UpdateChallengeInput {
   practiceTime: Int!
   detailsS3Key: String!
   htmlS3Key: String!
+  testS3Key: String!
   solutionUrl: String!
   files: [ChallengeFileInput!]!
   libraries: [LibraryInput!]!
