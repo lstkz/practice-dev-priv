@@ -14,7 +14,7 @@ import { dispatchTask } from '../../dispatch';
 import { createContract, createGraphqlBinding } from '../../lib';
 import { MapProps } from '../../types';
 
-export const submit = createContract('challenge.submit')
+export const submit = createContract('submission.submit')
   .params('appUser', 'values')
   .schema({
     appUser: S.object().appUser(),
