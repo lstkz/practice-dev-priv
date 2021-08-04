@@ -38,7 +38,6 @@ export const testSubmission = createContract('workspace.testSubmission')
         undefined
       )
       .promise();
-    console.log(result);
     if (result.StatusCode !== 200) {
       logger.error(result);
       throw new Error('Failed to invoke lambda');
