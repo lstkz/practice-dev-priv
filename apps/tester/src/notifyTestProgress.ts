@@ -27,7 +27,6 @@ export async function notifyTestProgress(
       agent,
     });
     const text = await res.text();
-    console.log(text);
     if (res.status !== 200) {
       console.error('failed to notify result, status: ' + res.status, text);
     }

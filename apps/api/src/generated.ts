@@ -293,7 +293,11 @@ export type SubmitInput = {
 
 export type Subscription = {
   __typename?: 'Subscription';
-  mock: Scalars['String'];
+  testProgress: Scalars['TestProgressData'];
+};
+
+export type SubscriptionTestProgressArgs = {
+  id: Scalars['String'];
 };
 
 export type UpdateChallengeInput = {
@@ -889,11 +893,12 @@ export type SubscriptionResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']
 > = {
-  mock?: SubscriptionResolver<
-    ResolversTypes['String'],
-    'mock',
+  testProgress?: SubscriptionResolver<
+    ResolversTypes['TestProgressData'],
+    'testProgress',
     ParentType,
-    ContextType
+    ContextType,
+    RequireFields<SubscriptionTestProgressArgs, 'id'>
   >;
 };
 

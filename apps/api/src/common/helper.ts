@@ -162,3 +162,11 @@ export function getWorkspaceS3Prefix(workspaceId: ObjectID) {
 export function getCDNUrl(s3Key: string) {
   return config.cdnBaseUrl + s3Key.replace(/^cdn/, '');
 }
+
+export function getNotifyTestPubKey(options: {
+  userId: string;
+  challengeId: string;
+}) {
+  const { challengeId, userId } = options;
+  return `NOTIFY_TEST:${challengeId}:${userId}`;
+}

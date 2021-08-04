@@ -2,7 +2,7 @@ scalar Void
 scalar TestProgressData
 
 type Subscription {
-  mock: String!
+  testProgress(id: String!): TestProgressData!
 }
 
 type Query {

@@ -19,6 +19,9 @@ type MapToType<T> = {
 };
 type TypeMap = MapToType<SubscriptionResolvers>;
 
-export function publishEvent<T extends TypeMap>(name: string, payload: T) {
+export function publishPubSubEvent<T extends TypeMap>(
+  name: string,
+  payload: T
+) {
   return pubsub.publish(name, payload);
 }
