@@ -80,6 +80,11 @@ jobs:
           cd apps/app
           yarn run test
 
+      - name: test tester
+        run: |
+          cd apps/tester
+          yarn run test
+
       - name: test packages/code-editor
         run: |
           cd packages/code-editor

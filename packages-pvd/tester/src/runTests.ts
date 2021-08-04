@@ -41,7 +41,7 @@ export async function runTests(
 
   let success = true;
 
-  const serialized: TestInfo[] = tester.tests.map((test) => ({
+  const serialized: TestInfo[] = tester.tests.map(test => ({
     id: test.id,
     name: test.name,
     result: 'pending',
@@ -93,9 +93,9 @@ export async function runTests(
   await notifier.notify({ type: 'RESULT', meta, payload: { success } });
   await notifier.flush();
 
-  Object.values(createdBrowsers).forEach((browser) => {
+  Object.values(createdBrowsers).forEach(browser => {
     try {
-      browser.close();
+      void browser.close();
     } catch (e) {
       console.error(e);
     }

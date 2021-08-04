@@ -3,7 +3,26 @@ import * as aws from '@pulumi/aws';
 import * as pulumi from '@pulumi/pulumi';
 
 function createTester() {
-  const docsHandlerRole = new aws.iam.Role('testerRole', {
+  const lambdaLogging = new aws.iam.Policy('pd-lambda-logging', {
+    path: '/',
+    description: 'IAM policy for logging from a lambda',
+    policy: `{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "arn:aws:logs:*:*:*",
+      "Effect": "Allow"
+    }
+  ]
+}
+`,
+  });
+  const testerRole = new aws.iam.Role('pd-tester-role', {
     assumeRolePolicy: {
       Version: '2012-10-17',
       Statement: [
@@ -18,22 +37,37 @@ function createTester() {
       ],
     },
   });
-  const lambdaLayer = new aws.lambda.LayerVersion('tester_layer', {
+  const lambdaLogs = new aws.iam.RolePolicyAttachment('pd-lambda-tester-logs', {
+    role: testerRole.name,
+    policyArn: lambdaLogging.arn,
+  });
+  const lambdaLayer = new aws.lambda.LayerVersion('pd-tester-layer', {
     compatibleRuntimes: [aws.lambda.Runtime.NodeJS14dX],
     code: new pulumi.asset.FileArchive(Path.join(__dirname, 'tester-layer')),
-    layerName: 'tester_layer',
+    layerName: 'pd-tester-layer',
   });
-  const lambda = new aws.lambda.Function('tester', {
-    code: new pulumi.asset.FileArchive(
-      Path.join(__dirname, '../apps/tester/build')
-    ),
-    memorySize: 1024,
-    timeout: 60 * 5,
-    handler: 'tester-lambda.testerHandler',
-    runtime: aws.lambda.Runtime.NodeJS14dX,
-    role: docsHandlerRole.arn,
-    layers: [lambdaLayer.arn],
-  });
+  const lambda = new aws.lambda.Function(
+    'pd-tester',
+    {
+      code: new pulumi.asset.FileArchive(
+        Path.join(__dirname, '../apps/tester/build')
+      ),
+      memorySize: 1024,
+      timeout: 60 * 5,
+      handler: 'tester-lambda.testerHandler',
+      runtime: aws.lambda.Runtime.NodeJS14dX,
+      role: testerRole.arn,
+      layers: [lambdaLayer.arn],
+      environment: {
+        variables: {
+          IS_AWS: '1',
+        },
+      },
+    },
+    {
+      dependsOn: [lambdaLogs],
+    }
+  );
   return lambda;
 }
 

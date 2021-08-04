@@ -22,6 +22,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  TestProgressData: any;
   Void: any;
 };
 
@@ -128,6 +129,7 @@ export type Mutation = {
   updateWorkspaceNode?: Maybe<Scalars['Void']>;
   deleteWorkspaceNode?: Maybe<Scalars['Void']>;
   submit?: Maybe<Scalars['Void']>;
+  notifyTestProgress?: Maybe<Scalars['Void']>;
 };
 
 export type MutationLoginArgs = {
@@ -217,6 +219,11 @@ export type MutationDeleteWorkspaceNodeArgs = {
 
 export type MutationSubmitArgs = {
   values: SubmitInput;
+};
+
+export type MutationNotifyTestProgressArgs = {
+  notifyKey: Scalars['String'];
+  data: Array<Scalars['TestProgressData']>;
 };
 
 export type MyProfile = {
@@ -514,6 +521,7 @@ export type ResolversTypes = {
   RegisterInput: RegisterInput;
   SubmitInput: SubmitInput;
   Subscription: ResolverTypeWrapper<{}>;
+  TestProgressData: ResolverTypeWrapper<Scalars['TestProgressData']>;
   UpdateChallengeInput: UpdateChallengeInput;
   UpdateModuleInput: UpdateModuleInput;
   UpdateProfileInput: UpdateProfileInput;
@@ -554,6 +562,7 @@ export type ResolversParentTypes = {
   RegisterInput: RegisterInput;
   SubmitInput: SubmitInput;
   Subscription: {};
+  TestProgressData: Scalars['TestProgressData'];
   UpdateChallengeInput: UpdateChallengeInput;
   UpdateModuleInput: UpdateModuleInput;
   UpdateProfileInput: UpdateProfileInput;
@@ -783,6 +792,12 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationSubmitArgs, 'values'>
   >;
+  notifyTestProgress?: Resolver<
+    Maybe<ResolversTypes['Void']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationNotifyTestProgressArgs, 'notifyKey' | 'data'>
+  >;
 };
 
 export type MyProfileResolvers<
@@ -882,6 +897,11 @@ export type SubscriptionResolvers<
   >;
 };
 
+export interface TestProgressDataScalarConfig
+  extends GraphQLScalarTypeConfig<ResolversTypes['TestProgressData'], any> {
+  name: 'TestProgressData';
+}
+
 export type UserResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']
@@ -965,6 +985,7 @@ export type Resolvers<ContextType = any> = {
   PresignedPostField?: PresignedPostFieldResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
+  TestProgressData?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;
   Void?: GraphQLScalarType;
   Workspace?: WorkspaceResolvers<ContextType>;

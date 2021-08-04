@@ -53,16 +53,19 @@ export async function testerHandler(event: TestSubmissionLambdaInput) {
   const testName = path.basename(event.testFileUrl);
   const testPath = path.join('/tmp', testName);
   fs.writeFileSync(testPath, testContent);
-
-  const apiNotifier = new APINotifier();
+  const apiNotifier = new APINotifier(event.apiBaseUrl, event.notifyKey);
   const inMemoryNotifier = new InMemoryNotifier();
-  const multiNotifier = new MultiNotifier([apiNotifier]);
+  const multiNotifier = new MultiNotifier([apiNotifier, inMemoryNotifier]);
   const [testUrl, dispose] = await startServer(indexContent);
+  const requireFunc =
+    typeof __webpack_require__ === 'function'
+      ? __non_webpack_require__
+      : require;
   try {
     await runTests(
       event.submissionId,
       testUrl,
-      require(testPath).default,
+      requireFunc(testPath).default,
       multiNotifier
     );
   } finally {

@@ -16,6 +16,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  TestProgressData: any;
   Void: any;
 };
 
@@ -122,6 +123,7 @@ export type Mutation = {
   updateWorkspaceNode?: Maybe<Scalars['Void']>;
   deleteWorkspaceNode?: Maybe<Scalars['Void']>;
   submit?: Maybe<Scalars['Void']>;
+  notifyTestProgress?: Maybe<Scalars['Void']>;
 };
 
 export type MutationLoginArgs = {
@@ -211,6 +213,11 @@ export type MutationDeleteWorkspaceNodeArgs = {
 
 export type MutationSubmitArgs = {
   values: SubmitInput;
+};
+
+export type MutationNotifyTestProgressArgs = {
+  notifyKey: Scalars['String'];
+  data: Array<Scalars['TestProgressData']>;
 };
 
 export type MyProfile = {

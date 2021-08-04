@@ -1,4 +1,5 @@
 scalar Void
+scalar TestProgressData
 
 type Subscription {
   mock: String!
@@ -44,6 +45,7 @@ type Mutation {
   updateWorkspaceNode(values: UpdateWorkspaceNodeInput!): Void
   deleteWorkspaceNode(id: String!): Void
   submit(values: SubmitInput!): Void
+  notifyTestProgress(notifyKey: String!, data: [TestProgressData!]!): Void
 }
 
 input SubmitInput {

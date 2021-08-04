@@ -9,6 +9,14 @@ export function init() {
     .option('--stage', 'deploy to stage')
     .action(async ({ stage }) => {
       await cpToPromise(
+        spawn('yarn', ['run', 'build'], {
+          env: {
+            ...process.env,
+          },
+          ...getSpawnOptions('tester'),
+        })
+      );
+      await cpToPromise(
         spawn('pulumi', ['up', '-s', stage ? 'dev' : 'prod', '-y'], {
           env: {
             ...process.env,
