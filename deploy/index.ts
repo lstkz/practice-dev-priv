@@ -1,7 +1,75 @@
-import * as docker from '@pulumi/docker';
+import Path from 'path';
 import * as aws from '@pulumi/aws';
 import * as pulumi from '@pulumi/pulumi';
-import { config, getMaybeStagePasswordEnv } from '../packages/config';
+
+function createTester() {
+  const lambdaLogging = new aws.iam.Policy('pd-lambda-logging', {
+    path: '/',
+    description: 'IAM policy for logging from a lambda',
+    policy: `{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "arn:aws:logs:*:*:*",
+      "Effect": "Allow"
+    }
+  ]
+}
+`,
+  });
+  const testerRole = new aws.iam.Role('pd-tester-role', {
+    assumeRolePolicy: {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Action: 'sts:AssumeRole',
+          Principal: {
+            Service: 'lambda.amazonaws.com',
+          },
+          Effect: 'Allow',
+          Sid: '',
+        },
+      ],
+    },
+  });
+  const lambdaLogs = new aws.iam.RolePolicyAttachment('pd-lambda-tester-logs', {
+    role: testerRole.name,
+    policyArn: lambdaLogging.arn,
+  });
+  const lambdaLayer = new aws.lambda.LayerVersion('pd-tester-layer', {
+    compatibleRuntimes: [aws.lambda.Runtime.NodeJS14dX],
+    code: new pulumi.asset.FileArchive(Path.join(__dirname, 'tester-layer')),
+    layerName: 'pd-tester-layer',
+  });
+  const lambda = new aws.lambda.Function(
+    'pd-tester',
+    {
+      code: new pulumi.asset.FileArchive(
+        Path.join(__dirname, '../apps/tester/build')
+      ),
+      memorySize: 1024,
+      timeout: 60 * 5,
+      handler: 'tester-lambda.testerHandler',
+      runtime: aws.lambda.Runtime.NodeJS14dX,
+      role: testerRole.arn,
+      layers: [lambdaLayer.arn],
+      environment: {
+        variables: {
+          IS_AWS: '1',
+        },
+      },
+    },
+    {
+      dependsOn: [lambdaLogs],
+    }
+  );
+  return lambda;
+}
 
 function createBucketCDN() {
   const cfIdentity = new aws.cloudfront.OriginAccessIdentity(
@@ -90,6 +158,8 @@ function createBucketCDN() {
 }
 
 const { distribution, mainBucket } = createBucketCDN();
+const testerLambda = createTester();
 
 export const bucketName = mainBucket.bucket;
 export const cdnDomain = distribution.domainName;
+export const testerLambdaName = testerLambda.name;

@@ -5,6 +5,7 @@ import cryptoAsync from 'mz/crypto';
 import { Response } from 'node-fetch';
 import { WorkspaceNodeModel } from '../collections/WorkspaceNode';
 import { ObjectID } from 'mongodb2';
+import { config } from 'config';
 
 const SECURITY = {
   SALT_LENGTH: 64,
@@ -156,4 +157,16 @@ export function getWorkspaceNodeS3Key(item: WorkspaceNodeModel) {
 
 export function getWorkspaceS3Prefix(workspaceId: ObjectID) {
   return `cdn/workspace/${workspaceId}/`;
+}
+
+export function getCDNUrl(s3Key: string) {
+  return config.cdnBaseUrl + s3Key.replace(/^cdn/, '');
+}
+
+export function getNotifyTestPubKey(options: {
+  userId: string;
+  challengeId: string;
+}) {
+  const { challengeId, userId } = options;
+  return `NOTIFY_TEST:${challengeId}:${userId}`;
 }

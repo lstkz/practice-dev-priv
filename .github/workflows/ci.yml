@@ -49,6 +49,11 @@ jobs:
           cd apps/api
           yarn test
 
+      - name: test tester
+        run: |
+          cd apps/tester
+          yarn run test
+
   front:
     runs-on: ubuntu-latest
 

@@ -9,12 +9,12 @@ import {
 import { WorkspaceCollection } from '../../collections/Workspace';
 import { WorkspaceNodeCollection } from '../../collections/WorkspaceNode';
 import { AppError } from '../../common/errors';
-import { getCurrentDate } from '../../common/helper';
+import { getCurrentDate, randomUniqString } from '../../common/helper';
 import { dispatchTask } from '../../dispatch';
 import { createContract, createGraphqlBinding } from '../../lib';
 import { MapProps } from '../../types';
 
-export const submit = createContract('challenge.submit')
+export const submit = createContract('submission.submit')
   .params('appUser', 'values')
   .schema({
     appUser: S.object().appUser(),
@@ -55,6 +55,7 @@ export const submit = createContract('challenge.submit')
       nodes,
       createdAt: getCurrentDate(),
       status: SubmissionStatus.Queued,
+      notifyKey: randomUniqString(),
     };
     await SubmissionCollection.insertOne(submission);
     await dispatchTask({

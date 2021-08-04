@@ -16,6 +16,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  TestProgressData: any;
   Void: any;
 };
 
@@ -122,6 +123,7 @@ export type Mutation = {
   updateWorkspaceNode?: Maybe<Scalars['Void']>;
   deleteWorkspaceNode?: Maybe<Scalars['Void']>;
   submit?: Maybe<Scalars['Void']>;
+  notifyTestProgress?: Maybe<Scalars['Void']>;
 };
 
 export type MutationLoginArgs = {
@@ -213,6 +215,11 @@ export type MutationSubmitArgs = {
   values: SubmitInput;
 };
 
+export type MutationNotifyTestProgressArgs = {
+  notifyKey: Scalars['String'];
+  data: Array<Scalars['TestProgressData']>;
+};
+
 export type MyProfile = {
   __typename?: 'MyProfile';
   name?: Maybe<Scalars['String']>;
@@ -280,7 +287,11 @@ export type SubmitInput = {
 
 export type Subscription = {
   __typename?: 'Subscription';
-  mock: Scalars['String'];
+  testProgress: Scalars['TestProgressData'];
+};
+
+export type SubscriptionTestProgressArgs = {
+  id: Scalars['String'];
 };
 
 export type UpdateChallengeInput = {
@@ -671,7 +682,10 @@ export type DefaultAuthResultFragment = { __typename?: 'AuthResult' } & Pick<
 export type AppDataQueryVariables = Exact<{ [key: string]: never }>;
 
 export type AppDataQuery = { __typename?: 'Query' } & {
-  me: { __typename?: 'User' } & AllUserPropsFragment;
+  me: { __typename?: 'User' } & Pick<
+    User,
+    'id' | 'username' | 'email' | 'isAdmin' | 'isVerified' | 'avatarId'
+  >;
 };
 
 export type AllUserPropsFragment = { __typename?: 'User' } & Pick<
@@ -2259,10 +2273,14 @@ export type RegisterMutationOptions = Apollo.BaseMutationOptions<
 export const AppDataDocument = gql`
   query AppData {
     me {
-      ...allUserProps
+      id
+      username
+      email
+      isAdmin
+      isVerified
+      avatarId
     }
   }
-  ${AllUserPropsFragmentDoc}
 `;
 
 /**

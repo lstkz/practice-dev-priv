@@ -10,7 +10,7 @@
     "jest": "TZ=America/New_York jest",
     "lint": "eslint . --ext .ts"
   },
-  "license": "MIT",
+  "license": "UNLICENSED",
   "dependencies": {
     "@bugsnag/core": "^7.10.0",
     "@bugsnag/js": "^7.10.5",

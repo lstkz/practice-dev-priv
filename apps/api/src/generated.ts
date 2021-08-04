@@ -22,6 +22,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  TestProgressData: any;
   Void: any;
 };
 
@@ -128,6 +129,7 @@ export type Mutation = {
   updateWorkspaceNode?: Maybe<Scalars['Void']>;
   deleteWorkspaceNode?: Maybe<Scalars['Void']>;
   submit?: Maybe<Scalars['Void']>;
+  notifyTestProgress?: Maybe<Scalars['Void']>;
 };
 
 export type MutationLoginArgs = {
@@ -219,6 +221,11 @@ export type MutationSubmitArgs = {
   values: SubmitInput;
 };
 
+export type MutationNotifyTestProgressArgs = {
+  notifyKey: Scalars['String'];
+  data: Array<Scalars['TestProgressData']>;
+};
+
 export type MyProfile = {
   __typename?: 'MyProfile';
   name?: Maybe<Scalars['String']>;
@@ -286,7 +293,11 @@ export type SubmitInput = {
 
 export type Subscription = {
   __typename?: 'Subscription';
-  mock: Scalars['String'];
+  testProgress: Scalars['TestProgressData'];
+};
+
+export type SubscriptionTestProgressArgs = {
+  id: Scalars['String'];
 };
 
 export type UpdateChallengeInput = {
@@ -514,6 +525,7 @@ export type ResolversTypes = {
   RegisterInput: RegisterInput;
   SubmitInput: SubmitInput;
   Subscription: ResolverTypeWrapper<{}>;
+  TestProgressData: ResolverTypeWrapper<Scalars['TestProgressData']>;
   UpdateChallengeInput: UpdateChallengeInput;
   UpdateModuleInput: UpdateModuleInput;
   UpdateProfileInput: UpdateProfileInput;
@@ -554,6 +566,7 @@ export type ResolversParentTypes = {
   RegisterInput: RegisterInput;
   SubmitInput: SubmitInput;
   Subscription: {};
+  TestProgressData: Scalars['TestProgressData'];
   UpdateChallengeInput: UpdateChallengeInput;
   UpdateModuleInput: UpdateModuleInput;
   UpdateProfileInput: UpdateProfileInput;
@@ -783,6 +796,12 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationSubmitArgs, 'values'>
   >;
+  notifyTestProgress?: Resolver<
+    Maybe<ResolversTypes['Void']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationNotifyTestProgressArgs, 'notifyKey' | 'data'>
+  >;
 };
 
 export type MyProfileResolvers<
@@ -874,13 +893,19 @@ export type SubscriptionResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']
 > = {
-  mock?: SubscriptionResolver<
-    ResolversTypes['String'],
-    'mock',
+  testProgress?: SubscriptionResolver<
+    ResolversTypes['TestProgressData'],
+    'testProgress',
     ParentType,
-    ContextType
+    ContextType,
+    RequireFields<SubscriptionTestProgressArgs, 'id'>
   >;
 };
+
+export interface TestProgressDataScalarConfig
+  extends GraphQLScalarTypeConfig<ResolversTypes['TestProgressData'], any> {
+  name: 'TestProgressData';
+}
 
 export type UserResolvers<
   ContextType = any,
@@ -965,6 +990,7 @@ export type Resolvers<ContextType = any> = {
   PresignedPostField?: PresignedPostFieldResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
+  TestProgressData?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;
   Void?: GraphQLScalarType;
   Workspace?: WorkspaceResolvers<ContextType>;

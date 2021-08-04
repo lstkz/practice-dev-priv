@@ -1,0 +1,27 @@
+{
+  "name": "tester",
+  "version": "0.0.1",
+  "scripts": {
+    "build": "yarn run webpack",
+    "tsc": "tsc --noEmit",
+    "test": "yarn run tsc && yarn run lint && yarn run jest",
+    "jest": "TZ=America/New_York jest",
+    "lint": "eslint . --ext .ts"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@types/tcp-port-used": "^1.0.0",
+    "aws-sdk": "^2.945.0",
+    "jest": "^27.0.6",
+    "remeda": "^0.0.27",
+    "schema": "*",
+    "shared": "*",
+    "tcp-port-used": "^1.0.2",
+    "ts-jest": "^27.0.3",
+    "typescript": "^4.3.5",
+    "webpack": "^5.37.0"
+  },
+  "devDependencies": {
+    "ts-node-dev": "^1.1.6"
+  }
+}

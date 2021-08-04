@@ -20,6 +20,7 @@ async function start() {
       `Express HTTP server listening on port ${config.api.port} in ${process.env.NODE_ENV} mode`
     );
   });
+  apolloServer.installSubscriptionHandlers(httpServer);
   stoppable(httpServer, getDuration(30, 's'));
   const asyncServerStop = util.promisify(apolloServer.stop).bind(apolloServer);
   addShownDownAction(100, async () => {

@@ -54,19 +54,17 @@ export class CustomApolloClient extends ApolloClient<NormalizedCacheObject> {
       };
     });
     const mainLink = authLink.concat(httpLink);
-    const wsLink =
-      // eslint-disable-next-line no-constant-condition
-      IS_SSR || true
-        ? null
-        : new WebSocketLink({
-            uri: API_URL.replace(/^http/, 'ws') + '/subscriptions',
-            options: {
-              reconnect: true,
-              connectionParams: () => ({
-                authorization: this.getAccessToken(),
-              }),
-            },
-          });
+    const wsLink = IS_SSR
+      ? null
+      : new WebSocketLink({
+          uri: API_URL.replace(/^http/, 'ws') + '/subscriptions',
+          options: {
+            reconnect: true,
+            connectionParams: () => ({
+              authorization: this.getAccessToken(),
+            }),
+          },
+        });
     super({
       link: wsLink
         ? split(

@@ -45,7 +45,12 @@ export default function App({
 gql`
   query AppData {
     me {
-      ...allUserProps
+      id
+      username
+      email
+      isAdmin
+      isVerified
+      avatarId
     }
   }
   fragment allUserProps on User {

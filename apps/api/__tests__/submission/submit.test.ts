@@ -2,7 +2,7 @@ import { gql } from 'apollo-server';
 import * as R from 'remeda';
 import { mocked } from 'ts-jest/utils';
 import { SubmissionCollection } from '../../src/collections/Submission';
-import { submit } from '../../src/contracts/challenge/submit';
+import { submit } from '../../src/contracts/submission/submit';
 import { dispatchTask } from '../../src/dispatch';
 import { apolloServer } from '../../src/server';
 import { getAppUser, getId, getTokenOptions, setupDb } from '../helper';
@@ -54,7 +54,7 @@ it('should submit successfully', async () => {
     indexHtmlS3Key: 'html',
   });
   const submission = await SubmissionCollection.findOne({});
-  expect(R.omit(submission!, ['_id'])).toMatchInlineSnapshot(`
+  expect(R.omit(submission!, ['_id', 'notifyKey'])).toMatchInlineSnapshot(`
 Object {
   "challengeUniqId": "1_2",
   "createdAt": 1970-01-01T00:00:00.001Z,
