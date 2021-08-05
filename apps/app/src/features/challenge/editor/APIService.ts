@@ -122,6 +122,18 @@ export class APIService {
     ]);
   }
 
+  async uploadIndexFile(html: string) {
+    const key = this._getS3Key('bundle/' + R.randomString(20));
+    await this.s3
+      .upload({
+        Bucket: this.bucketName,
+        Key: key,
+        Body: html,
+      })
+      .promise();
+    return key;
+  }
+
   private _getS3Key(fileId: string) {
     return `cdn/workspace/${this.workspaceId}/${fileId}`;
   }

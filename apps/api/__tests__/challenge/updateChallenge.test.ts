@@ -40,6 +40,7 @@ function getValidQuery() {
             { directory: "dir2", name: "f2", s3Key: "f2_s3" }
           ]
           libraries: [{ name: "lib", source: "source.js", types: "types.ts" }]
+          tests: ["t1"]
         }
       )
     }
@@ -77,6 +78,7 @@ function getValidValues() {
         types: 'types.ts',
       },
     ],
+    tests: ['test'],
   };
 }
 
@@ -123,6 +125,9 @@ it('should create a new module and update it', async () => {
       "practiceTime": 10,
       "solutionUrl": "sol",
       "testS3Key": "t_s3",
+      "tests": Array [
+        "test",
+      ],
       "title": "t1",
     }
   `);
@@ -150,6 +155,7 @@ it('should create a new module and update it', async () => {
       },
     ],
     libraries: [],
+    tests: ['t3'],
   });
   expect(await ChallengeCollection.findByIdOrThrow('1_1'))
     .toMatchInlineSnapshot(`
@@ -177,6 +183,9 @@ it('should create a new module and update it', async () => {
       "practiceTime": 20,
       "solutionUrl": "sol2",
       "testS3Key": "t_s3x",
+      "tests": Array [
+        "t3",
+      ],
       "title": "t1x",
     }
   `);

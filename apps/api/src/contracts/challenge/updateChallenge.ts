@@ -34,6 +34,7 @@ export const updateChallenge = createContract('challenge.updateChallenge')
           source: S.string(),
         })
       ),
+      tests: S.array().items(S.string()),
     }),
   })
   .fn(async values => {

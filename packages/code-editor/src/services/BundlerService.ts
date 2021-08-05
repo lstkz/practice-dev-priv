@@ -82,7 +82,7 @@ export class BundlerService {
     this.worker.postMessage(action);
   }
 
-  private async loadCodeAsync() {
+  async loadCodeAsync() {
     if (!this.inputFile) {
       throw new Error('inputFile not set');
     }
@@ -92,5 +92,6 @@ export class BundlerService {
       modules: fileMap,
     });
     await this.browserPreviewService.inject(code);
+    return code;
   }
 }

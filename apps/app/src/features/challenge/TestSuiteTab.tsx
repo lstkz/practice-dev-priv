@@ -10,75 +10,11 @@ import { Button } from '../../components/Button';
 import { ModalRef } from '../../components/GenericModal';
 import { SolutionModal } from './SolutionModal';
 import { TabTitle } from './TabTitle';
-
-export interface Step {
-  text: string;
-  data?: any;
-}
-
-export interface TestInfo {
-  id: number;
-  name: string;
-  error?: string;
-  steps: Step[];
-  result: TestResult;
-}
-
-export type TestResult =
-  | 'pass'
-  | 'fail'
-  | 'pending'
-  | 'running'
-  | 'fail-skipped';
-
-const tests: TestInfo[] = [
-  {
-    id: 1,
-    name: 'navigate to page',
-    result: 'pass',
-    steps: [
-      {
-        text: 'Navigate to "http://example.org"',
-      },
-      {
-        text: 'Lorem ipsum',
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: 'verify count label, increase and decrease buttons are visible',
-    result: 'fail',
-    error:
-      'waiting for selector "[data-test="count-value"]" failed: timeout 3500ms exceeded',
-    steps: [
-      {
-        text: 'Expect "[data-test="count-value"]" to be visible',
-      },
-    ],
-  },
-  {
-    id: 3,
-    name: 'count should display 0 by default',
-    result: 'running',
-    steps: [],
-  },
-  {
-    id: 4,
-    name: 'click increment button 3 times',
-    result: 'fail-skipped',
-    steps: [],
-  },
-  {
-    id: 5,
-    name: 'click decrement button 2 times',
-    result: 'fail-skipped',
-    steps: [],
-  },
-];
+import { useTesterState } from './TesterModule';
 
 export function TestSuiteTab() {
   const modalRef = React.useRef<ModalRef>(null!);
+  const { tests, result } = useTesterState();
   return (
     <div>
       <TabTitle>Test Suite</TabTitle>
@@ -117,23 +53,29 @@ export function TestSuiteTab() {
           );
         })}
       </div>
-      <div tw="bg-red-200 text-red-600 font-bold text-center rounded-sm p-1 mt-3">
-        FAIL
-      </div>
-      <div tw="bg-green-200 text-green-600 font-bold text-center rounded-sm p-1 mt-3">
-        PASS
-      </div>
-      <Button
-        tw="mt-2"
-        block
-        type="light"
-        focusBg="gray-900"
-        onClick={() => {
-          modalRef.current.open();
-        }}
-      >
-        Share Your Solution!
-      </Button>
+      {result === 'FAIL' && (
+        <div tw="bg-red-200 text-red-600 font-bold text-center rounded-sm p-1 mt-3">
+          FAIL
+        </div>
+      )}
+      {result === 'PASS' && (
+        <div tw="bg-green-200 text-green-600 font-bold text-center rounded-sm p-1 mt-3">
+          PASS
+        </div>
+      )}
+      {result === 'PASS' && (
+        <Button
+          tw="mt-2"
+          block
+          type="light"
+          focusBg="gray-900"
+          onClick={() => {
+            modalRef.current.open();
+          }}
+        >
+          Share Your Solution!
+        </Button>
+      )}
       <SolutionModal ref={modalRef} />
     </div>
   );

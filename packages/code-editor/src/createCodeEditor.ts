@@ -7,7 +7,7 @@ import { IAPIService } from './types';
 
 interface CreateCodeEditorOptions {
   apiService: IAPIService;
-  challengeId: number;
+  challengeId: string;
   iframeOrigin: string;
 }
 

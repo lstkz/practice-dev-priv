@@ -16,17 +16,21 @@ export const getChallenge = createContract('challenge.getChallenge')
     if (!challenge) {
       throw new AppError('Challenge not found');
     }
-    return R.pick(challenge, [
-      'challengeId',
-      'moduleId',
-      'title',
-      'description',
-      'difficulty',
-      'practiceTime',
-      'detailsS3Key',
-      'htmlS3Key',
-      'solutionUrl',
-    ]);
+    return {
+      id: challenge._id,
+      ...R.pick(challenge, [
+        'challengeId',
+        'moduleId',
+        'title',
+        'description',
+        'difficulty',
+        'practiceTime',
+        'detailsS3Key',
+        'htmlS3Key',
+        'solutionUrl',
+        'tests',
+      ]),
+    };
   });
 
 export const getChallengeGraphql = createGraphqlBinding({

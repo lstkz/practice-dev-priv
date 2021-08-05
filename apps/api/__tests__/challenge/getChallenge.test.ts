@@ -25,9 +25,11 @@ Object {
   "detailsS3Key": "",
   "difficulty": "easy",
   "htmlS3Key": "",
+  "id": "1_2",
   "moduleId": 1,
   "practiceTime": 10,
   "solutionUrl": "sol",
+  "tests": Array [],
   "title": "challenge 2",
 }
 `);

@@ -23,6 +23,7 @@ export const submit = createContract('submission.submit')
       indexHtmlS3Key: S.string(),
     }),
   })
+  .returns<string>()
   .fn(async (appUser, values) => {
     const workspace = await WorkspaceCollection.findById(values.workspaceId);
     if (!workspace) {
@@ -70,6 +71,7 @@ export const submit = createContract('submission.submit')
         submissionId: submission._id.toHexString(),
       },
     });
+    return submission._id.toHexString();
   });
 
 export const submitGraphql = createGraphqlBinding({

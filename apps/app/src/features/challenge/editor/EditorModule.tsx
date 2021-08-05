@@ -2,21 +2,33 @@ import loader from '@monaco-editor/loader';
 import { createModuleContext, useActions, useImmer } from 'context-api';
 import React from 'react';
 import { usePreventEditorNavigation } from './usePreventEditorNavigation';
-import { Workspace, WorkspaceNode, WorkspaceNodeType } from 'src/generated';
+import {
+  Challenge,
+  Workspace,
+  WorkspaceNode,
+  WorkspaceNodeType,
+} from 'src/generated';
 import { APIService } from './APIService';
 import { useApolloClient } from '@apollo/client';
 import { useModelState } from './useModelState';
 import { createCodeEditor, TreeNode, WorkspaceModel } from 'code-editor';
 import { IFRAME_ORIGIN } from 'src/config';
+import { useErrorModalActions } from 'src/features/ErrorModalModule';
+import { useChallengeActions } from '../ChallengeModule';
+import { useTesterActions } from '../TesterModule';
+import { convertCodeToHtml } from './convertCodeToHtml';
 
 interface Actions {
   load: (container: HTMLDivElement) => void;
   registerPreviewIFrame: (iframe: HTMLIFrameElement) => void;
+  submit: () => void;
 }
 
 interface State {
   isLoaded: boolean;
+  isSubmitting: boolean;
   workspace: Workspace;
+  challenge: Challenge;
 }
 
 interface FinalState extends State {
@@ -26,20 +38,23 @@ interface FinalState extends State {
 const [Provider, useContext] = createModuleContext<FinalState, Actions>();
 
 interface EditorModuleProps {
-  challengeId: number;
+  challenge: Challenge;
   children: React.ReactNode;
   workspace: Workspace;
 }
 
-function useServices(workspace: Workspace, challengeId: number) {
+function useServices(workspace: Workspace, challengeId: string) {
   const client = useApolloClient();
   return React.useMemo(() => {
     const apiService = new APIService(client, workspace.id, workspace.s3Auth);
-    return createCodeEditor({
+    return {
+      ...createCodeEditor({
+        apiService,
+        challengeId,
+        iframeOrigin: IFRAME_ORIGIN,
+      }),
       apiService,
-      challengeId,
-      iframeOrigin: IFRAME_ORIGIN,
-    });
+    };
   }, []);
 }
 
@@ -65,18 +80,26 @@ function mapWorkspaceNodes(nodes: WorkspaceNode[]) {
 }
 
 export function EditorModule(props: EditorModuleProps) {
-  const { challengeId, children, workspace } = props;
+  const { challenge, children, workspace } = props;
   const [state, setState] = useImmer<State>(
     {
       isLoaded: false,
+      isSubmitting: false,
       workspace,
+      challenge,
     },
     'EditorModule'
   );
-  const { codeEditor, workspaceModel, browserPreviewService } = useServices(
-    workspace,
-    challengeId
-  );
+  const {
+    codeEditor,
+    workspaceModel,
+    browserPreviewService,
+    bundlerService,
+    apiService,
+  } = useServices(workspace, challenge.id);
+  const { showError } = useErrorModalActions();
+  const { setLeftSidebarTab } = useChallengeActions();
+  const { submit: testerSubmit } = useTesterActions();
 
   const actions = useActions<Actions>({
     load: async container => {
@@ -102,6 +125,26 @@ export function EditorModule(props: EditorModuleProps) {
     },
     registerPreviewIFrame: iframe => {
       browserPreviewService.load(iframe);
+    },
+    submit: async () => {
+      try {
+        setState(draft => {
+          draft.isSubmitting = true;
+        });
+        workspaceModel.setReadOnly(true);
+        setLeftSidebarTab('test-suite');
+        const code = await bundlerService.loadCodeAsync();
+        const html = convertCodeToHtml(code, workspace.libraries);
+        const indexHtmlS3Key = await apiService.uploadIndexFile(html);
+        await testerSubmit(indexHtmlS3Key);
+      } catch (e) {
+        showError(e);
+      } finally {
+        workspaceModel.setReadOnly(false);
+        setState(draft => {
+          draft.isSubmitting = false;
+        });
+      }
     },
   });
   const { dirtyMap } = useModelState(workspaceModel.getModelState());

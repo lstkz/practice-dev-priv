@@ -52,6 +52,7 @@ export type AwsUploadContentAuth = {
 
 export type Challenge = {
   __typename?: 'Challenge';
+  id: Scalars['String'];
   challengeId: Scalars['Int'];
   moduleId: Scalars['Int'];
   title: Scalars['String'];
@@ -61,6 +62,7 @@ export type Challenge = {
   detailsS3Key: Scalars['String'];
   htmlS3Key: Scalars['String'];
   solutionUrl: Scalars['String'];
+  tests: Array<Scalars['String']>;
 };
 
 export type ChallengeFileInput = {
@@ -128,7 +130,7 @@ export type Mutation = {
   createWorkspaceNode?: Maybe<Scalars['Void']>;
   updateWorkspaceNode?: Maybe<Scalars['Void']>;
   deleteWorkspaceNode?: Maybe<Scalars['Void']>;
-  submit?: Maybe<Scalars['Void']>;
+  submit: Scalars['String'];
   notifyTestProgress?: Maybe<Scalars['Void']>;
 };
 
@@ -313,6 +315,7 @@ export type UpdateChallengeInput = {
   solutionUrl: Scalars['String'];
   files: Array<ChallengeFileInput>;
   libraries: Array<LibraryInput>;
+  tests: Array<Scalars['String']>;
 };
 
 export type UpdateModuleInput = {
@@ -622,6 +625,7 @@ export type ChallengeResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['Challenge'] = ResolversParentTypes['Challenge']
 > = {
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   challengeId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   moduleId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -631,6 +635,7 @@ export type ChallengeResolvers<
   detailsS3Key?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   htmlS3Key?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   solutionUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  tests?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -791,7 +796,7 @@ export type MutationResolvers<
     RequireFields<MutationDeleteWorkspaceNodeArgs, 'id'>
   >;
   submit?: Resolver<
-    Maybe<ResolversTypes['Void']>,
+    ResolversTypes['String'],
     ParentType,
     ContextType,
     RequireFields<MutationSubmitArgs, 'values'>

@@ -280,6 +280,10 @@ export class CodeEditor {
     this.monaco.editor.getModels().forEach(model => model.dispose());
   }
 
+  setReadOnly(readOnly: boolean) {
+    this.editor.updateOptions({ readOnly });
+  }
+
   private saveAllNonActiveFiles() {
     // TODO: files are not formatted
     Object.keys(this.models).forEach(modelId => {

@@ -6,8 +6,8 @@ import { getErrorMessage } from 'src/common/helper';
 import { createModuleContext, useImmer } from 'context-api';
 
 interface Actions {
-  show: (message: string | Error, noLog?: boolean) => void;
-  showError: (message: string | Error, noLog?: boolean) => void;
+  show: (message: string | Error | unknown, noLog?: boolean) => void;
+  showError: (message: string | Error | unknown, noLog?: boolean) => void;
 }
 
 interface State {

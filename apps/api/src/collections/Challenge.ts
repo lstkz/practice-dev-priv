@@ -22,6 +22,7 @@ export interface ChallengeModel {
   solutionUrl: string;
   files: ChallengeFile[];
   libraries: LibraryDefinition[];
+  tests: string[];
 }
 
 export const ChallengeCollection = createCollection<ChallengeModel>(

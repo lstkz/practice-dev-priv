@@ -21,6 +21,7 @@ import {
   GetOrCreateWorkspaceMutation,
   Workspace,
 } from 'src/generated';
+import { TesterModule } from './TesterModule';
 
 interface Actions {
   setLeftSidebarTab: (leftSidebarTab: LeftSidebarTab | null) => void;
@@ -83,9 +84,11 @@ export function ChallengeModule(props: ChallengeSSRProps) {
 
   return (
     <Provider state={state} actions={actions}>
-      <EditorModule challengeId={1} workspace={workspace}>
-        <ChallengePage />
-      </EditorModule>
+      <TesterModule challenge={challenge} workspace={workspace}>
+        <EditorModule challenge={challenge} workspace={workspace}>
+          <ChallengePage />
+        </EditorModule>
+      </TesterModule>
     </Provider>
   );
 }
@@ -135,6 +138,7 @@ gql`
 gql`
   query GetChallenge($id: String!) {
     getChallenge(id: $id) {
+      id
       challengeId
       moduleId
       title
@@ -144,6 +148,7 @@ gql`
       detailsS3Key
       htmlS3Key
       solutionUrl
+      tests
     }
   }
 `;
