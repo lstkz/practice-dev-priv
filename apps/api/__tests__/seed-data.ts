@@ -73,6 +73,7 @@ export async function createSampleChallenges() {
         practiceTime: 10,
         title: 'challenge 2',
         libraries: [],
+        tests: [],
       },
     ]),
   ]);
