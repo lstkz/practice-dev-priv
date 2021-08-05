@@ -16,7 +16,7 @@ import { IFRAME_ORIGIN } from 'src/config';
 import { useErrorModalActions } from 'src/features/ErrorModalModule';
 import { useChallengeActions } from '../ChallengeModule';
 import { useTesterActions } from '../TesterModule';
-import { convertCodeToHtml } from './convertCodeToHTML';
+import { convertCodeToHtml } from './convertCodeToHtml';
 
 interface Actions {
   load: (container: HTMLDivElement) => void;
