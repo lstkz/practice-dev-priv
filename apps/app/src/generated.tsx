@@ -46,6 +46,7 @@ export type AwsUploadContentAuth = {
 
 export type Challenge = {
   __typename?: 'Challenge';
+  id: Scalars['String'];
   challengeId: Scalars['Int'];
   moduleId: Scalars['Int'];
   title: Scalars['String'];
@@ -55,6 +56,7 @@ export type Challenge = {
   detailsS3Key: Scalars['String'];
   htmlS3Key: Scalars['String'];
   solutionUrl: Scalars['String'];
+  tests: Array<Scalars['String']>;
 };
 
 export type ChallengeFileInput = {
@@ -122,7 +124,7 @@ export type Mutation = {
   createWorkspaceNode?: Maybe<Scalars['Void']>;
   updateWorkspaceNode?: Maybe<Scalars['Void']>;
   deleteWorkspaceNode?: Maybe<Scalars['Void']>;
-  submit?: Maybe<Scalars['Void']>;
+  submit: Scalars['String'];
   notifyTestProgress?: Maybe<Scalars['Void']>;
 };
 
@@ -307,6 +309,7 @@ export type UpdateChallengeInput = {
   solutionUrl: Scalars['String'];
   files: Array<ChallengeFileInput>;
   libraries: Array<LibraryInput>;
+  tests: Array<Scalars['String']>;
 };
 
 export type UpdateModuleInput = {
@@ -477,6 +480,7 @@ export type GetChallengeQueryVariables = Exact<{
 export type GetChallengeQuery = { __typename?: 'Query' } & {
   getChallenge: { __typename?: 'Challenge' } & Pick<
     Challenge,
+    | 'id'
     | 'challengeId'
     | 'moduleId'
     | 'title'
@@ -486,8 +490,27 @@ export type GetChallengeQuery = { __typename?: 'Query' } & {
     | 'detailsS3Key'
     | 'htmlS3Key'
     | 'solutionUrl'
+    | 'tests'
   >;
 };
+
+export type SubmitMutationVariables = Exact<{
+  values: SubmitInput;
+}>;
+
+export type SubmitMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'submit'
+>;
+
+export type TestProgressSubscriptionVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+export type TestProgressSubscription = { __typename?: 'Subscription' } & Pick<
+  Subscription,
+  'testProgress'
+>;
 
 export type UpdateWorkspaceNodeMutationVariables = Exact<{
   values: UpdateWorkspaceNodeInput;
@@ -1181,6 +1204,7 @@ export type GetOrCreateWorkspaceMutationOptions = Apollo.BaseMutationOptions<
 export const GetChallengeDocument = gql`
   query GetChallenge($id: String!) {
     getChallenge(id: $id) {
+      id
       challengeId
       moduleId
       title
@@ -1190,6 +1214,7 @@ export const GetChallengeDocument = gql`
       detailsS3Key
       htmlS3Key
       solutionUrl
+      tests
     }
   }
 `;
@@ -1244,6 +1269,90 @@ export type GetChallengeQueryResult = Apollo.QueryResult<
   GetChallengeQuery,
   GetChallengeQueryVariables
 >;
+export const SubmitDocument = gql`
+  mutation Submit($values: SubmitInput!) {
+    submit(values: $values)
+  }
+`;
+export type SubmitMutationFn = Apollo.MutationFunction<
+  SubmitMutation,
+  SubmitMutationVariables
+>;
+
+/**
+ * __useSubmitMutation__
+ *
+ * To run a mutation, you first call `useSubmitMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSubmitMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [submitMutation, { data, loading, error }] = useSubmitMutation({
+ *   variables: {
+ *      values: // value for 'values'
+ *   },
+ * });
+ */
+export function useSubmitMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    SubmitMutation,
+    SubmitMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<SubmitMutation, SubmitMutationVariables>(
+    SubmitDocument,
+    options
+  );
+}
+export type SubmitMutationHookResult = ReturnType<typeof useSubmitMutation>;
+export type SubmitMutationResult = Apollo.MutationResult<SubmitMutation>;
+export type SubmitMutationOptions = Apollo.BaseMutationOptions<
+  SubmitMutation,
+  SubmitMutationVariables
+>;
+export const TestProgressDocument = gql`
+  subscription TestProgress($id: String!) {
+    testProgress(id: $id)
+  }
+`;
+
+/**
+ * __useTestProgressSubscription__
+ *
+ * To run a query within a React component, call `useTestProgressSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useTestProgressSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTestProgressSubscription({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useTestProgressSubscription(
+  baseOptions: Apollo.SubscriptionHookOptions<
+    TestProgressSubscription,
+    TestProgressSubscriptionVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useSubscription<
+    TestProgressSubscription,
+    TestProgressSubscriptionVariables
+  >(TestProgressDocument, options);
+}
+export type TestProgressSubscriptionHookResult = ReturnType<
+  typeof useTestProgressSubscription
+>;
+export type TestProgressSubscriptionResult =
+  Apollo.SubscriptionResult<TestProgressSubscription>;
 export const UpdateWorkspaceNodeDocument = gql`
   mutation UpdateWorkspaceNode($values: UpdateWorkspaceNodeInput!) {
     updateWorkspaceNode(values: $values)

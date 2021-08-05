@@ -240,6 +240,10 @@ export class WorkspaceModel {
     this.codeEditor.dispose();
   }
 
+  setReadOnly(readOnly: boolean) {
+    this.codeEditor.setReadOnly(readOnly);
+  }
+
   ////
 
   private setState(updater: ModelStateUpdater<WorkspaceState>) {

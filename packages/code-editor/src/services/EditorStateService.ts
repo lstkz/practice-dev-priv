@@ -9,7 +9,7 @@ interface TabsState {
 }
 
 export class EditorStateService {
-  constructor(private challengeId: number) {}
+  constructor(private challengeId: string) {}
 
   private getTabsStateKey() {
     return `challenge_tabs_state_${this.challengeId}`;

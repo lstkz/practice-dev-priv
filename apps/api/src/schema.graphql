@@ -44,7 +44,7 @@ type Mutation {
   createWorkspaceNode(values: CreateWorkspaceNodeInput!): Void
   updateWorkspaceNode(values: UpdateWorkspaceNodeInput!): Void
   deleteWorkspaceNode(id: String!): Void
-  submit(values: SubmitInput!): Void
+  submit(values: SubmitInput!): String!
   notifyTestProgress(notifyKey: String!, data: [TestProgressData!]!): Void
 }
 
@@ -70,6 +70,7 @@ input CreateWorkspaceNodeInput {
 }
 
 type Challenge {
+  id: String!
   challengeId: Int!
   moduleId: Int!
   title: String!
@@ -79,6 +80,7 @@ type Challenge {
   detailsS3Key: String!
   htmlS3Key: String!
   solutionUrl: String!
+  tests: [String!]!
 }
 
 type Workspace {
@@ -151,6 +153,7 @@ input UpdateChallengeInput {
   solutionUrl: String!
   files: [ChallengeFileInput!]!
   libraries: [LibraryInput!]!
+  tests: [String!]!
 }
 
 input LibraryInput {
