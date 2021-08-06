@@ -93,7 +93,7 @@ Object {
       "type": "file",
     },
   ],
-  "status": "Queued",
+  "status": "queued",
   "userId": "000000000000000000000001",
   "workspaceId": "000000000000000000000010",
 }
