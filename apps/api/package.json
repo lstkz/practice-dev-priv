@@ -8,7 +8,8 @@
     "dev": "(NODE_ENV=development ts-node-dev --transpile-only src/app &); (NODE_ENV=development ts-node-dev --transpile-only src/worker)",
     "test": "yarn run tsc && yarn run lint && yarn run jest",
     "jest": "TZ=America/New_York jest",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "g": "ts-node -T scripts/generate-client.ts src/contracts/**/*"
   },
   "license": "UNLICENSED",
   "dependencies": {

@@ -1,4 +1,4 @@
-import { initialize } from 'contract';
+import { ContractMeta, initialize } from 'contract';
 import { ObjectSchema, StringSchema } from 'schema';
 import AWS from 'aws-sdk';
 import {
@@ -36,6 +36,27 @@ export function createGraphqlBinding(
   return {
     isBinding: true,
     type: 'graphql',
+    options,
+  };
+}
+
+export interface CreateRpcBindingOptions {
+  verified?: true;
+  injectUser?: boolean;
+  public?: true;
+  admin?: true;
+  wrapAsValues?: true;
+  signature: string;
+  handler: ((...args: any[]) => any) & ContractMeta<any>;
+}
+
+export interface RpcBinding
+  extends BaseBinding<'rpc', CreateRpcBindingOptions> {}
+
+export function createRpcBinding(options: CreateRpcBindingOptions): RpcBinding {
+  return {
+    isBinding: true,
+    type: 'rpc',
     options,
   };
 }

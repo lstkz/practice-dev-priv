@@ -4,7 +4,7 @@ import Path from 'path';
 import {
   BaseBinding,
   CreateEventBindingOptions,
-  CreateGraphqlBindingOptions,
+  CreateRpcBindingOptions,
   CreateTaskBindingOptions,
 } from '../lib';
 
@@ -23,20 +23,21 @@ function walk(dir: string) {
   return results;
 }
 
-const bindings: any[] = R.flatMap(
-  walk(Path.join(__dirname, '../contracts')),
-  file => require(file)
-);
+// const bindings: any[] = R.flatMap(
+//   walk(Path.join(__dirname, '../contracts')),
+//   file => require(file)
+// );
+const bindings: any[] = [require('../contracts/user/confirmChangeEmail')];
 
+export function getBindings(type: 'rpc'): CreateRpcBindingOptions[];
 export function getBindings(type: 'event'): CreateEventBindingOptions<any>[];
 export function getBindings(type: 'task'): CreateTaskBindingOptions<any>[];
-export function getBindings(type: 'graphql'): CreateGraphqlBindingOptions[];
 export function getBindings(
-  type: 'event' | 'task' | 'graphql'
+  type: 'rpc' | 'event' | 'task'
 ):
+  | CreateRpcBindingOptions[]
   | CreateEventBindingOptions<any>[]
-  | CreateTaskBindingOptions<any>[]
-  | CreateGraphqlBindingOptions[] {
+  | CreateTaskBindingOptions<any>[] {
   return R.pipe(
     bindings,
     R.flatMap(obj => Object.values(obj) as BaseBinding<string, any>[]),

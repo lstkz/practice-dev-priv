@@ -5,19 +5,18 @@ import { UserCollection } from '../../collections/User';
 import { AppError } from '../../common/errors';
 import { randomUniqString } from '../../common/helper';
 import { OkResult } from '../../generated';
-import { createContract, createGraphqlBinding } from '../../lib';
+import { createContract, createRpcBinding } from '../../lib';
 import { config } from 'config';
 import { dispatchTask } from '../../dispatch';
 
 export const changeEmail = createContract('user.changeEmail')
-  .params('appUser', 'newEmail')
+  .params('user', 'newEmail')
   .schema({
-    appUser: S.object().appUser(),
+    user: S.object().appUser(),
     newEmail: S.string().email(),
   })
   .returns<OkResult>()
-  .fn(async (appUser, newEmail) => {
-    const user = await UserCollection.findByIdOrThrow(appUser.id);
+  .fn(async (user, newEmail) => {
     if (user.email_lowered === newEmail.toLowerCase()) {
       user.email = newEmail;
       await UserCollection.update(user, ['email']);
@@ -59,10 +58,8 @@ export const changeEmail = createContract('user.changeEmail')
     };
   });
 
-export const changeEmailGraphql = createGraphqlBinding({
-  resolver: {
-    Mutation: {
-      changeEmail: (_, { email }, { getUser }) => changeEmail(getUser(), email),
-    },
-  },
+export const changeEmailRpc = createRpcBinding({
+  injectUser: true,
+  signature: 'user.changeEmail',
+  handler: changeEmail,
 });

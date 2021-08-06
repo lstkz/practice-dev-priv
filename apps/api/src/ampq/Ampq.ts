@@ -8,6 +8,7 @@ export interface AmpqMessage<T = any> {
   id: string;
   type: string;
   payload: T;
+  meta: any;
 }
 
 export interface AmpqPublishMessage<T = any> {

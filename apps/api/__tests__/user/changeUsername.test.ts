@@ -1,8 +1,6 @@
-import { gql } from 'apollo-server';
 import { UserCollection } from '../../src/collections/User';
 import { changeUsername } from '../../src/contracts/user/changeUsername';
-import { apolloServer } from '../../src/server';
-import { getAppUser, getId, getTokenOptions, setupDb } from '../helper';
+import { execContract, getId, setupDb } from '../helper';
 import { registerSampleUsers } from '../seed-data';
 
 setupDb();
@@ -13,7 +11,7 @@ beforeEach(async () => {
 
 it('should throw if invalid username', async () => {
   await expect(
-    changeUsername(await getAppUser(1), 'asd$5')
+    execContract(changeUsername, { username: 'asd$5' }, 'user1_token')
   ).rejects.toMatchInlineSnapshot(
     `[Error: Validation error: 'username' must match regex /^[a-z\\d](?:[a-z\\d]|-(?=[a-z\\d])){0,30}$/i.]`
   );
@@ -21,34 +19,20 @@ it('should throw if invalid username', async () => {
 
 it('should throw if duplicated', async () => {
   await expect(
-    changeUsername(await getAppUser(1), 'User2')
+    execContract(changeUsername, { username: 'User2' }, 'user1_token')
   ).rejects.toMatchInlineSnapshot(`[AppError: Username already taken]`);
 });
 
 it('should change the username', async () => {
-  await changeUsername(await getAppUser(1), 'Foo');
+  await execContract(changeUsername, { username: 'Foo' }, 'user1_token');
   const user = await UserCollection.findByIdOrThrow(getId(1));
   expect(user.username).toEqual('Foo');
   expect(user.username_lowered).toEqual('foo');
 });
 
 it('should change the username (different casing)', async () => {
-  await changeUsername(await getAppUser(1), 'USER1');
+  await execContract(changeUsername, { username: 'USER1' }, 'user1_token');
   const user = await UserCollection.findByIdOrThrow(getId(1));
   expect(user.username).toEqual('USER1');
   expect(user.username_lowered).toEqual('user1');
-});
-
-it('should change the username #graphql', async () => {
-  const res = await apolloServer.executeOperation(
-    {
-      query: gql`
-        mutation {
-          changeUsername(username: "Foo")
-        }
-      `,
-    },
-    getTokenOptions('user1_token')
-  );
-  expect(res.errors).toBeFalsy();
 });

@@ -164,3 +164,26 @@ export type SocketMessage =
         success: boolean;
       };
     };
+
+export type AwsCredentials = {
+  accessKeyId: string;
+  secretAccessKey: string;
+  sessionToken: string;
+};
+
+export type AwsUploadContentAuth = {
+  bucketName: string;
+  credentials: AwsCredentials;
+};
+
+export interface TaskSolvedSocketMsg {
+  type: 'TaskSolved';
+  payload: {
+    userId: string;
+    moduleId: string;
+    taskId: number;
+    score: number;
+  };
+}
+
+export type AppSocketMsg = SocketMessage;

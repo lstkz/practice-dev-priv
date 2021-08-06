@@ -1,6 +1,6 @@
 import { config } from 'config';
-import { createContract, createGraphqlBinding, sts } from '../../lib';
-import { AwsUploadContentAuth } from '../../generated';
+import { AwsUploadContentAuth } from 'shared';
+import { createContract, createRpcBinding, sts } from '../../lib';
 
 export const getAwsUploadContentAuth = createContract(
   'aws.getAwsUploadContentAuth'
@@ -41,11 +41,8 @@ export const getAwsUploadContentAuth = createContract(
     };
   });
 
-export const getAwsUploadContentAuthGraphql = createGraphqlBinding({
+export const getAwsUploadContentAuthRpc = createRpcBinding({
   admin: true,
-  resolver: {
-    Query: {
-      getAwsUploadContentAuth: () => getAwsUploadContentAuth(),
-    },
-  },
+  signature: 'aws.getAwsUploadContentAuth',
+  handler: getAwsUploadContentAuth,
 });
