@@ -23,10 +23,7 @@ function walk(dir: string) {
   return results;
 }
 
-const bindings: any[] = R.flatMap(
-  walk(Path.join(__dirname, '../contracts')),
-  file => require(file)
-);
+let bindings: any[] = null!;
 
 export function getBindings(type: 'rpc'): CreateRpcBindingOptions[];
 export function getBindings(type: 'event'): CreateEventBindingOptions<any>[];
@@ -37,6 +34,11 @@ export function getBindings(
   | CreateRpcBindingOptions[]
   | CreateEventBindingOptions<any>[]
   | CreateTaskBindingOptions<any>[] {
+  if (!bindings) {
+    bindings = R.flatMap(walk(Path.join(__dirname, '../contracts')), file =>
+      require(file)
+    );
+  }
   return R.pipe(
     bindings,
     R.flatMap(obj => Object.values(obj) as BaseBinding<string, any>[]),
