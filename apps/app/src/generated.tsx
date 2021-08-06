@@ -536,6 +536,31 @@ export type GetChallengeQuery = { __typename?: 'Query' } & {
   >;
 };
 
+export type SearchSubmissionsQueryVariables = Exact<{
+  criteria: SearchSubmissionsCriteria;
+}>;
+
+export type SearchSubmissionsQuery = { __typename?: 'Query' } & {
+  searchSubmissions: { __typename?: 'SearchSubmissionsResult' } & Pick<
+    SearchSubmissionsResult,
+    'total'
+  > & {
+      items: Array<
+        { __typename?: 'Submission' } & Pick<
+          Submission,
+          'id' | 'createdAt' | 'status'
+        > & {
+            nodes: Array<
+              { __typename?: 'SubmissionNode' } & Pick<
+                SubmissionNode,
+                'id' | 'name' | 'parentId' | 'type' | 's3Key'
+              >
+            >;
+          }
+      >;
+    };
+};
+
 export type SubmitMutationVariables = Exact<{
   values: SubmitInput;
 }>;
@@ -1309,6 +1334,76 @@ export type GetChallengeLazyQueryHookResult = ReturnType<
 export type GetChallengeQueryResult = Apollo.QueryResult<
   GetChallengeQuery,
   GetChallengeQueryVariables
+>;
+export const SearchSubmissionsDocument = gql`
+  query SearchSubmissions($criteria: SearchSubmissionsCriteria!) {
+    searchSubmissions(criteria: $criteria) {
+      items {
+        id
+        createdAt
+        status
+        nodes {
+          id
+          name
+          parentId
+          type
+          s3Key
+        }
+      }
+      total
+    }
+  }
+`;
+
+/**
+ * __useSearchSubmissionsQuery__
+ *
+ * To run a query within a React component, call `useSearchSubmissionsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSearchSubmissionsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSearchSubmissionsQuery({
+ *   variables: {
+ *      criteria: // value for 'criteria'
+ *   },
+ * });
+ */
+export function useSearchSubmissionsQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    SearchSubmissionsQuery,
+    SearchSubmissionsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    SearchSubmissionsQuery,
+    SearchSubmissionsQueryVariables
+  >(SearchSubmissionsDocument, options);
+}
+export function useSearchSubmissionsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    SearchSubmissionsQuery,
+    SearchSubmissionsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    SearchSubmissionsQuery,
+    SearchSubmissionsQueryVariables
+  >(SearchSubmissionsDocument, options);
+}
+export type SearchSubmissionsQueryHookResult = ReturnType<
+  typeof useSearchSubmissionsQuery
+>;
+export type SearchSubmissionsLazyQueryHookResult = ReturnType<
+  typeof useSearchSubmissionsLazyQuery
+>;
+export type SearchSubmissionsQueryResult = Apollo.QueryResult<
+  SearchSubmissionsQuery,
+  SearchSubmissionsQueryVariables
 >;
 export const SubmitDocument = gql`
   mutation Submit($values: SubmitInput!) {

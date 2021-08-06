@@ -67,10 +67,10 @@ export interface LibraryDefinition {
 }
 
 export enum SubmissionStatus {
-  Queued = 'Queued',
-  Running = 'Running',
-  Pass = 'Pass',
-  Fail = 'Fail',
+  Queued = 'queued',
+  Running = 'running',
+  Pass = 'pass',
+  Fail = 'fail',
 }
 
 export interface TestSubmissionLambdaInput {
