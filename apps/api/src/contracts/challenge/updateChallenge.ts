@@ -37,6 +37,7 @@ export const updateChallenge = createContract('challenge.updateChallenge')
       tests: S.array().items(S.string()),
     }),
   })
+  .returns<void>()
   .fn(async values => {
     const module = await ModuleCollection.findById(values.moduleId);
     if (!module) {

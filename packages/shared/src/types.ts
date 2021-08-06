@@ -277,3 +277,10 @@ export interface PresignedPost {
   url: string;
   fields: PresignedPostField[];
 }
+
+export interface UserProfile {
+  name?: string | null;
+  about?: string | null;
+  country?: string | null;
+  url?: string | null;
+}

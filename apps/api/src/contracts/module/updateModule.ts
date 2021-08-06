@@ -15,6 +15,7 @@ export const updateModule = createContract('module.updateModule')
       tags: S.array().items(S.string()),
     }),
   })
+  .returns<void>()
   .fn(async values => {
     await ModuleCollection.findOneAndUpdate(
       {

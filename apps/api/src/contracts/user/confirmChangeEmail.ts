@@ -11,6 +11,7 @@ export const confirmChangeEmail = createContract('user.confirmChangeEmail')
     user: S.object().appUser(),
     code: S.string(),
   })
+  .returns<void>()
   .fn(async (user, code) => {
     const emailChange = await ConfirmEmailChangeCollection.findById(code);
     if (!emailChange) {

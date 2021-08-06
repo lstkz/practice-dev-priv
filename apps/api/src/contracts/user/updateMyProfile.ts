@@ -1,6 +1,6 @@
 import { S } from 'schema';
-import { countryList, URL_REGEX } from 'shared';
-import { UserCollection, UserProfile } from '../../collections/User';
+import { countryList, URL_REGEX, UserProfile } from 'shared';
+import { UserCollection } from '../../collections/User';
 import { createContract, createRpcBinding } from '../../lib';
 
 export const updateMyProfile = createContract('user.updateMyProfile')

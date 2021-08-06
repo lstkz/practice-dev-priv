@@ -1,5 +1,5 @@
 import { S } from 'schema';
-import { UserProfile } from '../../collections/User';
+import { UserProfile } from 'shared';
 import { createContract, createRpcBinding } from '../../lib';
 
 export const getMyProfile = createContract('user.getMyProfile')

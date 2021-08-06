@@ -12,6 +12,7 @@ export const notifyTestProgress = createContract(
     notifyKey: S.string(),
     data: S.array().items(S.object().unknown().as<any>()),
   })
+  .returns<void>()
   .fn(async (notifyKey, data) => {
     const submission = await SubmissionCollection.findOne({
       notifyKey,

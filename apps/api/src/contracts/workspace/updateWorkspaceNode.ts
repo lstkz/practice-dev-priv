@@ -31,6 +31,7 @@ export const updateWorkspaceNode = createContract(
         .optional(),
     }),
   })
+  .returns<void>()
   .fn(async (user, values) => {
     const node = await getNodeByIdWithCheck(user, values.id);
     if (node.isLocked && (values.name || values.parentId)) {

@@ -116,9 +116,9 @@ function checkNode(node: ts.Node, checker: ts.TypeChecker) {
   }
   const [, callExpression] = getChildren(variableDeclaration);
   if (
-    ((callExpression as ts.CallExpression)
-      ?.expression as ts.Identifier).escapedText?.toString() !==
-    'createRpcBinding'
+    (
+      (callExpression as ts.CallExpression)?.expression as ts.Identifier
+    ).escapedText?.toString() !== 'createRpcBinding'
   ) {
     return;
   }
@@ -141,7 +141,7 @@ function checkNode(node: ts.Node, checker: ts.TypeChecker) {
       injectUser = true;
     }
     if (name === 'signature') {
-      signature = ((prop.initializer as any) as ts.LiteralLikeNode).text;
+      signature = (prop.initializer as any as ts.LiteralLikeNode).text;
     }
     if (name === 'handler') {
       const fn = prop.initializer;

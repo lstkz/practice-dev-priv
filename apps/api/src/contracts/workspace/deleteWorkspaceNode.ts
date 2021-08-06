@@ -13,6 +13,7 @@ export const deleteWorkspaceNode = createContract(
     user: S.object().appUser(),
     id: S.string(),
   })
+  .returns<void>()
   .fn(async (user, id) => {
     const node = await getNodeByIdWithCheck(user, id);
     const removeNodes = [node, ...(await findNodeAllChildren(node._id))];
