@@ -1,11 +1,9 @@
-import { gql } from 'apollo-server';
 import * as R from 'remeda';
 import { mocked } from 'ts-jest/utils';
 import { SubmissionCollection } from '../../src/collections/Submission';
 import { submit } from '../../src/contracts/submission/submit';
 import { dispatchTask } from '../../src/dispatch';
-import { apolloServer } from '../../src/server';
-import { getAppUser, getId, getTokenOptions, setupDb } from '../helper';
+import { execContract, getId, setupDb } from '../helper';
 import {
   createSampleChallenges,
   createSampleWorkspaceItems,
@@ -30,29 +28,47 @@ beforeEach(async () => {
 
 it('should throw if workspace not found', async () => {
   await expect(
-    submit(await getAppUser(1), {
-      workspaceId: getId(1000),
-      indexHtmlS3Key: 'html',
-    })
+    execContract(
+      submit,
+      {
+        values: {
+          workspaceId: getId(1000),
+          indexHtmlS3Key: 'html',
+        },
+      },
+      'user1_token'
+    )
   ).rejects.toMatchInlineSnapshot(`[AppError: Workspace not found]`);
 });
 
 it('should throw if not permission', async () => {
   await expect(
-    submit(await getAppUser(2), {
-      workspaceId: getId(10),
-      indexHtmlS3Key: 'html',
-    })
+    execContract(
+      submit,
+      {
+        values: {
+          workspaceId: getId(10),
+          indexHtmlS3Key: 'html',
+        },
+      },
+      'user2_token'
+    )
   ).rejects.toMatchInlineSnapshot(
     `[ForbiddenError: Not permission to access this workspace]`
   );
 });
 
 it('should submit successfully', async () => {
-  await submit(await getAppUser(1), {
-    workspaceId: getId(10),
-    indexHtmlS3Key: 'html',
-  });
+  await execContract(
+    submit,
+    {
+      values: {
+        workspaceId: getId(10),
+        indexHtmlS3Key: 'html',
+      },
+    },
+    'user1_token'
+  );
   const submission = await SubmissionCollection.findOne({});
   expect(R.omit(submission!, ['_id', 'notifyKey'])).toMatchInlineSnapshot(`
 Object {
@@ -99,24 +115,4 @@ Object {
 }
 `);
   expect(mocked_dispatchTask).toBeCalled();
-});
-
-it('should submit #graphql', async () => {
-  const res = await apolloServer.executeOperation(
-    {
-      query: gql`
-        mutation ($values: SubmitInput!) {
-          submit(values: $values)
-        }
-      `,
-      variables: {
-        values: {
-          indexHtmlS3Key: 'html',
-          workspaceId: getId(10).toHexString(),
-        },
-      },
-    },
-    getTokenOptions('user1_token')
-  );
-  expect(res.errors).toBeFalsy();
 });

@@ -165,16 +165,16 @@ export type SocketMessage =
       };
     };
 
-export type AwsCredentials = {
+export interface AwsCredentials {
   accessKeyId: string;
   secretAccessKey: string;
   sessionToken: string;
-};
+}
 
-export type AwsUploadContentAuth = {
+export interface AwsUploadContentAuth {
   bucketName: string;
   credentials: AwsCredentials;
-};
+}
 
 export interface TaskSolvedSocketMsg {
   type: 'TaskSolved';
@@ -190,4 +190,33 @@ export type AppSocketMsg = SocketMessage;
 
 export interface NotificationSettings {
   newsletter: boolean;
+}
+
+export type Scalars = {
+  ID: string;
+  String: string;
+  Boolean: boolean;
+  Int: number;
+  Float: number;
+  TestProgressData: any;
+  Void: any;
+};
+
+export interface Challenge {
+  id: Scalars['String'];
+  challengeId: Scalars['Int'];
+  moduleId: Scalars['Int'];
+  title: Scalars['String'];
+  description: Scalars['String'];
+  difficulty: Scalars['String'];
+  practiceTime: Scalars['Float'];
+  detailsS3Key: Scalars['String'];
+  htmlS3Key: Scalars['String'];
+  solutionUrl: Scalars['String'];
+  tests: Array<Scalars['String']>;
+}
+
+export enum SubmissionSortBy {
+  Newest = 'newest',
+  Oldest = 'oldest',
 }

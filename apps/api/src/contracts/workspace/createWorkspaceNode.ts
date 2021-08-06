@@ -1,5 +1,4 @@
 import { ForbiddenError } from 'apollo-server';
-import { ObjectID } from 'mongodb2';
 import { S } from 'schema';
 import { FILENAME_MAX_LENGTH, FILENAME_REGEX } from 'shared';
 import { WorkspaceCollection } from '../../collections/Workspace';
@@ -8,16 +7,15 @@ import { AppError } from '../../common/errors';
 import { getWorkspaceNodeS3Key, revertRenameId } from '../../common/helper';
 import { getWorkspaceNodeWithUniqueKey } from '../../common/workspace-tree';
 import { WorkspaceNodeType } from '../../generated';
-import { createContract, createGraphqlBinding } from '../../lib';
-import { MapProps } from '../../types';
+import { createContract, createRpcBinding } from '../../lib';
 import { ensureNodeUnique, validateValidParentId } from './_common';
 
 export const createWorkspaceNode = createContract(
   'workspace.createWorkspaceNode'
 )
-  .params('appUser', 'values')
+  .params('user', 'values')
   .schema({
-    appUser: S.object().appUser(),
+    user: S.object().appUser(),
     values: S.object().keys({
       id: S.string().uuid(),
       workspaceId: S.string().objectId(),
@@ -30,7 +28,7 @@ export const createWorkspaceNode = createContract(
     }),
   })
   .returns<void>()
-  .fn(async (appUser, values) => {
+  .fn(async (user, values) => {
     const existing = await WorkspaceNodeCollection.findById(values.id);
     if (existing) {
       throw new AppError('Duplicated id');
@@ -39,7 +37,7 @@ export const createWorkspaceNode = createContract(
     if (!workspace) {
       throw new AppError('Workspace not found');
     }
-    if (!workspace.userId.equals(appUser.id)) {
+    if (!workspace.userId.equals(user._id)) {
       throw new ForbiddenError('Not permission to access this workspace');
     }
     if (values.parentId) {
@@ -48,7 +46,7 @@ export const createWorkspaceNode = createContract(
     const node = getWorkspaceNodeWithUniqueKey({
       parentId: null,
       ...revertRenameId(values),
-      userId: appUser.id,
+      userId: user._id,
       s3Key: null,
       sourceS3Key: null,
     });
@@ -57,14 +55,8 @@ export const createWorkspaceNode = createContract(
     await WorkspaceNodeCollection.insertOne(node);
   });
 
-export const createWorkspaceNodeGraphql = createGraphqlBinding({
-  resolver: {
-    Mutation: {
-      createWorkspaceNode: (_, { values }, { getUser }) =>
-        createWorkspaceNode(
-          getUser(),
-          values as any as MapProps<typeof values, { workspaceId: ObjectID }>
-        ),
-    },
-  },
+export const createWorkspaceNodeRpc = createRpcBinding({
+  injectUser: true,
+  signature: 'workspace.createWorkspaceNode',
+  handler: createWorkspaceNode,
 });

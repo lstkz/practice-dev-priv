@@ -1,9 +1,9 @@
 import * as R from 'remeda';
 import { S } from 'schema';
+import { Challenge } from 'shared';
 import { ChallengeCollection } from '../../collections/Challenge';
 import { AppError } from '../../common/errors';
-import { Challenge } from '../../generated';
-import { createContract, createGraphqlBinding } from '../../lib';
+import { createContract, createRpcBinding } from '../../lib';
 
 export const getChallenge = createContract('challenge.getChallenge')
   .params('id')
@@ -33,10 +33,8 @@ export const getChallenge = createContract('challenge.getChallenge')
     };
   });
 
-export const getChallengeGraphql = createGraphqlBinding({
-  resolver: {
-    Query: {
-      getChallenge: (_, { id }) => getChallenge(id),
-    },
-  },
+export const getChallengeRpc = createRpcBinding({
+  public: true,
+  signature: 'challenge.getChallenge',
+  handler: getChallenge,
 });

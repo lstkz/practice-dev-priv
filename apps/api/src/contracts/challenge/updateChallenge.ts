@@ -1,6 +1,6 @@
 import { S } from 'schema';
 import { ChallengeCollection } from '../../collections/Challenge';
-import { createContract, createGraphqlBinding } from '../../lib';
+import { createContract, createRpcBinding } from '../../lib';
 import { getChallengeId } from '../../common/helper';
 import { ModuleCollection } from '../../collections/Module';
 import { AppError } from '../../common/errors';
@@ -58,11 +58,8 @@ export const updateChallenge = createContract('challenge.updateChallenge')
     );
   });
 
-export const updateChallengeGraphql = createGraphqlBinding({
+export const updateChallengeRpc = createRpcBinding({
   admin: true,
-  resolver: {
-    Mutation: {
-      updateChallenge: (_, { values }, {}) => updateChallenge(values),
-    },
-  },
+  signature: 'challenge.updateChallenge',
+  handler: updateChallenge,
 });

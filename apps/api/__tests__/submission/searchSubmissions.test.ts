@@ -1,14 +1,11 @@
-import { SubmissionStatus } from 'shared';
-import { gql } from 'apollo-server';
+import { SubmissionSortBy, SubmissionStatus } from 'shared';
 import {
   SubmissionCollection,
   SubmissionModel,
 } from '../../src/collections/Submission';
-import { apolloServer } from '../../src/server';
 import { searchSubmissions } from '../../src/contracts/submission/searchSubmissions';
-import { getAppUser, getId, getTokenOptions, setupDb } from '../helper';
+import { execContract, getId, setupDb } from '../helper';
 import { registerSampleUsers } from '../seed-data';
-import { SubmissionSortBy } from '../../src/generated';
 
 setupDb();
 
@@ -61,11 +58,17 @@ beforeEach(async () => {
 
 it('should return results by newest', async () => {
   expect(
-    await searchSubmissions(await getAppUser(1), {
-      offset: 0,
-      limit: 10,
-      sortBy: SubmissionSortBy.Newest,
-    })
+    await execContract(
+      searchSubmissions,
+      {
+        criteria: {
+          offset: 0,
+          limit: 10,
+          sortBy: SubmissionSortBy.Newest,
+        },
+      },
+      'user1_token'
+    )
   ).toMatchInlineSnapshot(`
     Object {
       "items": Array [
@@ -95,11 +98,17 @@ it('should return results by newest', async () => {
 
 it('should return results by oldest', async () => {
   expect(
-    await searchSubmissions(await getAppUser(1), {
-      offset: 0,
-      limit: 10,
-      sortBy: SubmissionSortBy.Oldest,
-    })
+    await execContract(
+      searchSubmissions,
+      {
+        criteria: {
+          offset: 0,
+          limit: 10,
+          sortBy: SubmissionSortBy.Oldest,
+        },
+      },
+      'user1_token'
+    )
   ).toMatchInlineSnapshot(`
     Object {
       "items": Array [
@@ -129,11 +138,17 @@ it('should return results by oldest', async () => {
 
 it('should return results by oldest with offset', async () => {
   expect(
-    await searchSubmissions(await getAppUser(1), {
-      offset: 1,
-      limit: 10,
-      sortBy: SubmissionSortBy.Oldest,
-    })
+    await execContract(
+      searchSubmissions,
+      {
+        criteria: {
+          offset: 1,
+          limit: 10,
+          sortBy: SubmissionSortBy.Oldest,
+        },
+      },
+      'user1_token'
+    )
   ).toMatchInlineSnapshot(`
     Object {
       "items": Array [
@@ -157,11 +172,17 @@ it('should return results by oldest with offset', async () => {
 
 it('should return results by oldest with limit', async () => {
   expect(
-    await searchSubmissions(await getAppUser(1), {
-      offset: 0,
-      limit: 2,
-      sortBy: SubmissionSortBy.Oldest,
-    })
+    await execContract(
+      searchSubmissions,
+      {
+        criteria: {
+          offset: 0,
+          limit: 2,
+          sortBy: SubmissionSortBy.Oldest,
+        },
+      },
+      'user1_token'
+    )
   ).toMatchInlineSnapshot(`
     Object {
       "items": Array [
@@ -179,45 +200,6 @@ it('should return results by oldest with limit', async () => {
         },
       ],
       "total": 3,
-    }
-  `);
-});
-
-it('should search #graphql', async () => {
-  const res = await apolloServer.executeOperation(
-    {
-      query: gql`
-        query {
-          searchSubmissions(
-            criteria: { limit: 10, offset: 0, sortBy: newest }
-          ) {
-            items {
-              id
-            }
-            total
-          }
-        }
-      `,
-    },
-    getTokenOptions('user1_token')
-  );
-  expect(res.errors).toBeFalsy();
-  expect(res.data).toMatchInlineSnapshot(`
-    Object {
-      "searchSubmissions": Object {
-        "items": Array [
-          Object {
-            "id": "000000000000000000000102",
-          },
-          Object {
-            "id": "000000000000000000000101",
-          },
-          Object {
-            "id": "000000000000000000000100",
-          },
-        ],
-        "total": 3,
-      },
     }
   `);
 });

@@ -2,8 +2,8 @@ import { S } from 'schema';
 import { SubmissionCollection } from '../../collections/Submission';
 import { AppError } from '../../common/errors';
 import { getNotifyTestPubKey } from '../../common/helper';
-import { createContract, createGraphqlBinding } from '../../lib';
-import { publishPubSubEvent, pubsub } from '../../pubsub';
+import { createContract, createRpcBinding } from '../../lib';
+import { publishPubSubEvent } from '../../pubsub';
 
 export const notifyTestProgress = createContract(
   'submission.notifyTestProgress'
@@ -31,23 +31,8 @@ export const notifyTestProgress = createContract(
     );
   });
 
-export const notifyTestProgressGraphql = createGraphqlBinding({
-  resolver: {
-    Mutation: {
-      notifyTestProgress: (_, { notifyKey, data }) =>
-        notifyTestProgress(notifyKey, data),
-    },
-    Subscription: {
-      testProgress: {
-        subscribe: (_, { id }, { getUser }) => {
-          return pubsub.asyncIterator(
-            getNotifyTestPubKey({
-              challengeId: id,
-              userId: getUser().id.toHexString(),
-            })
-          );
-        },
-      },
-    },
-  },
+export const notifyTestProgressRpc = createRpcBinding({
+  public: true,
+  signature: 'submission.notifyTestProgress',
+  handler: notifyTestProgress,
 });

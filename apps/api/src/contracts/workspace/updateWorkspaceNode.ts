@@ -1,5 +1,5 @@
 import { S } from 'schema';
-import { createContract, createGraphqlBinding } from '../../lib';
+import { createContract, createRpcBinding } from '../../lib';
 import { FILENAME_MAX_LENGTH, FILENAME_REGEX } from 'shared';
 import {
   ensureNodeUnique,
@@ -62,11 +62,8 @@ export const updateWorkspaceNode = createContract(
     ]);
   });
 
-export const updateWorkspaceNodeGraphql = createGraphqlBinding({
-  resolver: {
-    Mutation: {
-      updateWorkspaceNode: (_, { values }, { getUser }) =>
-        updateWorkspaceNode(getUser(), values),
-    },
-  },
+export const updateWorkspaceNodeRpc = createRpcBinding({
+  injectUser: true,
+  signature: 'workspace.updateWorkspaceNode',
+  handler: updateWorkspaceNode,
 });

@@ -2,19 +2,19 @@ import { S } from 'schema';
 import { WorkspaceNodeCollection } from '../../collections/WorkspaceNode';
 import { AppError } from '../../common/errors';
 import { findNodeAllChildren } from '../../common/workspace-tree';
-import { createContract, createGraphqlBinding } from '../../lib';
+import { createContract, createRpcBinding } from '../../lib';
 import { getNodeByIdWithCheck } from './_common';
 
 export const deleteWorkspaceNode = createContract(
   'workspace.deleteWorkspaceNode'
 )
-  .params('appUser', 'id')
+  .params('user', 'id')
   .schema({
-    appUser: S.object().appUser(),
+    user: S.object().appUser(),
     id: S.string(),
   })
-  .fn(async (appUser, id) => {
-    const node = await getNodeByIdWithCheck(appUser, id);
+  .fn(async (user, id) => {
+    const node = await getNodeByIdWithCheck(user, id);
     const removeNodes = [node, ...(await findNodeAllChildren(node._id))];
     if (removeNodes.some(x => x.isLocked)) {
       throw new AppError('Cannot remove locked node');
@@ -26,11 +26,8 @@ export const deleteWorkspaceNode = createContract(
     });
   });
 
-export const deleteWorkspaceNodeGraphql = createGraphqlBinding({
-  resolver: {
-    Mutation: {
-      deleteWorkspaceNode: (_, { id }, { getUser }) =>
-        deleteWorkspaceNode(getUser(), id),
-    },
-  },
+export const deleteWorkspaceNodeRpc = createRpcBinding({
+  injectUser: true,
+  signature: 'workspace.deleteWorkspaceNode',
+  handler: deleteWorkspaceNode,
 });

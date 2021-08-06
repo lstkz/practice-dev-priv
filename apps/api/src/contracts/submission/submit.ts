@@ -11,25 +11,24 @@ import { WorkspaceNodeCollection } from '../../collections/WorkspaceNode';
 import { AppError } from '../../common/errors';
 import { getCurrentDate, randomUniqString } from '../../common/helper';
 import { dispatchTask } from '../../dispatch';
-import { createContract, createGraphqlBinding } from '../../lib';
-import { MapProps } from '../../types';
+import { createContract, createRpcBinding } from '../../lib';
 
 export const submit = createContract('submission.submit')
-  .params('appUser', 'values')
+  .params('user', 'values')
   .schema({
-    appUser: S.object().appUser(),
+    user: S.object().appUser(),
     values: S.object().keys({
       workspaceId: S.string().objectId(),
       indexHtmlS3Key: S.string(),
     }),
   })
   .returns<string>()
-  .fn(async (appUser, values) => {
+  .fn(async (user, values) => {
     const workspace = await WorkspaceCollection.findById(values.workspaceId);
     if (!workspace) {
       throw new AppError('Workspace not found');
     }
-    if (!workspace.userId.equals(appUser.id)) {
+    if (!workspace.userId.equals(user._id)) {
       throw new ForbiddenError('Not permission to access this workspace');
     }
     const workspaceNodes = await WorkspaceNodeCollection.findAll({
@@ -49,7 +48,7 @@ export const submit = createContract('submission.submit')
     );
     const submission: SubmissionModel = {
       _id: new ObjectID(),
-      userId: appUser.id,
+      userId: user._id,
       workspaceId: workspace._id,
       challengeUniqId: workspace.challengeUniqId,
       indexHtmlS3Key: values.indexHtmlS3Key,
@@ -74,14 +73,8 @@ export const submit = createContract('submission.submit')
     return submission._id.toHexString();
   });
 
-export const submitGraphql = createGraphqlBinding({
-  resolver: {
-    Mutation: {
-      submit: (_, { values }, { getUser }) =>
-        submit(
-          getUser(),
-          values as any as MapProps<typeof values, { workspaceId: ObjectID }>
-        ),
-    },
-  },
+export const submitRpc = createRpcBinding({
+  injectUser: true,
+  signature: 'submission.submit',
+  handler: submit,
 });

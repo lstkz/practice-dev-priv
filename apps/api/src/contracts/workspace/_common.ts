@@ -18,7 +18,7 @@ export async function getNodeByIdWithCheck(appUser: AppUser, id: string) {
   if (!node) {
     throw new AppError('Node not found');
   }
-  if (!node.userId.equals(appUser.id)) {
+  if (!node.userId.equals(appUser._id)) {
     throw new ForbiddenError('Not permission to access this workspace');
   }
   return node;
