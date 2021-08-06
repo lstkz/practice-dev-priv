@@ -16,7 +16,7 @@ export const createGetServerSideProps: <T>(
   try {
     return await fn(context);
   } catch (e: any) {
-    const code = e?.graphQLErrors?.[0].extensions?.code;
+    const code = e?.graphQLErrors?.[0]?.extensions?.code;
     if (code === 'UNAUTHENTICATED') {
       context.res.setHeader(
         'Set-Cookie',

@@ -1,51 +1,98 @@
+import { gql, useApolloClient } from '@apollo/client';
 import React from 'react';
+import * as DateFns from 'date-fns';
 import Badge from '../../components/Badge';
 import { Button } from '../../components/Button';
 import Select from '../../components/Select';
 import { TabLoader } from './TabLoader';
 import { TabTitle } from './TabTitle';
+import {
+  SearchSubmissionsDocument,
+  SearchSubmissionsQuery,
+  Submission,
+  SubmissionSortBy,
+  SubmissionStatus,
+} from '../../generated';
+import { useImmer } from 'context-api';
+import { useErrorModalActions } from '../ErrorModalModule';
 
-interface Submission {
-  id: string;
-  date: string;
-  result: 'PASS' | 'FAIL' | 'PENDING';
+gql`
+  query SearchSubmissions($criteria: SearchSubmissionsCriteria!) {
+    searchSubmissions(criteria: $criteria) {
+      items {
+        id
+        createdAt
+        status
+        nodes {
+          id
+          name
+          parentId
+          type
+          s3Key
+        }
+      }
+      total
+    }
+  }
+`;
+
+interface State {
+  isLoaded: boolean;
+  isLoadMore: boolean;
+  total: number;
+  items: Submission[];
+  sortBy: SubmissionSortBy;
 }
 
-const submissions: Submission[] = [
-  {
-    id: '1',
-    date: '18:00 3/7/2020',
-    result: 'PENDING',
-  },
-  {
-    id: '2',
-    date: '18:00 3/7/2020',
-    result: 'PASS',
-  },
-  {
-    id: '3',
-    date: '18:00 3/7/2020',
-    result: 'FAIL',
-  },
-  {
-    id: '4',
-    date: '18:00 3/7/2020',
-    result: 'FAIL',
-  },
-  {
-    id: '5',
-    date: '18:00 3/7/2020',
-    result: 'FAIL',
-  },
-];
-
 export function SubmissionHistoryTab() {
-  const [sortBy, setSortBy] = React.useState('newest');
-  const [isLoaded, setIsLoaded] = React.useState(false);
+  const client = useApolloClient();
+  const [state, setState, getState] = useImmer<State>(
+    {
+      isLoaded: false,
+      isLoadMore: false,
+      total: 0,
+      items: [],
+      sortBy: SubmissionSortBy.Newest,
+    },
+    'SubmissionHistoryTab'
+  );
+  const { isLoadMore, isLoaded, items, sortBy, total } = state;
+  const { showError } = useErrorModalActions();
+
+  const searchData = async (loadMore?: boolean) => {
+    try {
+      const ret = await client.query<SearchSubmissionsQuery>({
+        fetchPolicy: 'network-only',
+        query: SearchSubmissionsDocument,
+        variables: {
+          criteria: {
+            offset: loadMore ? getState().items.length : 0,
+            limit: 20,
+            sortBy: getState().sortBy,
+          },
+        },
+      });
+      const { items, total } = ret.data.searchSubmissions;
+      setState(draft => {
+        draft.isLoaded = true;
+        draft.isLoadMore = false;
+        draft.total = total;
+        if (loadMore) {
+          draft.items.push(...items);
+        } else {
+          draft.items = items;
+        }
+      });
+    } catch (e) {
+      showError(e);
+      setState(draft => {
+        draft.isLoadMore = false;
+      });
+    }
+  };
+
   React.useEffect(() => {
-    setTimeout(() => {
-      setIsLoaded(true);
-    }, 1000);
+    void searchData(false);
   }, []);
   const title = <TabTitle>Submission History</TabTitle>;
   if (!isLoaded) {
@@ -60,39 +107,47 @@ export function SubmissionHistoryTab() {
           focusBg="gray-900"
           value={sortBy}
           label={<span tw="text-gray-200">Sort by</span>}
-          onChange={setSortBy}
+          onChange={value => {
+            setState(draft => {
+              draft.sortBy = value;
+            });
+            void searchData();
+          }}
           options={[
             {
               label: 'Newest',
-              value: 'newest',
+              value: SubmissionSortBy.Newest,
             },
             {
               label: 'Oldest',
-              value: 'oldest',
+              value: SubmissionSortBy.Oldest,
             },
           ]}
         />
       </div>
       <div className="flow-root mt-6">
         <ul className="-my-5 divide-y divide-gray-700">
-          {submissions.map((item, i) => (
+          {items.map((item, i) => (
             <li key={i} className="py-4">
               <div className="flex items-center space-x-4">
                 <Badge
                   dark
                   color={
-                    item.result === 'FAIL'
+                    item.status === SubmissionStatus.Fail
                       ? 'red'
-                      : item.result === 'PASS'
+                      : item.status === SubmissionStatus.Pass
                       ? 'green'
                       : 'gray'
                   }
                 >
-                  {item.result}
+                  {item.status.toUpperCase()}
                 </Badge>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-gray-400 truncate">
-                    18:00 3/7/2020
+                    {DateFns.format(
+                      new Date(item.createdAt),
+                      'HH:mm dd/MM/yyyy'
+                    )}
                   </p>
                 </div>
                 <div tw="flex items-center">
@@ -105,11 +160,21 @@ export function SubmissionHistoryTab() {
           ))}
         </ul>
       </div>
-      <div className="mt-6">
-        <Button type="light" block focusBg="gray-900">
-          Load More
-        </Button>
-      </div>
+      {total > items.length && (
+        <div className="mt-6">
+          <Button
+            type="light"
+            block
+            focusBg="gray-900"
+            loading={isLoadMore}
+            onClick={() => {
+              void searchData(true);
+            }}
+          >
+            Load More
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
