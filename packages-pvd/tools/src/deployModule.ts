@@ -12,16 +12,17 @@ import {
   md5,
   walk,
 } from './helper';
-import {
-  getAwsUploadContentAuth,
-  updateChallenge,
-  updateModule,
-} from './queries';
 import { S3Upload } from './S3Upload';
-import { ChallengeInfo, ChallengeUpload, ModuleUpload } from './types';
-import { ChallengeFileInput, UpdateChallengeInput } from './generated';
+import {
+  ChallengeFile,
+  ChallengeInfo,
+  ChallengeUpload,
+  ModuleUpload,
+  UpdateChallengeValues,
+} from './types';
 import { buildDetails } from './buildDetails';
 import { buildTests } from './buildTests';
+import { api } from './api';
 
 function _nodeToMarkup(component: string) {
   const node = React.createElement(component);
@@ -31,7 +32,7 @@ function _nodeToMarkup(component: string) {
 function _getChallengeFiles(sourceDir: string, lockedFiles: string[]) {
   return walk(sourceDir).map(filePath => {
     const relativePath = Path.relative(sourceDir, filePath);
-    const fileInput: ChallengeFileInput = {
+    const fileInput: ChallengeFile = {
       name: Path.basename(relativePath),
       directory: Path.dirname(relativePath),
       isLocked: lockedFiles.includes(relativePath),
@@ -88,6 +89,7 @@ function _getChallengesInfo(moduleUpload: ModuleUpload, moduleDir: string) {
         testS3Key: '',
         moduleId,
         libraries,
+        tests: [],
       },
       testPath,
       sourceDir,
@@ -102,7 +104,7 @@ function _getChallengesInfo(moduleUpload: ModuleUpload, moduleDir: string) {
   return challenges;
 }
 
-function _getChallengePrefix(challenge: UpdateChallengeInput) {
+function _getChallengePrefix(challenge: UpdateChallengeValues) {
   return `c_${challenge.moduleId}_${challenge.challengeId}`;
 }
 
@@ -208,13 +210,15 @@ export async function deployModule(options: DeployModuleOptions) {
   const challenges = _getChallengesInfo(moduleUpload, modulePath);
   await buildDetails(modulePath, challenges);
   await buildTests(modulePath, challenges);
-  const s3Auth = await getAwsUploadContentAuth();
+  const s3Auth = await api.aws_getAwsUploadContentAuth();
   const s3Upload = new S3Upload(s3Auth);
   await _uploadChallenges(s3Upload, challenges);
   await Promise.all(
-    challenges.map(challenge => updateChallenge(challenge.challenge))
+    challenges.map(challenge =>
+      api.challenge_updateChallenge(challenge.challenge)
+    )
   );
-  await updateModule({
+  await api.module_updateModule({
     ...R.omit(moduleUpload, ['defaultLibraries']),
     id: moduleId,
   });

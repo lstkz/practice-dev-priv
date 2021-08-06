@@ -5,7 +5,9 @@
     "start:app": "cd apps/app && yarn start",
     "start:api": "cd apps/api && yarn start",
     "lint": "eslint . --ext .ts --ext .tsx",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "sync:in": "rsync -r --exclude=dist --exclude=node_modules ../practice-dev-public-new/packages/ ./packages-pvd ",
+    "sync:out": "rsync -r --exclude=dist --exclude=node_modules ./packages-pvd/* ../practice-dev-public-new/packages/"
   },
   "workspaces": [
     "apps/api",
