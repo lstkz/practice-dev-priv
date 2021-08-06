@@ -22,6 +22,10 @@ export function safeKeys<T>(obj: T): Array<keyof T> {
   return Object.keys(obj) as any;
 }
 
+export function safeValues<T>(obj: T): Array<T[keyof T]> {
+  return Object.values(obj) as any;
+}
+
 export function safeAssign<T>(obj: T, values: Partial<T>) {
   return Object.assign(obj, values);
 }

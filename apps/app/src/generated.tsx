@@ -266,6 +266,7 @@ export type Query = {
   getAwsUploadContentAuth: AwsUploadContentAuth;
   getWorkspaceS3Auth: WorkspaceS3Auth;
   getChallenge: Challenge;
+  searchSubmissions: SearchSubmissionsResult;
 };
 
 export type QueryGetWorkspaceS3AuthArgs = {
@@ -276,11 +277,56 @@ export type QueryGetChallengeArgs = {
   id: Scalars['String'];
 };
 
+export type QuerySearchSubmissionsArgs = {
+  criteria: SearchSubmissionsCriteria;
+};
+
 export type RegisterInput = {
   username: Scalars['String'];
   email: Scalars['String'];
   password: Scalars['String'];
 };
+
+export type SearchSubmissionsCriteria = {
+  limit: Scalars['Int'];
+  offset: Scalars['Int'];
+  sortBy: SubmissionSortBy;
+};
+
+export type SearchSubmissionsResult = {
+  __typename?: 'SearchSubmissionsResult';
+  items: Array<Submission>;
+  total: Scalars['Int'];
+};
+
+export type Submission = {
+  __typename?: 'Submission';
+  id: Scalars['String'];
+  createdAt: Scalars['String'];
+  status: SubmissionStatus;
+  nodes: Array<SubmissionNode>;
+};
+
+export type SubmissionNode = {
+  __typename?: 'SubmissionNode';
+  id: Scalars['String'];
+  name: Scalars['String'];
+  parentId?: Maybe<Scalars['String']>;
+  type: WorkspaceNodeType;
+  s3Key?: Maybe<Scalars['String']>;
+};
+
+export enum SubmissionSortBy {
+  Newest = 'newest',
+  Oldest = 'oldest',
+}
+
+export enum SubmissionStatus {
+  Queued = 'queued',
+  Running = 'running',
+  Pass = 'pass',
+  Fail = 'fail',
+}
 
 export type SubmitInput = {
   workspaceId: Scalars['String'];
