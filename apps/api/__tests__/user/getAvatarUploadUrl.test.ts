@@ -9,7 +9,7 @@ beforeEach(async () => {
   await registerSampleUsers();
 });
 
-it('should return a profile #graphql', async () => {
+it('should return a profile', async () => {
   s3.createPresignedPost = () => ({
     url: '/foo',
     fields: {

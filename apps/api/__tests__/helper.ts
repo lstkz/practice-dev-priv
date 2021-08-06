@@ -41,15 +41,6 @@ export function getTokenOptions(token: string) {
   };
 }
 
-export function serializeGraphqlInput(values: Record<string, any>) {
-  Object.keys(values).forEach(key => {
-    if (values[key] instanceof ObjectID) {
-      values[key] = values[key].toString();
-    }
-  });
-  return values;
-}
-
 type ExtractParams<T> = T extends ContractMeta<infer S>
   ? Omit<
       Convert<

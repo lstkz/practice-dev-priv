@@ -24,9 +24,7 @@ module.exports = {
     '!src/common/tpay.ts',
     '!src/orm/**/*.ts',
   ],
-  transform: {
-    '^.+\\.graphql$': 'graphql-import-node/jest',
-  },
+  transform: {},
   coverageThreshold: {
     global: {
       branches: 80,

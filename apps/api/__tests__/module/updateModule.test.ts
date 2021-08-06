@@ -63,7 +63,7 @@ it('should create a new module and update it', async () => {
   `);
 });
 
-it('should throw if not admin #graphql', async () => {
+it('should throw if not admin', async () => {
   await expect(
     execContract(
       updateModule,
