@@ -1,7 +1,5 @@
-import {
-  WorkspaceNodeCollection,
-  WorkspaceNodeType,
-} from '../../src/collections/WorkspaceNode';
+import { WorkspaceNodeType } from 'shared';
+import { WorkspaceNodeCollection } from '../../src/collections/WorkspaceNode';
 import { createWorkspaceNode } from '../../src/contracts/workspace/createWorkspaceNode';
 import { getId, getUUID, setupDb, execContract } from '../helper';
 import {

@@ -1,5 +1,5 @@
 import { Notifier } from '@pvd/tester';
-import { SocketMessage } from 'shared';
+import { TesterSocketMessage } from 'shared';
 import { notifyTestProgress } from './notifyTestProgress';
 
 export class APINotifier implements Notifier {
@@ -14,7 +14,7 @@ export class APINotifier implements Notifier {
     }
   }
 
-  async notify(action: SocketMessage) {
+  async notify(action: TesterSocketMessage) {
     await this.notifySocket(action);
   }
 

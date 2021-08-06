@@ -1,7 +1,7 @@
 import { notifyTestProgress } from '../src/notifyTestProgress';
 import { mocked } from 'ts-jest/utils';
 import { APINotifier } from '../src/APINotifier';
-import { SocketMessage } from 'shared';
+import { TesterSocketMessage } from 'shared';
 
 jest.mock('../src/notifyTestProgress');
 
@@ -15,7 +15,7 @@ beforeEach(() => {
   Date.now = () => new Date(2000, 1, 1).getTime();
 });
 
-function getMsg(nr: number): SocketMessage {
+function getMsg(nr: number): TesterSocketMessage {
   return {
     type: 'STARTING_TEST',
     meta: { id: 'mock' },

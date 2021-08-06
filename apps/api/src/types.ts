@@ -1,15 +1,7 @@
-import { Resolvers as BaseResolvers } from './generated';
 import { Request, Response, NextFunction } from 'express';
 import { UserModel } from './collections/User';
 
 export type Handler = (req: Request, res: Response, next: NextFunction) => void;
-
-export type AppContext = {
-  ensureAdmin: () => void;
-  getUser: () => AppUser;
-  getUserOrAnonymous: () => AppUser | null;
-  getToken: () => string;
-};
 
 export interface AppUser extends UserModel {
   accessToken: string;
@@ -20,8 +12,6 @@ declare module 'express' {
     user: AppUser;
   }
 }
-
-export type Resolvers = BaseResolvers<AppContext>;
 
 export type EmailTemplate = {
   type: 'actionButton';

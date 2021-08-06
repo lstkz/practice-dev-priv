@@ -1,6 +1,5 @@
-import { SubmissionStatus } from 'shared';
+import { SubmissionStatus, WorkspaceNodeType } from 'shared';
 import { SubmissionCollection } from '../../src/collections/Submission';
-import { WorkspaceNodeType } from '../../src/collections/WorkspaceNode';
 import { cloneWorkspaceFiles } from '../../src/contracts/submission/cloneWorkspaceFiles';
 import { s3, sts } from '../../src/lib';
 import { getId, setupDb } from '../helper';

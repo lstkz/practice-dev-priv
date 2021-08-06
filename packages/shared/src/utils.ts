@@ -1,4 +1,4 @@
-import { SocketMessage, TestInfo } from './types';
+import { TesterSocketMessage, TestInfo } from './types';
 
 interface TestResultState {
   tests: TestInfo[];
@@ -7,7 +7,7 @@ interface TestResultState {
 
 export function updateTestResult<T extends TestResultState>(
   state: T,
-  msg: SocketMessage
+  msg: TesterSocketMessage
 ) {
   const getTest = (id: number) => state.tests.find(x => x.id === id)!;
 

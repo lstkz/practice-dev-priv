@@ -14,6 +14,7 @@ export interface AmpqMessage<T = any> {
 export interface AmpqPublishMessage<T = any> {
   type: string;
   payload: T;
+  meta?: any;
 }
 
 type OnMessageFn = (message: AmpqMessage) => Promise<void> | void;
@@ -24,7 +25,7 @@ export interface AmpqHandler {
 }
 
 function _delay(n: number) {
-  return new Promise(resolve => setTimeout(resolve, n));
+  return new Promise<void>(resolve => setTimeout(resolve, n));
 }
 
 function _getRequeueDelay(retry: number) {
@@ -440,6 +441,7 @@ export class Ampq {
           id: uniqueMessageId,
           type: publishMsg.type,
           payload: publishMsg.payload,
+          meta: publishMsg.meta,
         });
       } catch (e: any) {
         reportError({

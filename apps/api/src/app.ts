@@ -6,7 +6,7 @@ import cors from 'cors';
 import util from 'util';
 import stoppable from 'stoppable';
 import { logger } from './common/logger';
-import { connect, createCollections } from './db';
+import { connect } from './db';
 import { domainMiddleware } from './middlewares/domainMiddleware';
 import { errorHandlerMiddleware } from './middlewares/errorHandlerMiddleware';
 import { notFoundHandlerMiddleware } from './middlewares/notFoundHandlerMiddleware';
@@ -24,7 +24,6 @@ startSockets(server);
 
 Promise.all([connect(), ampq.connect(['publish', 'socket'])])
   .then(async () => {
-    await createCollections();
     app.use(domainMiddleware);
     app.use(compression());
     app.use(
@@ -40,7 +39,7 @@ Promise.all([connect(), ampq.connect(['publish', 'socket'])])
       })
     );
     app.get('/', (req, res) => {
-      res.send('Fullstack API 💪');
+      res.send('Practice.dev API 💪');
       res.end();
     });
     const apiRouter = express.Router();

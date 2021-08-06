@@ -7,9 +7,9 @@ import {
   getUserAvatarUploadKey,
   randomString,
 } from '../../common/helper';
-import { AvatarUploadResult } from '../../generated';
 import { createContract, createRpcBinding, s3 } from '../../lib';
 import { UserCollection } from '../../collections/User';
+import { AvatarUploadResult } from 'shared';
 
 export const completeAvatarUpload = createContract('user.completeAvatarUpload')
   .params('user')

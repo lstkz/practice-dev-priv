@@ -4,7 +4,7 @@ import Url from 'url';
 import Query from 'querystring';
 import net from 'net';
 import { ampq } from './lib';
-import { _getAppUser } from './contracts/user/_getAppUser';
+import { getAppUser } from './contracts/user/_common';
 import { AppUser } from './types';
 import { AppSocketMsg } from 'shared';
 
@@ -59,7 +59,7 @@ export function startSockets(server: http.Server) {
         send401();
         return;
       }
-      const user = await _getAppUser(query.token).catch(() => null);
+      const user = await getAppUser(query.token).catch(() => null);
       if (!user) {
         send401();
         return;
@@ -71,7 +71,7 @@ export function startSockets(server: http.Server) {
   );
 
   ampq.addSocketHandler(async message => {
-    const { userId } = (message as AppSocketMsg).payload;
+    const { userId } = (message as AppSocketMsg).meta;
     const userConnections = connectionMap.get(userId) ?? [];
     userConnections.forEach(ws => {
       try {

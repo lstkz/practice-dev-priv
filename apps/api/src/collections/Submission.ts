@@ -1,7 +1,6 @@
 import { ObjectID } from 'mongodb2';
-import { SubmissionStatus, TestInfo } from 'shared';
+import { SubmissionStatus, TestInfo, WorkspaceNodeType } from 'shared';
 import { createCollection } from '../db';
-import { WorkspaceNodeType } from './WorkspaceNode';
 
 export interface SubmissionNodeModel {
   _id: string;

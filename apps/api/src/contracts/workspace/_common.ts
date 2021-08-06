@@ -1,5 +1,6 @@
 import { ForbiddenError } from 'apollo-server';
 import { ObjectID } from 'mongodb2';
+import { WorkspaceNodeType } from 'shared';
 import {
   WorkspaceCollection,
   WorkspaceModel,
@@ -7,7 +8,6 @@ import {
 import {
   WorkspaceNodeCollection,
   WorkspaceNodeModel,
-  WorkspaceNodeType,
 } from '../../collections/WorkspaceNode';
 import { AppError } from '../../common/errors';
 import { AppUser } from '../../types';

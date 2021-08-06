@@ -1,6 +1,6 @@
 import { S } from 'schema';
+import { User } from 'shared';
 import { mapUser } from '../../common/mapper';
-import { User } from '../../generated';
 import { createContract, createRpcBinding } from '../../lib';
 
 export const getMe = createContract('user.getMe')

@@ -1,10 +1,8 @@
+import { WorkspaceNodeType } from 'shared';
 import { ChallengeCollection } from '../src/collections/Challenge';
 import { ModuleCollection } from '../src/collections/Module';
 import { WorkspaceCollection } from '../src/collections/Workspace';
-import {
-  WorkspaceNodeCollection,
-  WorkspaceNodeType,
-} from '../src/collections/WorkspaceNode';
+import { WorkspaceNodeCollection } from '../src/collections/WorkspaceNode';
 import { getWorkspaceNodeWithUniqueKey } from '../src/common/workspace-tree';
 import { createToken } from '../src/contracts/user/createToken';
 import { createUser } from '../src/contracts/user/_common';

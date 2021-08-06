@@ -4,10 +4,10 @@ import { ConfirmEmailChangeCollection } from '../../collections/ConfirmEmailChan
 import { UserCollection } from '../../collections/User';
 import { AppError } from '../../common/errors';
 import { randomUniqString } from '../../common/helper';
-import { OkResult } from '../../generated';
 import { createContract, createRpcBinding } from '../../lib';
 import { config } from 'config';
 import { dispatchTask } from '../../dispatch';
+import { OkResult } from 'shared';
 
 export const changeEmail = createContract('user.changeEmail')
   .params('user', 'newEmail')

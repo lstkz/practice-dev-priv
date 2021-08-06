@@ -1,14 +1,7 @@
 import { ContractMeta, initialize } from 'contract';
 import { ObjectSchema, StringSchema } from 'schema';
 import AWS from 'aws-sdk';
-import {
-  AppEvent,
-  AppEventType,
-  AppTask,
-  AppTaskType,
-  AppUser,
-  Resolvers,
-} from './types';
+import { AppEvent, AppEventType, AppTask, AppTaskType, AppUser } from './types';
 import { config } from 'config';
 import { Ampq } from './ampq/Ampq';
 import { ObjectID } from 'mongodb';
@@ -18,26 +11,6 @@ export interface BaseBinding<T, U> {
   isBinding: boolean;
   type: T;
   options: U;
-}
-
-export interface CreateGraphqlBindingOptions {
-  public?: true;
-  verified?: true;
-  admin?: true;
-  resolver: Resolvers;
-}
-
-export interface GraphqlBinding
-  extends BaseBinding<'graphql', CreateGraphqlBindingOptions> {}
-
-export function createGraphqlBinding(
-  options: CreateGraphqlBindingOptions
-): GraphqlBinding {
-  return {
-    isBinding: true,
-    type: 'graphql',
-    options,
-  };
 }
 
 export interface CreateRpcBindingOptions {

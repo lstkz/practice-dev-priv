@@ -1,5 +1,5 @@
 import { S } from 'schema';
-import { NotificationSettings } from '../../generated';
+import { NotificationSettings } from 'shared';
 import { createContract, createRpcBinding } from '../../lib';
 import { updateNotificationSettings } from './updateNotificationSettings';
 

@@ -1,8 +1,6 @@
+import { WorkspaceNodeType } from 'shared';
 import { WorkspaceCollection } from '../../src/collections/Workspace';
-import {
-  WorkspaceNodeCollection,
-  WorkspaceNodeType,
-} from '../../src/collections/WorkspaceNode';
+import { WorkspaceNodeCollection } from '../../src/collections/WorkspaceNode';
 import { getWorkspaceNodeWithUniqueKey } from '../../src/common/workspace-tree';
 import { getOrCreateWorkspace } from '../../src/contracts/workspace/getOrCreateWorkspace';
 import { s3, sts } from '../../src/lib';

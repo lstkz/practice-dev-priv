@@ -106,30 +106,29 @@ export interface TestInfo {
   result: TestResult;
 }
 
-export type SocketMessage =
+export interface TesterSocketMessageMeta {
+  userId: string;
+  submissionId: string;
+}
+
+export type TesterSocketMessage =
   | {
       type: 'TEST_INFO';
-      meta: {
-        id: string;
-      };
+      meta: TesterSocketMessageMeta;
       payload: {
         tests: TestInfo[];
       };
     }
   | {
-      type: 'STARTING_TEST';
-      meta: {
-        id: string;
-      };
+      type: 'TEST_START';
+      meta: TesterSocketMessageMeta;
       payload: {
         testId: number;
       };
     }
   | {
       type: 'TEST_FAIL';
-      meta: {
-        id: string;
-      };
+      meta: TesterSocketMessageMeta;
       payload: {
         testId: number;
         error: string;
@@ -137,18 +136,14 @@ export type SocketMessage =
     }
   | {
       type: 'TEST_PASS';
-      meta: {
-        id: string;
-      };
+      meta: TesterSocketMessageMeta;
       payload: {
         testId: number;
       };
     }
   | {
-      type: 'STEP';
-      meta: {
-        id: string;
-      };
+      type: 'TEST_STEP';
+      meta: TesterSocketMessageMeta;
       payload: {
         testId: number;
         text: string;
@@ -156,10 +151,8 @@ export type SocketMessage =
       };
     }
   | {
-      type: 'RESULT';
-      meta: {
-        id: string;
-      };
+      type: 'TEST_RESULT';
+      meta: TesterSocketMessageMeta;
       payload: {
         success: boolean;
       };
@@ -186,7 +179,7 @@ export interface TaskSolvedSocketMsg {
   };
 }
 
-export type AppSocketMsg = SocketMessage;
+export type AppSocketMsg = TesterSocketMessage;
 
 export interface NotificationSettings {
   newsletter: boolean;
@@ -194,7 +187,7 @@ export interface NotificationSettings {
 
 export type Scalars = {
   ID: string;
-  String: string;
+  string: string;
   Boolean: boolean;
   Int: number;
   Float: number;
@@ -203,20 +196,84 @@ export type Scalars = {
 };
 
 export interface Challenge {
-  id: Scalars['String'];
-  challengeId: Scalars['Int'];
-  moduleId: Scalars['Int'];
-  title: Scalars['String'];
-  description: Scalars['String'];
-  difficulty: Scalars['String'];
-  practiceTime: Scalars['Float'];
-  detailsS3Key: Scalars['String'];
-  htmlS3Key: Scalars['String'];
-  solutionUrl: Scalars['String'];
-  tests: Array<Scalars['String']>;
+  id: string;
+  challengeId: number;
+  moduleId: number;
+  title: string;
+  description: string;
+  difficulty: string;
+  practiceTime: number;
+  detailsS3Key: string;
+  htmlS3Key: string;
+  solutionUrl: string;
+  tests: Array<string>;
 }
 
 export enum SubmissionSortBy {
   Newest = 'newest',
   Oldest = 'oldest',
+}
+
+export interface Workspace {
+  id: string;
+  items: WorkspaceNode[];
+  s3Auth: WorkspaceS3Auth;
+  libraries: LibraryDefinition[];
+}
+
+export interface WorkspaceNode {
+  id: string;
+  name: string;
+  parentId?: string | null;
+  hash: string;
+  type: WorkspaceNodeType;
+  isLocked?: boolean | null;
+}
+
+export interface WorkspaceS3Auth {
+  bucketName: string;
+  credentials: AwsCredentials;
+}
+
+export enum WorkspaceNodeType {
+  File = 'file',
+  Directory = 'directory',
+}
+
+export interface PaginatedResult<T> {
+  items: T[];
+  total: number;
+}
+
+export interface Submission {
+  id: string;
+  createdAt: string;
+  status: SubmissionStatus;
+  nodes: SubmissionNode[];
+}
+
+export interface SubmissionNode {
+  id: string;
+  name: string;
+  parentId: string | null;
+  type: WorkspaceNodeType;
+  s3Key?: string | null;
+}
+
+export interface OkResult {
+  ok: boolean;
+}
+
+export interface AvatarUploadResult {
+  avatarId: string;
+}
+
+export interface PresignedPostField {
+  name: string;
+  value: string;
+}
+
+export interface PresignedPost {
+  url: string;
+  fields: PresignedPostField[];
 }

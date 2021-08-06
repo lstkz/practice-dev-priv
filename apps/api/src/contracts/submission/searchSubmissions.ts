@@ -1,7 +1,7 @@
 import { S } from 'schema';
+import { PaginatedResult, Submission, SubmissionSortBy } from 'shared';
 import { SubmissionCollection } from '../../collections/Submission';
 import { safeValues } from '../../common/helper';
-import { SearchSubmissionsResult, SubmissionSortBy } from '../../generated';
 import { createContract, createRpcBinding } from '../../lib';
 
 export const searchSubmissions = createContract('submission.searchSubmissions')
@@ -14,7 +14,7 @@ export const searchSubmissions = createContract('submission.searchSubmissions')
       sortBy: S.enum().literal(...safeValues(SubmissionSortBy)),
     }),
   })
-  .returns<SearchSubmissionsResult>()
+  .returns<PaginatedResult<Submission>>()
   .fn(async (user, criteria) => {
     const filter = {
       userId: user._id,

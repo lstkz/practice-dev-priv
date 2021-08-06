@@ -1,13 +1,8 @@
 import { S } from 'schema';
-import {
-  createContract,
-  createGraphqlBinding,
-  createRpcBinding,
-  s3,
-} from '../../lib';
-import { PresignedPost } from '../../generated';
+import { createContract, createRpcBinding, s3 } from '../../lib';
 import { config } from 'config';
 import { getUserAvatarUploadKey } from '../../common/helper';
+import { PresignedPost } from 'shared';
 
 export const getAvatarUploadUrl = createContract('user.getAvatarUploadUrl')
   .params('user')
@@ -32,14 +27,6 @@ export const getAvatarUploadUrl = createContract('user.getAvatarUploadUrl')
       })),
     };
   });
-
-export const getAvatarUploadUrlGraphql = createGraphqlBinding({
-  resolver: {
-    Query: {
-      getAvatarUploadUrl: (_, __, { getUser }) => getAvatarUploadUrl(getUser()),
-    },
-  },
-});
 
 export const getAvatarUploadUrlRpc = createRpcBinding({
   injectUser: true,

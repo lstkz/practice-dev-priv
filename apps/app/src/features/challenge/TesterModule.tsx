@@ -1,7 +1,7 @@
 import { gql, useApolloClient } from '@apollo/client';
 import { createModuleContext, useActions, useImmer } from 'context-api';
 import React from 'react';
-import { SocketMessage, TestInfo } from 'shared';
+import { TesterSocketMessage, TestInfo } from 'shared';
 import { updateTestResult } from 'shared/src/utils';
 import {
   Challenge,
@@ -93,7 +93,7 @@ export function TesterModule(props: TesterModuleProps) {
         })
         .subscribe(value => {
           const messages = (value as TestProgressSubscriptionResult).data!
-            .testProgress as SocketMessage[];
+            .testProgress as TesterSocketMessage[];
           setState(draft => {
             messages.forEach(msg => {
               if (msg.meta.id === submissionId) {

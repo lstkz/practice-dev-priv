@@ -1,5 +1,6 @@
 import { ObjectID } from 'mongodb2';
 import { S } from 'schema';
+import { Workspace } from 'shared';
 import {
   ChallengeCollection,
   ChallengeModel,
@@ -13,7 +14,6 @@ import { AppError } from '../../common/errors';
 import { renameId } from '../../common/helper';
 import { mapWorkspaceS3Auth } from '../../common/mapper';
 import { DUPLICATED_UNIQUE_VALUE_ERROR_CODE } from '../../common/mongo';
-import { Workspace } from '../../generated';
 import { createContract, createRpcBinding } from '../../lib';
 import { AppUser } from '../../types';
 import { prepareWorkspace } from './prepareWorkspace';
