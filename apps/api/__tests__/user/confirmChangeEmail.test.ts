@@ -1,12 +1,10 @@
-import { gql } from 'apollo-server';
 import { mocked } from 'ts-jest/utils';
 import { ConfirmEmailChangeCollection } from '../../src/collections/ConfirmEmailChange';
 import * as DateFns from 'date-fns';
 import { UserCollection } from '../../src/collections/User';
 import { confirmChangeEmail } from '../../src/contracts/user/confirmChangeEmail';
 import { dispatchEvent } from '../../src/dispatch';
-import { apolloServer } from '../../src/server';
-import { getAppUser, getId, getTokenOptions, setupDb } from '../helper';
+import { execContract, getId, setupDb } from '../helper';
 import { registerSampleUsers } from '../seed-data';
 
 jest.mock('../../src/dispatch');
@@ -27,9 +25,9 @@ const validProps = {
 };
 
 it('should throw error if code not found', async () => {
-  await expect(confirmChangeEmail(await getAppUser(1), '123')).rejects.toThrow(
-    'Invalid code'
-  );
+  await expect(
+    execContract(confirmChangeEmail, { code: '123' }, 'user1_token')
+  ).rejects.toThrow('Invalid code');
 });
 
 it('should throw error if assigned for another user', async () => {
@@ -37,9 +35,9 @@ it('should throw error if assigned for another user', async () => {
     ...validProps,
     userId: getId(2),
   });
-  await expect(confirmChangeEmail(await getAppUser(1), '123')).rejects.toThrow(
-    'Invalid code'
-  );
+  await expect(
+    execContract(confirmChangeEmail, { code: '123' }, 'user1_token')
+  ).rejects.toThrow('Invalid code');
 });
 
 it('should throw error if email taken', async () => {
@@ -47,9 +45,9 @@ it('should throw error if email taken', async () => {
     ...validProps,
     newEmail: 'user2@example.com',
   });
-  await expect(confirmChangeEmail(await getAppUser(1), '123')).rejects.toThrow(
-    'Cannot change email. Email taken by another user'
-  );
+  await expect(
+    execContract(confirmChangeEmail, { code: '123' }, 'user1_token')
+  ).rejects.toThrow('Cannot change email. Email taken by another user');
 });
 
 it('should throw error if expired', async () => {
@@ -57,39 +55,24 @@ it('should throw error if expired', async () => {
     ...validProps,
     expireAt: new Date(1),
   });
-  await expect(confirmChangeEmail(await getAppUser(1), '123')).rejects.toThrow(
-    'Token expired. Please request email change again.'
-  );
+  await expect(
+    execContract(confirmChangeEmail, { code: '123' }, 'user1_token')
+  ).rejects.toThrow('Token expired. Please request email change again.');
 });
 
 it('should change the email', async () => {
   await ConfirmEmailChangeCollection.insertOne(validProps);
-  await confirmChangeEmail(await getAppUser(1), '123');
+  await execContract(confirmChangeEmail, { code: '123' }, 'user1_token');
   const user = await UserCollection.findByIdOrThrow(getId(1));
   expect(user.email).toEqual('foO@example.com');
   expect(user.email_lowered).toEqual('foo@example.com');
   expect(mocked_dispatchEvent).toBeCalled();
 });
 
-it('should change the email #graphql', async () => {
-  await ConfirmEmailChangeCollection.insertOne(validProps);
-  const res = await apolloServer.executeOperation(
-    {
-      query: gql`
-        mutation {
-          confirmChangeEmail(code: "123")
-        }
-      `,
-    },
-    getTokenOptions('user1_token')
-  );
-  expect(res.errors).toBeFalsy();
-});
-
 it('should return an error if confirmed multiple times', async () => {
   await ConfirmEmailChangeCollection.insertOne(validProps);
-  await confirmChangeEmail(await getAppUser(1), '123');
-  await expect(confirmChangeEmail(await getAppUser(1), '123')).rejects.toThrow(
-    'You have already confirmed the new email.'
-  );
+  await execContract(confirmChangeEmail, { code: '123' }, 'user1_token');
+  await expect(
+    execContract(confirmChangeEmail, { code: '123' }, 'user1_token')
+  ).rejects.toThrow('You have already confirmed the new email.');
 });

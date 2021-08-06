@@ -1,50 +1,31 @@
 import { CDN_BASE_URL } from 'src/config';
 import * as R from 'remeda';
-import {
-  CreateWorkspaceNodeDocument,
-  CreateWorkspaceNodeInput,
-  CreateWorkspaceNodeMutation,
-  CreateWorkspaceNodeMutationVariables,
-  DeleteWorkspaceNodeDocument,
-  DeleteWorkspaceNodeMutation,
-  DeleteWorkspaceNodeMutationVariables,
-  UpdateWorkspaceNodeDocument,
-  UpdateWorkspaceNodeInput,
-  UpdateWorkspaceNodeMutation,
-  UpdateWorkspaceNodeMutationVariables,
-  WorkspaceS3Auth,
-} from 'src/generated';
 import S3 from 'aws-sdk/clients/s3';
-import { ApolloClient, gql } from '@apollo/client';
 import { doFn } from 'src/common/helper';
+import { WorkspaceNodeType, WorkspaceS3Auth } from 'shared';
+import { api } from 'src/services/api';
 
-gql`
-  mutation UpdateWorkspaceNode($values: UpdateWorkspaceNodeInput!) {
-    updateWorkspaceNode(values: $values)
-  }
-`;
+interface AddNodeValues {
+  id: string;
+  name: string;
+  workspaceId: string;
+  hash: string;
+  type: WorkspaceNodeType;
+  parentId?: string | null | undefined;
+}
 
-gql`
-  mutation DeleteWorkspaceNode($id: String!) {
-    deleteWorkspaceNode(id: $id)
-  }
-`;
-
-gql`
-  mutation CreateWorkspaceNode($values: CreateWorkspaceNodeInput!) {
-    createWorkspaceNode(values: $values)
-  }
-`;
+interface UpdateNodeValues {
+  id: string;
+  name?: string | null | undefined;
+  parentId?: string | null | undefined;
+  hash?: string | null | undefined;
+}
 
 export class APIService {
   private s3: S3 = null!;
   private bucketName: string = null!;
 
-  constructor(
-    private client: ApolloClient<any>,
-    private workspaceId: string,
-    auth: WorkspaceS3Auth
-  ) {
+  constructor(private workspaceId: string, auth: WorkspaceS3Auth) {
     this.s3 = new S3({
       credentials: auth.credentials,
       region: 'eu-central-1',
@@ -62,16 +43,8 @@ export class APIService {
     return fetch(url).then(x => x.text());
   }
 
-  async addNode(values: CreateWorkspaceNodeInput) {
-    await this.client.mutate<
-      CreateWorkspaceNodeMutation,
-      CreateWorkspaceNodeMutationVariables
-    >({
-      mutation: CreateWorkspaceNodeDocument,
-      variables: {
-        values,
-      },
-    });
+  async addNode(values: AddNodeValues) {
+    await api.workspace_createWorkspaceNode(values);
   }
 
   async deleteNode(nodeId: string) {
@@ -80,19 +53,11 @@ export class APIService {
         Bucket: this.bucketName,
         Key: this._getS3Key(nodeId),
       }),
-      this.client.mutate<
-        DeleteWorkspaceNodeMutation,
-        DeleteWorkspaceNodeMutationVariables
-      >({
-        mutation: DeleteWorkspaceNodeDocument,
-        variables: {
-          id: nodeId,
-        },
-      }),
+      api.workspace_deleteWorkspaceNode(nodeId),
     ]);
   }
 
-  async updateNode(values: UpdateWorkspaceNodeInput & { content?: string }) {
+  async updateNode(values: UpdateNodeValues & { content?: string }) {
     await Promise.all([
       doFn(async () => {
         if (values.content) {
@@ -108,15 +73,7 @@ export class APIService {
       doFn(async () => {
         const other = R.omit(values, ['content']);
         if (Object.values(other).length > 1) {
-          await this.client.mutate<
-            UpdateWorkspaceNodeMutation,
-            UpdateWorkspaceNodeMutationVariables
-          >({
-            mutation: UpdateWorkspaceNodeDocument,
-            variables: {
-              values: other,
-            },
-          });
+          await api.workspace_updateWorkspaceNode(other);
         }
       }),
     ]);

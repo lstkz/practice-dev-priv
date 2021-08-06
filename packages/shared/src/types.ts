@@ -1,3 +1,7 @@
+export * from '@pvd/types';
+
+import { TesterSocketMessage, TestInfo } from '@pvd/types';
+
 export interface User {
   id: string;
   email: string;
@@ -86,81 +90,127 @@ export interface TestSubmissionLambdaOutput {
   testRun: TestInfo[];
 }
 
-export interface Step {
-  text: string;
-  data?: any;
+export interface AwsCredentials {
+  accessKeyId: string;
+  secretAccessKey: string;
+  sessionToken: string;
 }
 
-export type TestResult =
-  | 'pass'
-  | 'fail'
-  | 'pending'
-  | 'running'
-  | 'fail-skipped';
+export interface AwsUploadContentAuth {
+  bucketName: string;
+  credentials: AwsCredentials;
+}
 
-export interface TestInfo {
-  id: number;
+export interface TestUpdateSocketMsg {
+  type: 'TestUpdate';
+  payload: {
+    userId: string;
+    messages: TesterSocketMessage[];
+  };
+}
+
+export type AppSocketMsg = TestUpdateSocketMsg;
+
+export interface NotificationSettings {
+  newsletter: boolean;
+}
+
+export type Scalars = {
+  ID: string;
+  string: string;
+  Boolean: boolean;
+  Int: number;
+  Float: number;
+  TestProgressData: any;
+  Void: any;
+};
+
+export interface Challenge {
+  id: string;
+  challengeId: number;
+  moduleId: number;
+  title: string;
+  description: string;
+  difficulty: string;
+  practiceTime: number;
+  detailsS3Key: string;
+  htmlS3Key: string;
+  solutionUrl: string;
+  tests: Array<string>;
+}
+
+export enum SubmissionSortBy {
+  Newest = 'newest',
+  Oldest = 'oldest',
+}
+
+export interface Workspace {
+  id: string;
+  items: WorkspaceNode[];
+  s3Auth: WorkspaceS3Auth;
+  libraries: LibraryDefinition[];
+}
+
+export interface WorkspaceNode {
+  id: string;
   name: string;
-  error?: string;
-  steps: Step[];
-  result: TestResult;
+  parentId?: string | null;
+  hash: string;
+  type: WorkspaceNodeType;
+  isLocked?: boolean | null;
 }
 
-export type SocketMessage =
-  | {
-      type: 'TEST_INFO';
-      meta: {
-        id: string;
-      };
-      payload: {
-        tests: TestInfo[];
-      };
-    }
-  | {
-      type: 'STARTING_TEST';
-      meta: {
-        id: string;
-      };
-      payload: {
-        testId: number;
-      };
-    }
-  | {
-      type: 'TEST_FAIL';
-      meta: {
-        id: string;
-      };
-      payload: {
-        testId: number;
-        error: string;
-      };
-    }
-  | {
-      type: 'TEST_PASS';
-      meta: {
-        id: string;
-      };
-      payload: {
-        testId: number;
-      };
-    }
-  | {
-      type: 'STEP';
-      meta: {
-        id: string;
-      };
-      payload: {
-        testId: number;
-        text: string;
-        data: any;
-      };
-    }
-  | {
-      type: 'RESULT';
-      meta: {
-        id: string;
-      };
-      payload: {
-        success: boolean;
-      };
-    };
+export interface WorkspaceS3Auth {
+  bucketName: string;
+  credentials: AwsCredentials;
+}
+
+export enum WorkspaceNodeType {
+  File = 'file',
+  Directory = 'directory',
+}
+
+export interface PaginatedResult<T> {
+  items: T[];
+  total: number;
+}
+
+export interface Submission {
+  id: string;
+  createdAt: string;
+  status: SubmissionStatus;
+  nodes: SubmissionNode[];
+}
+
+export interface SubmissionNode {
+  id: string;
+  name: string;
+  parentId: string | null;
+  type: WorkspaceNodeType;
+  s3Key?: string | null;
+}
+
+export interface OkResult {
+  ok: boolean;
+}
+
+export interface AvatarUploadResult {
+  avatarId: string;
+}
+
+export interface PresignedPostField {
+  name: string;
+  value: string;
+}
+
+export interface PresignedPost {
+  url: string;
+  fields: PresignedPostField[];
+}
+
+export interface UserProfile {
+  name?: string | null;
+  about?: string | null;
+  country?: string | null;
+  url?: string | null;
+}

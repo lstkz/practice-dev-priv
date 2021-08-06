@@ -5,26 +5,8 @@ import { useRouter } from 'next/dist/client/router';
 import { useErrorModalActions } from './ErrorModalModule';
 import { SimpleModal } from 'src/components/SimpleModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { gql } from '@apollo/client';
-import {
-  useConfirmChangeEmailMutation,
-  useConfirmEmailMutation,
-} from '../generated';
 import { useAuthActions } from './AuthModule';
-
-gql`
-  mutation ConfirmEmail($code: String!) {
-    confirmEmail(code: $code) {
-      ...DefaultAuthResult
-    }
-  }
-`;
-
-gql`
-  mutation ConfirmChangeEmail($code: String!) {
-    confirmChangeEmail(code: $code)
-  }
-`;
+import { api } from 'src/services/api';
 
 export function ConfirmEmailChecker() {
   const router = useRouter();
@@ -32,8 +14,6 @@ export function ConfirmEmailChecker() {
   const [visibleModal, setVisibleModal] = useState<
     null | 'confirmed' | 'confirmed-new'
   >(null);
-  const [confirmEmail] = useConfirmEmailMutation();
-  const [confirmChangeEmail] = useConfirmChangeEmailMutation();
   const { loginUser } = useAuthActions();
   React.useEffect(() => {
     const getQuery = (name: string) =>
@@ -45,13 +25,10 @@ export function ConfirmEmailChecker() {
         pathname: router.pathname,
         query: R.omit(router.query, ['confirm-email']),
       });
-      confirmEmail({
-        variables: {
-          code: confirmEmailCode,
-        },
-      })
+      api
+        .user_confirmEmail(confirmEmailCode)
         .then(ret => {
-          loginUser(ret.data!.confirmEmail, false);
+          loginUser(ret, false);
           setVisibleModal('confirmed');
         })
         .catch(errorModalActions.show);
@@ -61,11 +38,8 @@ export function ConfirmEmailChecker() {
         pathname: router.pathname,
         query: R.omit(router.query, ['confirm-new-email']),
       });
-      confirmChangeEmail({
-        variables: {
-          code: confirmNewEmailCode,
-        },
-      })
+      api
+        .user_confirmChangeEmail(confirmNewEmailCode)
         .then(() => {
           setVisibleModal('confirmed-new');
         })

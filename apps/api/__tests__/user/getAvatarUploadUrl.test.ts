@@ -1,7 +1,6 @@
-import { gql } from 'apollo-server';
+import { getAvatarUploadUrl } from '../../src/contracts/user/getAvatarUploadUrl';
 import { s3 } from '../../src/lib';
-import { apolloServer } from '../../src/server';
-import { getTokenOptions, setupDb } from '../helper';
+import { execContract, setupDb } from '../helper';
 import { registerSampleUsers } from '../seed-data';
 
 setupDb();
@@ -10,7 +9,7 @@ beforeEach(async () => {
   await registerSampleUsers();
 });
 
-it('should return a profile #graphql', async () => {
+it('should return a profile', async () => {
   s3.createPresignedPost = () => ({
     url: '/foo',
     fields: {
@@ -18,38 +17,20 @@ it('should return a profile #graphql', async () => {
       foo: 'bar',
     } as any,
   });
-  const res = await apolloServer.executeOperation(
-    {
-      query: gql`
-        query {
-          getAvatarUploadUrl {
-            url
-            fields {
-              name
-              value
-            }
-          }
-        }
-      `,
-    },
-    getTokenOptions('user1_token')
-  );
-  expect(res.errors).toBeFalsy();
-  expect(res.data).toMatchInlineSnapshot(`
+  const ret = await execContract(getAvatarUploadUrl, {}, 'user1_token');
+  expect(ret).toMatchInlineSnapshot(`
 Object {
-  "getAvatarUploadUrl": Object {
-    "fields": Array [
-      Object {
-        "name": "Content-Type",
-        "value": "image/png",
-      },
-      Object {
-        "name": "foo",
-        "value": "bar",
-      },
-    ],
-    "url": "/foo",
-  },
+  "fields": Array [
+    Object {
+      "name": "Content-Type",
+      "value": "image/png",
+    },
+    Object {
+      "name": "foo",
+      "value": "bar",
+    },
+  ],
+  "url": "/foo",
 }
 `);
 });

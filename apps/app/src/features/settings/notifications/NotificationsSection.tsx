@@ -1,25 +1,14 @@
 import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { SavableSection } from '../SavableSection';
-import {
-  NotificationSettings,
-  useUpdateNotificationSettingsMutation,
-} from 'src/generated';
 import { useErrorModalActions } from 'src/features/ErrorModalModule';
-import { gql } from '@apollo/client';
 import { ContextSwitchGroup } from 'src/components/ContextSwitchGroup';
+import { NotificationSettings } from 'shared';
+import { api } from 'src/services/api';
 
 interface NotificationsSectionProps {
   initialValues: NotificationSettings;
 }
-
-gql`
-  mutation UpdateNotificationSettings($values: NotificationSettingsInput!) {
-    updateNotificationSettings(values: $values) {
-      newsletter
-    }
-  }
-`;
 
 export function NotificationsSection(props: NotificationsSectionProps) {
   const formMethods = useForm<NotificationSettings>({
@@ -27,25 +16,25 @@ export function NotificationsSection(props: NotificationsSectionProps) {
   });
   const { show: showError } = useErrorModalActions();
   const { handleSubmit } = formMethods;
-  const [updateNotificationSettings, { loading }] =
-    useUpdateNotificationSettingsMutation();
+  const [isLoading, setIsLoading] = React.useState(false);
 
   return (
     <form
       onSubmit={handleSubmit(async values => {
         try {
-          await updateNotificationSettings({
-            variables: { values },
-          });
+          setIsLoading(true);
+          await api.user_updateNotificationSettings(values);
         } catch (e) {
           showError(e);
+        } finally {
+          setIsLoading(false);
         }
       })}
     >
       <SavableSection
         id="notifications-section"
         title="Email Notifications"
-        isLoading={loading}
+        isLoading={isLoading}
       >
         <FormProvider {...formMethods}>
           <div tw="space-y-6 mt-6 ">

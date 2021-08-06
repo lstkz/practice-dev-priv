@@ -1,10 +1,8 @@
-import { gql } from 'apollo-server';
 import { mocked } from 'ts-jest/utils';
 import { exchangeCode, getUserData } from '../../src/common/github';
 import { registerGithub } from '../../src/contracts/user/registerGithub';
 import { createUser } from '../../src/contracts/user/_common';
-import { apolloServer } from '../../src/server';
-import { getId, setupDb } from '../helper';
+import { execContract, getId, setupDb } from '../helper';
 
 jest.mock('../../src/dispatch');
 jest.mock('../../src/common/github');
@@ -23,30 +21,19 @@ beforeAll(async () => {
   }));
 });
 
-it('should register successfully #graphql', async () => {
-  const res = await apolloServer.executeOperation({
-    query: gql`
-      mutation {
-        registerGithub(code: "abc") {
-          user {
-            email
-            username
-          }
-        }
-      }
-    `,
-  });
-  expect(res.data).toMatchInlineSnapshot(`
+it('should register successfully', async () => {
+  const ret = await execContract(registerGithub, { code: 'abc' });
+  ret.user.id = '';
+  expect(ret.user).toMatchInlineSnapshot(`
 Object {
-  "registerGithub": Object {
-    "user": Object {
-      "email": "new-user1@example.com",
-      "username": "git123",
-    },
-  },
+  "avatarId": undefined,
+  "email": "new-user1@example.com",
+  "id": "",
+  "isAdmin": undefined,
+  "isVerified": true,
+  "username": "git123",
 }
 `);
-  expect(res.errors).toBeFalsy();
 });
 
 it('should throw an error if already registered code', async () => {
@@ -58,7 +45,7 @@ it('should throw an error if already registered code', async () => {
     userId: getId(1),
     username: 'user1',
   });
-  await expect(registerGithub('abc')).rejects.toThrowError(
-    'User is already registered'
-  );
+  await expect(
+    execContract(registerGithub, { code: 'abc' })
+  ).rejects.toThrowError('User is already registered');
 });

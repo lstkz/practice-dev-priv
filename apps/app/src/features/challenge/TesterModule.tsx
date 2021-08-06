@@ -1,15 +1,11 @@
-import { gql, useApolloClient } from '@apollo/client';
 import { createModuleContext, useActions, useImmer } from 'context-api';
 import React from 'react';
-import { SocketMessage, TestInfo } from 'shared';
+import WS from 'reconnecting-websocket';
+import { Challenge, TestInfo, Workspace, AppSocketMsg } from 'shared';
 import { updateTestResult } from 'shared/src/utils';
-import {
-  Challenge,
-  TestProgressDocument,
-  TestProgressSubscriptionResult,
-  useSubmitMutation,
-  Workspace,
-} from 'src/generated';
+import { API_URL } from 'src/config';
+import { api } from 'src/services/api';
+import { getAccessToken } from 'src/services/Storage';
 
 interface Actions {
   submit: (indexHtmlS3Key: string) => Promise<void>;
@@ -30,16 +26,6 @@ interface TesterModuleProps {
   workspace: Workspace;
 }
 
-gql`
-  mutation Submit($values: SubmitInput!) {
-    submit(values: $values)
-  }
-
-  subscription TestProgress($id: String!) {
-    testProgress(id: $id)
-  }
-`;
-
 function _getDefaultTests(challenge: Challenge) {
   return challenge.tests.map((test, i) => {
     const item: TestInfo = {
@@ -53,8 +39,7 @@ function _getDefaultTests(challenge: Challenge) {
 }
 
 export function TesterModule(props: TesterModuleProps) {
-  const { challenge, workspace, children } = props;
-  const client = useApolloClient();
+  const { challenge, children, workspace } = props;
   const defaultTests = React.useMemo(() => {
     return _getDefaultTests(challenge);
   }, [challenge]);
@@ -62,7 +47,6 @@ export function TesterModule(props: TesterModuleProps) {
     { challenge, isSubmitting: false, tests: defaultTests, result: null },
     'TesterModule'
   );
-  const [submit] = useSubmitMutation();
   const unsubscribeRef = React.useRef<(() => void) | null>(null);
   const unsubscribe = () => {
     if (unsubscribeRef.current) {
@@ -84,37 +68,35 @@ export function TesterModule(props: TesterModuleProps) {
         draft.tests = _getDefaultTests(challenge);
         draft.tests[0].result = 'running';
       });
-      const obs = client
-        .subscribe({
-          query: TestProgressDocument,
-          variables: {
-            id: challenge.id,
-          },
-        })
-        .subscribe(value => {
-          const messages = (value as TestProgressSubscriptionResult).data!
-            .testProgress as SocketMessage[];
-          setState(draft => {
-            messages.forEach(msg => {
-              if (msg.meta.id === submissionId) {
-                updateTestResult(draft, msg);
-              }
-            });
+      const socketUrl =
+        API_URL.replace(/^http/, 'ws') +
+        '/socket?token=' +
+        encodeURIComponent(getAccessToken() ?? '');
+      const ws = new WS(socketUrl);
+      const onMessage = (e: MessageEvent<any>) => {
+        const msg = JSON.parse(e.data) as AppSocketMsg;
+        if (msg.type !== 'TestUpdate') {
+          return;
+        }
+        const { messages } = msg.payload;
+        setState(draft => {
+          messages.forEach(msg => {
+            if (msg.meta.submissionId === submissionId) {
+              updateTestResult(draft, msg);
+            }
           });
-          if (messages.some(x => x.type === 'RESULT')) {
-            unsubscribe();
-            done();
-          }
         });
-      unsubscribeRef.current = () => obs.unsubscribe();
-      submissionId = await submit({
-        variables: {
-          values: {
-            workspaceId: workspace.id,
-            indexHtmlS3Key,
-          },
-        },
-      }).then(x => x.data!.submit);
+        if (messages.some(x => x.type === 'TEST_RESULT')) {
+          unsubscribe();
+          done();
+        }
+      };
+      ws.addEventListener('message', onMessage);
+      unsubscribeRef.current = () => ws.close();
+      submissionId = await api.submission_submit({
+        workspaceId: workspace.id,
+        indexHtmlS3Key,
+      });
       return new Promise(resolve => {
         done = resolve;
       });

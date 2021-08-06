@@ -7,21 +7,21 @@ import {
   getUserAvatarUploadKey,
   randomString,
 } from '../../common/helper';
-import { AvatarUploadResult } from '../../generated';
-import { createContract, createGraphqlBinding, s3 } from '../../lib';
+import { createContract, createRpcBinding, s3 } from '../../lib';
 import { UserCollection } from '../../collections/User';
+import { AvatarUploadResult } from 'shared';
 
 export const completeAvatarUpload = createContract('user.completeAvatarUpload')
-  .params('appUser')
+  .params('user')
   .schema({
-    appUser: S.object().appUser(),
+    user: S.object().appUser(),
   })
   .returns<AvatarUploadResult>()
-  .fn(async appUser => {
+  .fn(async user => {
     const s3Object = await s3
       .getObject({
         Bucket: config.aws.s3Bucket,
-        Key: getUserAvatarUploadKey(appUser.id.toHexString()),
+        Key: getUserAvatarUploadKey(user._id.toHexString()),
       })
       .promise()
       .catch(err => {
@@ -73,7 +73,6 @@ export const completeAvatarUpload = createContract('user.completeAvatarUpload')
           .promise();
       }),
     ]);
-    const user = await UserCollection.findByIdOrThrow(appUser.id);
     user.avatarId = id;
     await UserCollection.update(user, ['avatarId']);
     return {
@@ -81,11 +80,8 @@ export const completeAvatarUpload = createContract('user.completeAvatarUpload')
     };
   });
 
-export const completeAvatarUploadGraphql = createGraphqlBinding({
-  resolver: {
-    Mutation: {
-      completeAvatarUpload: (_, __, { getUser }) =>
-        completeAvatarUpload(getUser()),
-    },
-  },
+export const completeAvatarUploadRpc = createRpcBinding({
+  injectUser: true,
+  signature: 'user.completeAvatarUpload',
+  handler: completeAvatarUpload,
 });

@@ -3,16 +3,16 @@ import { ConfirmEmailChangeCollection } from '../../collections/ConfirmEmailChan
 import { UserCollection } from '../../collections/User';
 import { AppError } from '../../common/errors';
 import { dispatchEvent } from '../../dispatch';
-import { createContract, createGraphqlBinding } from '../../lib';
+import { createContract, createRpcBinding } from '../../lib';
 
 export const confirmChangeEmail = createContract('user.confirmChangeEmail')
-  .params('appUser', 'code')
+  .params('user', 'code')
   .schema({
-    appUser: S.object().appUser(),
+    user: S.object().appUser(),
     code: S.string(),
   })
-  .fn(async (appUser, code) => {
-    const user = await UserCollection.findByIdOrThrow(appUser.id);
+  .returns<void>()
+  .fn(async (user, code) => {
     const emailChange = await ConfirmEmailChangeCollection.findById(code);
     if (!emailChange) {
       throw new AppError('Invalid code');
@@ -44,11 +44,8 @@ export const confirmChangeEmail = createContract('user.confirmChangeEmail')
     });
   });
 
-export const confirmChangeEmailGraphql = createGraphqlBinding({
-  resolver: {
-    Mutation: {
-      confirmChangeEmail: (_, { code }, { getUser }) =>
-        confirmChangeEmail(getUser(), code),
-    },
-  },
+export const changeEmailRpc = createRpcBinding({
+  injectUser: true,
+  signature: 'user.confirmChangeEmail',
+  handler: confirmChangeEmail,
 });

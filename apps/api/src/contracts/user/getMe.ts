@@ -1,8 +1,7 @@
 import { S } from 'schema';
-import { UserCollection } from '../../collections/User';
+import { User } from 'shared';
 import { mapUser } from '../../common/mapper';
-import { User } from '../../generated';
-import { createContract, createGraphqlBinding } from '../../lib';
+import { createContract, createRpcBinding } from '../../lib';
 
 export const getMe = createContract('user.getMe')
   .params('user')
@@ -11,14 +10,11 @@ export const getMe = createContract('user.getMe')
   })
   .returns<User>()
   .fn(async user => {
-    const userModal = await UserCollection.findByIdOrThrow(user.id);
-    return mapUser(userModal);
+    return mapUser(user);
   });
 
-export const getMeGraphql = createGraphqlBinding({
-  resolver: {
-    Query: {
-      me: (_, __, { getUser }) => getMe(getUser()),
-    },
-  },
+export const getMeRpc = createRpcBinding({
+  injectUser: true,
+  signature: 'user.getMe',
+  handler: getMe,
 });

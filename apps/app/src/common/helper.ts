@@ -1,6 +1,7 @@
-import { GetServerSideProps } from 'next';
-import { CDN_BASE_URL } from 'src/config';
-import { createCookie, readCookie, removeCookie } from './cookie';
+import { GetServerSideProps, NextPageContext } from 'next';
+import { APIClient } from 'shared';
+import { API_URL, CDN_BASE_URL } from 'src/config';
+import { readCookieFromString } from './cookie';
 
 export class UnreachableCaseError extends Error {
   constructor(val: never) {
@@ -33,18 +34,6 @@ export const createGetServerSideProps: <T>(
   }
 };
 
-export const getAccessToken = () => {
-  return readCookie('token');
-};
-
-export const setAccessToken = (token: string) => {
-  createCookie('token', token);
-};
-
-export const clearAccessToken = () => {
-  removeCookie('token');
-};
-
 export function doFn<T>(fn: () => T): T {
   return fn();
 }
@@ -75,4 +64,16 @@ export function getAvatarUrl(avatarId: string, size: 80 | 280) {
 
 export function getCDNUrl(s3Key: string) {
   return CDN_BASE_URL + s3Key.replace(/^cdn/, '');
+}
+
+export function createSSRClient<
+  T extends {
+    req?: NextPageContext['req'];
+  }
+>(ctx: T) {
+  const token = readCookieFromString(
+    ctx?.req?.headers['cookie'] ?? '',
+    'token'
+  );
+  return new APIClient(API_URL, () => token);
 }

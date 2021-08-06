@@ -1,20 +1,17 @@
-import { ObjectID } from 'mongodb';
-import { Resolvers as BaseResolvers } from './generated';
+import { Request, Response, NextFunction } from 'express';
+import { UserModel } from './collections/User';
 
-export type AppContext = {
-  ensureAdmin: () => void;
-  getUser: () => AppUser;
-  getUserOrAnonymous: () => AppUser | null;
-  getToken: () => string;
-};
+export type Handler = (req: Request, res: Response, next: NextFunction) => void;
 
-export interface AppUser {
-  id: ObjectID;
-  email: string;
-  username: string;
+export interface AppUser extends UserModel {
+  accessToken: string;
 }
 
-export type Resolvers = BaseResolvers<AppContext>;
+declare module 'express' {
+  interface Request {
+    user: AppUser;
+  }
+}
 
 export type EmailTemplate = {
   type: 'actionButton';

@@ -3,7 +3,7 @@ import { AuthData } from 'shared';
 import { UserCollection } from '../../collections/User';
 import { AppError } from '../../common/errors';
 import { getEmail } from '../../common/google';
-import { createContract, createGraphqlBinding } from '../../lib';
+import { createContract, createRpcBinding } from '../../lib';
 import { generateAuthData } from './_common';
 
 export const loginGoogle = createContract('user.loginGoogle')
@@ -21,11 +21,8 @@ export const loginGoogle = createContract('user.loginGoogle')
     return generateAuthData(user);
   });
 
-export const loginGoogleGraphql = createGraphqlBinding({
+export const loginGoogleRpc = createRpcBinding({
   public: true,
-  resolver: {
-    Mutation: {
-      loginGoogle: (_, { accessToken }) => loginGoogle(accessToken),
-    },
-  },
+  signature: 'user.loginGoogle',
+  handler: loginGoogle,
 });

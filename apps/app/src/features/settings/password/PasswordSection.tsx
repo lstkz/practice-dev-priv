@@ -2,22 +2,15 @@ import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { SavableSection } from '../SavableSection';
 import { ContextInput } from '../../../components/ContextInput';
-import { gql } from '@apollo/client';
-import { useChangePasswordMutation } from 'src/generated';
 import { useErrorModalActions } from 'src/features/ErrorModalModule';
 import { Validator } from 'src/common/Validator';
 import { PASSWORD_MIN_LENGTH } from 'shared';
+import { api } from 'src/services/api';
 
 interface FormValues {
   password: string;
   confirmPassword: string;
 }
-
-gql`
-  mutation ChangePassword($password: String!) {
-    changePassword(password: $password)
-  }
-`;
 
 export function PasswordSection() {
   const formMethods = useForm<FormValues>({
@@ -35,25 +28,26 @@ export function PasswordSection() {
     },
   });
   const { handleSubmit } = formMethods;
-  const [changePassword, { loading }] = useChangePasswordMutation();
+  const [isLoading, setIsLoading] = React.useState(false);
   const { show: showError } = useErrorModalActions();
   return (
     <form
       onSubmit={handleSubmit(async values => {
         try {
-          await changePassword({
-            variables: values,
-          });
+          setIsLoading(true);
+          await api.user_changePassword(values.password);
           formMethods.reset();
         } catch (e) {
           showError(e);
+        } finally {
+          setIsLoading(false);
         }
       })}
     >
       <SavableSection
         id="password-section"
         title="Password"
-        isLoading={loading}
+        isLoading={isLoading}
       >
         <FormProvider {...formMethods}>
           <div tw="space-y-6 mt-6 ">

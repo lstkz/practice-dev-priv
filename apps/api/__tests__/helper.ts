@@ -1,7 +1,9 @@
+import { ContractMeta } from 'contract';
 import { ObjectID } from 'mongodb';
-import { UserCollection } from '../src/collections/User';
+import { Convert } from 'schema';
+import loadRoutes from '../src/common/loadRoutes';
 import { connect, disconnect, getAllCollection } from '../src/db';
-import { AppUser } from '../src/types';
+import { Handler } from '../src/types';
 
 export async function initDb() {
   await connect();
@@ -39,20 +41,64 @@ export function getTokenOptions(token: string) {
   };
 }
 
-export async function getAppUser(id: number): Promise<AppUser> {
-  const dbUser = await UserCollection.findByIdOrThrow(getId(id));
-  return {
-    email: dbUser.email,
-    id: dbUser._id,
-    username: dbUser.username,
-  };
-}
+type ExtractParams<T> = T extends ContractMeta<infer S>
+  ? Omit<
+      Convert<
+        {
+          [P in keyof S]: Convert<S[P]>;
+        }
+      >,
+      'user'
+    >
+  : never;
 
-export function serializeGraphqlInput(values: Record<string, any>) {
-  Object.keys(values).forEach(key => {
-    if (values[key] instanceof ObjectID) {
-      values[key] = values[key].toString();
-    }
-  });
-  return values;
+let routeMap: Record<string, Handler[]> = null!;
+
+export function execContract<
+  T extends ((...args: any[]) => any) & ContractMeta<any>
+>(contract: T, params: ExtractParams<T>, accessToken?: string): ReturnType<T> {
+  if (!routeMap) {
+    routeMap = {};
+    loadRoutes({
+      post(url: string, handlers: Handler[]) {
+        const signature = url.substr(1);
+        routeMap[signature] = handlers;
+      },
+    } as any);
+  }
+  const handlers = routeMap[contract.getSignature()];
+  if (!handlers) {
+    throw new Error('Signature not found: ' + contract.getSignature());
+  }
+  return new Promise<any>((resolve, reject) => {
+    const req: any = {
+      body: params,
+      headers: {},
+      header(str: string) {
+        if (str === 'authorization') {
+          return accessToken;
+        }
+        return undefined;
+      },
+    };
+    const res: any = {
+      json: resolve,
+      send: resolve,
+    };
+    let i = 0;
+    const processNext = (err?: any) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      const handler = handlers[i];
+      if (!handler) {
+        reject(new Error('No next handler'));
+        return;
+      }
+      i++;
+      handler(req, res, processNext);
+    };
+    processNext();
+  }) as any;
 }

@@ -1,23 +1,23 @@
 import { S } from 'schema';
+import { PaginatedResult, Submission, SubmissionSortBy } from 'shared';
 import { SubmissionCollection } from '../../collections/Submission';
 import { safeValues } from '../../common/helper';
-import { SearchSubmissionsResult, SubmissionSortBy } from '../../generated';
-import { createContract, createGraphqlBinding } from '../../lib';
+import { createContract, createRpcBinding } from '../../lib';
 
 export const searchSubmissions = createContract('submission.searchSubmissions')
-  .params('appUser', 'criteria')
+  .params('user', 'criteria')
   .schema({
-    appUser: S.object().appUser(),
+    user: S.object().appUser(),
     criteria: S.object().keys({
       limit: S.number().integer().min(0),
       offset: S.number().integer().min(0).max(100),
       sortBy: S.enum().literal(...safeValues(SubmissionSortBy)),
     }),
   })
-  .returns<SearchSubmissionsResult>()
-  .fn(async (appUser, criteria) => {
+  .returns<PaginatedResult<Submission>>()
+  .fn(async (user, criteria) => {
     const filter = {
-      userId: appUser.id,
+      userId: user._id,
     };
     const [items, total] = await Promise.all([
       SubmissionCollection.find(filter)
@@ -46,11 +46,8 @@ export const searchSubmissions = createContract('submission.searchSubmissions')
     };
   });
 
-export const searchSubmissionsGraphql = createGraphqlBinding({
-  resolver: {
-    Query: {
-      searchSubmissions: (_, { criteria }, { getUser }) =>
-        searchSubmissions(getUser(), criteria),
-    },
-  },
+export const searchSubmissionsRpc = createRpcBinding({
+  injectUser: true,
+  signature: 'submission.searchSubmissions',
+  handler: searchSubmissions,
 });

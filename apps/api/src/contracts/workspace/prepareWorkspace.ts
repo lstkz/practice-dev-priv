@@ -2,14 +2,12 @@ import { S } from 'schema';
 import { createContract, s3 } from '../../lib';
 import { WorkspaceCollection } from '../../collections/Workspace';
 import { ChallengeCollection } from '../../collections/Challenge';
-import {
-  WorkspaceNodeCollection,
-  WorkspaceNodeType,
-} from '../../collections/WorkspaceNode';
+import { WorkspaceNodeCollection } from '../../collections/WorkspaceNode';
 import { createWorkspaceNodes } from '../../common/workspace-tree';
 import { config } from 'config';
 import { getWorkspaceNodeS3Key } from '../../common/helper';
 import { withTransaction } from '../../db';
+import { WorkspaceNodeType } from 'shared';
 
 export const prepareWorkspace = createContract('workspace.prepareWorkspace')
   .params('workspaceId')

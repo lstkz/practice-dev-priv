@@ -1,9 +1,8 @@
 import { S } from 'schema';
 import { SubmissionCollection } from '../../collections/Submission';
 import { AppError } from '../../common/errors';
-import { getNotifyTestPubKey } from '../../common/helper';
-import { createContract, createGraphqlBinding } from '../../lib';
-import { publishPubSubEvent, pubsub } from '../../pubsub';
+import { dispatchSocketMsg } from '../../dispatch';
+import { createContract, createRpcBinding } from '../../lib';
 
 export const notifyTestProgress = createContract(
   'submission.notifyTestProgress'
@@ -13,6 +12,7 @@ export const notifyTestProgress = createContract(
     notifyKey: S.string(),
     data: S.array().items(S.object().unknown().as<any>()),
   })
+  .returns<void>()
   .fn(async (notifyKey, data) => {
     const submission = await SubmissionCollection.findOne({
       notifyKey,
@@ -20,34 +20,17 @@ export const notifyTestProgress = createContract(
     if (!submission) {
       throw new AppError('Invalid submission key');
     }
-    await publishPubSubEvent(
-      getNotifyTestPubKey({
-        challengeId: submission.challengeUniqId,
+    await dispatchSocketMsg({
+      type: 'TestUpdate',
+      payload: {
         userId: submission.userId.toHexString(),
-      }),
-      {
-        testProgress: data,
-      }
-    );
+        messages: data,
+      },
+    });
   });
 
-export const notifyTestProgressGraphql = createGraphqlBinding({
-  resolver: {
-    Mutation: {
-      notifyTestProgress: (_, { notifyKey, data }) =>
-        notifyTestProgress(notifyKey, data),
-    },
-    Subscription: {
-      testProgress: {
-        subscribe: (_, { id }, { getUser }) => {
-          return pubsub.asyncIterator(
-            getNotifyTestPubKey({
-              challengeId: id,
-              userId: getUser().id.toHexString(),
-            })
-          );
-        },
-      },
-    },
-  },
+export const notifyTestProgressRpc = createRpcBinding({
+  public: true,
+  signature: 'submission.notifyTestProgress',
+  handler: notifyTestProgress,
 });

@@ -1,4 +1,4 @@
-import { SocketMessage, TestInfo } from './types';
+import { TesterSocketMessage, TestInfo } from './types';
 
 interface TestResultState {
   tests: TestInfo[];
@@ -7,7 +7,7 @@ interface TestResultState {
 
 export function updateTestResult<T extends TestResultState>(
   state: T,
-  msg: SocketMessage
+  msg: TesterSocketMessage
 ) {
   const getTest = (id: number) => state.tests.find(x => x.id === id)!;
 
@@ -25,7 +25,7 @@ export function updateTestResult<T extends TestResultState>(
       });
       break;
     }
-    case 'STARTING_TEST': {
+    case 'TEST_START': {
       const { testId } = msg.payload;
       getTest(testId).result = 'running';
       break;
@@ -47,7 +47,7 @@ export function updateTestResult<T extends TestResultState>(
       }
       break;
     }
-    case 'STEP': {
+    case 'TEST_STEP': {
       const { testId } = msg.payload;
       const test = getTest(testId);
       if (!test.steps) {
@@ -56,7 +56,7 @@ export function updateTestResult<T extends TestResultState>(
       test.steps.push(msg.payload);
       break;
     }
-    case 'RESULT': {
+    case 'TEST_RESULT': {
       state.result = msg.payload.success ? 'PASS' : 'FAIL';
       if (msg.payload.success) {
         break;

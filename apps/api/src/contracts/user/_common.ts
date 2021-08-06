@@ -7,7 +7,7 @@ import {
 import { UserCollection, UserModel } from '../../collections/User';
 import { ObjectID } from 'mongodb';
 import { config } from 'config';
-import { AppError } from '../../common/errors';
+import { AppError, UnauthorizedError } from '../../common/errors';
 import { dispatchEvent, dispatchTask } from '../../dispatch';
 import { AuthData } from 'shared';
 import { mapUser } from '../../common/mapper';
@@ -16,6 +16,8 @@ import {
   ConfirmEmailCodeCollection,
   ConfirmEmailCodeModel,
 } from '../../collections/ConfirmEmailCode';
+import { AppUser } from '../../types';
+import { AccessTokenCollection } from '../../collections/AccessToken';
 
 interface CreateUserValues {
   userId?: ObjectID;
@@ -118,4 +120,18 @@ export async function sendVerificationEmail(user: UserModel) {
       },
     },
   });
+}
+
+export async function getAppUser(token: string): Promise<AppUser> {
+  const tokenEntity = await AccessTokenCollection.findOne({
+    _id: token,
+  });
+  if (!tokenEntity) {
+    throw new UnauthorizedError('invalid token');
+  }
+  const ret = await UserCollection.findByIdOrThrow(tokenEntity.userId);
+  return {
+    ...ret,
+    accessToken: token,
+  };
 }

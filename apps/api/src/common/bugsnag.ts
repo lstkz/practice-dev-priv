@@ -87,7 +87,7 @@ export function reportInfo(options: ReportInfoOptions) {
 
 interface ReportErrorOptions {
   source: 'api' | 'worker' | 'schedular';
-  error: Error | unknown;
+  error: Error;
   request?: Request;
   data?: any;
   isHandled?: boolean;

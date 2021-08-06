@@ -8,6 +8,7 @@ const withTM = require('next-transpile-modules')([
   'schema',
   'shared',
   'code-editor',
+  '@pvd/types',
 ]);
 
 function getEnv() {

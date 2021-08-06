@@ -1,5 +1,9 @@
 import { Notifier } from '@pvd/tester';
-import { SocketMessage, TestInfo, TestSubmissionLambdaOutput } from 'shared';
+import {
+  TesterSocketMessage,
+  TestInfo,
+  TestSubmissionLambdaOutput,
+} from 'shared';
 import { updateTestResult } from 'shared/src/utils';
 
 export class InMemoryNotifier implements Notifier {
@@ -10,7 +14,7 @@ export class InMemoryNotifier implements Notifier {
 
   async flush() {}
 
-  async notify(action: SocketMessage) {
+  async notify(action: TesterSocketMessage) {
     const state = {
       tests: this.tests,
       result: this.result,

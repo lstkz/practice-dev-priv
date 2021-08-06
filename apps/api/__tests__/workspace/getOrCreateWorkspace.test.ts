@@ -1,14 +1,10 @@
-import { gql } from 'apollo-server';
+import { WorkspaceNodeType } from 'shared';
 import { WorkspaceCollection } from '../../src/collections/Workspace';
-import {
-  WorkspaceNodeCollection,
-  WorkspaceNodeType,
-} from '../../src/collections/WorkspaceNode';
+import { WorkspaceNodeCollection } from '../../src/collections/WorkspaceNode';
 import { getWorkspaceNodeWithUniqueKey } from '../../src/common/workspace-tree';
 import { getOrCreateWorkspace } from '../../src/contracts/workspace/getOrCreateWorkspace';
 import { s3, sts } from '../../src/lib';
-import { apolloServer } from '../../src/server';
-import { getAppUser, getId, getTokenOptions, setupDb } from '../helper';
+import { execContract, getId, setupDb } from '../helper';
 import { createSampleChallenges, registerSampleUsers } from '../seed-data';
 
 let mocked_copyObject: jest.Mock<any, []> = null!;
@@ -40,29 +36,31 @@ beforeEach(async () => {
 
 it('should throw if challenge not found', async () => {
   await expect(
-    getOrCreateWorkspace(await getAppUser(1), { challengeUniqId: '12_32' })
+    execContract(
+      getOrCreateWorkspace,
+      { values: { challengeUniqId: '12_32' } },
+      'user1_token'
+    )
   ).rejects.toMatchInlineSnapshot(`[AppError: Challenge not found: 12_32]`);
 });
 
 it('should create a workspace', async () => {
-  const ret = await getOrCreateWorkspace(await getAppUser(1), {
-    challengeUniqId: '1_2',
-  });
+  const ret = await execContract(
+    getOrCreateWorkspace,
+    { values: { challengeUniqId: '1_2' } },
+    'user1_token'
+  );
   expect(ret.items).toHaveLength(4);
 });
 
 it('should create a workspace and return the same files if parallel requests', async () => {
-  const ret = await Promise.all([
-    getOrCreateWorkspace(await getAppUser(1), {
-      challengeUniqId: '1_2',
-    }),
-    getOrCreateWorkspace(await getAppUser(1), {
-      challengeUniqId: '1_2',
-    }),
-    getOrCreateWorkspace(await getAppUser(1), {
-      challengeUniqId: '1_2',
-    }),
-  ]);
+  const exec = () =>
+    execContract(
+      getOrCreateWorkspace,
+      { values: { challengeUniqId: '1_2' } },
+      'user1_token'
+    );
+  const ret = await Promise.all([exec(), exec(), exec()]);
   expect(ret[0].items).toEqual(ret[1].items);
   expect(ret[1].items).toEqual(ret[2].items);
 });
@@ -104,9 +102,12 @@ it('should return an existing workspace', async () => {
       workspaceId: getId(101),
     }),
   ]);
-  const ret = await getOrCreateWorkspace(await getAppUser(1), {
-    challengeUniqId: '1_2',
-  });
+  const ret = await execContract(
+    getOrCreateWorkspace,
+    { values: { challengeUniqId: '1_2' } },
+    'user1_token'
+  );
+
   expect(ret).toMatchInlineSnapshot(`
 Object {
   "id": "000000000000000000000100",
@@ -140,20 +141,4 @@ Object {
   },
 }
 `);
-});
-
-it('should create a workspace #graphql', async () => {
-  const res = await apolloServer.executeOperation(
-    {
-      query: gql`
-        mutation {
-          getOrCreateWorkspace(values: { challengeUniqId: "1_2" }) {
-            id
-          }
-        }
-      `,
-    },
-    getTokenOptions('user1_token')
-  );
-  expect(res.errors).toBeFalsy();
 });

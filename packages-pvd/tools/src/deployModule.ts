@@ -5,6 +5,7 @@ import * as Path from 'path';
 import fs from 'fs-extra';
 import tmp from 'tmp';
 import mime from 'mime-types';
+import { Tester } from '@pvd/tester';
 import {
   findModuleDir,
   getNumberPrefix,
@@ -12,16 +13,17 @@ import {
   md5,
   walk,
 } from './helper';
-import {
-  getAwsUploadContentAuth,
-  updateChallenge,
-  updateModule,
-} from './queries';
 import { S3Upload } from './S3Upload';
-import { ChallengeInfo, ChallengeUpload, ModuleUpload } from './types';
-import { ChallengeFileInput, UpdateChallengeInput } from './generated';
+import {
+  ChallengeFile,
+  ChallengeInfo,
+  ChallengeUpload,
+  ModuleUpload,
+  UpdateChallengeValues,
+} from './types';
 import { buildDetails } from './buildDetails';
 import { buildTests } from './buildTests';
+import { api } from './api';
 
 function _nodeToMarkup(component: string) {
   const node = React.createElement(component);
@@ -31,7 +33,7 @@ function _nodeToMarkup(component: string) {
 function _getChallengeFiles(sourceDir: string, lockedFiles: string[]) {
   return walk(sourceDir).map(filePath => {
     const relativePath = Path.relative(sourceDir, filePath);
-    const fileInput: ChallengeFileInput = {
+    const fileInput: ChallengeFile = {
       name: Path.basename(relativePath),
       directory: Path.dirname(relativePath),
       isLocked: lockedFiles.includes(relativePath),
@@ -88,6 +90,7 @@ function _getChallengesInfo(moduleUpload: ModuleUpload, moduleDir: string) {
         testS3Key: '',
         moduleId,
         libraries,
+        tests: [],
       },
       testPath,
       sourceDir,
@@ -102,7 +105,7 @@ function _getChallengesInfo(moduleUpload: ModuleUpload, moduleDir: string) {
   return challenges;
 }
 
-function _getChallengePrefix(challenge: UpdateChallengeInput) {
+function _getChallengePrefix(challenge: UpdateChallengeValues) {
   return `c_${challenge.moduleId}_${challenge.challengeId}`;
 }
 
@@ -194,6 +197,30 @@ async function _uploadChallenges(
   ]);
 }
 
+async function _getTests(testFile: string) {
+  const testConfiguration = require(testFile).default;
+
+  const tester = new Tester(
+    {
+      notify() {
+        throw new Error('Not supported');
+      },
+    },
+    async () => {
+      throw new Error('Not supported');
+    }
+  );
+  await testConfiguration.handler({
+    tester,
+    url: 'mock',
+  });
+  return tester.tests.map(test => test.name);
+}
+
+async function _populateTests(info: ChallengeInfo) {
+  info.challenge.tests = await _getTests(info.testPath);
+}
+
 interface DeployModuleOptions {
   basedir: string;
   moduleId: number;
@@ -206,15 +233,18 @@ export async function deployModule(options: DeployModuleOptions) {
     .info as ModuleUpload;
   moduleUpload.id = moduleId;
   const challenges = _getChallengesInfo(moduleUpload, modulePath);
+  await Promise.all(challenges.map(challenge => _populateTests(challenge)));
   await buildDetails(modulePath, challenges);
   await buildTests(modulePath, challenges);
-  const s3Auth = await getAwsUploadContentAuth();
+  const s3Auth = await api.aws_getAwsUploadContentAuth();
   const s3Upload = new S3Upload(s3Auth);
   await _uploadChallenges(s3Upload, challenges);
   await Promise.all(
-    challenges.map(challenge => updateChallenge(challenge.challenge))
+    challenges.map(challenge =>
+      api.challenge_updateChallenge(challenge.challenge)
+    )
   );
-  await updateModule({
+  await api.module_updateModule({
     ...R.omit(moduleUpload, ['defaultLibraries']),
     id: moduleId,
   });

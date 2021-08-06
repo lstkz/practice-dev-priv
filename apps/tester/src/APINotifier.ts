@@ -1,12 +1,17 @@
 import { Notifier } from '@pvd/tester';
-import { SocketMessage } from 'shared';
-import { notifyTestProgress } from './notifyTestProgress';
+import https from 'https';
+import { APIClient, TesterSocketMessage } from 'shared';
+
+const agent = new https.Agent({ keepAlive: true });
 
 export class APINotifier implements Notifier {
   private lastNotify = 0;
   private pendingData: any[] = [];
+  private api: APIClient;
 
-  constructor(private apiBaseUrl: string, private notifyKey: string) {}
+  constructor(apiBaseUrl: string, private notifyKey: string) {
+    this.api = new APIClient(apiBaseUrl, () => null, agent);
+  }
 
   async flush() {
     if (this.pendingData.length) {
@@ -14,7 +19,7 @@ export class APINotifier implements Notifier {
     }
   }
 
-  async notify(action: SocketMessage) {
+  async notify(action: TesterSocketMessage) {
     await this.notifySocket(action);
   }
 
@@ -29,7 +34,11 @@ export class APINotifier implements Notifier {
       ...(Array.isArray(data) ? data : [data]),
     ];
     this.pendingData = [];
-    await notifyTestProgress(this.apiBaseUrl, this.notifyKey, combined);
+    try {
+      await this.api.submission_notifyTestProgress(this.notifyKey, combined);
+    } catch (e) {
+      console.error('failed to notify result', e);
+    }
     this.lastNotify = Date.now();
   }
 }

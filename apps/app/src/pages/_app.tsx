@@ -1,19 +1,16 @@
 import '../styles/globals.css';
-import { ApolloProvider, gql } from '@apollo/client';
 import { AppContext, AppProps } from 'next/app';
 import { config } from '@fortawesome/fontawesome-svg-core';
 import '@fortawesome/fontawesome-svg-core/styles.css';
-import { getApolloClient } from '../getApolloClient';
-import { AppDataDocument, AppDataQuery, User } from '../generated';
 import React from 'react';
 import { AuthModule } from 'src/features/AuthModule';
 import { ErrorModalModule } from 'src/features/ErrorModalModule';
-import { clearAccessToken, getAccessToken } from 'src/common/helper';
 import { ConfirmEmailChecker } from 'src/features/ConfirmEmailChecker';
+import { clearAccessToken, getAccessToken } from 'src/services/Storage';
+import { User } from 'shared';
+import { createSSRClient } from 'src/common/helper';
 
 config.autoAddCss = false;
-
-const client = getApolloClient();
 
 interface GlobalProps {
   initialUser: User | null;
@@ -30,7 +27,7 @@ export default function App({
     }
   }, []);
   return (
-    <ApolloProvider client={client}>
+    <>
       <AuthModule initialUser={initialUser}>
         <ErrorModalModule>
           <Component {...pageProps} />
@@ -38,49 +35,20 @@ export default function App({
         </ErrorModalModule>
       </AuthModule>
       <div id="portals" />
-    </ApolloProvider>
+    </>
   );
 }
 
-gql`
-  query AppData {
-    me {
-      id
-      username
-      email
-      isAdmin
-      isVerified
-      avatarId
-    }
-  }
-  fragment allUserProps on User {
-    id
-    username
-    email
-    isAdmin
-    isVerified
-    avatarId
-  }
-`;
-
 App.getInitialProps = async ({ ctx }: AppContext) => {
-  const client = getApolloClient(ctx);
-  if (!client.hasAccessToken()) {
-    return {
-      initialUser: null,
-    };
+  const api = createSSRClient(ctx);
+  if (!api.getToken()) {
+    return { initialUser: null };
   }
-  try {
-    const ret = await client.query<AppDataQuery>({
-      query: AppDataDocument,
-    });
-    return {
-      initialUser: ret.data.me,
-    };
-  } catch (e) {
+  const user = await api.user_getMe().catch(e => {
     console.error(e);
-    return {
-      initialUser: null,
-    };
-  }
+    return null;
+  });
+  return {
+    initialUser: user,
+  };
 };

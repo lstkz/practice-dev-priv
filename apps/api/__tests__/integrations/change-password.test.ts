@@ -1,4 +1,4 @@
-import { getAppUser, setupDb } from '../helper';
+import { execContract, setupDb } from '../helper';
 import { registerSampleUsers } from '../seed-data';
 import { login } from '../../src/contracts/user/login';
 import { changePassword } from '../../src/contracts/user/changePassword';
@@ -10,7 +10,7 @@ beforeEach(async () => {
 });
 
 it('change password and log in with a new password', async () => {
-  await changePassword(await getAppUser(1), 'new_pass');
+  await execContract(changePassword, { password: 'new_pass' }, 'user1_token');
   const ret = await login({
     usernameOrEmail: 'user1',
     password: 'new_pass',

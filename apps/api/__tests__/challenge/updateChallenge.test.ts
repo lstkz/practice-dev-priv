@@ -1,9 +1,7 @@
-import { gql } from 'apollo-server';
 import { ChallengeCollection } from '../../src/collections/Challenge';
 import { updateChallenge } from '../../src/contracts/challenge/updateChallenge';
 import { updateModule } from '../../src/contracts/module/updateModule';
-import { apolloServer } from '../../src/server';
-import { getTokenOptions, setupDb } from '../helper';
+import { execContract, setupDb } from '../helper';
 import { registerSampleUsers } from '../seed-data';
 
 setupDb();
@@ -19,33 +17,6 @@ beforeEach(async () => {
     tags: ['t1', 't2'],
   });
 });
-
-function getValidQuery() {
-  return gql`
-    mutation {
-      updateChallenge(
-        values: {
-          challengeId: 1
-          moduleId: 1
-          title: "t1x"
-          description: "desc1x"
-          difficulty: "diff1x"
-          detailsS3Key: "d_s3x"
-          htmlS3Key: "h_s3x"
-          testS3Key: "t_s3x"
-          practiceTime: 20
-          solutionUrl: "sol"
-          files: [
-            { directory: "dir1x", name: "f1x", s3Key: "f1_s3x" }
-            { directory: "dir2", name: "f2", s3Key: "f2_s3" }
-          ]
-          libraries: [{ name: "lib", source: "source.js", types: "types.ts" }]
-          tests: ["t1"]
-        }
-      )
-    }
-  `;
-}
 
 function getValidValues() {
   return {
@@ -84,15 +55,27 @@ function getValidValues() {
 
 it('should throw if module does not exist', async () => {
   await expect(
-    updateChallenge({
-      ...getValidValues(),
-      moduleId: 100,
-    })
+    execContract(
+      updateChallenge,
+      {
+        values: {
+          ...getValidValues(),
+          moduleId: 100,
+        },
+      },
+      'admin-test'
+    )
   ).rejects.toMatchInlineSnapshot(`[AppError: Module not found]`);
 });
 
 it('should create a new module and update it', async () => {
-  await updateChallenge(getValidValues());
+  await execContract(
+    updateChallenge,
+    {
+      values: getValidValues(),
+    },
+    'admin-test'
+  );
   expect(await ChallengeCollection.findByIdOrThrow('1_1'))
     .toMatchInlineSnapshot(`
     Object {
@@ -191,40 +174,15 @@ it('should create a new module and update it', async () => {
   `);
 });
 
-it('should throw if not admin #graphql', async () => {
-  const res = await apolloServer.executeOperation(
-    {
-      query: getValidQuery(),
-    },
-    getTokenOptions('user1_token')
-  );
-  expect(res.errors).toMatchInlineSnapshot(`
-    Array [
-      Object {
-        "extensions": Object {
-          "code": "FORBIDDEN",
-        },
-        "locations": Array [
-          Object {
-            "column": 3,
-            "line": 2,
-          },
-        ],
-        "message": "No permission",
-        "path": Array [
-          "updateChallenge",
-        ],
+it('should throw if not admin ', async () => {
+  await expect(
+    execContract(
+      updateChallenge,
+      {
+        values: getValidValues(),
       },
-    ]
-  `);
-});
 
-it('should update as admin #graphql', async () => {
-  const res = await apolloServer.executeOperation(
-    {
-      query: getValidQuery(),
-    },
-    getTokenOptions('admin-test')
-  );
-  expect(res.errors).toBeFalsy();
+      'user1_token'
+    )
+  ).rejects.toMatchInlineSnapshot(`[Error: Admin only]`);
 });

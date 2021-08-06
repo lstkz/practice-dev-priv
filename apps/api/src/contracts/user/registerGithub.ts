@@ -4,7 +4,7 @@ import { UserCollection } from '../../collections/User';
 import { AppError } from '../../common/errors';
 import { exchangeCode, getUserData } from '../../common/github';
 import { randomUniqString } from '../../common/helper';
-import { createContract, createGraphqlBinding } from '../../lib';
+import { createContract, createRpcBinding } from '../../lib';
 import { createUser, generateAuthData, getNextUsername } from './_common';
 
 export const registerGithub = createContract('user.registerGithub')
@@ -35,11 +35,8 @@ export const registerGithub = createContract('user.registerGithub')
     return generateAuthData(user);
   });
 
-export const registerGithubGraphql = createGraphqlBinding({
+export const registerGithubRpc = createRpcBinding({
   public: true,
-  resolver: {
-    Mutation: {
-      registerGithub: (_, { code }) => registerGithub(code),
-    },
-  },
+  signature: 'user.registerGithub',
+  handler: registerGithub,
 });

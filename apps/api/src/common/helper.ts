@@ -1,5 +1,3 @@
-import { toApolloError } from 'apollo-server';
-import * as z from 'zod';
 import crypto from 'crypto';
 import cryptoAsync from 'mz/crypto';
 import { Response } from 'node-fetch';
@@ -47,14 +45,6 @@ export function randomString(len: number) {
 
 export function randomInt() {
   return crypto.randomBytes(4).readUInt32BE(0);
-}
-
-export function validate<T>(schema: z.ZodObject<any, any, T>, input: T) {
-  try {
-    schema.parse(input);
-  } catch (e: any) {
-    throw toApolloError(e, 'VALIDATION_ERROR');
-  }
 }
 
 export function sleep(timeout: number) {

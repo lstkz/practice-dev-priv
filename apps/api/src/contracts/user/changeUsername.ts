@@ -2,17 +2,16 @@ import { S } from 'schema';
 import { getUsernameSchema } from '../../../../../packages/shared';
 import { UserCollection } from '../../collections/User';
 import { AppError } from '../../common/errors';
-import { createContract, createGraphqlBinding } from '../../lib';
+import { createContract, createRpcBinding } from '../../lib';
 
 export const changeUsername = createContract('user.changeUsername')
-  .params('appUser', 'username')
+  .params('user', 'username')
   .schema({
-    appUser: S.object().appUser(),
+    user: S.object().appUser(),
     username: getUsernameSchema(),
   })
   .returns<void>()
-  .fn(async (appUser, username) => {
-    const user = await UserCollection.findByIdOrThrow(appUser.id);
+  .fn(async (user, username) => {
     if (user.username.toLowerCase() !== username.toLowerCase()) {
       const existing = await UserCollection.findOneByUsername(username);
       if (existing) {
@@ -24,11 +23,8 @@ export const changeUsername = createContract('user.changeUsername')
     await UserCollection.update(user, ['username', 'username_lowered']);
   });
 
-export const changeUsernameGraphql = createGraphqlBinding({
-  resolver: {
-    Mutation: {
-      changeUsername: (_, { username }, { getUser }) =>
-        changeUsername(getUser(), username),
-    },
-  },
+export const changeUsernameRpc = createRpcBinding({
+  injectUser: true,
+  signature: 'user.changeUsername',
+  handler: changeUsername,
 });

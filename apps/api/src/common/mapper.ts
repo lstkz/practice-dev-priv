@@ -1,6 +1,6 @@
 import { UserModel } from '../collections/User';
 import { WorkspaceS3Auth } from '../collections/Workspace';
-import { User, WorkspaceS3Auth as MappedWorkspaceS3Auth } from '../generated';
+import { User, WorkspaceS3Auth as MappedWorkspaceS3Auth } from 'shared';
 
 export function mapUser(user: UserModel): User {
   return {

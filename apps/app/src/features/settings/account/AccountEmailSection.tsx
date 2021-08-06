@@ -3,26 +3,17 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { SavableSection } from '../SavableSection';
 import { ContextInput } from '../../../components/ContextInput';
 import { Input } from '../../../components/Input';
-import { gql } from '@apollo/client';
 import { Validator } from 'src/common/Validator';
 import { useUser } from 'src/features/AuthModule';
 import { useErrorModalActions } from 'src/features/ErrorModalModule';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { SimpleModal } from 'src/components/SimpleModal';
-import { useChangeEmailMutation } from 'src/generated';
+import { api } from 'src/services/api';
 
 interface FormValues {
   email: string;
 }
-
-gql`
-  mutation ChangeEmail($email: String!) {
-    changeEmail(email: $email) {
-      ok
-    }
-  }
-`;
 
 export function AccountEmailSection() {
   const user = useUser();
@@ -33,21 +24,22 @@ export function AccountEmailSection() {
   });
   const [isShowConfirm, setIsShowConfirm] = React.useState(false);
   const { handleSubmit } = formMethods;
-  const [changeEmail, { loading }] = useChangeEmailMutation();
+  const [isLoading, setIsLoading] = React.useState(false);
   const { show: showError } = useErrorModalActions();
 
   return (
     <form
       onSubmit={handleSubmit(async values => {
         try {
-          const ret = await changeEmail({
-            variables: values,
-          });
-          if (ret.data?.changeEmail.ok) {
+          setIsLoading(true);
+          const { ok } = await api.user_changeEmail(values.email);
+          if (ok) {
             setIsShowConfirm(true);
           }
         } catch (e) {
           showError(e);
+        } finally {
+          setIsLoading(false);
         }
       })}
     >
@@ -71,7 +63,7 @@ export function AccountEmailSection() {
         id="email-section"
         title="Email"
         desc="You will have to confirm the new email if you change it."
-        isLoading={loading}
+        isLoading={isLoading}
       >
         <FormProvider {...formMethods}>
           <div tw="space-y-6 mt-6 ">

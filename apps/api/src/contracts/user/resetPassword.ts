@@ -1,5 +1,5 @@
 import { S } from 'schema';
-import { createContract, createGraphqlBinding } from '../../lib';
+import { createContract, createRpcBinding } from '../../lib';
 import { AppError } from '../../common/errors';
 import { randomUniqString, getDuration } from '../../common/helper';
 import { config } from 'config';
@@ -47,11 +47,8 @@ export const resetPassword = createContract('user.resetPassword')
     });
   });
 
-export const confirmResetPasswordRpc = createGraphqlBinding({
+export const resetPasswordRpc = createRpcBinding({
   public: true,
-  resolver: {
-    Mutation: {
-      resetPassword: (_, { usernameOrEmail }) => resetPassword(usernameOrEmail),
-    },
-  },
+  signature: 'user.resetPassword',
+  handler: resetPassword,
 });

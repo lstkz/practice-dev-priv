@@ -1,18 +1,7 @@
-import { gql } from 'apollo-server';
-import {
-  WorkspaceNodeCollection,
-  WorkspaceNodeType,
-} from '../../src/collections/WorkspaceNode';
+import { WorkspaceNodeType } from 'shared';
+import { WorkspaceNodeCollection } from '../../src/collections/WorkspaceNode';
 import { createWorkspaceNode } from '../../src/contracts/workspace/createWorkspaceNode';
-import { apolloServer } from '../../src/server';
-import {
-  getAppUser,
-  getId,
-  getTokenOptions,
-  getUUID,
-  serializeGraphqlInput,
-  setupDb,
-} from '../helper';
+import { getId, getUUID, setupDb, execContract } from '../helper';
 import {
   createSampleChallenges,
   createSampleWorkspaces,
@@ -39,112 +28,197 @@ function getValidValues() {
 }
 
 it('should throw if duplicated id', async () => {
-  await createWorkspaceNode(await getAppUser(1), getValidValues());
+  await execContract(
+    createWorkspaceNode,
+    { values: getValidValues() },
+    'user1_token'
+  );
   await expect(
-    createWorkspaceNode(await getAppUser(1), getValidValues())
+    execContract(
+      createWorkspaceNode,
+      { values: getValidValues() },
+      'user1_token'
+    )
   ).rejects.toMatchInlineSnapshot(`[AppError: Duplicated id]`);
 });
 
 it('should throw if workspace not found', async () => {
   await expect(
-    createWorkspaceNode(await getAppUser(1), {
-      ...getValidValues(),
-      workspaceId: getId(1234),
-    })
+    execContract(
+      createWorkspaceNode,
+      {
+        values: {
+          ...getValidValues(),
+          workspaceId: getId(1234),
+        },
+      },
+      'user1_token'
+    )
   ).rejects.toMatchInlineSnapshot(`[AppError: Workspace not found]`);
 });
 
 it('should throw if no permission', async () => {
   await expect(
-    createWorkspaceNode(await getAppUser(2), getValidValues())
+    execContract(
+      createWorkspaceNode,
+      {
+        values: getValidValues(),
+      },
+
+      'user2_token'
+    )
   ).rejects.toMatchInlineSnapshot(
-    `[ForbiddenError: Not permission to access this workspace]`
+    `[Error: Not permission to access this workspace]`
   );
 });
 
 it('should throw if invalid parentId', async () => {
   await expect(
-    createWorkspaceNode(await getAppUser(1), {
-      ...getValidValues(),
-      parentId: '12345',
-    })
+    execContract(
+      createWorkspaceNode,
+      {
+        values: {
+          ...getValidValues(),
+          parentId: '12345',
+        },
+      },
+      'user1_token'
+    )
   ).rejects.toMatchInlineSnapshot(`[AppError: Invalid parentId]`);
 });
 
 it('should throw if parent belongs to different workspace', async () => {
-  await createWorkspaceNode(await getAppUser(1), getValidValues());
+  await execContract(
+    createWorkspaceNode,
+    {
+      values: getValidValues(),
+    },
+    'user1_token'
+  );
   await expect(
-    createWorkspaceNode(await getAppUser(1), {
-      ...getValidValues(),
-      id: getUUID(2),
-      workspaceId: getId(11),
-      parentId: getUUID(1),
-    })
+    execContract(
+      createWorkspaceNode,
+      {
+        values: {
+          ...getValidValues(),
+          id: getUUID(2),
+          workspaceId: getId(11),
+          parentId: getUUID(1),
+        },
+      },
+      'user1_token'
+    )
   ).rejects.toMatchInlineSnapshot(
     `[AppError: Parent must belong to the same workspace]`
   );
 });
 
 it('should throw if parent is not a directory', async () => {
-  await createWorkspaceNode(await getAppUser(1), {
-    ...getValidValues(),
-    type: WorkspaceNodeType.File,
-  });
+  await execContract(
+    createWorkspaceNode,
+    {
+      values: {
+        ...getValidValues(),
+        type: WorkspaceNodeType.File,
+      },
+    },
+    'user1_token'
+  );
   await expect(
-    createWorkspaceNode(await getAppUser(1), {
-      ...getValidValues(),
-      id: getUUID(2),
-      parentId: getUUID(1),
-    })
+    execContract(
+      createWorkspaceNode,
+      {
+        values: {
+          ...getValidValues(),
+          id: getUUID(2),
+          parentId: getUUID(1),
+        },
+      },
+      'user1_token'
+    )
   ).rejects.toMatchInlineSnapshot(
     `[AppError: Parent must be a directory type]`
   );
 });
 
 it('should throw if duplicated name (root)', async () => {
-  await createWorkspaceNode(await getAppUser(1), {
-    ...getValidValues(),
-    name: 'Foo',
-  });
+  await execContract(
+    createWorkspaceNode,
+    {
+      values: {
+        ...getValidValues(),
+        name: 'Foo',
+      },
+    },
+    'user1_token'
+  );
   await expect(
-    createWorkspaceNode(await getAppUser(1), {
-      ...getValidValues(),
-      id: getUUID(2),
-      name: 'foo',
-    })
+    execContract(
+      createWorkspaceNode,
+      {
+        values: {
+          ...getValidValues(),
+          id: getUUID(2),
+          name: 'foo',
+        },
+      },
+      'user1_token'
+    )
   ).rejects.toMatchInlineSnapshot(
     `[AppError: Duplicated node name in the same folder.]`
   );
 });
 
 it('should throw if duplicated name (nested directory)', async () => {
-  await createWorkspaceNode(await getAppUser(1), {
-    ...getValidValues(),
-    name: 'dir',
-    type: WorkspaceNodeType.Directory,
-  });
-  await createWorkspaceNode(await getAppUser(1), {
-    ...getValidValues(),
-    id: getUUID(2),
-    parentId: getUUID(1),
-    name: 'Foo',
-  });
+  await execContract(
+    createWorkspaceNode,
+    {
+      values: {
+        ...getValidValues(),
+        name: 'dir',
+        type: WorkspaceNodeType.Directory,
+      },
+    },
+    'user1_token'
+  );
+  await execContract(
+    createWorkspaceNode,
+    {
+      values: {
+        ...getValidValues(),
+        id: getUUID(2),
+        parentId: getUUID(1),
+        name: 'Foo',
+      },
+    },
+    'user1_token'
+  );
   await expect(
-    createWorkspaceNode(await getAppUser(1), {
-      ...getValidValues(),
-      id: getUUID(3),
-      parentId: getUUID(1),
-      name: 'foo',
-    })
+    execContract(
+      createWorkspaceNode,
+      {
+        values: {
+          ...getValidValues(),
+          id: getUUID(3),
+          parentId: getUUID(1),
+          name: 'foo',
+        },
+      },
+      'user1_token'
+    )
   ).rejects.toMatchInlineSnapshot(
     `[AppError: Duplicated node name in the same folder.]`
   );
 });
 
 it('should create a root node', async () => {
-  await createWorkspaceNode(await getAppUser(1), {
-    ...getValidValues(),
-  });
+  await execContract(
+    createWorkspaceNode,
+    {
+      values: getValidValues(),
+    },
+    'user1_token'
+  );
   expect(await WorkspaceNodeCollection.findAll({})).toMatchInlineSnapshot(`
     Array [
       Object {
@@ -164,17 +238,29 @@ it('should create a root node', async () => {
 });
 
 it('should create a nested node', async () => {
-  await createWorkspaceNode(await getAppUser(1), {
-    ...getValidValues(),
-    name: 'dir',
-    type: WorkspaceNodeType.Directory,
-  });
-  await createWorkspaceNode(await getAppUser(1), {
-    ...getValidValues(),
-    id: getUUID(2),
-    parentId: getUUID(1),
-    name: 'Foo',
-  });
+  await execContract(
+    createWorkspaceNode,
+    {
+      values: {
+        ...getValidValues(),
+        name: 'dir',
+        type: WorkspaceNodeType.Directory,
+      },
+    },
+    'user1_token'
+  );
+  await execContract(
+    createWorkspaceNode,
+    {
+      values: {
+        ...getValidValues(),
+        id: getUUID(2),
+        parentId: getUUID(1),
+        name: 'Foo',
+      },
+    },
+    'user1_token'
+  );
   expect(await WorkspaceNodeCollection.findById(getUUID(2)))
     .toMatchInlineSnapshot(`
     Object {
@@ -192,33 +278,28 @@ it('should create a nested node', async () => {
   `);
 });
 
-it('should throw create file and directory with same name', async () => {
-  await createWorkspaceNode(await getAppUser(1), {
-    ...getValidValues(),
-    name: 'foo',
-    type: WorkspaceNodeType.Directory,
-  });
-  await createWorkspaceNode(await getAppUser(1), {
-    ...getValidValues(),
-    id: getUUID(2),
-    name: 'foo',
-    type: WorkspaceNodeType.File,
-  });
-});
-
-it('should create a node #graphql', async () => {
-  const res = await apolloServer.executeOperation(
+it('should create file and directory with same name', async () => {
+  await execContract(
+    createWorkspaceNode,
     {
-      query: gql`
-        mutation ($values: CreateWorkspaceNodeInput!) {
-          createWorkspaceNode(values: $values)
-        }
-      `,
-      variables: {
-        values: serializeGraphqlInput(getValidValues()),
+      values: {
+        ...getValidValues(),
+        name: 'foo',
+        type: WorkspaceNodeType.Directory,
       },
     },
-    getTokenOptions('user1_token')
+    'user1_token'
   );
-  expect(res.errors).toBeFalsy();
+  await execContract(
+    createWorkspaceNode,
+    {
+      values: {
+        ...getValidValues(),
+        id: getUUID(2),
+        name: 'foo',
+        type: WorkspaceNodeType.File,
+      },
+    },
+    'user1_token'
+  );
 });

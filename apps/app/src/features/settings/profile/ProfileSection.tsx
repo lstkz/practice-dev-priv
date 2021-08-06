@@ -5,10 +5,9 @@ import { ContextInput } from '../../../components/ContextInput';
 import { UserPhoto } from './UserPhoto';
 import { countryList, URL_REGEX } from 'shared';
 import { Validator } from 'src/common/Validator';
-import { gql } from '@apollo/client';
-import { useUpdateMyProfileMutation } from 'src/generated';
 import { useErrorModalActions } from 'src/features/ErrorModalModule';
 import { ContextSelect } from 'src/components/ContextSelect';
+import { api } from 'src/services/api';
 
 interface FormValues {
   name?: string | null;
@@ -20,17 +19,6 @@ interface FormValues {
 interface ProfileSectionProps {
   initialValues: FormValues;
 }
-
-gql`
-  mutation UpdateMyProfile($values: UpdateProfileInput!) {
-    updateMyProfile(values: $values) {
-      name
-      about
-      country
-      url
-    }
-  }
-`;
 
 export function ProfileSection(props: ProfileSectionProps) {
   const formMethods = useForm<FormValues>({
@@ -48,21 +36,20 @@ export function ProfileSection(props: ProfileSectionProps) {
       searchLabel: item.name,
     }));
   }, [countryList]);
+  const [isLoading, setIsLoading] = React.useState(false);
   const { handleSubmit } = formMethods;
-  const [updateMyProfile, { loading }] = useUpdateMyProfileMutation();
   const { show: showError } = useErrorModalActions();
 
   return (
     <form
       onSubmit={handleSubmit(async values => {
         try {
-          await updateMyProfile({
-            variables: {
-              values,
-            },
-          });
+          setIsLoading(true);
+          await api.user_updateMyProfile(values);
         } catch (e) {
           showError(e);
+        } finally {
+          setIsLoading(false);
         }
       })}
     >
@@ -70,7 +57,7 @@ export function ProfileSection(props: ProfileSectionProps) {
         id="profile"
         title="Profile"
         desc="This information will be displayed publicly so be careful what you share."
-        isLoading={loading}
+        isLoading={isLoading}
       >
         <FormProvider {...formMethods}>
           <div tw="space-y-6 mt-6">

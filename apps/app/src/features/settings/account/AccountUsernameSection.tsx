@@ -2,7 +2,6 @@ import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { SavableSection } from '../SavableSection';
 import { ContextInput } from '../../../components/ContextInput';
-import { gql } from '@apollo/client';
 import { Validator } from 'src/common/Validator';
 import {
   USERNAME_MAX_LENGTH,
@@ -10,18 +9,13 @@ import {
   USERNAME_REGEX,
 } from 'shared';
 import { useAuthActions, useUser } from 'src/features/AuthModule';
-import { useChangeUsernameMutation } from 'src/generated';
 import { useErrorModalActions } from 'src/features/ErrorModalModule';
+import { api } from 'src/services/api';
 
 interface FormValues {
   username: string;
 }
 
-gql`
-  mutation ChangeUsername($username: String!) {
-    changeUsername(username: $username)
-  }
-`;
 export function AccountUsernameSection() {
   const user = useUser();
   const { updateUser } = useAuthActions();
@@ -43,20 +37,21 @@ export function AccountUsernameSection() {
     },
   });
   const { handleSubmit } = formMethods;
-  const [changeUsername, { loading }] = useChangeUsernameMutation();
+  const [isLoading, setIsLoading] = React.useState(false);
   const { show: showError } = useErrorModalActions();
   return (
     <form
       onSubmit={handleSubmit(async values => {
         try {
-          await changeUsername({
-            variables: values,
-          });
+          setIsLoading(true);
+          await api.user_changeUsername(values.username);
           updateUser({
             username: values.username,
           });
         } catch (e) {
           showError(e);
+        } finally {
+          setIsLoading(false);
         }
       })}
     >
@@ -64,7 +59,7 @@ export function AccountUsernameSection() {
         id="username-section"
         title="Username"
         desc="Be careful when changing the username, someone can take your old username."
-        isLoading={loading}
+        isLoading={isLoading}
       >
         <FormProvider {...formMethods}>
           <div tw="space-y-6 mt-6 ">

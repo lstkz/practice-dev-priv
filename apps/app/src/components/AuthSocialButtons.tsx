@@ -1,66 +1,29 @@
-import { gql } from '@apollo/client';
 import { useRouter } from 'next/dist/client/router';
 import React from 'react';
 import { useAuthForm } from 'src/hooks/useAuthForm';
 import { GithubIcon } from '../icons/GithubIcon';
 import { GoogleIcon } from '../icons/GoogleIcon';
 import { Button } from './Button';
-import {
-  useLoginGithubMutation,
-  useLoginGoogleMutation,
-  useRegisterGithubMutation,
-  useRegisterGoogleMutation,
-} from '../generated';
 import { useErrorModalActions } from 'src/features/ErrorModalModule';
 import { GITHUB_CLIENT_ID, GOOGLE_CLIENT_ID } from 'src/config';
+import { api } from 'src/services/api';
 
 interface AuthSocialButtonsProps {
   source: 'login' | 'register';
   className?: string;
 }
 
-gql`
-  mutation LoginGithub($code: String!) {
-    loginGithub(code: $code) {
-      ...DefaultAuthResult
-    }
-  }
-  mutation RegisterGithub($code: String!) {
-    registerGithub(code: $code) {
-      ...DefaultAuthResult
-    }
-  }
-  mutation LoginGoogle($accessToken: String!) {
-    loginGoogle(accessToken: $accessToken) {
-      ...DefaultAuthResult
-    }
-  }
-  mutation RegisterGoogle($accessToken: String!) {
-    registerGoogle(accessToken: $accessToken) {
-      ...DefaultAuthResult
-    }
-  }
-`;
-
 export function AuthSocialButtons(props: AuthSocialButtonsProps) {
   const { source } = props;
   const router = useRouter();
-  const [loginGithub] = useLoginGithubMutation();
-  const [loginGoogle] = useLoginGoogleMutation();
-  const [registerGithub] = useRegisterGithubMutation();
-  const [registerGoogle] = useRegisterGoogleMutation();
   const errorModalActions = useErrorModalActions();
   const github = useAuthForm({
     submit: async () => {
       const code = router.query.code as string;
       if (source === 'login') {
-        return loginGithub({
-          variables: { code },
-        }).then(x => x.data!.loginGithub);
+        return api.user_loginGithub(code);
       } else {
-        return registerGithub({
-          variables: { code },
-        }).then(x => x.data!.registerGithub);
+        return api.user_registerGithub(code);
       }
     },
   });
@@ -74,13 +37,9 @@ export function AuthSocialButtons(props: AuthSocialButtonsProps) {
         throw new Error('access_token missing');
       }
       if (source === 'login') {
-        return loginGoogle({ variables: { accessToken } }).then(
-          x => x.data!.loginGoogle
-        );
+        return api.user_loginGoogle(accessToken);
       } else {
-        return registerGoogle({ variables: { accessToken } }).then(
-          x => x.data!.registerGoogle
-        );
+        return api.user_registerGoogle(accessToken);
       }
     },
   });

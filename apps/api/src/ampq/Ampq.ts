@@ -23,7 +23,7 @@ export interface AmpqHandler {
 }
 
 function _delay(n: number) {
-  return new Promise(resolve => setTimeout(resolve, n));
+  return new Promise<void>(resolve => setTimeout(resolve, n));
 }
 
 function _getRequeueDelay(retry: number) {

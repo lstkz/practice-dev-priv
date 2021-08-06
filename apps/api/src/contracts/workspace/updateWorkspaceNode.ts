@@ -1,5 +1,5 @@
 import { S } from 'schema';
-import { createContract, createGraphqlBinding } from '../../lib';
+import { createContract, createRpcBinding } from '../../lib';
 import { FILENAME_MAX_LENGTH, FILENAME_REGEX } from 'shared';
 import {
   ensureNodeUnique,
@@ -16,9 +16,9 @@ import { AppError } from '../../common/errors';
 export const updateWorkspaceNode = createContract(
   'workspace.updateWorkspaceNode'
 )
-  .params('appUser', 'values')
+  .params('user', 'values')
   .schema({
-    appUser: S.object().appUser(),
+    user: S.object().appUser(),
     values: S.object().keys({
       id: S.string().uuid(),
       parentId: S.string().nullable().optional(),
@@ -31,8 +31,9 @@ export const updateWorkspaceNode = createContract(
         .optional(),
     }),
   })
-  .fn(async (appUser, values) => {
-    const node = await getNodeByIdWithCheck(appUser, values.id);
+  .returns<void>()
+  .fn(async (user, values) => {
+    const node = await getNodeByIdWithCheck(user, values.id);
     if (node.isLocked && (values.name || values.parentId)) {
       throw new AppError('Cannot update locked node');
     }
@@ -62,11 +63,8 @@ export const updateWorkspaceNode = createContract(
     ]);
   });
 
-export const updateWorkspaceNodeGraphql = createGraphqlBinding({
-  resolver: {
-    Mutation: {
-      updateWorkspaceNode: (_, { values }, { getUser }) =>
-        updateWorkspaceNode(getUser(), values),
-    },
-  },
+export const updateWorkspaceNodeRpc = createRpcBinding({
+  injectUser: true,
+  signature: 'workspace.updateWorkspaceNode',
+  handler: updateWorkspaceNode,
 });

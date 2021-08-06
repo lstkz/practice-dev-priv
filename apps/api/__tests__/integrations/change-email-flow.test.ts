@@ -1,6 +1,6 @@
 import { mocked } from 'ts-jest/utils';
 import { confirmChangeEmail } from '../../src/contracts/user/confirmChangeEmail';
-import { getAppUser, setupDb } from '../helper';
+import { execContract, setupDb } from '../helper';
 import { registerSampleUsers } from '../seed-data';
 import { changeEmail } from '../../src/contracts/user/changeEmail';
 import { sendMailjetEmail } from '../../src/common/mailjet';
@@ -17,8 +17,11 @@ beforeEach(async () => {
 });
 
 it('request change email, confirm it and log in #integration', async () => {
-  const appUser = await getAppUser(1);
-  await changeEmail(appUser, 'fooo@example.com');
+  await execContract(
+    changeEmail,
+    { newEmail: 'fooo@example.com' },
+    'user1_token'
+  );
   const options = mocked_sendMailjetEmail.mock.calls[0][0];
   expect(options.template.type).toEqual('actionButton');
   const exec = /confirm-new-email=(.+)/.exec(
@@ -26,7 +29,7 @@ it('request change email, confirm it and log in #integration', async () => {
   );
   expect(exec).toBeDefined();
   const code = exec![1];
-  await confirmChangeEmail(appUser, code);
+  await execContract(confirmChangeEmail, { code }, 'user1_token');
   const ret = await login({
     usernameOrEmail: 'fooo@example.com',
     password: 'password1',

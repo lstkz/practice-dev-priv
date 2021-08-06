@@ -2,9 +2,9 @@ import { ChallengeFile } from '../collections/Challenge';
 import {
   WorkspaceNodeCollection,
   WorkspaceNodeModel,
-  WorkspaceNodeType,
 } from '../collections/WorkspaceNode';
 import * as uuid from 'uuid';
+import { WorkspaceNodeType } from 'shared';
 
 export function getNodeUniqueKey(
   node: Pick<WorkspaceNodeModel, 'workspaceId' | 'parentId' | 'type' | 'name'>

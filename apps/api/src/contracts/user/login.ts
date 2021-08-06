@@ -3,7 +3,7 @@ import { AuthData } from 'shared';
 import { UserCollection } from '../../collections/User';
 import { AppError } from '../../common/errors';
 import { createPasswordHash } from '../../common/helper';
-import { createContract, createGraphqlBinding } from '../../lib';
+import { createContract, createRpcBinding } from '../../lib';
 import { generateAuthData } from './_common';
 
 const INVALID_CRED = 'Invalid credentials or user not found';
@@ -31,10 +31,8 @@ export const login = createContract('user.login')
     return generateAuthData(user);
   });
 
-export const loginGraphql = createGraphqlBinding({
-  resolver: {
-    Mutation: {
-      login: (_, { values }) => login(values),
-    },
-  },
+export const loginRpc = createRpcBinding({
+  public: true,
+  signature: 'user.login',
+  handler: login,
 });

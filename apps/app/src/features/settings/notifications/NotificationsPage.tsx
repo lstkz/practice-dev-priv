@@ -1,13 +1,7 @@
 import React from 'react';
 import { SettingsPageTemplate } from '../SettingsPageTemplate';
-import { createGetServerSideProps } from 'src/common/helper';
+import { createGetServerSideProps, createSSRClient } from 'src/common/helper';
 import { InferGetServerSidePropsType } from 'next';
-import { gql } from '@apollo/client';
-import { getApolloClient } from 'src/getApolloClient';
-import {
-  GetNotificationSettingsDocument,
-  GetNotificationSettingsQuery,
-} from 'src/generated';
 import { NotificationsSection } from './NotificationsSection';
 
 export function NotificationsPage(props: NotificationsSSRProps) {
@@ -22,23 +16,11 @@ export type NotificationsSSRProps = InferGetServerSidePropsType<
   typeof getServerSideProps
 >;
 
-gql`
-  query GetNotificationSettings {
-    getNotificationSettings {
-      newsletter
-    }
-  }
-`;
-
 export const getServerSideProps = createGetServerSideProps(async ctx => {
-  const client = getApolloClient(ctx);
-  const ret = await client.query<GetNotificationSettingsQuery>({
-    query: GetNotificationSettingsDocument,
-  });
-
+  const api = createSSRClient(ctx);
   return {
     props: {
-      initialValues: ret.data.getNotificationSettings,
+      initialValues: await api.user_getNotificationSettings(),
     },
   };
 });

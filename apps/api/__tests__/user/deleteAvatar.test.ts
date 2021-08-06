@@ -1,6 +1,4 @@
-import { gql } from 'apollo-server';
-import { apolloServer } from '../../src/server';
-import { getAppUser, getId, getTokenOptions, setupDb } from '../helper';
+import { execContract, getId, setupDb } from '../helper';
 import { registerSampleUsers } from '../seed-data';
 import { UserCollection } from '../../src/collections/User';
 import { deleteAvatar } from '../../src/contracts/user/deleteAvatar';
@@ -24,21 +22,7 @@ beforeEach(async () => {
 it('should delete avatar', async () => {
   let user = await UserCollection.findByIdOrThrow(getId(1));
   expect(user.avatarId).toBeTruthy();
-  await deleteAvatar(await getAppUser(1));
+  await execContract(deleteAvatar, {}, 'user1_token');
   user = await UserCollection.findByIdOrThrow(getId(1));
   expect(user.avatarId).toBeFalsy();
-});
-
-it('should delete avatar #graphql', async () => {
-  const res = await apolloServer.executeOperation(
-    {
-      query: gql`
-        mutation {
-          deleteAvatar
-        }
-      `,
-    },
-    getTokenOptions('user1_token')
-  );
-  expect(res.errors).toBeFalsy();
 });

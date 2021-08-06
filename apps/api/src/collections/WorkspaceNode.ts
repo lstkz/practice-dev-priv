@@ -1,10 +1,6 @@
 import { ObjectID } from 'mongodb2';
+import { WorkspaceNodeType } from 'shared';
 import { createCollection } from '../db';
-
-export enum WorkspaceNodeType {
-  File = 'file',
-  Directory = 'directory',
-}
 
 export interface WorkspaceNodeModel {
   _id: string;

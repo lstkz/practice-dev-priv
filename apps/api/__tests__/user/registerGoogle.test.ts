@@ -1,10 +1,8 @@
 import { mocked } from 'ts-jest/utils';
-import { getId, setupDb } from '../helper';
+import { execContract, getId, setupDb } from '../helper';
 import { getEmail } from '../../src/common/google';
 import { createUser } from '../../src/contracts/user/_common';
 import { registerGoogle } from '../../src/contracts/user/registerGoogle';
-import { gql } from 'apollo-server';
-import { apolloServer } from '../../src/server';
 
 jest.mock('../../src/common/google');
 jest.mock('../../src/dispatch');
@@ -17,30 +15,19 @@ beforeAll(async () => {
   mockedGetEmail.mockImplementation(async () => 'user1@example.com');
 });
 
-it('should register successfully #graphql', async () => {
-  const res = await apolloServer.executeOperation({
-    query: gql`
-      mutation {
-        registerGoogle(accessToken: "abc") {
-          user {
-            email
-            username
-          }
-        }
-      }
-    `,
-  });
-  expect(res.data).toMatchInlineSnapshot(`
+it('should register successfully', async () => {
+  const ret = await execContract(registerGoogle, { accessToken: 'abc' });
+  ret.user.id = '';
+  expect(ret.user).toMatchInlineSnapshot(`
 Object {
-  "registerGoogle": Object {
-    "user": Object {
-      "email": "user1@example.com",
-      "username": "user1",
-    },
-  },
+  "avatarId": undefined,
+  "email": "user1@example.com",
+  "id": "",
+  "isAdmin": undefined,
+  "isVerified": true,
+  "username": "user1",
 }
 `);
-  expect(res.errors).toBeFalsy();
 });
 
 it('should throw an error if already registered code', async () => {
@@ -52,7 +39,7 @@ it('should throw an error if already registered code', async () => {
     userId: getId(1),
     username: 'user1',
   });
-  await expect(registerGoogle('abc')).rejects.toThrowError(
-    'User is already registered'
-  );
+  await expect(
+    execContract(registerGoogle, { accessToken: 'abc' })
+  ).rejects.toThrowError('User is already registered');
 });

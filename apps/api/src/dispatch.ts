@@ -1,3 +1,4 @@
+import { AppSocketMsg } from 'shared';
 import { getBindings } from './common/bindings';
 import { randomUniqString } from './common/helper';
 import { ampq } from './lib';
@@ -25,5 +26,11 @@ export async function dispatchTask(task: AppTask) {
       throw new Error('No task handler for: ' + task.type);
     }
     await target.handler(randomUniqString(), task.payload);
+  }
+}
+
+export async function dispatchSocketMsg(msg: AppSocketMsg) {
+  if (process.env.NODE_ENV !== 'test') {
+    await ampq.publishSocket(msg);
   }
 }

@@ -1,5 +1,5 @@
-import { ForbiddenError } from 'apollo-server';
 import { ObjectID } from 'mongodb2';
+import { WorkspaceNodeType } from 'shared';
 import {
   WorkspaceCollection,
   WorkspaceModel,
@@ -7,9 +7,8 @@ import {
 import {
   WorkspaceNodeCollection,
   WorkspaceNodeModel,
-  WorkspaceNodeType,
 } from '../../collections/WorkspaceNode';
-import { AppError } from '../../common/errors';
+import { AppError, ForbiddenError } from '../../common/errors';
 import { AppUser } from '../../types';
 import { createWorkspaceS3Auth } from './createWorkspaceS3Auth';
 
@@ -18,7 +17,7 @@ export async function getNodeByIdWithCheck(appUser: AppUser, id: string) {
   if (!node) {
     throw new AppError('Node not found');
   }
-  if (!node.userId.equals(appUser.id)) {
+  if (!node.userId.equals(appUser._id)) {
     throw new ForbiddenError('Not permission to access this workspace');
   }
   return node;

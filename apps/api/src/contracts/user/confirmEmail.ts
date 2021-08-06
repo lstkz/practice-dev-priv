@@ -1,6 +1,6 @@
 import { S } from 'schema';
 import * as DateFns from 'date-fns';
-import { createContract, createGraphqlBinding } from '../../lib';
+import { createContract, createRpcBinding } from '../../lib';
 import { AppError } from '../../common/errors';
 import { AuthData } from 'shared';
 import { UserCollection } from '../../collections/User';
@@ -42,13 +42,8 @@ export const confirmEmail = createContract('user.confirmEmail')
     return generateAuthData(user);
   });
 
-export const confirmEmailGraphql = createGraphqlBinding({
+export const changeEmailRpc = createRpcBinding({
   public: true,
-  resolver: {
-    Mutation: {
-      confirmEmail: (_, { code }) => {
-        return confirmEmail(code);
-      },
-    },
-  },
+  signature: 'user.confirmEmail',
+  handler: confirmEmail,
 });

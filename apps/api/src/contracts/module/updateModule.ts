@@ -1,6 +1,6 @@
 import { S } from 'schema';
 import * as R from 'remeda';
-import { createContract, createGraphqlBinding } from '../../lib';
+import { createContract, createRpcBinding } from '../../lib';
 import { ModuleCollection } from '../../collections/Module';
 
 export const updateModule = createContract('module.updateModule')
@@ -15,6 +15,7 @@ export const updateModule = createContract('module.updateModule')
       tags: S.array().items(S.string()),
     }),
   })
+  .returns<void>()
   .fn(async values => {
     await ModuleCollection.findOneAndUpdate(
       {
@@ -31,11 +32,8 @@ export const updateModule = createContract('module.updateModule')
     );
   });
 
-export const updateModuleGraphql = createGraphqlBinding({
+export const updateModuleRpc = createRpcBinding({
   admin: true,
-  resolver: {
-    Mutation: {
-      updateModule: (_, { values }, {}) => updateModule(values),
-    },
-  },
+  signature: 'module.updateModule',
+  handler: updateModule,
 });

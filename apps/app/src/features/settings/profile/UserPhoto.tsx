@@ -1,40 +1,10 @@
-import { gql, useApolloClient } from '@apollo/client';
 import React from 'react';
 import { Button } from 'src/components/Button';
 import { UserAvatar } from 'src/components/UserAvatar';
 import { useAuthActions, useUser } from 'src/features/AuthModule';
 import { useErrorModalActions } from 'src/features/ErrorModalModule';
-import {
-  GetAvatarUploadUrlDocument,
-  GetAvatarUploadUrlQuery,
-  useCompleteAvatarUploadMutation,
-  useDeleteAvatarMutation,
-} from 'src/generated';
+import { api } from 'src/services/api';
 import { CropModal, CropModalRef } from './CropModal';
-
-gql`
-  query GetAvatarUploadUrl {
-    getAvatarUploadUrl {
-      url
-      fields {
-        name
-        value
-      }
-    }
-  }
-`;
-gql`
-  mutation CompleteAvatarUpload {
-    completeAvatarUpload {
-      avatarId
-    }
-  }
-`;
-gql`
-  mutation DeleteAvatar {
-    deleteAvatar
-  }
-`;
 
 export function UserPhoto() {
   const fileRef = React.useRef<HTMLInputElement | null>(null);
@@ -48,9 +18,6 @@ export function UserPhoto() {
   };
   const [isLoading, setIsLoading] = React.useState(false);
   const { show: showError } = useErrorModalActions();
-  const client = useApolloClient();
-  const [completeAvatarUpload] = useCompleteAvatarUploadMutation();
-  const [deleteAvatar] = useDeleteAvatarMutation();
   const { updateUser } = useAuthActions();
 
   const buttons = (
@@ -70,7 +37,7 @@ export function UserPhoto() {
           type="white"
           size="small"
           onClick={async () => {
-            await deleteAvatar();
+            await api.user_deleteAvatar();
             updateUser({
               avatarId: null,
             });
@@ -89,10 +56,7 @@ export function UserPhoto() {
         onImage={async img => {
           try {
             setIsLoading(true);
-            const avatarRet = await client.query<GetAvatarUploadUrlQuery>({
-              query: GetAvatarUploadUrlDocument,
-            });
-            const { url, fields } = avatarRet.data.getAvatarUploadUrl;
+            const { url, fields } = await api.user_getAvatarUploadUrl();
             const formData = new FormData();
             fields.forEach(field => {
               formData.append(field.name, field.value);
@@ -105,8 +69,7 @@ export function UserPhoto() {
             if (ret.status < 200 || ret.status > 299) {
               throw new Error('Failed to upload an image!');
             }
-            const completeRet = await completeAvatarUpload();
-            const avatarId = completeRet.data!.completeAvatarUpload.avatarId;
+            const { avatarId } = await api.user_completeAvatarUpload();
             updateUser({ avatarId });
           } catch (e) {
             showError(e);

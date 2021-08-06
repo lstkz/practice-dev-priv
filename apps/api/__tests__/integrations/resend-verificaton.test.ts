@@ -1,5 +1,5 @@
 import { mocked } from 'ts-jest/utils';
-import { getAppUser, setupDb } from '../helper';
+import { execContract, setupDb } from '../helper';
 import { confirmEmail } from '../../src/contracts/user/confirmEmail';
 import { registerSampleUsers } from '../seed-data';
 import { login } from '../../src/contracts/user/login';
@@ -17,7 +17,7 @@ beforeEach(async () => {
 });
 
 it('should resubmit verification code #integration', async () => {
-  await resendVerificationCode(await getAppUser(1));
+  await execContract(resendVerificationCode, {}, 'user1_token');
   expect(mocked_sendMailjetEmail).toBeCalled();
   const options = mocked_sendMailjetEmail.mock.calls[0][0];
   expect(options.template.type).toEqual('actionButton');

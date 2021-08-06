@@ -1,21 +1,21 @@
 import { S } from 'schema';
-import { createContract, createGraphqlBinding, s3 } from '../../lib';
-import { PresignedPost } from '../../generated';
+import { createContract, createRpcBinding, s3 } from '../../lib';
 import { config } from 'config';
 import { getUserAvatarUploadKey } from '../../common/helper';
+import { PresignedPost } from 'shared';
 
 export const getAvatarUploadUrl = createContract('user.getAvatarUploadUrl')
-  .params('appUser')
+  .params('user')
   .schema({
-    appUser: S.object().appUser(),
+    user: S.object().appUser(),
   })
   .returns<PresignedPost>()
-  .fn(async appUser => {
+  .fn(async user => {
     const uploadUrl = await s3.createPresignedPost({
       Bucket: config.aws.s3Bucket,
       Conditions: [['content-length-range', 0, 3 * 1024 * 1024]],
       Fields: {
-        key: getUserAvatarUploadKey(appUser.id.toHexString()),
+        key: getUserAvatarUploadKey(user._id.toHexString()),
         'Content-Type': 'image/png',
       },
     });
@@ -28,10 +28,8 @@ export const getAvatarUploadUrl = createContract('user.getAvatarUploadUrl')
     };
   });
 
-export const getAvatarUploadUrlGraphql = createGraphqlBinding({
-  resolver: {
-    Query: {
-      getAvatarUploadUrl: (_, __, { getUser }) => getAvatarUploadUrl(getUser()),
-    },
-  },
+export const getAvatarUploadUrlRpc = createRpcBinding({
+  injectUser: true,
+  signature: 'user.getAvatarUploadUrl',
+  handler: getAvatarUploadUrl,
 });
