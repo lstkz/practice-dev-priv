@@ -1,7 +1,11 @@
 import { createModuleContext, useActions, useImmer } from 'context-api';
 import React from 'react';
-import { Challenge, TestInfo, Workspace } from 'shared';
-// import { api } from 'src/services/api';
+import WS from 'reconnecting-websocket';
+import { Challenge, TestInfo, Workspace, AppSocketMsg } from 'shared';
+import { updateTestResult } from 'shared/src/utils';
+import { API_URL } from 'src/config';
+import { api } from 'src/services/api';
+import { getAccessToken } from 'src/services/Storage';
 
 interface Actions {
   submit: (indexHtmlS3Key: string) => Promise<void>;
@@ -35,7 +39,7 @@ function _getDefaultTests(challenge: Challenge) {
 }
 
 export function TesterModule(props: TesterModuleProps) {
-  const { challenge, children } = props;
+  const { challenge, children, workspace } = props;
   const defaultTests = React.useMemo(() => {
     return _getDefaultTests(challenge);
   }, [challenge]);
@@ -57,43 +61,41 @@ export function TesterModule(props: TesterModuleProps) {
   }, []);
   const actions = useActions<Actions>({
     submit: async indexHtmlS3Key => {
-      // let submissionId: string = null!;
-      // let done: () => void = null!;
+      let submissionId: string = null!;
+      let done: () => void = null!;
       setState(draft => {
         draft.result = null;
         draft.tests = _getDefaultTests(challenge);
         draft.tests[0].result = 'running';
       });
-      // const obs = client
-      //   .subscribe({
-      //     query: TestProgressDocument,
-      //     variables: {
-      //       id: challenge.id,
-      //     },
-      //   })
-      //   .subscribe(value => {
-      //     const messages = (value as TestProgressSubscriptionResult).data!
-      //       .testProgress as TesterSocketMessage[];
-      //     setState(draft => {
-      //       messages.forEach(msg => {
-      //         if (msg.meta.submissionId === submissionId) {
-      //           updateTestResult(draft, msg);
-      //         }
-      //       });
-      //     });
-      //     if (messages.some(x => x.type === 'TEST_RESULT')) {
-      //       unsubscribe();
-      //       done();
-      //     }
-      //   });
-      // unsubscribeRef.current = () => obs.unsubscribe();
-      // submissionId = await api.submission_submit({
-      //   workspaceId: workspace.id,
-      //   indexHtmlS3Key,
-      // });
-      // return new Promise(resolve => {
-      //   done = resolve;
-      // });
+      const socketUrl =
+        API_URL.replace(/^http/, 'ws') +
+        '/socket?token=' +
+        encodeURIComponent(getAccessToken() ?? '');
+      const ws = new WS(socketUrl);
+      const onMessage = (e: MessageEvent<any>) => {
+        const messages = JSON.parse(e.data) as AppSocketMsg[];
+        setState(draft => {
+          messages.forEach(msg => {
+            if (msg.meta.submissionId === submissionId) {
+              updateTestResult(draft, msg);
+            }
+          });
+        });
+        if (messages.some(x => x.type === 'TEST_RESULT')) {
+          unsubscribe();
+          done();
+        }
+      };
+      ws.addEventListener('message', onMessage);
+      unsubscribeRef.current = () => ws.close();
+      submissionId = await api.submission_submit({
+        workspaceId: workspace.id,
+        indexHtmlS3Key,
+      });
+      return new Promise(resolve => {
+        done = resolve;
+      });
     },
   });
 

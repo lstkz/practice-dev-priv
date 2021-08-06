@@ -5,6 +5,7 @@ import * as Path from 'path';
 import fs from 'fs-extra';
 import tmp from 'tmp';
 import mime from 'mime-types';
+import { Tester } from '@pvd/tester';
 import {
   findModuleDir,
   getNumberPrefix,
@@ -196,6 +197,30 @@ async function _uploadChallenges(
   ]);
 }
 
+async function _getTests(testFile: string) {
+  const testConfiguration = require(testFile).default;
+
+  const tester = new Tester(
+    {
+      notify() {
+        throw new Error('Not supported');
+      },
+    },
+    async () => {
+      throw new Error('Not supported');
+    }
+  );
+  await testConfiguration.handler({
+    tester,
+    url: 'mock',
+  });
+  return tester.tests.map(test => test.name);
+}
+
+async function _populateTests(info: ChallengeInfo) {
+  info.challenge.tests = await _getTests(info.testPath);
+}
+
 interface DeployModuleOptions {
   basedir: string;
   moduleId: number;
@@ -208,6 +233,7 @@ export async function deployModule(options: DeployModuleOptions) {
     .info as ModuleUpload;
   moduleUpload.id = moduleId;
   const challenges = _getChallengesInfo(moduleUpload, modulePath);
+  await Promise.all(challenges.map(challenge => _populateTests(challenge)));
   await buildDetails(modulePath, challenges);
   await buildTests(modulePath, challenges);
   const s3Auth = await api.aws_getAwsUploadContentAuth();

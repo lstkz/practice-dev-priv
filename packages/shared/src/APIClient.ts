@@ -22,7 +22,11 @@ import { SubmissionSortBy, WorkspaceNodeType } from './types';
 type ObjectId = string;
 
 export class APIClient {
-  constructor(private baseUrl: string, public getToken: () => string | null) {
+  constructor(
+    private baseUrl: string,
+    public getToken: () => string | null,
+    private agent?: any
+  ) {
     this.baseUrl = baseUrl.replace(/\/$/, '');
   }
 
@@ -212,6 +216,8 @@ export class APIClient {
       method: 'POST',
       headers,
       body: JSON.stringify(params),
+      // @ts-ignore
+      agent: this.agent,
     });
     const body = await res.json();
     if (res.status !== 200) {

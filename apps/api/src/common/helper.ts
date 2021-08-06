@@ -1,4 +1,3 @@
-import * as z from 'zod';
 import crypto from 'crypto';
 import cryptoAsync from 'mz/crypto';
 import { Response } from 'node-fetch';

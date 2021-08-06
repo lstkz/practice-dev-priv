@@ -71,6 +71,7 @@ export function startSockets(server: http.Server) {
   );
 
   ampq.addSocketHandler(async message => {
+    console.log({ message });
     const { userId } = (message as AppSocketMsg).meta;
     const userConnections = connectionMap.get(userId) ?? [];
     userConnections.forEach(ws => {

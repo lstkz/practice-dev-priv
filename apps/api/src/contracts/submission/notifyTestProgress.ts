@@ -1,7 +1,7 @@
 import { S } from 'schema';
 import { SubmissionCollection } from '../../collections/Submission';
 import { AppError } from '../../common/errors';
-// import { getNotifyTestPubKey } from '../../common/helper';
+import { dispatchSocketMsg } from '../../dispatch';
 import { createContract, createRpcBinding } from '../../lib';
 
 export const notifyTestProgress = createContract(
@@ -20,15 +20,10 @@ export const notifyTestProgress = createContract(
     if (!submission) {
       throw new AppError('Invalid submission key');
     }
-    // await publishPubSubEvent(
-    //   getNotifyTestPubKey({
-    //     challengeId: submission.challengeUniqId,
-    //     userId: submission.userId.toHexString(),
-    //   }),
-    //   {
-    //     testProgress: data,
-    //   }
-    // );
+    for (const msg of data) {
+      msg.meta.userId = submission.userId.toHexString();
+      await dispatchSocketMsg(msg);
+    }
   });
 
 export const notifyTestProgressRpc = createRpcBinding({
