@@ -35,13 +35,6 @@ export interface SendEmailTask {
   };
 }
 
-export interface PrepareWorkspaceTask {
-  type: 'PrepareWorkspace';
-  payload: {
-    workspaceId: string;
-  };
-}
-
 export interface TestSubmissionTask {
   type: 'TestSubmission';
   payload: {
@@ -66,7 +59,6 @@ export interface ButtonActionTemplateProps {
 
 export type AppTask =
   | SendEmailTask
-  | PrepareWorkspaceTask
   | TestSubmissionTask
   | CloneWorkspaceFilesTask;
 

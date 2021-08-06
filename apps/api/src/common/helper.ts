@@ -6,6 +6,7 @@ import { Response } from 'node-fetch';
 import { WorkspaceNodeModel } from '../collections/WorkspaceNode';
 import { ObjectID } from 'mongodb2';
 import { config } from 'config';
+import { SubmissionNodeModel } from '../collections/Submission';
 
 const SECURITY = {
   SALT_LENGTH: 64,
@@ -157,6 +158,16 @@ export function getWorkspaceNodeS3Key(item: WorkspaceNodeModel) {
 
 export function getWorkspaceS3Prefix(workspaceId: ObjectID) {
   return `cdn/workspace/${workspaceId}/`;
+}
+export function getSubmissionS3Prefix(submissionId: ObjectID) {
+  return `cdn/submission/${submissionId}/`;
+}
+
+export function getSubmissionNodeS3Key(
+  submissionId: ObjectID,
+  item: SubmissionNodeModel
+) {
+  return `${getSubmissionS3Prefix(submissionId)}${item._id}`;
 }
 
 export function getCDNUrl(s3Key: string) {

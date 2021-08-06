@@ -354,7 +354,6 @@ export type User = {
 export type Workspace = {
   __typename?: 'Workspace';
   id: Scalars['String'];
-  isReady: Scalars['Boolean'];
   items: Array<WorkspaceNode>;
   s3Auth: WorkspaceS3Auth;
   libraries: Array<LibraryDefinition>;
@@ -935,7 +934,6 @@ export type WorkspaceResolvers<
   ParentType extends ResolversParentTypes['Workspace'] = ResolversParentTypes['Workspace']
 > = {
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  isReady?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   items?: Resolver<
     Array<ResolversTypes['WorkspaceNode']>,
     ParentType,

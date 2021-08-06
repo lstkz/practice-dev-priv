@@ -12,10 +12,10 @@ import { WorkspaceNodeCollection } from '../../collections/WorkspaceNode';
 import { AppError } from '../../common/errors';
 import { renameId } from '../../common/helper';
 import { mapWorkspaceS3Auth } from '../../common/mapper';
-import { dispatchTask } from '../../dispatch';
 import { Workspace } from '../../generated';
 import { createContract, createGraphqlBinding } from '../../lib';
 import { AppUser } from '../../types';
+import { prepareWorkspace } from './prepareWorkspace';
 import { renewWorkspaceAuth } from './_common';
 
 async function _getOrCreate(
@@ -43,12 +43,6 @@ async function _getOrCreate(
     libraries: challenge.libraries,
   };
   await WorkspaceCollection.insertOne(workspace);
-  await dispatchTask({
-    type: 'PrepareWorkspace',
-    payload: {
-      workspaceId: workspace._id.toHexString(),
-    },
-  });
   return workspace;
 }
 
@@ -75,6 +69,9 @@ export const getOrCreateWorkspace = createContract(
       dedupKey,
       challengeUniqId: values.challengeUniqId,
     });
+    if (!workspace.isReady) {
+      await prepareWorkspace(workspace._id);
+    }
     await renewWorkspaceAuth(workspace);
     const files = await WorkspaceNodeCollection.findAll({
       workspaceId: workspace._id,
@@ -82,7 +79,6 @@ export const getOrCreateWorkspace = createContract(
 
     return {
       id: workspace._id.toHexString(),
-      isReady: workspace.isReady,
       items: files.map(file => renameId(file)),
       s3Auth: mapWorkspaceS3Auth(workspace.s3Auth),
       libraries: workspace.libraries,

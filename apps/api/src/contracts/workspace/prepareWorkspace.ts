@@ -1,6 +1,5 @@
 import { S } from 'schema';
-import { ObjectID } from 'mongodb2';
-import { createContract, createTaskBinding, s3 } from '../../lib';
+import { createContract, s3 } from '../../lib';
 import { WorkspaceCollection } from '../../collections/Workspace';
 import { ChallengeCollection } from '../../collections/Challenge';
 import {
@@ -10,6 +9,7 @@ import {
 import { createWorkspaceNodes } from '../../common/workspace-tree';
 import { config } from 'config';
 import { getWorkspaceNodeS3Key } from '../../common/helper';
+import { withTransaction } from '../../db';
 
 export const prepareWorkspace = createContract('workspace.prepareWorkspace')
   .params('workspaceId')
@@ -50,16 +50,17 @@ export const prepareWorkspace = createContract('workspace.prepareWorkspace')
             )
             .promise();
         }
-        await WorkspaceNodeCollection.insertOne(item);
       })
     );
-    workspace.isReady = true;
-    await WorkspaceCollection.update(workspace, ['isReady']);
+    await withTransaction(async () => {
+      const existingCount = await WorkspaceNodeCollection.countDocuments({
+        workspaceId: workspaceId,
+      });
+      if (existingCount) {
+        return;
+      }
+      await WorkspaceNodeCollection.insertMany(workspaceItems);
+      workspace.isReady = true;
+      await WorkspaceCollection.update(workspace, ['isReady']);
+    });
   });
-
-export const prepareWorkspaceTask = createTaskBinding({
-  type: 'PrepareWorkspace',
-  handler: async (_, task) => {
-    await prepareWorkspace(ObjectID.createFromHexString(task.workspaceId));
-  },
-});
