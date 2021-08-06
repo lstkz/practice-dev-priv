@@ -7,28 +7,13 @@ import {
 import { Validator } from 'src/common/Validator';
 import { useForm } from 'react-hook-form';
 import { useAuthForm } from 'src/hooks/useAuthForm';
-import { gql } from '@apollo/client';
-import { useRegisterMutation } from 'src/generated';
+import { api } from 'src/services/api';
 
 interface FormValues {
   email: string;
   username: string;
   password: string;
 }
-
-gql`
-  mutation Register($registerValues: RegisterInput!) {
-    register(values: $registerValues) {
-      ...DefaultAuthResult
-    }
-  }
-  fragment DefaultAuthResult on AuthResult {
-    token
-    user {
-      ...allUserProps
-    }
-  }
-`;
 
 export function useRegisterForm() {
   const formMethods = useForm<FormValues>({
@@ -49,14 +34,9 @@ export function useRegisterForm() {
         .validate();
     },
   });
-  const [register] = useRegisterMutation();
   const auth = useAuthForm({
     submit: () => {
-      return register({
-        variables: {
-          registerValues: formMethods.getValues(),
-        },
-      }).then(x => x.data!.register!);
+      return api.user_register(formMethods.getValues());
     },
   });
   return { formMethods, ...auth };

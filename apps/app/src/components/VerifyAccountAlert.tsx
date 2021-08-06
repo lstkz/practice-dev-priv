@@ -1,19 +1,11 @@
-import { gql } from '@apollo/client';
 import React from 'react';
 import { useErrorModalActions } from 'src/features/ErrorModalModule';
-import { useResendVerificationCodeMutation } from 'src/generated';
+import { api } from 'src/services/api';
 import { Alert } from './Alert';
 import { Button } from './Button';
 
-gql`
-  mutation ResendVerificationCode {
-    resendVerificationCode
-  }
-`;
-
 export function VerifyAccountAlert() {
-  const [resendVerificationCode, { loading }] =
-    useResendVerificationCodeMutation();
+  const [isLoading, setIsLoading] = React.useState(false);
   const { showError } = useErrorModalActions();
   const [isSent, setIsSent] = React.useState(false);
   return (
@@ -24,14 +16,17 @@ export function VerifyAccountAlert() {
           type="dark"
           size="xs"
           tw="ml-4"
-          loading={loading}
+          loading={isLoading}
           disabled={isSent}
           onClick={async () => {
             try {
-              await resendVerificationCode();
+              setIsLoading(true);
+              await api.user_resendVerificationCode();
               setIsSent(true);
             } catch (e) {
               showError(e);
+            } finally {
+              setIsLoading(false);
             }
           }}
         >

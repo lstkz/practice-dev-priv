@@ -2,14 +2,7 @@ import loader from '@monaco-editor/loader';
 import { createModuleContext, useActions, useImmer } from 'context-api';
 import React from 'react';
 import { usePreventEditorNavigation } from './usePreventEditorNavigation';
-import {
-  Challenge,
-  Workspace,
-  WorkspaceNode,
-  WorkspaceNodeType,
-} from 'src/generated';
 import { APIService } from './APIService';
-import { useApolloClient } from '@apollo/client';
 import { useModelState } from './useModelState';
 import { createCodeEditor, TreeNode, WorkspaceModel } from 'code-editor';
 import { IFRAME_ORIGIN } from 'src/config';
@@ -17,6 +10,7 @@ import { useErrorModalActions } from 'src/features/ErrorModalModule';
 import { useChallengeActions } from '../ChallengeModule';
 import { useTesterActions } from '../TesterModule';
 import { convertCodeToHtml } from './convertCodeToHtml';
+import { Challenge, Workspace, WorkspaceNode, WorkspaceNodeType } from 'shared';
 
 interface Actions {
   load: (container: HTMLDivElement) => void;
@@ -44,9 +38,8 @@ interface EditorModuleProps {
 }
 
 function useServices(workspace: Workspace, challengeId: string) {
-  const client = useApolloClient();
   return React.useMemo(() => {
-    const apiService = new APIService(client, workspace.id, workspace.s3Auth);
+    const apiService = new APIService(workspace.id, workspace.s3Auth);
     return {
       ...createCodeEditor({
         apiService,

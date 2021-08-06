@@ -1,9 +1,12 @@
 import React from 'react';
-import { gql } from '@apollo/client';
 import { InferGetServerSidePropsType } from 'next';
 import { useImmer, createModuleContext, useActions } from 'context-api';
 import { ChallengePage } from './ChallengePage';
-import { createGetServerSideProps, getCDNUrl } from '../../common/helper';
+import {
+  createGetServerSideProps,
+  createSSRClient,
+  getCDNUrl,
+} from '../../common/helper';
 import { readCookieFromString } from '../../common/cookie';
 import {
   LEFT_COOKIE_NAME,
@@ -12,16 +15,8 @@ import {
   RIGHT_DEFAULT,
 } from './const';
 import { EditorModule } from './editor/EditorModule';
-import { getApolloClient } from 'src/getApolloClient';
-import {
-  Challenge,
-  GetChallengeDocument,
-  GetChallengeQuery,
-  GetOrCreateWorkspaceDocument,
-  GetOrCreateWorkspaceMutation,
-  Workspace,
-} from 'src/generated';
 import { TesterModule } from './TesterModule';
+import { Challenge, Workspace } from 'shared';
 
 interface Actions {
   setLeftSidebarTab: (leftSidebarTab: LeftSidebarTab | null) => void;
@@ -105,53 +100,6 @@ export type ChallengeSSRProps = InferGetServerSidePropsType<
   typeof getServerSideProps
 >;
 
-gql`
-  mutation GetOrCreateWorkspace($id: String!) {
-    getOrCreateWorkspace(values: { challengeUniqId: $id }) {
-      id
-      items {
-        id
-        name
-        parentId
-        hash
-        type
-        isLocked
-      }
-      s3Auth {
-        bucketName
-        credentials {
-          accessKeyId
-          secretAccessKey
-          sessionToken
-        }
-      }
-      libraries {
-        name
-        types
-        source
-      }
-    }
-  }
-`;
-
-gql`
-  query GetChallenge($id: String!) {
-    getChallenge(id: $id) {
-      id
-      challengeId
-      moduleId
-      title
-      description
-      difficulty
-      practiceTime
-      detailsS3Key
-      htmlS3Key
-      solutionUrl
-      tests
-    }
-  }
-`;
-
 export const getServerSideProps = createGetServerSideProps(async ctx => {
   const getCookieNum = (name: string, defaultValue: number) => {
     const strVal = readCookieFromString(
@@ -164,24 +112,12 @@ export const getServerSideProps = createGetServerSideProps(async ctx => {
   const initialLeftSidebar = getCookieNum(LEFT_COOKIE_NAME, LEFT_DEFAULT);
   const initialRightSidebar = getCookieNum(RIGHT_COOKIE_NAME, RIGHT_DEFAULT);
 
-  const client = getApolloClient(ctx);
+  const api = createSSRClient(ctx);
   const [workspace, challenge] = await Promise.all([
-    client
-      .mutate<GetOrCreateWorkspaceMutation>({
-        mutation: GetOrCreateWorkspaceDocument,
-        variables: {
-          id: '2_1',
-        },
-      })
-      .then(x => x.data!.getOrCreateWorkspace),
-    client
-      .query<GetChallengeQuery>({
-        query: GetChallengeDocument,
-        variables: {
-          id: '2_1',
-        },
-      })
-      .then(x => x.data.getChallenge),
+    api.workspace_getOrCreateWorkspace({
+      challengeUniqId: '2_1',
+    }),
+    api.challenge_getChallenge('2_1'),
   ]);
   const challengeHtml = await fetch(getCDNUrl(challenge.htmlS3Key)).then(x =>
     x.text()

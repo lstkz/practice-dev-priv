@@ -1,5 +1,4 @@
 import React from 'react';
-import { gql } from '@apollo/client';
 import { InferGetServerSidePropsType } from 'next';
 import { useImmer, createModuleContext, useActions } from 'context-api';
 import { ModulePage } from './ModulePage';
@@ -46,19 +45,7 @@ export type ModuleSSRProps = InferGetServerSidePropsType<
   typeof getServerSideProps
 >;
 
-gql`
-  query GetModule {
-    me {
-      id
-    }
-  }
-`;
-
 export const getServerSideProps = createGetServerSideProps(async _ctx => {
-  // const client = getApolloClient(ctx);
-  // const ret = await client.query<GetModuleQuery>({
-  //   query: GetModuleDocument,
-  // });
   return {
     props: {},
   };

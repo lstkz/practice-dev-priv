@@ -4,8 +4,6 @@
   "scripts": {
     "start:app": "cd apps/app && yarn start",
     "start:api": "cd apps/api && yarn start",
-    "generate": "graphql-codegen",
-    "g": "yarn run generate",
     "lint": "eslint . --ext .ts --ext .tsx",
     "tsc": "tsc"
   },
@@ -19,11 +17,6 @@
   ],
   "dependencies": {
     "@types/node": "^14.14.37",
-    "@graphql-codegen/cli": "^1.21.3",
-    "@graphql-codegen/typescript": "^1.21.1",
-    "@graphql-codegen/typescript-operations": "^1.17.15",
-    "@graphql-codegen/typescript-react-apollo": "^2.2.3",
-    "@graphql-codegen/typescript-resolvers": "^1.19.0",
     "@typescript-eslint/eslint-plugin": "^4.28.3",
     "@typescript-eslint/parser": "^4.28.3",
     "eslint": "^7.30.0",

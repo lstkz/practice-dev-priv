@@ -11,8 +11,6 @@
   },
   "license": "UNLICENSED",
   "dependencies": {
-    "@apollo/client": "^3.3.13",
-    "@apollo/react-components": "^4.0.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@fortawesome/free-brands-svg-icons": "^5.15.2",
     "@fortawesome/free-regular-svg-icons": "^5.15.1",

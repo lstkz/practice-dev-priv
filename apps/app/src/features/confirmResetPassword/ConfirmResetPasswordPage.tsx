@@ -1,27 +1,18 @@
 import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { useConfirmResetPasswordMutation } from '../../generated';
 import { ContextInput } from '../../components/ContextInput';
 import { Button } from '../../components/Button';
 import { Alert } from '../../components/Alert';
 import { FullPageForm } from '../../components/FullPageForm';
-import { gql } from '@apollo/client';
 import { Validator } from 'src/common/Validator';
 import { useAuthForm } from 'src/hooks/useAuthForm';
 import { PASSWORD_MIN_LENGTH } from 'shared';
 import { useRouter } from 'next/dist/client/router';
+import { api } from 'src/services/api';
 
 interface FormValues {
   password: string;
 }
-
-gql`
-  mutation ConfirmResetPassword($code: String!, $newPassword: String!) {
-    confirmResetPassword(code: $code, newPassword: $newPassword) {
-      ...DefaultAuthResult
-    }
-  }
-`;
 
 export function ConfirmResetPasswordPage() {
   const formMethods = useForm<FormValues>({
@@ -33,15 +24,12 @@ export function ConfirmResetPasswordPage() {
     },
   });
   const router = useRouter();
-  const [confirmResetPassword] = useConfirmResetPasswordMutation();
   const { error, isSubmitting, onSubmit } = useAuthForm({
     submit: () => {
-      return confirmResetPassword({
-        variables: {
-          code: router.query.code as string,
-          newPassword: formMethods.getValues().password,
-        },
-      }).then(x => x.data!.confirmResetPassword!);
+      return api.user_confirmResetPassword(
+        router.query.code as string,
+        formMethods.getValues().password
+      );
     },
   });
   const { handleSubmit } = formMethods;

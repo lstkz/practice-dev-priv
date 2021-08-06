@@ -9,9 +9,8 @@ import { createUrl } from '../../common/url';
 import { FullPageForm } from '../../components/FullPageForm';
 import { MailIcon } from '@heroicons/react/outline';
 import { Validator } from 'src/common/Validator';
-import { gql } from '@apollo/client';
-import { useResetPasswordMutation } from '../../generated';
 import { getErrorMessage } from 'src/common/helper';
+import { api } from 'src/services/api';
 
 type State = {
   error: string;
@@ -22,12 +21,6 @@ interface FormValues {
   usernameOrEmail: string;
 }
 
-gql`
-  mutation ResetPassword($usernameOrEmail: String!) {
-    resetPassword(usernameOrEmail: $usernameOrEmail)
-  }
-`;
-
 export function ResetPasswordPage() {
   const [state, setState] = useImmer<State>(
     {
@@ -37,7 +30,7 @@ export function ResetPasswordPage() {
     'ForgotPasswordModule'
   );
   const { error } = state;
-  const [resetPassword, { loading }] = useResetPasswordMutation();
+  const [isLoading, setIsLoading] = React.useState(false);
   const formMethods = useForm<FormValues>({
     resolver: data => {
       return new Validator(data).required('usernameOrEmail').validate();
@@ -72,9 +65,8 @@ export function ResetPasswordPage() {
             tw="space-y-6"
             onSubmit={handleSubmit(async values => {
               try {
-                await resetPassword({
-                  variables: values,
-                });
+                setIsLoading(true);
+                await api.user_resetPassword(values.usernameOrEmail);
                 setState(draft => {
                   draft.isSuccess = true;
                 });
@@ -82,12 +74,14 @@ export function ResetPasswordPage() {
                 setState(draft => {
                   draft.error = getErrorMessage(e);
                 });
+              } finally {
+                setIsLoading(false);
               }
             })}
           >
             {error && <Alert>{error}</Alert>}
             <ContextInput label="Username or Email" name="usernameOrEmail" />
-            <Button type="primary" block htmlType="submit" loading={loading}>
+            <Button type="primary" block htmlType="submit" loading={isLoading}>
               Reset password
             </Button>
           </form>

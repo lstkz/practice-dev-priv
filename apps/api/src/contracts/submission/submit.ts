@@ -1,4 +1,3 @@
-import { ForbiddenError } from 'apollo-server';
 import { ObjectID } from 'mongodb2';
 import { S } from 'schema';
 import { SubmissionStatus } from 'shared';
@@ -8,7 +7,7 @@ import {
 } from '../../collections/Submission';
 import { WorkspaceCollection } from '../../collections/Workspace';
 import { WorkspaceNodeCollection } from '../../collections/WorkspaceNode';
-import { AppError } from '../../common/errors';
+import { AppError, ForbiddenError } from '../../common/errors';
 import { getCurrentDate, randomUniqString } from '../../common/helper';
 import { dispatchTask } from '../../dispatch';
 import { createContract, createRpcBinding } from '../../lib';

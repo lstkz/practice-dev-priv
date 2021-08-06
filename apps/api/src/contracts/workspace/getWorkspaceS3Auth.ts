@@ -1,8 +1,7 @@
-import { ForbiddenError } from 'apollo-server';
 import { S } from 'schema';
 import { WorkspaceS3Auth } from 'shared';
 import { WorkspaceCollection } from '../../collections/Workspace';
-import { AppError } from '../../common/errors';
+import { AppError, ForbiddenError } from '../../common/errors';
 import { mapWorkspaceS3Auth } from '../../common/mapper';
 import { createContract, createRpcBinding } from '../../lib';
 import { renewWorkspaceAuth } from './_common';

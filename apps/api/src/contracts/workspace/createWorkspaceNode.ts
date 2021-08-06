@@ -1,9 +1,8 @@
-import { ForbiddenError } from 'apollo-server';
 import { S } from 'schema';
 import { FILENAME_MAX_LENGTH, FILENAME_REGEX, WorkspaceNodeType } from 'shared';
 import { WorkspaceCollection } from '../../collections/Workspace';
 import { WorkspaceNodeCollection } from '../../collections/WorkspaceNode';
-import { AppError } from '../../common/errors';
+import { AppError, ForbiddenError } from '../../common/errors';
 import { getWorkspaceNodeS3Key, revertRenameId } from '../../common/helper';
 import { getWorkspaceNodeWithUniqueKey } from '../../common/workspace-tree';
 import { createContract, createRpcBinding } from '../../lib';

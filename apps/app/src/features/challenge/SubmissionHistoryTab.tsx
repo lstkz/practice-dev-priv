@@ -1,4 +1,3 @@
-import { gql, useApolloClient } from '@apollo/client';
 import React from 'react';
 import * as DateFns from 'date-fns';
 import Badge from '../../components/Badge';
@@ -6,35 +5,10 @@ import { Button } from '../../components/Button';
 import Select from '../../components/Select';
 import { TabLoader } from './TabLoader';
 import { TabTitle } from './TabTitle';
-import {
-  SearchSubmissionsDocument,
-  SearchSubmissionsQuery,
-  Submission,
-  SubmissionSortBy,
-  SubmissionStatus,
-} from '../../generated';
 import { useImmer } from 'context-api';
 import { useErrorModalActions } from '../ErrorModalModule';
-
-gql`
-  query SearchSubmissions($criteria: SearchSubmissionsCriteria!) {
-    searchSubmissions(criteria: $criteria) {
-      items {
-        id
-        createdAt
-        status
-        nodes {
-          id
-          name
-          parentId
-          type
-          s3Key
-        }
-      }
-      total
-    }
-  }
-`;
+import { Submission, SubmissionSortBy, SubmissionStatus } from 'shared';
+import { api } from 'src/services/api';
 
 interface State {
   isLoaded: boolean;
@@ -45,7 +19,6 @@ interface State {
 }
 
 export function SubmissionHistoryTab() {
-  const client = useApolloClient();
   const [state, setState, getState] = useImmer<State>(
     {
       isLoaded: false,
@@ -61,18 +34,11 @@ export function SubmissionHistoryTab() {
 
   const searchData = async (loadMore?: boolean) => {
     try {
-      const ret = await client.query<SearchSubmissionsQuery>({
-        fetchPolicy: 'network-only',
-        query: SearchSubmissionsDocument,
-        variables: {
-          criteria: {
-            offset: loadMore ? getState().items.length : 0,
-            limit: 20,
-            sortBy: getState().sortBy,
-          },
-        },
+      const { items, total } = await api.submission_searchSubmissions({
+        offset: loadMore ? getState().items.length : 0,
+        limit: 20,
+        sortBy: getState().sortBy,
       });
-      const { items, total } = ret.data.searchSubmissions;
       setState(draft => {
         draft.isLoaded = true;
         draft.isLoadMore = false;

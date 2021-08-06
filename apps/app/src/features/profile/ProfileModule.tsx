@@ -1,9 +1,6 @@
 import React from 'react';
-import { gql } from '@apollo/client';
 import { InferGetServerSidePropsType } from 'next';
 import { useImmer, createModuleContext, useActions } from 'context-api';
-// import { GetProfileDocument, GetProfileQuery } from '../../generated';
-// import { getApolloClient } from '../../getApolloClient';
 import { ProfilePage } from './ProfilePage';
 import { createGetServerSideProps } from '../../common/helper';
 
@@ -48,19 +45,7 @@ export type ProfileSSRProps = InferGetServerSidePropsType<
   typeof getServerSideProps
 >;
 
-gql`
-  query GetProfile {
-    me {
-      id
-    }
-  }
-`;
-
 export const getServerSideProps = createGetServerSideProps(async _ctx => {
-  // const client = getApolloClient(ctx);
-  // const ret = await client.query<GetProfileQuery>({
-  //   query: GetProfileDocument,
-  // });
   return {
     props: {},
   };

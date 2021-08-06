@@ -1,4 +1,3 @@
-import { ForbiddenError } from 'apollo-server';
 import { ObjectID } from 'mongodb2';
 import { WorkspaceNodeType } from 'shared';
 import {
@@ -9,7 +8,7 @@ import {
   WorkspaceNodeCollection,
   WorkspaceNodeModel,
 } from '../../collections/WorkspaceNode';
-import { AppError } from '../../common/errors';
+import { AppError, ForbiddenError } from '../../common/errors';
 import { AppUser } from '../../types';
 import { createWorkspaceS3Auth } from './createWorkspaceS3Auth';
 
