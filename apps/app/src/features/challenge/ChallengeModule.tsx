@@ -109,7 +109,6 @@ gql`
   mutation GetOrCreateWorkspace($id: String!) {
     getOrCreateWorkspace(values: { challengeUniqId: $id }) {
       id
-      isReady
       items {
         id
         name

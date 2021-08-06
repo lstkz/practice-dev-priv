@@ -1,5 +1,4 @@
 import { gql } from 'apollo-server';
-import { mocked } from 'ts-jest/utils';
 import { WorkspaceCollection } from '../../src/collections/Workspace';
 import {
   WorkspaceNodeCollection,
@@ -7,22 +6,18 @@ import {
 } from '../../src/collections/WorkspaceNode';
 import { getWorkspaceNodeWithUniqueKey } from '../../src/common/workspace-tree';
 import { getOrCreateWorkspace } from '../../src/contracts/workspace/getOrCreateWorkspace';
-import { dispatchTask } from '../../src/dispatch';
-import { sts } from '../../src/lib';
+import { s3, sts } from '../../src/lib';
 import { apolloServer } from '../../src/server';
 import { getAppUser, getId, getTokenOptions, setupDb } from '../helper';
 import { createSampleChallenges, registerSampleUsers } from '../seed-data';
 
-jest.mock('../../src/dispatch');
-
-const mocked_dispatchTask = mocked(dispatchTask);
+let mocked_copyObject: jest.Mock<any, []> = null!;
 
 setupDb();
 
 beforeEach(async () => {
   await registerSampleUsers();
   await createSampleChallenges();
-  mocked_dispatchTask.mockClear();
   sts.getFederationToken = () =>
     ({
       promise: async () => ({
@@ -33,6 +28,13 @@ beforeEach(async () => {
         },
       }),
     } as any);
+  mocked_copyObject = jest.fn(
+    () =>
+      ({
+        promise: async () => ({}),
+      } as any)
+  );
+  s3.copyObject = mocked_copyObject;
   Date.now = () => 1;
 });
 
@@ -46,9 +48,23 @@ it('should create a workspace', async () => {
   const ret = await getOrCreateWorkspace(await getAppUser(1), {
     challengeUniqId: '1_2',
   });
-  expect(mocked_dispatchTask).toBeCalled();
-  expect(ret.isReady).toEqual(false);
-  expect(ret.items).toEqual([]);
+  expect(ret.items).toHaveLength(4);
+});
+
+it('should create a workspace and return the same files if parallel requests', async () => {
+  const ret = await Promise.all([
+    getOrCreateWorkspace(await getAppUser(1), {
+      challengeUniqId: '1_2',
+    }),
+    getOrCreateWorkspace(await getAppUser(1), {
+      challengeUniqId: '1_2',
+    }),
+    getOrCreateWorkspace(await getAppUser(1), {
+      challengeUniqId: '1_2',
+    }),
+  ]);
+  expect(ret[0].items).toEqual(ret[1].items);
+  expect(ret[1].items).toEqual(ret[2].items);
 });
 
 it('should return an existing workspace', async () => {
@@ -91,11 +107,9 @@ it('should return an existing workspace', async () => {
   const ret = await getOrCreateWorkspace(await getAppUser(1), {
     challengeUniqId: '1_2',
   });
-  expect(mocked_dispatchTask).not.toBeCalled();
   expect(ret).toMatchInlineSnapshot(`
 Object {
   "id": "000000000000000000000100",
-  "isReady": true,
   "items": Array [
     Object {
       "hash": "h1",
@@ -134,7 +148,7 @@ it('should create a workspace #graphql', async () => {
       query: gql`
         mutation {
           getOrCreateWorkspace(values: { challengeUniqId: "1_2" }) {
-            isReady
+            id
           }
         }
       `,
@@ -142,11 +156,4 @@ it('should create a workspace #graphql', async () => {
     getTokenOptions('user1_token')
   );
   expect(res.errors).toBeFalsy();
-  expect(res.data).toMatchInlineSnapshot(`
-Object {
-  "getOrCreateWorkspace": Object {
-    "isReady": false,
-  },
-}
-`);
 });

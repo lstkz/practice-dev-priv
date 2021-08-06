@@ -85,7 +85,6 @@ type Challenge {
 
 type Workspace {
   id: String!
-  isReady: Boolean!
   items: [WorkspaceNode!]!
   s3Auth: WorkspaceS3Auth!
   libraries: [LibraryDefinition!]!

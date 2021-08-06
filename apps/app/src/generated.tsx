@@ -348,7 +348,6 @@ export type User = {
 export type Workspace = {
   __typename?: 'Workspace';
   id: Scalars['String'];
-  isReady: Scalars['Boolean'];
   items: Array<WorkspaceNode>;
   s3Auth: WorkspaceS3Auth;
   libraries: Array<LibraryDefinition>;
@@ -445,10 +444,7 @@ export type GetOrCreateWorkspaceMutationVariables = Exact<{
 }>;
 
 export type GetOrCreateWorkspaceMutation = { __typename?: 'Mutation' } & {
-  getOrCreateWorkspace: { __typename?: 'Workspace' } & Pick<
-    Workspace,
-    'id' | 'isReady'
-  > & {
+  getOrCreateWorkspace: { __typename?: 'Workspace' } & Pick<Workspace, 'id'> & {
       items: Array<
         { __typename?: 'WorkspaceNode' } & Pick<
           WorkspaceNode,
@@ -1133,7 +1129,6 @@ export const GetOrCreateWorkspaceDocument = gql`
   mutation GetOrCreateWorkspace($id: String!) {
     getOrCreateWorkspace(values: { challengeUniqId: $id }) {
       id
-      isReady
       items {
         id
         name
