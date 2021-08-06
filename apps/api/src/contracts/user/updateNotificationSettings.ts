@@ -1,31 +1,27 @@
 import { S } from 'schema';
+import { NotificationSettings } from 'shared';
 import { UserCollection } from '../../collections/User';
-import { NotificationSettings } from '../../generated';
-import { createContract, createGraphqlBinding } from '../../lib';
+import { createContract, createRpcBinding } from '../../lib';
 
 export const updateNotificationSettings = createContract(
   'user.updateNotificationSettings'
 )
-  .params('appUser', 'values')
+  .params('user', 'values')
   .schema({
-    appUser: S.object().appUser(),
+    user: S.object().appUser(),
     values: S.object().keys({
       newsletter: S.boolean(),
     }),
   })
   .returns<NotificationSettings>()
-  .fn(async (appUser, values) => {
-    const user = await UserCollection.findByIdOrThrow(appUser.id);
+  .fn(async (user, values) => {
     user.notificationSettings = values;
     await UserCollection.update(user, ['notificationSettings']);
     return values;
   });
 
-export const updateNotificationSettingsGraphql = createGraphqlBinding({
-  resolver: {
-    Mutation: {
-      updateNotificationSettings: (_, { values }, { getUser }) =>
-        updateNotificationSettings(getUser(), values),
-    },
-  },
+export const resetPasswordRpc = createRpcBinding({
+  injectUser: true,
+  signature: 'user.updateNotificationSettings',
+  handler: updateNotificationSettings,
 });

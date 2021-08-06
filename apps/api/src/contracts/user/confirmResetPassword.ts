@@ -1,5 +1,5 @@
 import { S } from 'schema';
-import { createContract, createGraphqlBinding } from '../../lib';
+import { createContract, createRpcBinding } from '../../lib';
 import { AppError } from '../../common/errors';
 import { createPasswordHash } from '../../common/helper';
 import { AuthData, getPasswordSchema } from 'shared';
@@ -33,12 +33,8 @@ export const confirmResetPassword = createContract('user.confirmResetPassword')
     return generateAuthData(user);
   });
 
-export const confirmResetPasswordRpc = createGraphqlBinding({
+export const changeEmailRpc = createRpcBinding({
   public: true,
-  resolver: {
-    Mutation: {
-      confirmResetPassword: (_, { code, newPassword }) =>
-        confirmResetPassword(code, newPassword),
-    },
-  },
+  signature: 'user.confirmResetPassword',
+  handler: confirmResetPassword,
 });

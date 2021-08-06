@@ -1,8 +1,6 @@
-import { gql } from 'apollo-server';
 import { mocked } from 'ts-jest/utils';
 import { register } from '../../src/contracts/user/register';
-import { apolloServer } from '../../src/server';
-import { setupDb } from '../helper';
+import { execContract, setupDb } from '../helper';
 import { dispatchEvent } from '../../src/dispatch';
 
 jest.mock('../../src/dispatch');
@@ -50,10 +48,12 @@ describe('validation', () => {
 });
 
 it('register user successfully', async () => {
-  const { user, token } = await register({
-    email: 'user1@example.com',
-    username: 'user1',
-    password: 'password',
+  const { user, token } = await execContract(register, {
+    values: {
+      email: 'user1@example.com',
+      username: 'user1',
+      password: 'password',
+    },
   });
   expect(token).toBeDefined();
   expect(user.id).toBeDefined();
@@ -61,85 +61,4 @@ it('register user successfully', async () => {
   expect(user.email).toEqual('user1@example.com');
   expect(user.username).toEqual('user1');
   expect(mocked_dispatchEvent).toBeCalled();
-});
-
-it('register user successfully #graphql', async () => {
-  const res = await apolloServer.executeOperation({
-    query: gql`
-      mutation {
-        register(
-          values: {
-            email: "user1@example.org"
-            password: "123456"
-            username: "user1"
-          }
-        ) {
-          user {
-            username
-            email
-          }
-        }
-      }
-    `,
-  });
-  expect(res.data).toMatchInlineSnapshot(`
-Object {
-  "register": Object {
-    "user": Object {
-      "email": "user1@example.org",
-      "username": "user1",
-    },
-  },
-}
-`);
-  expect(res.errors).toBeFalsy();
-});
-
-it('register with errors #graphql', async () => {
-  const res = await apolloServer.executeOperation({
-    query: gql`
-      mutation {
-        register(
-          values: { email: "aa", password: "123456", username: "user1" }
-        ) {
-          user {
-            username
-            email
-          }
-        }
-      }
-    `,
-  });
-  expect(res.errors).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "extensions": Object {
-      "code": "VALIDATION_ERROR",
-      "exception": Object {
-        "errors": Array [
-          Object {
-            "message": "must a valid email",
-            "path": Array [
-              "values",
-              "email",
-            ],
-            "type": "string.email",
-            "value": "aa",
-          },
-        ],
-      },
-    },
-    "locations": Array [
-      Object {
-        "column": 3,
-        "line": 2,
-      },
-    ],
-    "message": "Validation error: 'values.email' must a valid email.",
-    "path": Array [
-      "register",
-    ],
-  },
-]
-`);
 });

@@ -3,7 +3,7 @@ import { AuthData } from 'shared';
 import { UserCollection } from '../../collections/User';
 import { AppError } from '../../common/errors';
 import { exchangeCode, getUserData } from '../../common/github';
-import { createContract, createGraphqlBinding } from '../../lib';
+import { createContract, createRpcBinding } from '../../lib';
 import { generateAuthData } from './_common';
 
 export const loginGithub = createContract('user.loginGithub')
@@ -24,11 +24,8 @@ export const loginGithub = createContract('user.loginGithub')
     return generateAuthData(user);
   });
 
-export const loginGithubGraphql = createGraphqlBinding({
+export const loginGithubRpc = createRpcBinding({
   public: true,
-  resolver: {
-    Mutation: {
-      loginGithub: (_, { code }) => loginGithub(code),
-    },
-  },
+  signature: 'user.loginGithub',
+  handler: loginGithub,
 });

@@ -1,6 +1,6 @@
 import { S } from 'schema';
-import { UserCollection, UserProfile } from '../../collections/User';
-import { createContract, createGraphqlBinding } from '../../lib';
+import { UserProfile } from '../../collections/User';
+import { createContract, createRpcBinding } from '../../lib';
 
 export const getMyProfile = createContract('user.getMyProfile')
   .params('user')
@@ -9,14 +9,11 @@ export const getMyProfile = createContract('user.getMyProfile')
   })
   .returns<UserProfile>()
   .fn(async user => {
-    const latest = await UserCollection.findByIdOrThrow(user.id);
-    return latest.profile ?? {};
+    return user.profile ?? {};
   });
 
-export const getMyProfileGraphql = createGraphqlBinding({
-  resolver: {
-    Query: {
-      getMyProfile: (_, __, { getUser }) => getMyProfile(getUser()),
-    },
-  },
+export const getMyProfileRpc = createRpcBinding({
+  injectUser: true,
+  signature: 'user.getMyProfile',
+  handler: getMyProfile,
 });

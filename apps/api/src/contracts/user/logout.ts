@@ -1,21 +1,19 @@
 import { S } from 'schema';
 import { AccessTokenCollection } from '../../collections/AccessToken';
-import { createContract, createGraphqlBinding } from '../../lib';
+import { createContract, createRpcBinding } from '../../lib';
 
 export const logout = createContract('user.logout')
-  .params('token')
+  .params('user')
   .schema({
-    token: S.string(),
+    user: S.object().appUser(),
   })
   .returns<void>()
-  .fn(async token => {
-    await AccessTokenCollection.deleteById(token);
+  .fn(async user => {
+    await AccessTokenCollection.deleteById(user.accessToken);
   });
 
-export const logoutGraphql = createGraphqlBinding({
-  resolver: {
-    Mutation: {
-      logout: (_, __, { getToken }) => logout(getToken()),
-    },
-  },
+export const loginGoogleRpc = createRpcBinding({
+  injectUser: true,
+  signature: 'user.logout',
+  handler: logout,
 });

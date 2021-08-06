@@ -23,11 +23,10 @@ function walk(dir: string) {
   return results;
 }
 
-// const bindings: any[] = R.flatMap(
-//   walk(Path.join(__dirname, '../contracts')),
-//   file => require(file)
-// );
-const bindings: any[] = [require('../contracts/user/confirmChangeEmail')];
+const bindings: any[] = R.flatMap(
+  walk(Path.join(__dirname, '../contracts')),
+  file => require(file)
+);
 
 export function getBindings(type: 'rpc'): CreateRpcBindingOptions[];
 export function getBindings(type: 'event'): CreateEventBindingOptions<any>[];

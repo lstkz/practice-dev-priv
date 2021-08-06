@@ -129,5 +129,9 @@ export async function getAppUser(token: string): Promise<AppUser> {
   if (!tokenEntity) {
     throw new UnauthorizedError('invalid token');
   }
-  return UserCollection.findByIdOrThrow(tokenEntity.userId);
+  const ret = await UserCollection.findByIdOrThrow(tokenEntity.userId);
+  return {
+    ...ret,
+    accessToken: token,
+  };
 }

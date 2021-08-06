@@ -11,7 +11,9 @@ export type AppContext = {
   getToken: () => string;
 };
 
-export interface AppUser extends UserModel {}
+export interface AppUser extends UserModel {
+  accessToken: string;
+}
 
 declare module 'express' {
   interface Request {

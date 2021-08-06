@@ -1,5 +1,5 @@
 import { S } from 'schema';
-import { createContract, createGraphqlBinding } from '../../lib';
+import { createContract, createRpcBinding } from '../../lib';
 import { AuthData, getPasswordSchema, getUsernameSchema } from 'shared';
 import { createUser, generateAuthData } from './_common';
 
@@ -24,13 +24,8 @@ export const register = createContract('user.register')
     return generateAuthData(user);
   });
 
-export const registerGraphql = createGraphqlBinding({
+export const loginGoogleRpc = createRpcBinding({
   public: true,
-  resolver: {
-    Mutation: {
-      register: (_, { values }) => {
-        return register(values);
-      },
-    },
-  },
+  signature: 'user.register',
+  handler: register,
 });

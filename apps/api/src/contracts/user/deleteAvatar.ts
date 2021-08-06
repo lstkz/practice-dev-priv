@@ -1,15 +1,14 @@
 import { S } from 'schema';
 import { UserCollection } from '../../collections/User';
-import { createContract, createGraphqlBinding } from '../../lib';
+import { createContract, createRpcBinding } from '../../lib';
 
 export const deleteAvatar = createContract('user.deleteAvatar')
-  .params('appUser')
+  .params('user')
   .schema({
-    appUser: S.object().appUser(),
+    user: S.object().appUser(),
   })
   .returns<void>()
-  .fn(async appUser => {
-    const user = await UserCollection.findByIdOrThrow(appUser.id);
+  .fn(async user => {
     if (user.avatarId) {
       user.avatarId = null;
       await UserCollection.update(user, ['avatarId']);
@@ -17,10 +16,8 @@ export const deleteAvatar = createContract('user.deleteAvatar')
     }
   });
 
-export const deleteAvatarGraphql = createGraphqlBinding({
-  resolver: {
-    Mutation: {
-      deleteAvatar: (_, __, { getUser }) => deleteAvatar(getUser()),
-    },
-  },
+export const deleteAvatarRpc = createRpcBinding({
+  injectUser: true,
+  signature: 'user.deleteAvatar',
+  handler: deleteAvatar,
 });

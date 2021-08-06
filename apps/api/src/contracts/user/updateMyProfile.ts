@@ -1,12 +1,12 @@
 import { S } from 'schema';
 import { countryList, URL_REGEX } from 'shared';
 import { UserCollection, UserProfile } from '../../collections/User';
-import { createContract, createGraphqlBinding } from '../../lib';
+import { createContract, createRpcBinding } from '../../lib';
 
 export const updateMyProfile = createContract('user.updateMyProfile')
-  .params('appUser', 'values')
+  .params('user', 'values')
   .schema({
-    appUser: S.object().appUser(),
+    user: S.object().appUser(),
     values: S.object().keys({
       name: S.string().optional().nullable().max(100),
       about: S.string().optional().nullable().max(500),
@@ -18,18 +18,14 @@ export const updateMyProfile = createContract('user.updateMyProfile')
     }),
   })
   .returns<UserProfile>()
-  .fn(async (appUser, values) => {
-    const user = await UserCollection.findByIdOrThrow(appUser.id);
+  .fn(async (user, values) => {
     user.profile = values;
     await UserCollection.update(user, ['profile']);
     return values;
   });
 
-export const updateMyProfileGraphql = createGraphqlBinding({
-  resolver: {
-    Mutation: {
-      updateMyProfile: (_, { values }, { getUser }) =>
-        updateMyProfile(getUser(), values),
-    },
-  },
+export const resetPasswordRpc = createRpcBinding({
+  injectUser: true,
+  signature: 'user.updateMyProfile',
+  handler: updateMyProfile,
 });

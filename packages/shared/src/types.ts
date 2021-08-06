@@ -187,3 +187,7 @@ export interface TaskSolvedSocketMsg {
 }
 
 export type AppSocketMsg = SocketMessage;
+
+export interface NotificationSettings {
+  newsletter: boolean;
+}
