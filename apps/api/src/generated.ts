@@ -272,6 +272,7 @@ export type Query = {
   getAwsUploadContentAuth: AwsUploadContentAuth;
   getWorkspaceS3Auth: WorkspaceS3Auth;
   getChallenge: Challenge;
+  searchSubmissions: SearchSubmissionsResult;
 };
 
 export type QueryGetWorkspaceS3AuthArgs = {
@@ -282,11 +283,56 @@ export type QueryGetChallengeArgs = {
   id: Scalars['String'];
 };
 
+export type QuerySearchSubmissionsArgs = {
+  criteria: SearchSubmissionsCriteria;
+};
+
 export type RegisterInput = {
   username: Scalars['String'];
   email: Scalars['String'];
   password: Scalars['String'];
 };
+
+export type SearchSubmissionsCriteria = {
+  limit: Scalars['Int'];
+  offset: Scalars['Int'];
+  sortBy: SubmissionSortBy;
+};
+
+export type SearchSubmissionsResult = {
+  __typename?: 'SearchSubmissionsResult';
+  items: Array<Submission>;
+  total: Scalars['Int'];
+};
+
+export type Submission = {
+  __typename?: 'Submission';
+  id: Scalars['String'];
+  createdAt: Scalars['String'];
+  status: SubmissionStatus;
+  nodes: Array<SubmissionNode>;
+};
+
+export type SubmissionNode = {
+  __typename?: 'SubmissionNode';
+  id: Scalars['String'];
+  name: Scalars['String'];
+  parentId?: Maybe<Scalars['String']>;
+  type: WorkspaceNodeType;
+  s3Key?: Maybe<Scalars['String']>;
+};
+
+export enum SubmissionSortBy {
+  Newest = 'newest',
+  Oldest = 'oldest',
+}
+
+export enum SubmissionStatus {
+  Queued = 'queued',
+  Running = 'running',
+  Pass = 'pass',
+  Fail = 'fail',
+}
 
 export type SubmitInput = {
   workspaceId: Scalars['String'];
@@ -525,6 +571,12 @@ export type ResolversTypes = {
   PresignedPostField: ResolverTypeWrapper<PresignedPostField>;
   Query: ResolverTypeWrapper<{}>;
   RegisterInput: RegisterInput;
+  SearchSubmissionsCriteria: SearchSubmissionsCriteria;
+  SearchSubmissionsResult: ResolverTypeWrapper<SearchSubmissionsResult>;
+  Submission: ResolverTypeWrapper<Submission>;
+  SubmissionNode: ResolverTypeWrapper<SubmissionNode>;
+  SubmissionSortBy: SubmissionSortBy;
+  SubmissionStatus: SubmissionStatus;
   SubmitInput: SubmitInput;
   Subscription: ResolverTypeWrapper<{}>;
   TestProgressData: ResolverTypeWrapper<Scalars['TestProgressData']>;
@@ -566,6 +618,10 @@ export type ResolversParentTypes = {
   PresignedPostField: PresignedPostField;
   Query: {};
   RegisterInput: RegisterInput;
+  SearchSubmissionsCriteria: SearchSubmissionsCriteria;
+  SearchSubmissionsResult: SearchSubmissionsResult;
+  Submission: Submission;
+  SubmissionNode: SubmissionNode;
   SubmitInput: SubmitInput;
   Subscription: {};
   TestProgressData: Scalars['TestProgressData'];
@@ -891,6 +947,56 @@ export type QueryResolvers<
     ContextType,
     RequireFields<QueryGetChallengeArgs, 'id'>
   >;
+  searchSubmissions?: Resolver<
+    ResolversTypes['SearchSubmissionsResult'],
+    ParentType,
+    ContextType,
+    RequireFields<QuerySearchSubmissionsArgs, 'criteria'>
+  >;
+};
+
+export type SearchSubmissionsResultResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['SearchSubmissionsResult'] = ResolversParentTypes['SearchSubmissionsResult']
+> = {
+  items?: Resolver<
+    Array<ResolversTypes['Submission']>,
+    ParentType,
+    ContextType
+  >;
+  total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type SubmissionResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['Submission'] = ResolversParentTypes['Submission']
+> = {
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status?: Resolver<
+    ResolversTypes['SubmissionStatus'],
+    ParentType,
+    ContextType
+  >;
+  nodes?: Resolver<
+    Array<ResolversTypes['SubmissionNode']>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type SubmissionNodeResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['SubmissionNode'] = ResolversParentTypes['SubmissionNode']
+> = {
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  parentId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['WorkspaceNodeType'], ParentType, ContextType>;
+  s3Key?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type SubscriptionResolvers<
@@ -992,6 +1098,9 @@ export type Resolvers<ContextType = any> = {
   PresignedPost?: PresignedPostResolvers<ContextType>;
   PresignedPostField?: PresignedPostFieldResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  SearchSubmissionsResult?: SearchSubmissionsResultResolvers<ContextType>;
+  Submission?: SubmissionResolvers<ContextType>;
+  SubmissionNode?: SubmissionNodeResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   TestProgressData?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;

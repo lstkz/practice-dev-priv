@@ -14,6 +14,9 @@ type Query {
   getAwsUploadContentAuth: AwsUploadContentAuth!
   getWorkspaceS3Auth(workspaceId: String!): WorkspaceS3Auth!
   getChallenge(id: String!): Challenge!
+  searchSubmissions(
+    criteria: SearchSubmissionsCriteria!
+  ): SearchSubmissionsResult!
 }
 
 type Mutation {
@@ -46,6 +49,44 @@ type Mutation {
   deleteWorkspaceNode(id: String!): Void
   submit(values: SubmitInput!): String!
   notifyTestProgress(notifyKey: String!, data: [TestProgressData!]!): Void
+}
+
+input SearchSubmissionsCriteria {
+  limit: Int!
+  offset: Int!
+  sortBy: SubmissionSortBy!
+}
+
+enum SubmissionSortBy {
+  newest
+  oldest
+}
+
+enum SubmissionStatus {
+  queued
+  running
+  pass
+  fail
+}
+
+type SubmissionNode {
+  id: String!
+  name: String!
+  parentId: String
+  type: WorkspaceNodeType!
+  s3Key: String
+}
+
+type SearchSubmissionsResult {
+  items: [Submission!]!
+  total: Int!
+}
+
+type Submission {
+  id: String!
+  createdAt: String!
+  status: SubmissionStatus!
+  nodes: [SubmissionNode!]!
 }
 
 input SubmitInput {

@@ -93,7 +93,7 @@ Object {
       "type": "file",
     },
   ],
-  "status": "QUEUED",
+  "status": "Queued",
   "userId": "000000000000000000000001",
   "workspaceId": "000000000000000000000010",
 }
@@ -101,7 +101,7 @@ Object {
   expect(mocked_dispatchTask).toBeCalled();
 });
 
-it('should submit#graphql', async () => {
+it('should submit #graphql', async () => {
   const res = await apolloServer.executeOperation(
     {
       query: gql`
