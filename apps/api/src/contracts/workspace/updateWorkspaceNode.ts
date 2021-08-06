@@ -16,9 +16,9 @@ import { AppError } from '../../common/errors';
 export const updateWorkspaceNode = createContract(
   'workspace.updateWorkspaceNode'
 )
-  .params('appUser', 'values')
+  .params('user', 'values')
   .schema({
-    appUser: S.object().appUser(),
+    user: S.object().appUser(),
     values: S.object().keys({
       id: S.string().uuid(),
       parentId: S.string().nullable().optional(),
@@ -31,8 +31,8 @@ export const updateWorkspaceNode = createContract(
         .optional(),
     }),
   })
-  .fn(async (appUser, values) => {
-    const node = await getNodeByIdWithCheck(appUser, values.id);
+  .fn(async (user, values) => {
+    const node = await getNodeByIdWithCheck(user, values.id);
     if (node.isLocked && (values.name || values.parentId)) {
       throw new AppError('Cannot update locked node');
     }

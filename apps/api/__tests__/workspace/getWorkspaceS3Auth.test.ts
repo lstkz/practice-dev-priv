@@ -1,9 +1,7 @@
-import { gql } from 'apollo-server';
 import { WorkspaceCollection } from '../../src/collections/Workspace';
 import { getWorkspaceS3Auth } from '../../src/contracts/workspace/getWorkspaceS3Auth';
 import { sts } from '../../src/lib';
-import { apolloServer } from '../../src/server';
-import { getAppUser, getId, getTokenOptions, setupDb } from '../helper';
+import { execContract, getId, setupDb } from '../helper';
 import {
   createSampleChallenges,
   createSampleWorkspaces,
@@ -31,13 +29,13 @@ beforeEach(async () => {
 
 it('should throw if no found', async () => {
   await expect(
-    getWorkspaceS3Auth(await getAppUser(1), getId(121))
+    execContract(getWorkspaceS3Auth, { workspaceId: getId(121) }, 'user1_token')
   ).rejects.toMatchInlineSnapshot(`[AppError: Workspace not found]`);
 });
 
 it('should throw if no permission', async () => {
   await expect(
-    getWorkspaceS3Auth(await getAppUser(2), getId(10))
+    execContract(getWorkspaceS3Auth, { workspaceId: getId(10) }, 'user2_token')
   ).rejects.toMatchInlineSnapshot(
     `[ForbiddenError: No permission to access this workspace]`
   );
@@ -47,8 +45,13 @@ it('should it create credentials if null', async () => {
   let workspace = await WorkspaceCollection.findByIdOrThrow(getId(10));
   workspace.s3Auth = null!;
   await WorkspaceCollection.update(workspace, ['s3Auth']);
-  expect(await getWorkspaceS3Auth(await getAppUser(1), getId(10)))
-    .toMatchInlineSnapshot(`
+  expect(
+    await execContract(
+      getWorkspaceS3Auth,
+      { workspaceId: getId(10) },
+      'user1_token'
+    )
+  ).toMatchInlineSnapshot(`
     Object {
       "bucketName": "s3-bucket-123",
       "credentials": Object {
@@ -74,8 +77,13 @@ it('should it return existing if not expired', async () => {
     credentialsExpiresAt: new Date(Date.now() + 10000),
   };
   await WorkspaceCollection.update(workspace, ['s3Auth']);
-  expect(await getWorkspaceS3Auth(await getAppUser(1), getId(10)))
-    .toMatchInlineSnapshot(`
+  expect(
+    await execContract(
+      getWorkspaceS3Auth,
+      { workspaceId: getId(10) },
+      'user1_token'
+    )
+  ).toMatchInlineSnapshot(`
     Object {
       "bucketName": "123",
       "credentials": Object {
@@ -99,50 +107,19 @@ it('should it return renew if expired', async () => {
     credentialsExpiresAt: new Date(Date.now() - 10000),
   };
   await WorkspaceCollection.update(workspace, ['s3Auth']);
-  expect(await getWorkspaceS3Auth(await getAppUser(1), getId(10)))
-    .toMatchInlineSnapshot(`
+  expect(
+    await execContract(
+      getWorkspaceS3Auth,
+      { workspaceId: getId(10) },
+      'user1_token'
+    )
+  ).toMatchInlineSnapshot(`
     Object {
       "bucketName": "s3-bucket-123",
       "credentials": Object {
         "accessKeyId": "key1",
         "secretAccessKey": "secret1",
         "sessionToken": "token1",
-      },
-    }
-  `);
-});
-
-it('should return credentials #graphql', async () => {
-  const res = await apolloServer.executeOperation(
-    {
-      query: gql`
-        query ($workspaceId: String!) {
-          getWorkspaceS3Auth(workspaceId: $workspaceId) {
-            bucketName
-            credentials {
-              accessKeyId
-              secretAccessKey
-              sessionToken
-            }
-          }
-        }
-      `,
-      variables: {
-        workspaceId: getId(10).toHexString(),
-      },
-    },
-    getTokenOptions('user1_token')
-  );
-  expect(res.errors).toBeFalsy();
-  expect(res.data).toMatchInlineSnapshot(`
-    Object {
-      "getWorkspaceS3Auth": Object {
-        "bucketName": "s3-bucket-123",
-        "credentials": Object {
-          "accessKeyId": "key1",
-          "secretAccessKey": "secret1",
-          "sessionToken": "token1",
-        },
       },
     }
   `);
