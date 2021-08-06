@@ -20,10 +20,13 @@ export const notifyTestProgress = createContract(
     if (!submission) {
       throw new AppError('Invalid submission key');
     }
-    for (const msg of data) {
-      msg.meta.userId = submission.userId.toHexString();
-      await dispatchSocketMsg(msg);
-    }
+    await dispatchSocketMsg({
+      type: 'TestUpdate',
+      payload: {
+        userId: submission.userId.toHexString(),
+        messages: data,
+      },
+    });
   });
 
 export const notifyTestProgressRpc = createRpcBinding({

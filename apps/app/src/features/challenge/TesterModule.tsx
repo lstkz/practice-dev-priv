@@ -74,7 +74,11 @@ export function TesterModule(props: TesterModuleProps) {
         encodeURIComponent(getAccessToken() ?? '');
       const ws = new WS(socketUrl);
       const onMessage = (e: MessageEvent<any>) => {
-        const messages = JSON.parse(e.data) as AppSocketMsg[];
+        const msg = JSON.parse(e.data) as AppSocketMsg;
+        if (msg.type !== 'TestUpdate') {
+          return;
+        }
+        const { messages } = msg.payload;
         setState(draft => {
           messages.forEach(msg => {
             if (msg.meta.submissionId === submissionId) {

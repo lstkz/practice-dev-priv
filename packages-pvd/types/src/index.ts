@@ -19,7 +19,6 @@ export interface TestInfo {
 }
 
 export interface TesterSocketMessageMeta {
-  userId?: string;
   submissionId: string;
 }
 

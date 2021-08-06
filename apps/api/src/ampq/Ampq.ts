@@ -8,13 +8,11 @@ export interface AmpqMessage<T = any> {
   id: string;
   type: string;
   payload: T;
-  meta: any;
 }
 
 export interface AmpqPublishMessage<T = any> {
   type: string;
   payload: T;
-  meta?: any;
 }
 
 type OnMessageFn = (message: AmpqMessage) => Promise<void> | void;
@@ -441,7 +439,6 @@ export class Ampq {
           id: uniqueMessageId,
           type: publishMsg.type,
           payload: publishMsg.payload,
-          meta: publishMsg.meta,
         });
       } catch (e: any) {
         reportError({

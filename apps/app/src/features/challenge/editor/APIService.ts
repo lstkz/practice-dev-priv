@@ -73,7 +73,7 @@ export class APIService {
       doFn(async () => {
         const other = R.omit(values, ['content']);
         if (Object.values(other).length > 1) {
-          await api.workspace_updateWorkspaceNode(values);
+          await api.workspace_updateWorkspaceNode(other);
         }
       }),
     ]);

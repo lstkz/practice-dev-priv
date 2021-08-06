@@ -101,17 +101,15 @@ export interface AwsUploadContentAuth {
   credentials: AwsCredentials;
 }
 
-export interface TaskSolvedSocketMsg {
-  type: 'TaskSolved';
+export interface TestUpdateSocketMsg {
+  type: 'TestUpdate';
   payload: {
     userId: string;
-    moduleId: string;
-    taskId: number;
-    score: number;
+    messages: TesterSocketMessage[];
   };
 }
 
-export type AppSocketMsg = TesterSocketMessage;
+export type AppSocketMsg = TestUpdateSocketMsg;
 
 export interface NotificationSettings {
   newsletter: boolean;
