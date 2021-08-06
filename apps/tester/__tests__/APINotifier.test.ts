@@ -1,31 +1,27 @@
-import { notifyTestProgress } from '../src/notifyTestProgress';
-import { mocked } from 'ts-jest/utils';
 import { APINotifier } from '../src/APINotifier';
-import { TesterSocketMessage } from 'shared';
+import { APIClient, TesterSocketMessage } from 'shared';
 
-jest.mock('../src/notifyTestProgress');
-
-const notifyTestProgress_mocked = mocked(notifyTestProgress);
+let notifyTestProgress_mocked: jest.Mock<any, any> = null!;
 
 let notifier: APINotifier = null!;
 
 beforeEach(() => {
   notifier = new APINotifier('http://example.org', '1234');
-  notifyTestProgress_mocked.mockReset();
+  notifyTestProgress_mocked =
+    APIClient.prototype.submission_notifyTestProgress = jest.fn();
   Date.now = () => new Date(2000, 1, 1).getTime();
 });
 
 function getMsg(nr: number): TesterSocketMessage {
   return {
-    type: 'STARTING_TEST',
-    meta: { id: 'mock' },
+    type: 'TEST_START',
+    meta: { submissionId: 'mock' },
     payload: { testId: nr },
   };
 }
 
 function assertInvokes(...nr: number[]) {
   expect(notifyTestProgress_mocked).toHaveBeenCalledWith(
-    'http://example.org',
     '1234',
     nr.map(getMsg)
   );

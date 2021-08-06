@@ -32,7 +32,7 @@ it('should throw if no permission', async () => {
   await expect(
     execContract(deleteWorkspaceNode, { id: getUUID(1) }, 'user2_token')
   ).rejects.toMatchInlineSnapshot(
-    `[ForbiddenError: Not permission to access this workspace]`
+    `[Error: Not permission to access this workspace]`
   );
 });
 

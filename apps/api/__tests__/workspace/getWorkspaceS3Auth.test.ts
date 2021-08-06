@@ -37,7 +37,7 @@ it('should throw if no permission', async () => {
   await expect(
     execContract(getWorkspaceS3Auth, { workspaceId: getId(10) }, 'user2_token')
   ).rejects.toMatchInlineSnapshot(
-    `[ForbiddenError: No permission to access this workspace]`
+    `[Error: No permission to access this workspace]`
   );
 });
 
