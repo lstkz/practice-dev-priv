@@ -27,6 +27,7 @@ export function FileExplorerItem(props: FileExplorerItemProps) {
     hasFocus,
     lockedNodesMap,
     nodeState,
+    isReadOnly,
   } = useFileExplorerState();
   const {
     toggleDirectoryExpanded,
@@ -157,7 +158,7 @@ export function FileExplorerItem(props: FileExplorerItemProps) {
             {item.name}
           </span>
         )}
-        {!isEdit && (
+        {!isEdit && !isReadOnly && (
           <ItemActions
             css={bgCss}
             item={item}

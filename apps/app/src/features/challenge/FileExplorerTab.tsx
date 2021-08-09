@@ -13,7 +13,7 @@ import {
 export function FileExplorerTab() {
   const isLoaded = useIsEditorLoaded();
   const { nodes, nodeState } = useWorkspaceState();
-  const { workspace } = useEditorState();
+  const { workspace, mode } = useEditorState();
   const workspaceModel = useWorkspaceModel();
   const getWorkspaceModel = useGetter(workspaceModel);
   const lockedNodesMap = React.useMemo(() => {
@@ -33,6 +33,7 @@ export function FileExplorerTab() {
   }
   return (
     <FileExplorer
+      isReadOnly={mode === 'readOnly'}
       lockedNodesMap={lockedNodesMap}
       nodeState={nodeState}
       items={nodes}

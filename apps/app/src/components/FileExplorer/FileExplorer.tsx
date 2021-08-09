@@ -9,6 +9,7 @@ import { NewFileIcon } from './icons/NewFileIcon';
 import { doFn } from '../../common/helper';
 import { TreeNode, TreeNodeType } from 'src/types';
 import { FileTreeHelper, getVisibleNodes } from 'src/common/tree';
+import tw from 'twin.macro';
 
 interface FileExplorerProps {
   nodeState: Record<string, 'error'>;
@@ -18,6 +19,7 @@ interface FileExplorerProps {
   onRename: (id: string, name: string) => void;
   onNewFile: (node: TreeNode) => void;
   onRemoved: (id: string) => void;
+  isReadOnly?: boolean;
 }
 
 interface BaseState {
@@ -30,6 +32,7 @@ interface BaseState {
 interface State extends BaseState {
   nodeState: Record<string, 'error'>;
   lockedNodesMap: Record<string, boolean>;
+  isReadOnly?: boolean;
 }
 
 interface ItemAPI {
@@ -58,6 +61,7 @@ export function FileExplorer(props: FileExplorerProps) {
     items,
     lockedNodesMap,
     nodeState,
+    isReadOnly,
   } = props;
   const [state, setState] = useImmer<BaseState>({
     hasFocus: false,
@@ -125,7 +129,10 @@ export function FileExplorer(props: FileExplorerProps) {
   }, [recNodes, expandedDirectories]);
 
   return (
-    <Provider state={{ ...state, lockedNodesMap, nodeState }} actions={actions}>
+    <Provider
+      state={{ ...state, lockedNodesMap, nodeState, isReadOnly }}
+      actions={actions}
+    >
       <div
         ref={wrapperRef}
         tw="text-sm text-gray-400"
@@ -193,6 +200,9 @@ export function FileExplorer(props: FileExplorerProps) {
                 return true;
               }
               case 'Enter': {
+                if (isReadOnly) {
+                  return;
+                }
                 const id = navigationActiveItemId || activeItemId;
                 if (id) {
                   itemApiRef.current[id]?.rename();
@@ -200,6 +210,9 @@ export function FileExplorer(props: FileExplorerProps) {
                 return true;
               }
               case 'Delete': {
+                if (isReadOnly) {
+                  return;
+                }
                 const id = navigationActiveItemId || activeItemId;
                 if (id) {
                   itemApiRef.current[id]?.confirmDelete();
@@ -216,7 +229,7 @@ export function FileExplorer(props: FileExplorerProps) {
       >
         <div tw="flex">
           <div tw="text-xs font-semibold tracking-wider mb-1 ">FILES</div>
-          <div tw="ml-auto space-x-2">
+          <div tw="ml-auto space-x-2" css={[isReadOnly && tw`invisible`]}>
             <ActionIcon
               title="New File"
               onClick={() => {

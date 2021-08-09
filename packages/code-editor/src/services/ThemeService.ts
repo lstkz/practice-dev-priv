@@ -101,6 +101,7 @@ ${this.generateCSS(style)}
       }
     }
     if (DEBUG && !ret) {
+      // eslint-disable-next-line no-console
       console.log('no class for ', scope);
     }
     this.scopeCache.set(scope, ret);
