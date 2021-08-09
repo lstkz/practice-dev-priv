@@ -34,13 +34,6 @@ export const searchSubmissions = createContract('submission.searchSubmissions')
         id: item._id.toHexString(),
         createdAt: item.createdAt.toISOString(),
         status: item.status,
-        nodes: item.nodes.map(node => ({
-          id: node._id,
-          name: node.name,
-          parentId: node.parentId,
-          type: node.type,
-          s3Key: node.s3Key,
-        })),
       })),
       total,
     };

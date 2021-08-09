@@ -5,7 +5,7 @@ import { usePreventEditorNavigation } from './usePreventEditorNavigation';
 import { APIService } from './APIService';
 import { useModelState } from './useModelState';
 import { createCodeEditor, TreeNode, WorkspaceModel } from 'code-editor';
-import { IFRAME_ORIGIN } from 'src/config';
+import { CDN_BASE_URL, IFRAME_ORIGIN } from 'src/config';
 import { useErrorModalActions } from 'src/features/ErrorModalModule';
 import { useChallengeActions } from '../ChallengeModule';
 import { useTesterActions } from '../TesterModule';
@@ -51,7 +51,7 @@ function useServices(workspace: Workspace, challengeId: string) {
   }, []);
 }
 
-function mapWorkspaceNodes(nodes: WorkspaceNode[]) {
+function mapWorkspaceNodes(workspaceId: string, nodes: WorkspaceNode[]) {
   const ret: TreeNode[] = nodes.map(node => {
     if (node.type === WorkspaceNodeType.Directory) {
       return {
@@ -66,13 +66,21 @@ function mapWorkspaceNodes(nodes: WorkspaceNode[]) {
         id: node.id,
         name: node.name,
         parentId: node.parentId,
+        contentUrl: `${CDN_BASE_URL}/workspace/${workspaceId}/${node.id}`,
       };
     }
   });
   return ret;
 }
 
-export function EditorModule(props: EditorModuleProps) {
+export interface EditorModuleRef {
+  openReadOnly: () => void;
+}
+
+export const EditorModule = React.forwardRef<
+  EditorModuleRef,
+  EditorModuleProps
+>((props, ref) => {
   const { challenge, children, workspace } = props;
   const [state, setState] = useImmer<State>(
     {
@@ -89,6 +97,7 @@ export function EditorModule(props: EditorModuleProps) {
     browserPreviewService,
     bundlerService,
     apiService,
+    editorFactory,
   } = useServices(workspace, challenge.id);
   const { showError } = useErrorModalActions();
   const { setLeftSidebarTab } = useChallengeActions();
@@ -97,7 +106,8 @@ export function EditorModule(props: EditorModuleProps) {
   const actions = useActions<Actions>({
     load: async container => {
       const monaco = await loader.init();
-      codeEditor.init(monaco, container);
+      editorFactory.init(monaco, container);
+      codeEditor.init(monaco, editorFactory);
       await Promise.all(
         workspace.libraries.map(lib => codeEditor.addLib(lib.name, lib.types))
       );
@@ -109,7 +119,7 @@ export function EditorModule(props: EditorModuleProps) {
       });
       await workspaceModel.init({
         fileHashMap,
-        nodes: mapWorkspaceNodes(workspace.items),
+        nodes: mapWorkspaceNodes(workspace.id, workspace.items),
         workspaceId: workspace.id,
       });
       setState(draft => {
@@ -140,6 +150,17 @@ export function EditorModule(props: EditorModuleProps) {
       }
     },
   });
+
+  React.useImperativeHandle(
+    ref,
+    () => ({
+      openReadOnly: () => {
+        //
+      },
+    }),
+    []
+  );
+
   const { dirtyMap } = useModelState(workspaceModel.getModelState());
   usePreventEditorNavigation(dirtyMap);
   React.useEffect(() => {
@@ -155,7 +176,7 @@ export function EditorModule(props: EditorModuleProps) {
       {children}
     </Provider>
   );
-}
+});
 
 export function useEditorActions() {
   return useContext().actions;

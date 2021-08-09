@@ -55,7 +55,6 @@ async function _getOrCreate(
     }
     throw e;
   }
-  return workspace;
 }
 
 export const getOrCreateWorkspace = createContract(

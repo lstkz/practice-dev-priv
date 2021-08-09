@@ -1,14 +1,13 @@
 import React from 'react';
-import * as DateFns from 'date-fns';
-import Badge from '../../components/Badge';
 import { Button } from '../../components/Button';
 import Select from '../../components/Select';
 import { TabLoader } from './TabLoader';
 import { TabTitle } from './TabTitle';
 import { useImmer } from 'context-api';
 import { useErrorModalActions } from '../ErrorModalModule';
-import { Submission, SubmissionSortBy, SubmissionStatus } from 'shared';
+import { Submission, SubmissionSortBy } from 'shared';
 import { api } from 'src/services/api';
+import { SubmissionHistoryItem } from './SubmissionHistoryItem';
 
 interface State {
   isLoaded: boolean;
@@ -93,36 +92,8 @@ export function SubmissionHistoryTab() {
       </div>
       <div className="flow-root mt-6">
         <ul className="-my-5 divide-y divide-gray-700">
-          {items.map((item, i) => (
-            <li key={i} className="py-4">
-              <div className="flex items-center space-x-4">
-                <Badge
-                  dark
-                  color={
-                    item.status === SubmissionStatus.Fail
-                      ? 'red'
-                      : item.status === SubmissionStatus.Pass
-                      ? 'green'
-                      : 'gray'
-                  }
-                >
-                  {item.status.toUpperCase()}
-                </Badge>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-gray-400 truncate">
-                    {DateFns.format(
-                      new Date(item.createdAt),
-                      'HH:mm dd/MM/yyyy'
-                    )}
-                  </p>
-                </div>
-                <div tw="flex items-center">
-                  <Button type="light" size="small" focusBg="gray-900">
-                    Load
-                  </Button>
-                </div>
-              </div>
-            </li>
+          {items.map(item => (
+            <SubmissionHistoryItem key={item.id} item={item} />
           ))}
         </ul>
       </div>

@@ -2,23 +2,15 @@ import * as R from 'remeda';
 import { doFn } from '../lib/helper';
 import { FileTreeHelper } from '../lib/tree';
 import { CodeEditor } from '../CodeEditor';
-import { IAPIService, InitWorkspaceOptions, TreeNode } from '../types';
+import {
+  IAPIService,
+  InitWorkspaceOptions,
+  TreeNode,
+  WorkspaceState,
+} from '../types';
 import { BundlerService } from '../services/BundlerService';
 import { EditorStateService } from '../services/EditorStateService';
 import { ModelState, ModelStateUpdater } from '../lib/ModelState';
-
-interface OpenedTab {
-  id: string;
-  name: string;
-}
-
-export interface WorkspaceState {
-  activeTabId: string | null;
-  nodes: TreeNode[];
-  tabs: OpenedTab[];
-  dirtyMap: Record<string, boolean>;
-  nodeState: Record<string, 'error'>;
-}
 
 function randomHash() {
   return R.randomString(15);
@@ -28,7 +20,6 @@ export class WorkspaceModel {
   private fileHashMap: Map<string, string> = new Map();
   private modelState: ModelState<WorkspaceState> = null!;
   private workspaceId: string = null!;
-
   constructor(
     private codeEditor: CodeEditor,
     private apiService: IAPIService,
@@ -71,11 +62,10 @@ export class WorkspaceModel {
           this.codeEditor.addFile({
             id: node.id,
             path: pathHelper.getPath(node.id),
-            source: await this.apiService.getFileContent({
-              fileId: node.id,
-              hash: this.fileHashMap.get(node.id)!,
-              workspaceId: this.workspaceId,
-            }),
+            source: await this.apiService.getFileContent(
+              node.contentUrl!,
+              this.fileHashMap.get(node.id)
+            ),
           });
         }
       })

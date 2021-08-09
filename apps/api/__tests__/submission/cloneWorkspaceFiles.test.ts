@@ -43,6 +43,7 @@ beforeEach(async () => {
           type: WorkspaceNodeType.File,
           sourceS3Key: 's1',
           s3Key: null,
+          hash: 'h1',
         },
         {
           _id: '2',
@@ -51,18 +52,21 @@ beforeEach(async () => {
           type: WorkspaceNodeType.File,
           sourceS3Key: 's2',
           s3Key: 'copied-s2',
+          hash: 'h2',
         },
         {
           _id: '3',
           name: '3',
           parentId: null,
           type: WorkspaceNodeType.Directory,
+          hash: 'h2',
         },
       ],
       notifyKey: '123',
       status: SubmissionStatus.Queued,
       userId: getId(1),
       workspaceId: getId(10),
+      libraries: [],
     },
   ]);
 });

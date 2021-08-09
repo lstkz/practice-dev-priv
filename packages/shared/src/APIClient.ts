@@ -4,6 +4,7 @@ import fetch from 'cross-fetch';
 import {
   AwsUploadContentAuth,
   Challenge,
+  ReadOnlyWorkspace,
   PaginatedResult,
   Submission,
   OkResult,
@@ -68,6 +69,11 @@ export class APIClient {
     tags: string[];
   }): Promise<void> {
     return this.call('module.updateModule', { values });
+  }
+  submission_getSubmissionReadonlyWorkspace(
+    id: ObjectId
+  ): Promise<ReadOnlyWorkspace> {
+    return this.call('submission.getSubmissionReadonlyWorkspace', { id });
   }
   submission_notifyTestProgress(notifyKey: string, data: any[]): Promise<void> {
     return this.call('submission.notifyTestProgress', { notifyKey, data });
@@ -174,9 +180,9 @@ export class APIClient {
   workspace_createWorkspaceNode(values: {
     id: string;
     name: string;
-    workspaceId: ObjectId;
-    hash: string;
     type: WorkspaceNodeType;
+    hash: string;
+    workspaceId: ObjectId;
     parentId?: string | null | undefined;
   }): Promise<void> {
     return this.call('workspace.createWorkspaceNode', { values });

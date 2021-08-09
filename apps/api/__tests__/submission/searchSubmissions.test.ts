@@ -22,6 +22,7 @@ beforeEach(async () => {
     userId: getId(1),
     workspaceId: getId(10),
     testRun: null,
+    libraries: [],
   };
   await SubmissionCollection.insertMany([
     {
@@ -67,6 +68,7 @@ it('should return results by newest', async () => {
           sortBy: SubmissionSortBy.Newest,
         },
       },
+
       'user1_token'
     )
   ).toMatchInlineSnapshot(`
@@ -75,19 +77,16 @@ it('should return results by newest', async () => {
         Object {
           "createdAt": "1970-01-01T00:00:00.003Z",
           "id": "000000000000000000000102",
-          "nodes": Array [],
           "status": "fail",
         },
         Object {
           "createdAt": "1970-01-01T00:00:00.002Z",
           "id": "000000000000000000000101",
-          "nodes": Array [],
           "status": "pass",
         },
         Object {
           "createdAt": "1970-01-01T00:00:00.001Z",
           "id": "000000000000000000000100",
-          "nodes": Array [],
           "status": "pass",
         },
       ],
@@ -107,6 +106,7 @@ it('should return results by oldest', async () => {
           sortBy: SubmissionSortBy.Oldest,
         },
       },
+
       'user1_token'
     )
   ).toMatchInlineSnapshot(`
@@ -115,19 +115,16 @@ it('should return results by oldest', async () => {
         Object {
           "createdAt": "1970-01-01T00:00:00.001Z",
           "id": "000000000000000000000100",
-          "nodes": Array [],
           "status": "pass",
         },
         Object {
           "createdAt": "1970-01-01T00:00:00.002Z",
           "id": "000000000000000000000101",
-          "nodes": Array [],
           "status": "pass",
         },
         Object {
           "createdAt": "1970-01-01T00:00:00.003Z",
           "id": "000000000000000000000102",
-          "nodes": Array [],
           "status": "fail",
         },
       ],
@@ -147,6 +144,7 @@ it('should return results by oldest with offset', async () => {
           sortBy: SubmissionSortBy.Oldest,
         },
       },
+
       'user1_token'
     )
   ).toMatchInlineSnapshot(`
@@ -155,13 +153,11 @@ it('should return results by oldest with offset', async () => {
         Object {
           "createdAt": "1970-01-01T00:00:00.002Z",
           "id": "000000000000000000000101",
-          "nodes": Array [],
           "status": "pass",
         },
         Object {
           "createdAt": "1970-01-01T00:00:00.003Z",
           "id": "000000000000000000000102",
-          "nodes": Array [],
           "status": "fail",
         },
       ],
@@ -181,6 +177,7 @@ it('should return results by oldest with limit', async () => {
           sortBy: SubmissionSortBy.Oldest,
         },
       },
+
       'user1_token'
     )
   ).toMatchInlineSnapshot(`
@@ -189,13 +186,11 @@ it('should return results by oldest with limit', async () => {
         Object {
           "createdAt": "1970-01-01T00:00:00.001Z",
           "id": "000000000000000000000100",
-          "nodes": Array [],
           "status": "pass",
         },
         Object {
           "createdAt": "1970-01-01T00:00:00.002Z",
           "id": "000000000000000000000101",
-          "nodes": Array [],
           "status": "pass",
         },
       ],

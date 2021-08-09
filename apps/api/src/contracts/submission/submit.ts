@@ -42,6 +42,7 @@ export const submit = createContract('submission.submit')
           type: node.type,
           s3Key: null,
           sourceS3Key: node.sourceS3Key,
+          hash: node.hash,
         };
       })
     );
@@ -55,6 +56,7 @@ export const submit = createContract('submission.submit')
       createdAt: getCurrentDate(),
       status: SubmissionStatus.Queued,
       notifyKey: randomUniqString(),
+      libraries: workspace.libraries,
     };
     await SubmissionCollection.insertOne(submission);
     await dispatchTask({

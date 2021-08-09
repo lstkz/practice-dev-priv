@@ -1,5 +1,10 @@
 import { ObjectID } from 'mongodb2';
-import { SubmissionStatus, TestInfo, WorkspaceNodeType } from 'shared';
+import {
+  LibraryDefinition,
+  SubmissionStatus,
+  TestInfo,
+  WorkspaceNodeType,
+} from 'shared';
 import { createCollection } from '../db';
 
 export interface SubmissionNodeModel {
@@ -7,6 +12,7 @@ export interface SubmissionNodeModel {
   name: string;
   parentId: string | null;
   type: WorkspaceNodeType;
+  hash: string;
   s3Key?: string | null;
   sourceS3Key?: string | null;
 }
@@ -18,6 +24,7 @@ export interface SubmissionModel {
   challengeUniqId: string;
   indexHtmlS3Key: string;
   nodes: SubmissionNodeModel[];
+  libraries: LibraryDefinition[];
   createdAt: Date;
   status: SubmissionStatus;
   testRun?: TestInfo[] | null | undefined;

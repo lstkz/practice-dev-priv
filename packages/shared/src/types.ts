@@ -115,16 +115,6 @@ export interface NotificationSettings {
   newsletter: boolean;
 }
 
-export type Scalars = {
-  ID: string;
-  string: string;
-  Boolean: boolean;
-  Int: number;
-  Float: number;
-  TestProgressData: any;
-  Void: any;
-};
-
 export interface Challenge {
   id: string;
   challengeId: number;
@@ -151,6 +141,12 @@ export interface Workspace {
   libraries: LibraryDefinition[];
 }
 
+export interface ReadOnlyWorkspace {
+  id: string;
+  items: WorkspaceNode[];
+  libraries: LibraryDefinition[];
+}
+
 export interface WorkspaceNode {
   id: string;
   name: string;
@@ -159,6 +155,8 @@ export interface WorkspaceNode {
   type: WorkspaceNodeType;
   isLocked?: boolean | null;
 }
+
+export interface ReadOnlyWorkspace {}
 
 export interface WorkspaceS3Auth {
   bucketName: string;
@@ -179,7 +177,6 @@ export interface Submission {
   id: string;
   createdAt: string;
   status: SubmissionStatus;
-  nodes: SubmissionNode[];
 }
 
 export interface SubmissionNode {

@@ -21,6 +21,7 @@ import { Challenge, Workspace } from 'shared';
 interface Actions {
   setLeftSidebarTab: (leftSidebarTab: LeftSidebarTab | null) => void;
   setRightSidebarTab: (rightSidebarTab: RightSidebarTab | null) => void;
+  openSubmission: (id: string) => Promise<void>;
 }
 
 interface State {
@@ -74,6 +75,9 @@ export function ChallengeModule(props: ChallengeSSRProps) {
       setState(draft => {
         draft.rightSidebarTab = rightSidebarTab;
       });
+    },
+    openSubmission: async id => {
+      //
     },
   });
 

@@ -1,4 +1,5 @@
 import { CodeEditor } from './CodeEditor';
+import { EditorFactory } from './EditorFactory';
 import { WorkspaceModel } from './models/WorkspaceModel';
 import { BrowserPreviewService } from './services/BrowserPreviewService';
 import { BundlerService } from './services/BundlerService';
@@ -23,6 +24,7 @@ export function createCodeEditor(options: CreateCodeEditorOptions) {
     editorStateService,
     bundlerService
   );
+  const editorFactory = new EditorFactory();
   return {
     codeEditor,
     apiService,
@@ -30,5 +32,6 @@ export function createCodeEditor(options: CreateCodeEditorOptions) {
     browserPreviewService,
     bundlerService,
     workspaceModel,
+    editorFactory,
   };
 }

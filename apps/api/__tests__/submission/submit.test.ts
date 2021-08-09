@@ -72,48 +72,49 @@ it('should submit successfully', async () => {
   );
   const submission = await SubmissionCollection.findOne({});
   expect(R.omit(submission!, ['_id', 'notifyKey'])).toMatchInlineSnapshot(`
+Object {
+  "challengeUniqId": "1_2",
+  "createdAt": 1970-01-01T00:00:00.001Z,
+  "indexHtmlS3Key": "html",
+  "libraries": Array [],
+  "nodes": Array [
     Object {
-      "challengeUniqId": "1_2",
-      "createdAt": 1970-01-01T00:00:00.001Z,
-      "indexHtmlS3Key": "html",
-      "nodes": Array [
-        Object {
-          "_id": "00000000-0000-4000-8000-000000000001",
-          "name": "index.tsx",
-          "parentId": null,
-          "s3Key": null,
-          "sourceS3Key": "s1",
-          "type": "file",
-        },
-        Object {
-          "_id": "00000000-0000-4000-8000-000000000002",
-          "name": "components",
-          "parentId": null,
-          "s3Key": null,
-          "sourceS3Key": null,
-          "type": "directory",
-        },
-        Object {
-          "_id": "00000000-0000-4000-8000-000000000003",
-          "name": "forms",
-          "parentId": "00000000-0000-4000-8000-000000000002",
-          "s3Key": null,
-          "sourceS3Key": null,
-          "type": "directory",
-        },
-        Object {
-          "_id": "00000000-0000-4000-8000-000000000004",
-          "name": "Button.tsx",
-          "parentId": "00000000-0000-4000-8000-000000000003",
-          "s3Key": null,
-          "sourceS3Key": "s2",
-          "type": "file",
-        },
-      ],
-      "status": "queued",
-      "userId": "000000000000000000000001",
-      "workspaceId": "000000000000000000000010",
-    }
-  `);
+      "_id": "00000000-0000-4000-8000-000000000001",
+      "name": "index.tsx",
+      "parentId": null,
+      "s3Key": null,
+      "sourceS3Key": "s1",
+      "type": "file",
+    },
+    Object {
+      "_id": "00000000-0000-4000-8000-000000000002",
+      "name": "components",
+      "parentId": null,
+      "s3Key": null,
+      "sourceS3Key": null,
+      "type": "directory",
+    },
+    Object {
+      "_id": "00000000-0000-4000-8000-000000000003",
+      "name": "forms",
+      "parentId": "00000000-0000-4000-8000-000000000002",
+      "s3Key": null,
+      "sourceS3Key": null,
+      "type": "directory",
+    },
+    Object {
+      "_id": "00000000-0000-4000-8000-000000000004",
+      "name": "Button.tsx",
+      "parentId": "00000000-0000-4000-8000-000000000003",
+      "s3Key": null,
+      "sourceS3Key": "s2",
+      "type": "file",
+    },
+  ],
+  "status": "queued",
+  "userId": "000000000000000000000001",
+  "workspaceId": "000000000000000000000010",
+}
+`);
   expect(mocked_dispatchTask).toBeCalled();
 });

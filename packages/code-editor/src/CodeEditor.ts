@@ -6,54 +6,7 @@ import { HighlighterService } from './services/HighlighterService';
 import { MarkerSeverity, Monaco } from './types';
 import { FormatterService } from './services/FormatterService';
 import { TypedEventEmitter } from './lib/TypedEventEmitter';
-
-export function createEditor(monaco: Monaco, wrapper: HTMLDivElement) {
-  monaco.editor.defineTheme('myCustomTheme', {
-    base: 'vs-dark',
-    inherit: true,
-    rules: [],
-    colors: {
-      'editor.background': '#011627',
-    },
-  });
-  const properties: editor.IStandaloneEditorConstructionOptions = {
-    language: 'typescript',
-    theme: 'myCustomTheme',
-    model: null,
-    minimap: {
-      enabled: false,
-    },
-    quickSuggestions: {
-      other: true,
-      comments: true,
-      strings: true,
-    },
-    automaticLayout: true,
-  };
-  monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
-    target: monaco.languages.typescript.ScriptTarget.Latest,
-    allowNonTsExtensions: true,
-    moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
-    module: monaco.languages.typescript.ModuleKind.ESNext,
-    noEmit: true,
-    esModuleInterop: true,
-    strict: true,
-    jsx: monaco.languages.typescript.JsxEmit.React,
-    reactNamespace: 'React',
-    allowJs: true,
-    isolatedModules: true,
-    typeRoots: ['node_modules/@types'],
-  });
-  monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true);
-  monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
-    // noSemanticValidation: false,
-    // noSyntaxValidation: false,
-  });
-
-  const editor = monaco.editor.create(wrapper, properties, {});
-
-  return editor;
-}
+import { EditorFactory } from './EditorFactory';
 
 function fixFilePath(path: string) {
   return path.replace(/^\.\//, 'file:///');
@@ -85,9 +38,9 @@ export class CodeEditor {
   private errorMap: Record<string, boolean> = {};
   private emitter = new TypedEventEmitter<CallbackMap>();
 
-  init(monaco: Monaco, wrapper: HTMLDivElement) {
+  init(monaco: Monaco, editorFactory: EditorFactory) {
     this.monaco = monaco;
-    this.editor = createEditor(monaco, wrapper);
+    this.editor = editorFactory.create();
     this.themer = new ThemeService();
     this.themer.loadTheme(DarkThemeNew as any);
     this.themer.injectStyles();
