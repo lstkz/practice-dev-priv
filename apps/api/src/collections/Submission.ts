@@ -29,6 +29,7 @@ export interface SubmissionModel {
   status: SubmissionStatus;
   testRun?: TestInfo[] | null | undefined;
   notifyKey: string;
+  isCloned: boolean;
 }
 
 export const SubmissionCollection = createCollection<SubmissionModel>(

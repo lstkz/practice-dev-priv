@@ -1,4 +1,5 @@
 import type * as monacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
+import { ModelState } from './lib/ModelState';
 export * from './editor-types';
 
 export type Monaco = typeof monacoEditor;
@@ -174,4 +175,13 @@ export interface WorkspaceState {
   tabs: OpenedTab[];
   dirtyMap: Record<string, boolean>;
   nodeState: Record<string, 'error'>;
+}
+
+export interface IWorkspaceModel {
+  getModelState(): ModelState<WorkspaceState>;
+  removeNode(nodeId: string): Promise<void>;
+  renameNode(nodeId: string, name: string): Promise<void>;
+  openFile(id: string): void;
+  closeFile(id: string): void;
+  addNew(newNode: TreeNode): void;
 }

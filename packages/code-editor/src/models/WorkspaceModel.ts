@@ -5,6 +5,7 @@ import { CodeEditor } from '../CodeEditor';
 import {
   IAPIService,
   InitWorkspaceOptions,
+  IWorkspaceModel,
   TreeNode,
   WorkspaceState,
 } from '../types';
@@ -16,7 +17,7 @@ function randomHash() {
   return R.randomString(15);
 }
 
-export class WorkspaceModel {
+export class WorkspaceModel implements IWorkspaceModel {
   private fileHashMap: Map<string, string> = new Map();
   private modelState: ModelState<WorkspaceState> = null!;
   private workspaceId: string = null!;

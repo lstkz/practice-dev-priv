@@ -1,10 +1,8 @@
 import { S } from 'schema';
-import * as uuid from 'uuid';
 import { ReadOnlyWorkspace } from 'shared';
 import { SubmissionCollection } from '../../collections/Submission';
 import { AppError, ForbiddenError } from '../../common/errors';
 import { createContract, createRpcBinding } from '../../lib';
-import { renameId } from '../../common/helper';
 
 export const getSubmissionReadonlyWorkspace = createContract(
   'submission.getSubmissionReadonlyWorkspace'
@@ -23,19 +21,20 @@ export const getSubmissionReadonlyWorkspace = createContract(
     if (!submission.userId.equals(user._id)) {
       throw new ForbiddenError('No access to this submission');
     }
-    const idMap: Record<string, string> = {};
-    submission.nodes.forEach(node => {
-      idMap[node._id] = uuid.v4();
-    });
+    if (!submission.isCloned) {
+      throw new AppError('Workspace not ready');
+    }
     return {
       id: id.toHexString(),
       libraries: submission.libraries,
       items: submission.nodes.map(node => {
-        const mapped = { ...renameId(node) };
-        mapped.id = idMap[mapped.id];
-        if (mapped.parentId) {
-          mapped.parentId = idMap[mapped.parentId];
-        }
+        const mapped = {
+          id: node._id.toString(),
+          name: node.name,
+          hash: 'init',
+          parentId: node.parentId,
+          type: node.type,
+        };
         return mapped;
       }),
     };

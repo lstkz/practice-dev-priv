@@ -57,6 +57,7 @@ export const submit = createContract('submission.submit')
       status: SubmissionStatus.Queued,
       notifyKey: randomUniqString(),
       libraries: workspace.libraries,
+      isCloned: false,
     };
     await SubmissionCollection.insertOne(submission);
     await dispatchTask({

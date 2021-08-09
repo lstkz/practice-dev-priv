@@ -1,16 +1,32 @@
-import loader from '@monaco-editor/loader';
 import { createModuleContext, useActions, useImmer } from 'context-api';
 import React from 'react';
 import { usePreventEditorNavigation } from './usePreventEditorNavigation';
 import { APIService } from './APIService';
 import { useModelState } from './useModelState';
-import { createCodeEditor, TreeNode, WorkspaceModel } from 'code-editor';
+import {
+  IWorkspaceModel,
+  ReadOnlyWorkspaceModel,
+  TreeNode,
+  WorkspaceModel,
+} from 'code-editor';
 import { CDN_BASE_URL, IFRAME_ORIGIN } from 'src/config';
 import { useErrorModalActions } from 'src/features/ErrorModalModule';
 import { useChallengeActions } from '../ChallengeModule';
 import { useTesterActions } from '../TesterModule';
 import { convertCodeToHtml } from './convertCodeToHtml';
-import { Challenge, Workspace, WorkspaceNode, WorkspaceNodeType } from 'shared';
+import {
+  Challenge,
+  ReadOnlyWorkspace,
+  Workspace,
+  WorkspaceNode,
+  WorkspaceNodeType,
+} from 'shared';
+import { CodeEditor } from 'code-editor/src/CodeEditor';
+import { EditorStateService } from 'code-editor/src/services/EditorStateService';
+import { BrowserPreviewService } from 'code-editor/src/services/BrowserPreviewService';
+import { BundlerService } from 'code-editor/src/services/BundlerService';
+import { EditorFactory } from 'code-editor/src/EditorFactory';
+import { MonacoLoader } from './MonacoLoader';
 
 interface Actions {
   load: (container: HTMLDivElement) => void;
@@ -23,10 +39,11 @@ interface State {
   isSubmitting: boolean;
   workspace: Workspace;
   challenge: Challenge;
+  mode: 'default' | 'readOnly';
 }
 
 interface FinalState extends State {
-  workspaceModel: WorkspaceModel;
+  workspaceModel: IWorkspaceModel;
 }
 
 const [Provider, useContext] = createModuleContext<FinalState, Actions>();
@@ -40,18 +57,47 @@ interface EditorModuleProps {
 function useServices(workspace: Workspace, challengeId: string) {
   return React.useMemo(() => {
     const apiService = new APIService(workspace.id, workspace.s3Auth);
-    return {
-      ...createCodeEditor({
-        apiService,
-        challengeId,
-        iframeOrigin: IFRAME_ORIGIN,
-      }),
+    const codeEditor = new CodeEditor();
+    const readOnlyCodeEditor = new CodeEditor();
+    const editorStateService = new EditorStateService(challengeId);
+    const browserPreviewService = new BrowserPreviewService(IFRAME_ORIGIN);
+    const bundlerService = new BundlerService(
+      browserPreviewService,
+      codeEditor
+    );
+    const workspaceModel = new WorkspaceModel(
+      codeEditor,
       apiService,
+      editorStateService,
+      bundlerService
+    );
+    const readOnlyWorkspaceModel = new ReadOnlyWorkspaceModel(
+      readOnlyCodeEditor,
+      apiService,
+      bundlerService
+    );
+    const editorFactory = new EditorFactory();
+    const monacoLoader = new MonacoLoader();
+    return {
+      codeEditor,
+      readOnlyCodeEditor,
+      editorStateService,
+      browserPreviewService,
+      bundlerService,
+      workspaceModel,
+      editorFactory,
+      apiService,
+      readOnlyWorkspaceModel,
+      monacoLoader,
     };
   }, []);
 }
 
-function mapWorkspaceNodes(workspaceId: string, nodes: WorkspaceNode[]) {
+function mapWorkspaceNodes(
+  id: string,
+  nodes: WorkspaceNode[],
+  type: 'submission' | 'workspace'
+) {
   const ret: TreeNode[] = nodes.map(node => {
     if (node.type === WorkspaceNodeType.Directory) {
       return {
@@ -66,7 +112,7 @@ function mapWorkspaceNodes(workspaceId: string, nodes: WorkspaceNode[]) {
         id: node.id,
         name: node.name,
         parentId: node.parentId,
-        contentUrl: `${CDN_BASE_URL}/workspace/${workspaceId}/${node.id}`,
+        contentUrl: `${CDN_BASE_URL}/${type}/${id}/${node.id}`,
       };
     }
   });
@@ -74,7 +120,7 @@ function mapWorkspaceNodes(workspaceId: string, nodes: WorkspaceNode[]) {
 }
 
 export interface EditorModuleRef {
-  openReadOnly: () => void;
+  openReadOnlyWorkspace: (workspace: ReadOnlyWorkspace) => void;
 }
 
 export const EditorModule = React.forwardRef<
@@ -88,16 +134,20 @@ export const EditorModule = React.forwardRef<
       isSubmitting: false,
       workspace,
       challenge,
+      mode: 'default',
     },
     'EditorModule'
   );
   const {
+    readOnlyCodeEditor,
     codeEditor,
     workspaceModel,
+    readOnlyWorkspaceModel,
     browserPreviewService,
     bundlerService,
     apiService,
     editorFactory,
+    monacoLoader,
   } = useServices(workspace, challenge.id);
   const { showError } = useErrorModalActions();
   const { setLeftSidebarTab } = useChallengeActions();
@@ -105,7 +155,8 @@ export const EditorModule = React.forwardRef<
 
   const actions = useActions<Actions>({
     load: async container => {
-      const monaco = await loader.init();
+      await monacoLoader.init();
+      const monaco = monacoLoader.getMonaco();
       editorFactory.init(monaco, container);
       codeEditor.init(monaco, editorFactory);
       await Promise.all(
@@ -119,7 +170,7 @@ export const EditorModule = React.forwardRef<
       });
       await workspaceModel.init({
         fileHashMap,
-        nodes: mapWorkspaceNodes(workspace.id, workspace.items),
+        nodes: mapWorkspaceNodes(workspace.id, workspace.items, 'workspace'),
         workspaceId: workspace.id,
       });
       setState(draft => {
@@ -154,8 +205,18 @@ export const EditorModule = React.forwardRef<
   React.useImperativeHandle(
     ref,
     () => ({
-      openReadOnly: () => {
-        //
+      openReadOnlyWorkspace: async (workspace: ReadOnlyWorkspace) => {
+        readOnlyCodeEditor.disposeModels();
+        codeEditor.disposeModels();
+        const monaco = monacoLoader.getMonaco();
+        readOnlyCodeEditor.init(monaco, editorFactory);
+        await readOnlyWorkspaceModel.init({
+          defaultOpenFiles: ['./App.tsx'],
+          nodes: mapWorkspaceNodes(workspace.id, workspace.items, 'submission'),
+        });
+        setState(draft => {
+          draft.mode = 'readOnly';
+        });
       },
     }),
     []
@@ -170,9 +231,16 @@ export const EditorModule = React.forwardRef<
       browserPreviewService.dispose();
     };
   }, []);
-
+  const { mode } = state;
   return (
-    <Provider state={{ ...state, workspaceModel }} actions={actions}>
+    <Provider
+      state={{
+        ...state,
+        workspaceModel:
+          mode === 'default' ? workspaceModel : readOnlyWorkspaceModel,
+      }}
+      actions={actions}
+    >
       {children}
     </Provider>
   );

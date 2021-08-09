@@ -3,6 +3,8 @@ import * as DateFns from 'date-fns';
 import { Submission, SubmissionStatus } from 'shared';
 import Badge from 'src/components/Badge';
 import { Button } from 'src/components/Button';
+import { useChallengeActions } from './ChallengeModule';
+import { useErrorModalActions } from '../ErrorModalModule';
 
 interface SubmissionHistoryItemProps {
   item: Submission;
@@ -10,6 +12,9 @@ interface SubmissionHistoryItemProps {
 
 export function SubmissionHistoryItem(props: SubmissionHistoryItemProps) {
   const { item } = props;
+  const { openSubmission } = useChallengeActions();
+  const { showError } = useErrorModalActions();
+  const [isLoading, setIsLoading] = React.useState(false);
   return (
     <li tw="py-4">
       <div tw="flex items-center space-x-4">
@@ -31,7 +36,22 @@ export function SubmissionHistoryItem(props: SubmissionHistoryItemProps) {
           </p>
         </div>
         <div tw="flex items-center">
-          <Button type="light" size="small" focusBg="gray-900">
+          <Button
+            type="light"
+            size="small"
+            focusBg="gray-900"
+            loading={isLoading}
+            onClick={async () => {
+              try {
+                setIsLoading(true);
+                await openSubmission(item.id);
+              } catch (e) {
+                showError(e);
+              } finally {
+                setIsLoading(false);
+              }
+            }}
+          >
             Load
           </Button>
         </div>

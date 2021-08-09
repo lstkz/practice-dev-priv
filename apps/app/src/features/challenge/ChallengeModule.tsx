@@ -14,9 +14,10 @@ import {
   RIGHT_COOKIE_NAME,
   RIGHT_DEFAULT,
 } from './const';
-import { EditorModule } from './editor/EditorModule';
+import { EditorModule, EditorModuleRef } from './editor/EditorModule';
 import { TesterModule } from './TesterModule';
 import { Challenge, Workspace } from 'shared';
+import { api } from 'src/services/api';
 
 interface Actions {
   setLeftSidebarTab: (leftSidebarTab: LeftSidebarTab | null) => void;
@@ -65,6 +66,7 @@ export function ChallengeModule(props: ChallengeSSRProps) {
     },
     'ChallengeModule'
   );
+  const editorRef = React.useRef<EditorModuleRef>(null!);
   const actions = useActions<Actions>({
     setLeftSidebarTab: leftSidebarTab => {
       setState(draft => {
@@ -77,14 +79,19 @@ export function ChallengeModule(props: ChallengeSSRProps) {
       });
     },
     openSubmission: async id => {
-      //
+      const workspace = await api.submission_getSubmissionReadonlyWorkspace(id);
+      editorRef.current.openReadOnlyWorkspace(workspace);
     },
   });
 
   return (
     <Provider state={state} actions={actions}>
       <TesterModule challenge={challenge} workspace={workspace}>
-        <EditorModule challenge={challenge} workspace={workspace}>
+        <EditorModule
+          challenge={challenge}
+          workspace={workspace}
+          ref={editorRef}
+        >
           <ChallengePage />
         </EditorModule>
       </TesterModule>

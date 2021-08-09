@@ -237,6 +237,13 @@ export class CodeEditor {
     this.editor.updateOptions({ readOnly });
   }
 
+  disposeModels() {
+    Object.values(this.models).forEach(model => {
+      model.dispose();
+    });
+    this.activeId = null;
+  }
+
   private saveAllNonActiveFiles() {
     // TODO: files are not formatted
     Object.keys(this.models).forEach(modelId => {
