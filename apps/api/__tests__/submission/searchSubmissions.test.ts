@@ -23,6 +23,7 @@ beforeEach(async () => {
     workspaceId: getId(10),
     testRun: null,
     libraries: [],
+    isCloned: true,
   };
   await SubmissionCollection.insertMany([
     {

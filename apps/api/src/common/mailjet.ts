@@ -14,31 +14,7 @@ interface SendEmailOptions {
 
 export async function sendMailjetEmail(options: SendEmailOptions) {
   const { template, to } = options;
-  console.log(
-    JSON.stringify(
-      {
-        Messages: [
-          {
-            From: {
-              Email: config.mailjet.senderEmail,
-              Name: config.mailjet.senderName,
-            },
-            To: [
-              {
-                Email: to,
-              },
-            ],
-            TemplateID: config.mailjet.templates[template.type],
-            TemplateLanguage: true,
-            Variables: template.variables,
-          },
-        ],
-      },
-      null,
-      2
-    )
-  );
-  const ret = await mailjet.post('send', { version: 'v3.1' }).request({
+  await mailjet.post('send', { version: 'v3.1' }).request({
     Messages: [
       {
         From: {
@@ -56,5 +32,4 @@ export async function sendMailjetEmail(options: SendEmailOptions) {
       },
     ],
   });
-  console.log({ ret });
 }

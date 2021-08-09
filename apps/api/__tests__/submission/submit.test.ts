@@ -76,10 +76,12 @@ Object {
   "challengeUniqId": "1_2",
   "createdAt": 1970-01-01T00:00:00.001Z,
   "indexHtmlS3Key": "html",
+  "isCloned": false,
   "libraries": Array [],
   "nodes": Array [
     Object {
       "_id": "00000000-0000-4000-8000-000000000001",
+      "hash": "123",
       "name": "index.tsx",
       "parentId": null,
       "s3Key": null,
@@ -88,6 +90,7 @@ Object {
     },
     Object {
       "_id": "00000000-0000-4000-8000-000000000002",
+      "hash": "123",
       "name": "components",
       "parentId": null,
       "s3Key": null,
@@ -96,6 +99,7 @@ Object {
     },
     Object {
       "_id": "00000000-0000-4000-8000-000000000003",
+      "hash": "123",
       "name": "forms",
       "parentId": "00000000-0000-4000-8000-000000000002",
       "s3Key": null,
@@ -104,6 +108,7 @@ Object {
     },
     Object {
       "_id": "00000000-0000-4000-8000-000000000004",
+      "hash": "123",
       "name": "Button.tsx",
       "parentId": "00000000-0000-4000-8000-000000000003",
       "s3Key": null,

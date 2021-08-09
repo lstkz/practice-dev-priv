@@ -35,6 +35,7 @@ beforeEach(async () => {
       challengeUniqId: '1',
       createdAt: new Date(1),
       indexHtmlS3Key: 'index',
+      isCloned: true,
       nodes: [
         {
           _id: '1',
@@ -78,6 +79,7 @@ it('should clone files', async () => {
 Array [
   Object {
     "_id": "1",
+    "hash": "h1",
     "name": "1.txt",
     "parentId": null,
     "s3Key": "cdn/submission/000000000000000000000100/1",
@@ -86,6 +88,7 @@ Array [
   },
   Object {
     "_id": "2",
+    "hash": "h2",
     "name": "2.txt",
     "parentId": null,
     "s3Key": "copied-s2",
@@ -94,6 +97,7 @@ Array [
   },
   Object {
     "_id": "3",
+    "hash": "h2",
     "name": "3",
     "parentId": null,
     "type": "directory",

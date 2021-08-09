@@ -57,9 +57,9 @@ Promise.all([connect(), ampq.connect(['publish', 'socket'])])
     const asyncServerStop = util.promisify(server.stop).bind(server);
 
     addShownDownAction(100, async () => {
-      console.log('[Server] shuting down');
+      logger.info('[Server] shuting down');
       await asyncServerStop();
-      console.log('[Server] shutdown success');
+      logger.info('[Server] shutdown success');
     });
   })
   .catch(e => {

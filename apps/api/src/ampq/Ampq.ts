@@ -3,6 +3,7 @@ import amqplib from 'amqplib';
 import { reportError, reportInfo } from '../common/bugsnag';
 import { UnreachableCaseError } from '../common/errors';
 import { sleep } from '../common/helper';
+import { logger } from '../common/logger';
 
 export interface AmpqMessage<T = any> {
   id: string;
@@ -165,7 +166,7 @@ export class Ampq {
   }
 
   async shutdown() {
-    console.log('[AMPQ] shuting down');
+    logger.info('[AMPQ] shuting down');
     this.isShutdown = true;
     await Promise.all([
       Object.values(this.consumeTagMap).map(tag =>
@@ -173,16 +174,16 @@ export class Ampq {
       ),
     ]);
     if (this.processingCount) {
-      console.log('[AMPQ] waiting for pending handlers');
+      logger.info('[AMPQ] waiting for pending handlers');
     }
     while (this.processingCount) {
       await sleep(100);
     }
-    console.log('[AMPQ] closing channel');
+    logger.info('[AMPQ] closing channel');
     await this.channel!.close();
-    console.log('[AMPQ] closing connection');
+    logger.info('[AMPQ] closing connection');
     await this.connection!.close();
-    console.log('[AMPQ] shutdown success');
+    logger.info('[AMPQ] shutdown success');
   }
 
   private async retryPublishMessage(
