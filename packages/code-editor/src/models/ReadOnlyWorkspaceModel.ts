@@ -8,9 +8,9 @@ export class ReadOnlyWorkspaceModel extends BaseWorkspaceModel {
   constructor(
     codeEditor: CodeEditor,
     apiService: IAPIService,
-    private bundlerService: BundlerService
+    bundlerService: BundlerService
   ) {
-    super(codeEditor, apiService, 'WorkspaceTreeModel');
+    super(codeEditor, apiService, bundlerService, 'WorkspaceTreeModel');
   }
 
   async init(options: InitReadOnlyWorkspaceOptions) {
@@ -34,10 +34,7 @@ export class ReadOnlyWorkspaceModel extends BaseWorkspaceModel {
     if (this.state.activeTabId) {
       this.codeEditor.openFile(this.state.activeTabId);
     }
-
-    this.bundlerService.init();
-    this.bundlerService.setInputFile('./index.tsx');
-    this.bundlerService.loadCode();
+    this._loadCode();
   }
 
   async removeNode() {

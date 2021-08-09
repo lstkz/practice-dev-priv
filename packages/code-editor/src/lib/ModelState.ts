@@ -19,7 +19,7 @@ export class ModelState<S> {
     const newState = produce(this.state, updater as any);
     this.state = newState;
     if (this.logName && process.env.NODE_ENV === 'development') {
-      // tslint:disable-next-line:no-console
+      // eslint-disable-next-line no-console
       console.log(this.logName, newState);
     }
     this.emitter.emit('updated', this.state);

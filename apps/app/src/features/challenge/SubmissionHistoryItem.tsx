@@ -44,10 +44,9 @@ export function SubmissionHistoryItem(props: SubmissionHistoryItemProps) {
             onClick={async () => {
               try {
                 setIsLoading(true);
-                await openSubmission(item.id);
+                await openSubmission(item);
               } catch (e) {
                 showError(e);
-              } finally {
                 setIsLoading(false);
               }
             }}

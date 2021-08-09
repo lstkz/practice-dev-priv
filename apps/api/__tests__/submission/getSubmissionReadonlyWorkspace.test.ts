@@ -21,6 +21,7 @@ beforeEach(async () => {
       challengeUniqId: '1',
       createdAt: new Date(1),
       indexHtmlS3Key: 'index',
+      isCloned: true,
       nodes: [
         {
           _id: '1',
@@ -104,26 +105,22 @@ it('should return the readonly workspace', async () => {
             "id": "000000000000000000000100",
             "items": Array [
               Object {
-                "hash": "h1",
-                "id": "mock-1",
+                "hash": "init",
+                "id": "1",
                 "name": "1.txt",
                 "parentId": null,
-                "s3Key": null,
-                "sourceS3Key": "s1",
                 "type": "file",
               },
               Object {
-                "hash": "h2",
-                "id": "mock-2",
+                "hash": "init",
+                "id": "2",
                 "name": "2.txt",
-                "parentId": "mock-3",
-                "s3Key": "copied-s2",
-                "sourceS3Key": "s2",
+                "parentId": "3",
                 "type": "file",
               },
               Object {
-                "hash": "h2",
-                "id": "mock-3",
+                "hash": "init",
+                "id": "3",
                 "name": "3",
                 "parentId": null,
                 "type": "directory",

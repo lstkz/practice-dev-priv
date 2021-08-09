@@ -1,4 +1,3 @@
-import { CodeEditor } from '../CodeEditor';
 import { BundlerAction, BundlerCallbackAction, SourceCode } from '../types';
 import { BrowserPreviewService } from './BrowserPreviewService';
 
@@ -12,18 +11,29 @@ interface CallbackDefer {
   reject: (err: any) => void;
 }
 
+interface LoadCodeOptions {
+  inputFile: string;
+  fileMap: Record<
+    string,
+    {
+      code: string;
+    }
+  >;
+}
+
 export class BundlerService {
-  private inputFile: string | null = null;
   private worker: Worker = null!;
   private version = 1;
   private defer: CallbackDefer = null!;
+  private isInited = false;
 
-  constructor(
-    private browserPreviewService: BrowserPreviewService,
-    private codeEditor: CodeEditor
-  ) {}
+  constructor(private browserPreviewService: BrowserPreviewService) {}
 
   init() {
+    if (this.isInited) {
+      return;
+    }
+    this.isInited = true;
     this.worker = new Worker(
       new URL('./BundlerService.worker.ts', import.meta.url)
     );
@@ -68,12 +78,8 @@ export class BundlerService {
     this.worker.terminate();
   }
 
-  setInputFile(inputFile: string) {
-    this.inputFile = inputFile;
-  }
-
-  loadCode() {
-    this.loadCodeAsync().catch(e => {
+  loadCode(options: LoadCodeOptions) {
+    this.loadCodeAsync(options).catch(e => {
       this.browserPreviewService.showError(e);
     });
   }
@@ -82,13 +88,10 @@ export class BundlerService {
     this.worker.postMessage(action);
   }
 
-  async loadCodeAsync() {
-    if (!this.inputFile) {
-      throw new Error('inputFile not set');
-    }
-    const fileMap = this.codeEditor.getFileMap();
+  async loadCodeAsync(options: LoadCodeOptions) {
+    const { fileMap, inputFile } = options;
     const code = await this.bundle({
-      input: this.inputFile,
+      input: inputFile,
       modules: fileMap,
     });
     await this.browserPreviewService.inject(code);

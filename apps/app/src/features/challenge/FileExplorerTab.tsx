@@ -1,5 +1,6 @@
 import React from 'react';
 import * as R from 'remeda';
+import { useGetter } from 'src/hooks/useGetter';
 import { TreeNode } from 'src/types';
 import { FileExplorer } from '../../components/FileExplorer/FileExplorer';
 import {
@@ -14,6 +15,7 @@ export function FileExplorerTab() {
   const { nodes, nodeState } = useWorkspaceState();
   const { workspace } = useEditorState();
   const workspaceModel = useWorkspaceModel();
+  const getWorkspaceModel = useGetter(workspaceModel);
   const lockedNodesMap = React.useMemo(() => {
     const lockedNodesMap: Record<string, boolean> = {};
     const nodeMap = R.indexBy(nodes, x => x.id);
@@ -34,10 +36,10 @@ export function FileExplorerTab() {
       lockedNodesMap={lockedNodesMap}
       nodeState={nodeState}
       items={nodes}
-      onOpenFile={id => workspaceModel.openFile(id)}
-      onNewFile={values => workspaceModel.addNew(values)}
-      onRemoved={id => workspaceModel.removeNode(id)}
-      onRename={(id, name) => workspaceModel.renameNode(id, name)}
+      onOpenFile={id => getWorkspaceModel().openFile(id)}
+      onNewFile={values => getWorkspaceModel().addNew(values)}
+      onRemoved={id => getWorkspaceModel().removeNode(id)}
+      onRename={(id, name) => getWorkspaceModel().renameNode(id, name)}
     />
   );
 }

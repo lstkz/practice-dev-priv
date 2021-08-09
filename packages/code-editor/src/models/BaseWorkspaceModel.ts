@@ -7,6 +7,7 @@ import {
   IAPIService,
 } from '../types';
 import { FileTreeHelper } from '../lib/tree';
+import { BundlerService } from '../services/BundlerService';
 
 function getDefaultState(): WorkspaceState {
   return {
@@ -18,12 +19,15 @@ function getDefaultState(): WorkspaceState {
   };
 }
 
+const TODO_INPUT_FILE = './index.tsx';
+
 export abstract class BaseWorkspaceModel implements IWorkspaceModel {
   protected modelState: ModelState<WorkspaceState> = null!;
 
   constructor(
     protected codeEditor: CodeEditor,
     protected apiService: IAPIService,
+    protected bundlerService: BundlerService,
     name: string
   ) {
     this.modelState = new ModelState(getDefaultState(), name);
@@ -74,6 +78,18 @@ export abstract class BaseWorkspaceModel implements IWorkspaceModel {
         }
       })
     );
+  }
+
+  protected _loadCode() {
+    this.bundlerService.init();
+    this.bundlerService.loadCode(this._getLoadCodeOptions());
+  }
+
+  protected _getLoadCodeOptions() {
+    return {
+      fileMap: this.codeEditor.getFileMap(),
+      inputFile: TODO_INPUT_FILE,
+    };
   }
 
   protected setState(updater: ModelStateUpdater<WorkspaceState>) {

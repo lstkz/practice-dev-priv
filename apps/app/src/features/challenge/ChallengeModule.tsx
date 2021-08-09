@@ -16,13 +16,15 @@ import {
 } from './const';
 import { EditorModule, EditorModuleRef } from './editor/EditorModule';
 import { TesterModule } from './TesterModule';
-import { Challenge, Workspace } from 'shared';
+import { Challenge, Submission, Workspace } from 'shared';
 import { api } from 'src/services/api';
 
 interface Actions {
   setLeftSidebarTab: (leftSidebarTab: LeftSidebarTab | null) => void;
   setRightSidebarTab: (rightSidebarTab: RightSidebarTab | null) => void;
-  openSubmission: (id: string) => Promise<void>;
+  openSubmission: (submission: Submission) => Promise<void>;
+  closeSubmission: () => void;
+  forkSubmission: () => void;
 }
 
 interface State {
@@ -33,6 +35,7 @@ interface State {
   initialRightSidebar: number;
   leftSidebarTab: LeftSidebarTab | null;
   rightSidebarTab: RightSidebarTab | null;
+  openedSubmission: Submission | null;
 }
 
 export type LeftSidebarTab =
@@ -63,6 +66,7 @@ export function ChallengeModule(props: ChallengeSSRProps) {
       initialRightSidebar,
       leftSidebarTab: 'details',
       rightSidebarTab: 'preview',
+      openedSubmission: null,
     },
     'ChallengeModule'
   );
@@ -78,10 +82,23 @@ export function ChallengeModule(props: ChallengeSSRProps) {
         draft.rightSidebarTab = rightSidebarTab;
       });
     },
-    openSubmission: async id => {
-      const workspace = await api.submission_getSubmissionReadonlyWorkspace(id);
+    openSubmission: async submission => {
+      const workspace = await api.submission_getSubmissionReadonlyWorkspace(
+        submission.id
+      );
       editorRef.current.openReadOnlyWorkspace(workspace);
+      setState(draft => {
+        draft.openedSubmission = submission;
+        draft.leftSidebarTab = 'file-explorer';
+      });
     },
+    closeSubmission: () => {
+      editorRef.current.closeReadOnlyWorkspace();
+      setState(draft => {
+        draft.openedSubmission = null;
+      });
+    },
+    forkSubmission: () => {},
   });
 
   return (

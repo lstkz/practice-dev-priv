@@ -57,14 +57,12 @@ interface EditorModuleProps {
 function useServices(workspace: Workspace, challengeId: string) {
   return React.useMemo(() => {
     const apiService = new APIService(workspace.id, workspace.s3Auth);
-    const codeEditor = new CodeEditor();
-    const readOnlyCodeEditor = new CodeEditor();
+    const codeEditor = new CodeEditor(false);
+    const readOnlyCodeEditor = new CodeEditor(true);
     const editorStateService = new EditorStateService(challengeId);
     const browserPreviewService = new BrowserPreviewService(IFRAME_ORIGIN);
-    const bundlerService = new BundlerService(
-      browserPreviewService,
-      codeEditor
-    );
+    const bundlerService = new BundlerService(browserPreviewService);
+    const readOnlyBundlerService = new BundlerService(browserPreviewService);
     const workspaceModel = new WorkspaceModel(
       codeEditor,
       apiService,
@@ -74,7 +72,7 @@ function useServices(workspace: Workspace, challengeId: string) {
     const readOnlyWorkspaceModel = new ReadOnlyWorkspaceModel(
       readOnlyCodeEditor,
       apiService,
-      bundlerService
+      readOnlyBundlerService
     );
     const editorFactory = new EditorFactory();
     const monacoLoader = new MonacoLoader();
@@ -121,6 +119,7 @@ function mapWorkspaceNodes(
 
 export interface EditorModuleRef {
   openReadOnlyWorkspace: (workspace: ReadOnlyWorkspace) => void;
+  closeReadOnlyWorkspace: () => void;
 }
 
 export const EditorModule = React.forwardRef<
@@ -128,7 +127,7 @@ export const EditorModule = React.forwardRef<
   EditorModuleProps
 >((props, ref) => {
   const { challenge, children, workspace } = props;
-  const [state, setState] = useImmer<State>(
+  const [state, setState, getState] = useImmer<State>(
     {
       isLoaded: false,
       isSubmitting: false,
@@ -144,7 +143,6 @@ export const EditorModule = React.forwardRef<
     workspaceModel,
     readOnlyWorkspaceModel,
     browserPreviewService,
-    bundlerService,
     apiService,
     editorFactory,
     monacoLoader,
@@ -187,7 +185,7 @@ export const EditorModule = React.forwardRef<
         });
         workspaceModel.setReadOnly(true);
         setLeftSidebarTab('test-suite');
-        const code = await bundlerService.loadCodeAsync();
+        const code = await workspaceModel.getBundledCode();
         const html = convertCodeToHtml(code, workspace.libraries);
         const indexHtmlS3Key = await apiService.uploadIndexFile(html);
         await testerSubmit(indexHtmlS3Key);
@@ -207,7 +205,10 @@ export const EditorModule = React.forwardRef<
     () => ({
       openReadOnlyWorkspace: async (workspace: ReadOnlyWorkspace) => {
         readOnlyCodeEditor.disposeModels();
-        codeEditor.disposeModels();
+        if (getState().mode === 'default') {
+          codeEditor.makeModelBackup();
+          codeEditor.disposeModels();
+        }
         const monaco = monacoLoader.getMonaco();
         readOnlyCodeEditor.init(monaco, editorFactory);
         await readOnlyWorkspaceModel.init({
@@ -216,6 +217,15 @@ export const EditorModule = React.forwardRef<
         });
         setState(draft => {
           draft.mode = 'readOnly';
+        });
+      },
+      closeReadOnlyWorkspace: () => {
+        readOnlyCodeEditor.disposeModels();
+        codeEditor.restoreModelBackup();
+        workspaceModel.setReadOnly(false);
+        workspaceModel.loadCode();
+        setState(draft => {
+          draft.mode = 'default';
         });
       },
     }),

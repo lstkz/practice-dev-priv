@@ -18,9 +18,9 @@ export class WorkspaceModel extends BaseWorkspaceModel {
     codeEditor: CodeEditor,
     apiService: IAPIService,
     private editorStateService: EditorStateService,
-    private bundlerService: BundlerService
+    bundlerService: BundlerService
   ) {
-    super(codeEditor, apiService, 'WorkspaceModel');
+    super(codeEditor, apiService, bundlerService, 'WorkspaceModel');
   }
 
   async init(options: InitWorkspaceOptions) {
@@ -47,9 +47,7 @@ export class WorkspaceModel extends BaseWorkspaceModel {
         }
       })
     );
-    this.bundlerService.init();
-    this.bundlerService.setInputFile('./index.tsx');
-    this.bundlerService.loadCode();
+    this._loadCode();
     this.codeEditor.addEventListener('modified', ({ fileId, hasChanges }) => {
       this.setState(draft => {
         if (hasChanges) {
@@ -70,7 +68,7 @@ export class WorkspaceModel extends BaseWorkspaceModel {
         hash: newHash,
       });
       this.fileHashMap.set(fileId, newHash);
-      this.bundlerService.loadCode();
+      this._loadCode();
     });
     this.codeEditor.addEventListener('opened', ({ fileId }) => {
       this._openTab(fileId);
@@ -120,7 +118,7 @@ export class WorkspaceModel extends BaseWorkspaceModel {
     });
     this.codeEditor.openFile(this.state.activeTabId);
     this._syncTabs();
-    this.bundlerService.loadCode();
+    this._loadCode();
   }
 
   async renameNode(nodeId: string, name: string) {
@@ -144,7 +142,7 @@ export class WorkspaceModel extends BaseWorkspaceModel {
         this.codeEditor.changeFilePath(node.id, treeHelper.getPath(node.id));
       }
     });
-    this.bundlerService.loadCode();
+    this._loadCode();
   }
 
   openFile(id: string) {
@@ -191,6 +189,14 @@ export class WorkspaceModel extends BaseWorkspaceModel {
 
   setReadOnly(readOnly: boolean) {
     this.codeEditor.setReadOnly(readOnly);
+  }
+
+  loadCode() {
+    this._loadCode();
+  }
+
+  getBundledCode() {
+    return this.bundlerService.loadCodeAsync(this._getLoadCodeOptions());
   }
 
   ////
