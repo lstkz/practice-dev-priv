@@ -46,10 +46,6 @@ module.exports = withTM({
   webpack5: true,
   env: getEnv(),
   webpack: (config, options) => {
-    config.module.rules.push({
-      test: /\.graphql?$/,
-      loader: 'webpack-graphql-loader',
-    });
     config.plugins.push(
       new CopyWebpackPlugin({
         patterns: [

@@ -5,57 +5,31 @@ import { CodeEditor } from '../CodeEditor';
 import { IAPIService, InitWorkspaceOptions, TreeNode } from '../types';
 import { BundlerService } from '../services/BundlerService';
 import { EditorStateService } from '../services/EditorStateService';
-import { ModelState, ModelStateUpdater } from '../lib/ModelState';
-
-interface OpenedTab {
-  id: string;
-  name: string;
-}
-
-export interface WorkspaceState {
-  activeTabId: string | null;
-  nodes: TreeNode[];
-  tabs: OpenedTab[];
-  dirtyMap: Record<string, boolean>;
-  nodeState: Record<string, 'error'>;
-}
+import { BaseWorkspaceModel } from './BaseWorkspaceModel';
 
 function randomHash() {
   return R.randomString(15);
 }
 
-export class WorkspaceModel {
+export class WorkspaceModel extends BaseWorkspaceModel {
   private fileHashMap: Map<string, string> = new Map();
-  private modelState: ModelState<WorkspaceState> = null!;
   private workspaceId: string = null!;
-
   constructor(
-    private codeEditor: CodeEditor,
-    private apiService: IAPIService,
+    codeEditor: CodeEditor,
+    apiService: IAPIService,
     private editorStateService: EditorStateService,
-    private bundlerService: BundlerService
+    bundlerService: BundlerService
   ) {
-    this.modelState = new ModelState(
-      {
-        activeTabId: null,
-        tabs: [],
-        dirtyMap: {},
-        nodes: [],
-        nodeState: {},
-      },
-      'WorkspaceTreeModel'
-    );
+    super(codeEditor, apiService, bundlerService, 'WorkspaceModel');
   }
 
-  private get state() {
-    return this.modelState.state;
+  async reload(options: InitWorkspaceOptions) {
+    this.codeEditor.clearState();
+    this.fileHashMap = new Map();
+    await this._init(options);
   }
 
-  public getModelState() {
-    return this.modelState;
-  }
-
-  async init(options: InitWorkspaceOptions) {
+  private async _init(options: InitWorkspaceOptions) {
     const tabsState = this.editorStateService.loadTabsState();
     this.workspaceId = options.workspaceId;
     this.fileHashMap = options.fileHashMap;
@@ -64,25 +38,15 @@ export class WorkspaceModel {
       draft.tabs = tabsState.tabs;
       draft.nodes = options.nodes;
     });
-    const pathHelper = new FileTreeHelper(this.state.nodes);
-    await Promise.all(
-      this.state.nodes.map(async node => {
-        if (node.type === 'file') {
-          this.codeEditor.addFile({
-            id: node.id,
-            path: pathHelper.getPath(node.id),
-            source: await this.apiService.getFileContent({
-              fileId: node.id,
-              hash: this.fileHashMap.get(node.id)!,
-              workspaceId: this.workspaceId,
-            }),
-          });
-        }
-      })
-    );
-    this.bundlerService.init();
-    this.bundlerService.setInputFile('./index.tsx');
-    this.bundlerService.loadCode();
+    await this._addNodesToEditor();
+    this._loadCode();
+    if (tabsState.activeTabId) {
+      this.codeEditor.openFile(tabsState.activeTabId);
+    }
+  }
+
+  async init(options: InitWorkspaceOptions) {
+    await this._init(options);
     this.codeEditor.addEventListener('modified', ({ fileId, hasChanges }) => {
       this.setState(draft => {
         if (hasChanges) {
@@ -103,7 +67,7 @@ export class WorkspaceModel {
         hash: newHash,
       });
       this.fileHashMap.set(fileId, newHash);
-      this.bundlerService.loadCode();
+      this._loadCode();
     });
     this.codeEditor.addEventListener('opened', ({ fileId }) => {
       this._openTab(fileId);
@@ -120,9 +84,6 @@ export class WorkspaceModel {
         });
       });
     });
-    if (tabsState.activeTabId) {
-      this.codeEditor.openFile(tabsState.activeTabId);
-    }
   }
 
   async removeNode(nodeId: string) {
@@ -153,7 +114,7 @@ export class WorkspaceModel {
     });
     this.codeEditor.openFile(this.state.activeTabId);
     this._syncTabs();
-    this.bundlerService.loadCode();
+    this._loadCode();
   }
 
   async renameNode(nodeId: string, name: string) {
@@ -177,34 +138,16 @@ export class WorkspaceModel {
         this.codeEditor.changeFilePath(node.id, treeHelper.getPath(node.id));
       }
     });
-    this.bundlerService.loadCode();
+    this._loadCode();
   }
 
   openFile(id: string) {
-    this._openTab(id);
-    this.codeEditor.openFile(id);
+    super.openFile(id);
     this._syncTabs();
   }
 
   closeFile(id: string) {
-    let newActiveId: string | null | -1 = -1;
-    this.setState(draft => {
-      draft.tabs = draft.tabs.filter(x => x.id !== id);
-      if (draft.activeTabId === id) {
-        draft.activeTabId = draft.tabs[0]?.id ?? null;
-        newActiveId = draft.activeTabId;
-      }
-    });
-    if (newActiveId !== -1) {
-      this.codeEditor.openFile(newActiveId);
-    }
-    const { dirtyMap } = this.state;
-    if (dirtyMap[id]) {
-      this.setState(draft => {
-        delete draft.dirtyMap[id];
-      });
-      this.codeEditor.revertDirty(id);
-    }
+    super.closeFile(id);
     this._syncTabs();
   }
 
@@ -244,24 +187,15 @@ export class WorkspaceModel {
     this.codeEditor.setReadOnly(readOnly);
   }
 
+  loadCode() {
+    this._loadCode();
+  }
+
+  getBundledCode() {
+    return this.bundlerService.loadCodeAsync(this._getLoadCodeOptions());
+  }
+
   ////
-
-  private setState(updater: ModelStateUpdater<WorkspaceState>) {
-    this.modelState.update(updater);
-  }
-
-  private _openTab(id: string) {
-    const file = this._getNodeById(id);
-    this.setState(draft => {
-      draft.activeTabId = id;
-      if (!draft.tabs.some(x => x.id === id)) {
-        draft.tabs.push({
-          id: id,
-          name: file.name,
-        });
-      }
-    });
-  }
 
   private _syncTabs() {
     const { activeTabId, tabs } = this.state;
@@ -269,10 +203,5 @@ export class WorkspaceModel {
       activeTabId,
       tabs,
     });
-  }
-
-  private _getNodeById(id: string) {
-    const { nodes } = this.state;
-    return nodes.find(x => x.id === id)!;
   }
 }

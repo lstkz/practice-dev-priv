@@ -1,5 +1,5 @@
 {
-  "name": "typescript-nextjs-graphql-mongo-starter",
+  "name": "practice.dev",
   "private": true,
   "scripts": {
     "start:app": "cd apps/app && yarn start",

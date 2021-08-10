@@ -4,6 +4,8 @@ import fetch from 'cross-fetch';
 import {
   AwsUploadContentAuth,
   Challenge,
+  Workspace,
+  ReadOnlyWorkspace,
   PaginatedResult,
   Submission,
   OkResult,
@@ -13,7 +15,6 @@ import {
   User,
   UserProfile,
   NotificationSettings,
-  Workspace,
   WorkspaceS3Auth,
 } from './types';
 // IMPORTS END
@@ -68,6 +69,20 @@ export class APIClient {
     tags: string[];
   }): Promise<void> {
     return this.call('module.updateModule', { values });
+  }
+  submission_forkSubmission(
+    workspaceId: ObjectId,
+    submissionId: ObjectId
+  ): Promise<Workspace> {
+    return this.call('submission.forkSubmission', {
+      workspaceId,
+      submissionId,
+    });
+  }
+  submission_getSubmissionReadonlyWorkspace(
+    id: ObjectId
+  ): Promise<ReadOnlyWorkspace> {
+    return this.call('submission.getSubmissionReadonlyWorkspace', { id });
   }
   submission_notifyTestProgress(notifyKey: string, data: any[]): Promise<void> {
     return this.call('submission.notifyTestProgress', { notifyKey, data });

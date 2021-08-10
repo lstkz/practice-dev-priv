@@ -1,59 +1,12 @@
 import * as R from 'remeda';
-import type { editor } from 'monaco-editor';
+import type { editor, Uri } from 'monaco-editor';
 import { ThemeService } from './services/ThemeService';
 import DarkThemeNew from './themes/dark-theme-new.json';
 import { HighlighterService } from './services/HighlighterService';
 import { MarkerSeverity, Monaco } from './types';
 import { FormatterService } from './services/FormatterService';
 import { TypedEventEmitter } from './lib/TypedEventEmitter';
-
-export function createEditor(monaco: Monaco, wrapper: HTMLDivElement) {
-  monaco.editor.defineTheme('myCustomTheme', {
-    base: 'vs-dark',
-    inherit: true,
-    rules: [],
-    colors: {
-      'editor.background': '#011627',
-    },
-  });
-  const properties: editor.IStandaloneEditorConstructionOptions = {
-    language: 'typescript',
-    theme: 'myCustomTheme',
-    model: null,
-    minimap: {
-      enabled: false,
-    },
-    quickSuggestions: {
-      other: true,
-      comments: true,
-      strings: true,
-    },
-    automaticLayout: true,
-  };
-  monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
-    target: monaco.languages.typescript.ScriptTarget.Latest,
-    allowNonTsExtensions: true,
-    moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
-    module: monaco.languages.typescript.ModuleKind.ESNext,
-    noEmit: true,
-    esModuleInterop: true,
-    strict: true,
-    jsx: monaco.languages.typescript.JsxEmit.React,
-    reactNamespace: 'React',
-    allowJs: true,
-    isolatedModules: true,
-    typeRoots: ['node_modules/@types'],
-  });
-  monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true);
-  monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
-    // noSemanticValidation: false,
-    // noSyntaxValidation: false,
-  });
-
-  const editor = monaco.editor.create(wrapper, properties, {});
-
-  return editor;
-}
+import { EditorFactory } from './EditorFactory';
 
 function fixFilePath(path: string) {
   return path.replace(/^\.\//, 'file:///');
@@ -63,6 +16,12 @@ interface EditorFile {
   id: string;
   path: string;
   source: string;
+}
+
+interface BackupModel {
+  id: string;
+  source: string;
+  uri: Uri;
 }
 
 export interface CallbackMap {
@@ -84,15 +43,69 @@ export class CodeEditor {
   private dirtyMap: Record<string, boolean> = {};
   private errorMap: Record<string, boolean> = {};
   private emitter = new TypedEventEmitter<CallbackMap>();
+  private modelBackup: {
+    activeId: string | null;
+    models: Record<string, BackupModel>;
+  } | null = null;
+  private isInited = false;
 
-  init(monaco: Monaco, wrapper: HTMLDivElement) {
+  constructor(private readOnly: boolean) {}
+
+  init(monaco: Monaco, editorFactory: EditorFactory) {
+    if (this.isInited) {
+      return;
+    }
+    this.isInited = true;
     this.monaco = monaco;
-    this.editor = createEditor(monaco, wrapper);
+    this.editor = editorFactory.create();
     this.themer = new ThemeService();
     this.themer.loadTheme(DarkThemeNew as any);
     this.themer.injectStyles();
     this.highlighter = new HighlighterService(monaco, this.editor, this.themer);
     this.formatter = new FormatterService(monaco);
+
+    const codeEditorService = this.editor._codeEditorService;
+    const openEditorBase =
+      codeEditorService.openCodeEditor.bind(codeEditorService);
+    codeEditorService.openCodeEditor = async (input, source) => {
+      const result = await openEditorBase(input, source);
+      if (result) {
+        return result;
+      }
+      const model = monaco.editor.getModel(input.resource);
+      const fileId = Object.keys(this.models).find(
+        fileId => this.models[fileId] === model
+      );
+      if (!fileId) {
+        return result;
+      }
+      this.editor.setModel(monaco.editor.getModel(input.resource));
+      if (input.options?.selection) {
+        this.editor.setSelection(input.options.selection);
+        this.editor.revealLine(input.options.selection.startLineNumber);
+      }
+      this.emitter.emit('opened', { fileId });
+      return result;
+    };
+
+    if (!this.readOnly) {
+      this._attachHandlers();
+    }
+  }
+
+  clearState() {
+    this.editor.setModel(null);
+    this.disposeModels();
+    this.models = {};
+    this.modelCommittedText = {};
+    this.activeId = null;
+    this.dirtyMap = {};
+    this.errorMap = {};
+    this.modelBackup = null;
+  }
+
+  private _attachHandlers() {
+    const monaco = this.monaco;
     this.changeCommandKeybinding(
       'editor.action.triggerSuggest',
       monaco.KeyMod.CtrlCmd | monaco.KeyCode.Space
@@ -115,6 +128,9 @@ export class CodeEditor {
     });
 
     this.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, () => {
+      if (this.editor.getRawOptions().readOnly) {
+        return;
+      }
       const model = this.editor.getModel();
       const activeId = this.activeId;
       if (!model || !activeId) {
@@ -141,30 +157,6 @@ export class CodeEditor {
           });
         });
     });
-
-    const codeEditorService = this.editor._codeEditorService;
-    const openEditorBase =
-      codeEditorService.openCodeEditor.bind(codeEditorService);
-    codeEditorService.openCodeEditor = async (input, source) => {
-      const result = await openEditorBase(input, source);
-      if (result) {
-        return result;
-      }
-      const model = monaco.editor.getModel(input.resource);
-      const fileId = Object.keys(this.models).find(
-        fileId => this.models[fileId] === model
-      );
-      if (!fileId) {
-        return result;
-      }
-      this.editor.setModel(monaco.editor.getModel(input.resource));
-      if (input.options?.selection) {
-        this.editor.setSelection(input.options.selection);
-        this.editor.revealLine(input.options.selection.startLineNumber);
-      }
-      this.emitter.emit('opened', { fileId });
-      return result;
-    };
 
     this.editor.onDidChangeModelDecorations(() => {
       const markers = monaco.editor.getModelMarkers({});
@@ -243,9 +235,6 @@ export class CodeEditor {
   }
 
   openFile(fileId: string | null) {
-    if (this.activeId === fileId) {
-      return;
-    }
     if (!fileId) {
       this.editor.setModel(null);
     } else {
@@ -280,8 +269,46 @@ export class CodeEditor {
     this.monaco.editor.getModels().forEach(model => model.dispose());
   }
 
+  makeModelBackup() {
+    this.modelBackup = {
+      activeId: this.activeId,
+      models: {},
+    };
+    Object.entries(this.models).forEach(([id, model]) => {
+      this.modelBackup!.models[id] = {
+        id,
+        source: model.getValue(),
+        uri: model.uri,
+      };
+    });
+  }
+
+  restoreModelBackup() {
+    if (!this.modelBackup) {
+      throw new Error('modelBackup not set');
+    }
+    this.models = {};
+    Object.values(this.modelBackup.models).forEach(data => {
+      const model = this.monaco.editor.createModel(
+        data.source,
+        'typescript',
+        data.uri
+      );
+      this.models[data.id] = model;
+    });
+    this.openFile(this.modelBackup.activeId);
+    this.modelBackup = null;
+  }
+
   setReadOnly(readOnly: boolean) {
     this.editor.updateOptions({ readOnly });
+  }
+
+  disposeModels() {
+    Object.values(this.models).forEach(model => {
+      model.dispose();
+    });
+    this.activeId = null;
   }
 
   private saveAllNonActiveFiles() {

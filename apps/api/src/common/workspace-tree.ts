@@ -1,10 +1,12 @@
 import { ChallengeFile } from '../collections/Challenge';
+import * as R from 'remeda';
 import {
   WorkspaceNodeCollection,
   WorkspaceNodeModel,
 } from '../collections/WorkspaceNode';
 import * as uuid from 'uuid';
 import { WorkspaceNodeType } from 'shared';
+import { SubmissionNodeModel } from '../collections/Submission';
 
 export function getNodeUniqueKey(
   node: Pick<WorkspaceNodeModel, 'workspaceId' | 'parentId' | 'type' | 'name'>
@@ -96,4 +98,37 @@ export async function findNodeAllChildren(parentId: string) {
   };
   await travel(parentId);
   return ret;
+}
+
+export function createWorkspaceNodesFromSubmission(
+  baseProps: Pick<WorkspaceNodeModel, 'workspaceId' | 'userId'>,
+  files: ChallengeFile[],
+  submissionNodes: SubmissionNodeModel[]
+) {
+  const getFullPath = (directory: string, name: string) =>
+    directory + '/' + name;
+  const fileMap = R.indexBy(files, x => getFullPath(x.directory, x.name));
+  const getDirectoryPath = (node: SubmissionNodeModel) => {
+    const path = [];
+    while (node.parentId) {
+      node = nodeMap[node.parentId];
+      path.unshift(node.name);
+    }
+    path.unshift('.');
+    return path.join('/');
+  };
+  const nodeMap = R.indexBy(submissionNodes, x => x._id);
+  const mockedFiles = submissionNodes
+    .filter(x => x.type === WorkspaceNodeType.File)
+    .map(node => {
+      const directory = getDirectoryPath(node);
+      const file: ChallengeFile = {
+        s3Key: node.s3Key!,
+        name: node.name,
+        directory,
+        isLocked: fileMap[getFullPath(directory, node.name)]?.isLocked,
+      };
+      return file;
+    });
+  return createWorkspaceNodes(baseProps, mockedFiles);
 }

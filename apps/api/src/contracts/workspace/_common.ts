@@ -1,5 +1,5 @@
 import { ObjectID } from 'mongodb2';
-import { WorkspaceNodeType } from 'shared';
+import { Workspace, WorkspaceNodeType } from 'shared';
 import {
   WorkspaceCollection,
   WorkspaceModel,
@@ -9,6 +9,8 @@ import {
   WorkspaceNodeModel,
 } from '../../collections/WorkspaceNode';
 import { AppError, ForbiddenError } from '../../common/errors';
+import { renameId } from '../../common/helper';
+import { mapWorkspaceS3Auth } from '../../common/mapper';
 import { AppUser } from '../../types';
 import { createWorkspaceS3Auth } from './createWorkspaceS3Auth';
 
@@ -59,4 +61,20 @@ export async function renewWorkspaceAuth(workspace: WorkspaceModel) {
     workspace.s3Auth = await createWorkspaceS3Auth(workspace._id);
     await WorkspaceCollection.update(workspace, ['s3Auth']);
   }
+}
+
+export async function getMappedWorkspace(
+  workspace: WorkspaceModel
+): Promise<Workspace> {
+  await renewWorkspaceAuth(workspace);
+  const files = await WorkspaceNodeCollection.findAll({
+    workspaceId: workspace._id,
+  });
+
+  return {
+    id: workspace._id.toHexString(),
+    items: files.map(file => renameId(file)),
+    s3Auth: mapWorkspaceS3Auth(workspace.s3Auth),
+    libraries: workspace.libraries,
+  };
 }

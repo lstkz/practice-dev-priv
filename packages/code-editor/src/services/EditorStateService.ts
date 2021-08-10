@@ -3,7 +3,7 @@ interface OpenedTab {
   name: string;
 }
 
-interface TabsState {
+export interface TabsState {
   activeTabId: string | null;
   tabs: OpenedTab[];
 }

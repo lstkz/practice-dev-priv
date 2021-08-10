@@ -35,6 +35,7 @@ beforeEach(async () => {
       challengeUniqId: '1',
       createdAt: new Date(1),
       indexHtmlS3Key: 'index',
+      isCloned: true,
       nodes: [
         {
           _id: '1',
@@ -43,6 +44,7 @@ beforeEach(async () => {
           type: WorkspaceNodeType.File,
           sourceS3Key: 's1',
           s3Key: null,
+          hash: 'h1',
         },
         {
           _id: '2',
@@ -51,18 +53,21 @@ beforeEach(async () => {
           type: WorkspaceNodeType.File,
           sourceS3Key: 's2',
           s3Key: 'copied-s2',
+          hash: 'h2',
         },
         {
           _id: '3',
           name: '3',
           parentId: null,
           type: WorkspaceNodeType.Directory,
+          hash: 'h2',
         },
       ],
       notifyKey: '123',
       status: SubmissionStatus.Queued,
       userId: getId(1),
       workspaceId: getId(10),
+      libraries: [],
     },
   ]);
 });
@@ -74,6 +79,7 @@ it('should clone files', async () => {
 Array [
   Object {
     "_id": "1",
+    "hash": "h1",
     "name": "1.txt",
     "parentId": null,
     "s3Key": "cdn/submission/000000000000000000000100/1",
@@ -82,6 +88,7 @@ Array [
   },
   Object {
     "_id": "2",
+    "hash": "h2",
     "name": "2.txt",
     "parentId": null,
     "s3Key": "copied-s2",
@@ -90,6 +97,7 @@ Array [
   },
   Object {
     "_id": "3",
+    "hash": "h2",
     "name": "3",
     "parentId": null,
     "type": "directory",

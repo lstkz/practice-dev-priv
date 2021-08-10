@@ -1,9 +1,9 @@
-import { CDN_BASE_URL } from 'src/config';
 import * as R from 'remeda';
 import S3 from 'aws-sdk/clients/s3';
 import { doFn } from 'src/common/helper';
 import { WorkspaceNodeType, WorkspaceS3Auth } from 'shared';
 import { api } from 'src/services/api';
+import { IAPIService } from 'code-editor';
 
 interface AddNodeValues {
   id: string;
@@ -21,7 +21,7 @@ interface UpdateNodeValues {
   hash?: string | null | undefined;
 }
 
-export class APIService {
+export class APIService implements IAPIService {
   private s3: S3 = null!;
   private bucketName: string = null!;
 
@@ -33,13 +33,12 @@ export class APIService {
     this.bucketName = auth.bucketName;
   }
 
-  async getFileContent(options: {
-    workspaceId: string;
-    fileId: string;
-    hash: string;
-  }) {
-    const { workspaceId, fileId, hash } = options;
-    const url = `${CDN_BASE_URL}/workspace/${workspaceId}/${fileId}?h=${hash}`;
+  async getFileContent(contentUrl: string, hash?: string) {
+    let url = contentUrl;
+    if (hash) {
+      url += `?h=${hash}`;
+    }
+    // const url = `${CDN_BASE_URL}/workspace/${workspaceId}/${fileId}?h=${hash}`;
     return fetch(url).then(x => x.text());
   }
 

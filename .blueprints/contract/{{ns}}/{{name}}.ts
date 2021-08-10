@@ -1,24 +1,21 @@
 import { S } from 'schema';
-import { createContract, createGraphqlBinding } from '../../lib';
+import { createContract, createRpcBinding } from '../../lib';
 
 
 export const {{name}} = createContract('{{ns}}.{{name}}')
-  .params('appUser', 'values')
+  .params('user', 'values')
   .schema({
-    appUser: S.object().appUser(),
+    user: S.object().appUser(),
     values: S.object().keys({
     })
   })
-  .fn(async (appUser, values) => {
+  .returns<void>()
+  .fn(async (user, values) => {
 
   });
 
-export const {{name}}Graphql = createGraphqlBinding({
-  resolver: {
-    Mutation: {
-      {{name}}: (_, { values }, {getUser}) => 
-       {{name}}(getUser(), values) 
-      ,
-    },
-  },
+export const {{name}}Rpc = createRpcBinding({
+  injectUser: true,
+  signature: '{{ns}}.{{name}}',
+  handler: {{name}},
 });

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import * as ts from 'typescript';
 import fs from 'fs';
 import Path from 'path';

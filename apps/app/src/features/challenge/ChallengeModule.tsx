@@ -14,13 +14,17 @@ import {
   RIGHT_COOKIE_NAME,
   RIGHT_DEFAULT,
 } from './const';
-import { EditorModule } from './editor/EditorModule';
+import { EditorModule, EditorModuleRef } from './editor/EditorModule';
 import { TesterModule } from './TesterModule';
-import { Challenge, Workspace } from 'shared';
+import { Challenge, Submission, Workspace } from 'shared';
+import { api } from 'src/services/api';
 
 interface Actions {
   setLeftSidebarTab: (leftSidebarTab: LeftSidebarTab | null) => void;
   setRightSidebarTab: (rightSidebarTab: RightSidebarTab | null) => void;
+  openSubmission: (submission: Submission) => Promise<void>;
+  closeSubmission: () => void;
+  forkSubmission: () => void;
 }
 
 interface State {
@@ -31,6 +35,7 @@ interface State {
   initialRightSidebar: number;
   leftSidebarTab: LeftSidebarTab | null;
   rightSidebarTab: RightSidebarTab | null;
+  openedSubmission: Submission | null;
 }
 
 export type LeftSidebarTab =
@@ -52,7 +57,7 @@ export function ChallengeModule(props: ChallengeSSRProps) {
     challenge,
     challengeHtml,
   } = props;
-  const [state, setState] = useImmer<State>(
+  const [state, setState, getState] = useImmer<State>(
     {
       challengeHtml,
       workspace,
@@ -61,9 +66,11 @@ export function ChallengeModule(props: ChallengeSSRProps) {
       initialRightSidebar,
       leftSidebarTab: 'details',
       rightSidebarTab: 'preview',
+      openedSubmission: null,
     },
     'ChallengeModule'
   );
+  const editorRef = React.useRef<EditorModuleRef>(null!);
   const actions = useActions<Actions>({
     setLeftSidebarTab: leftSidebarTab => {
       setState(draft => {
@@ -75,12 +82,44 @@ export function ChallengeModule(props: ChallengeSSRProps) {
         draft.rightSidebarTab = rightSidebarTab;
       });
     },
+    openSubmission: async submission => {
+      const workspace = await api.submission_getSubmissionReadonlyWorkspace(
+        submission.id
+      );
+      editorRef.current.openReadOnlyWorkspace(workspace);
+      setState(draft => {
+        draft.openedSubmission = submission;
+        draft.leftSidebarTab = 'file-explorer';
+      });
+    },
+    closeSubmission: () => {
+      editorRef.current.closeReadOnlyWorkspace();
+      setState(draft => {
+        draft.openedSubmission = null;
+      });
+    },
+    forkSubmission: async () => {
+      const { openedSubmission, workspace } = getState();
+      const newWorkspace = await api.submission_forkSubmission(
+        workspace.id,
+        openedSubmission!.id
+      );
+      editorRef.current.openNewWorkspace(newWorkspace);
+      setState(draft => {
+        draft.workspace = newWorkspace;
+        draft.openedSubmission = null;
+      });
+    },
   });
 
   return (
     <Provider state={state} actions={actions}>
       <TesterModule challenge={challenge} workspace={workspace}>
-        <EditorModule challenge={challenge} workspace={workspace}>
+        <EditorModule
+          challenge={challenge}
+          workspace={workspace}
+          ref={editorRef}
+        >
           <ChallengePage />
         </EditorModule>
       </TesterModule>

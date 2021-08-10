@@ -111,3 +111,18 @@ export function getVisibleNodes(
 
   return ret;
 }
+
+export function findFileByPath(tree: RecTreeNode[], path: string) {
+  const split = path.split('/');
+  if (split[0] === '.') {
+    split.shift();
+  }
+  const fileName = split.pop()!;
+  while (split.length) {
+    throw new Error('TODO');
+  }
+  return tree.find(
+    node =>
+      node.type === 'file' && node.name.toLowerCase() === fileName.toLowerCase()
+  )!;
+}

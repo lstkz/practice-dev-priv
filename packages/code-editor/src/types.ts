@@ -1,4 +1,5 @@
 import type * as monacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
+import { ModelState } from './lib/ModelState';
 export * from './editor-types';
 
 export type Monaco = typeof monacoEditor;
@@ -24,6 +25,7 @@ interface BaseNode {
 
 export interface FileNode extends BaseNode {
   type: 'file';
+  contentUrl?: string;
 }
 
 export interface DirectoryNode extends BaseNode {
@@ -140,11 +142,7 @@ export interface UpdateWorkspaceNodeInput {
 }
 
 export interface IAPIService {
-  getFileContent(options: {
-    workspaceId: string;
-    fileId: string;
-    hash: string;
-  }): Promise<string>;
+  getFileContent(contentUrl: string, hash?: string): Promise<string>;
 
   addNode(values: CreateWorkspaceNodeInput): Promise<void>;
 
@@ -159,4 +157,31 @@ export interface InitWorkspaceOptions {
   workspaceId: string;
   nodes: TreeNode[];
   fileHashMap: Map<string, string>;
+}
+
+export interface InitReadOnlyWorkspaceOptions {
+  nodes: TreeNode[];
+  defaultOpenFiles: string[];
+}
+
+export interface OpenedTab {
+  id: string;
+  name: string;
+}
+
+export interface WorkspaceState {
+  activeTabId: string | null;
+  nodes: TreeNode[];
+  tabs: OpenedTab[];
+  dirtyMap: Record<string, boolean>;
+  nodeState: Record<string, 'error'>;
+}
+
+export interface IWorkspaceModel {
+  getModelState(): ModelState<WorkspaceState>;
+  removeNode(nodeId: string): Promise<void>;
+  renameNode(nodeId: string, name: string): Promise<void>;
+  openFile(id: string): void;
+  closeFile(id: string): void;
+  addNew(newNode: TreeNode): void;
 }

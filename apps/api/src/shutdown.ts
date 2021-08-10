@@ -18,20 +18,20 @@ export function setupGracefulShutdown() {
   signals.forEach(signal => {
     process.on(signal, async () => {
       signals.forEach(s => process.removeAllListeners(s));
-      console.log(`received ${signal}: shuting down`);
+      logger.info(`received ${signal}: shuting down`);
       actions.sort((a, b) => b.priority - a.priority);
       setTimeout(() => {
-        console.log('Failed to graceful shutdown. Forcing exit.');
+        logger.info('Failed to graceful shutdown. Forcing exit.');
         process.exit(0);
       }, getDuration(3, 'm'));
       try {
         for (const { action } of actions) {
           await action();
         }
-        console.log('shutdown success');
+        logger.info('shutdown success');
         process.exit(0);
       } catch (e) {
-        console.log(e);
+        logger.error(e);
         logger.error('An error during graceful shutdown', e);
         process.exit(0);
       }

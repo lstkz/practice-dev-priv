@@ -2,7 +2,8 @@
   "name": "code-editor",
   "version": "0.0.1",
   "scripts": {
-    "test": "yarn run lint && yarn run tsc",
+    "jest": "TZ=America/New_York jest",
+    "test": "yarn run tsc && yarn run lint && yarn run jest",
     "lint": "eslint . --ext .ts"
   },
   "dependencies": {
@@ -14,5 +15,10 @@
     "monaco-vscode-textmate-theme-converter": "^0.1.1"
   },
   "license": "MIT",
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/jest": "^26.0.24",
+    "jest": "^27.0.6",
+    "jest-watch-suspend": "^1.1.2",
+    "jest-watch-typeahead": "^0.6.4"
+  }
 }
