@@ -238,21 +238,19 @@ export const EditorModule = React.forwardRef<
         });
       },
       openNewWorkspace: async newWorkspace => {
-        const { workspace } = getState();
         readOnlyCodeEditor.disposeModels();
-        workspaceModel.setReadOnly(false);
-        workspaceModel.loadCode();
         const newNodes = mapWorkspaceNodes(
           newWorkspace.id,
           newWorkspace.items,
           'workspace'
         );
         const tabState = migrateTabState({
-          tabState: editorStateService.loadTabsState(),
+          tabState: readOnlyWorkspaceModel.getModelState().state,
           newNodes,
-          nodes: workspace.items,
+          nodes: readOnlyWorkspaceModel.getModelState().state.nodes,
         });
         editorStateService.updateTabsState(tabState);
+        workspaceModel.setReadOnly(false);
         await workspaceModel.reload({
           fileHashMap: _getFileHashMap(newWorkspace),
           nodes: newNodes,

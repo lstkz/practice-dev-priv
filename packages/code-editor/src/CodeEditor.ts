@@ -94,6 +94,7 @@ export class CodeEditor {
   }
 
   clearState() {
+    this.editor.setModel(null);
     this.disposeModels();
     this.models = {};
     this.modelCommittedText = {};
