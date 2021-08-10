@@ -4,6 +4,7 @@ import fetch from 'cross-fetch';
 import {
   AwsUploadContentAuth,
   Challenge,
+  Workspace,
   ReadOnlyWorkspace,
   PaginatedResult,
   Submission,
@@ -14,7 +15,6 @@ import {
   User,
   UserProfile,
   NotificationSettings,
-  Workspace,
   WorkspaceS3Auth,
 } from './types';
 // IMPORTS END
@@ -69,6 +69,15 @@ export class APIClient {
     tags: string[];
   }): Promise<void> {
     return this.call('module.updateModule', { values });
+  }
+  submission_forkSubmission(
+    workspaceId: ObjectId,
+    submissionId: ObjectId
+  ): Promise<Workspace> {
+    return this.call('submission.forkSubmission', {
+      workspaceId,
+      submissionId,
+    });
   }
   submission_getSubmissionReadonlyWorkspace(
     id: ObjectId
@@ -180,9 +189,9 @@ export class APIClient {
   workspace_createWorkspaceNode(values: {
     id: string;
     name: string;
-    type: WorkspaceNodeType;
-    hash: string;
     workspaceId: ObjectId;
+    hash: string;
+    type: WorkspaceNodeType;
     parentId?: string | null | undefined;
   }): Promise<void> {
     return this.call('workspace.createWorkspaceNode', { values });

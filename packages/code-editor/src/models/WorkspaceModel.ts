@@ -23,7 +23,13 @@ export class WorkspaceModel extends BaseWorkspaceModel {
     super(codeEditor, apiService, bundlerService, 'WorkspaceModel');
   }
 
-  async init(options: InitWorkspaceOptions) {
+  async reload(options: InitWorkspaceOptions) {
+    this.codeEditor.clearState();
+    this.fileHashMap = new Map();
+    await this._init(options);
+  }
+
+  private async _init(options: InitWorkspaceOptions) {
     const tabsState = this.editorStateService.loadTabsState();
     this.workspaceId = options.workspaceId;
     this.fileHashMap = options.fileHashMap;
@@ -32,22 +38,15 @@ export class WorkspaceModel extends BaseWorkspaceModel {
       draft.tabs = tabsState.tabs;
       draft.nodes = options.nodes;
     });
-    const pathHelper = new FileTreeHelper(this.state.nodes);
-    await Promise.all(
-      this.state.nodes.map(async node => {
-        if (node.type === 'file') {
-          this.codeEditor.addFile({
-            id: node.id,
-            path: pathHelper.getPath(node.id),
-            source: await this.apiService.getFileContent(
-              node.contentUrl!,
-              this.fileHashMap.get(node.id)
-            ),
-          });
-        }
-      })
-    );
+    await this._addNodesToEditor();
     this._loadCode();
+    if (tabsState.activeTabId) {
+      this.codeEditor.openFile(tabsState.activeTabId);
+    }
+  }
+
+  async init(options: InitWorkspaceOptions) {
+    await this._init(options);
     this.codeEditor.addEventListener('modified', ({ fileId, hasChanges }) => {
       this.setState(draft => {
         if (hasChanges) {
@@ -85,9 +84,6 @@ export class WorkspaceModel extends BaseWorkspaceModel {
         });
       });
     });
-    if (tabsState.activeTabId) {
-      this.codeEditor.openFile(tabsState.activeTabId);
-    }
   }
 
   async removeNode(nodeId: string) {

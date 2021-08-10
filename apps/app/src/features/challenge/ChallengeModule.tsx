@@ -57,7 +57,7 @@ export function ChallengeModule(props: ChallengeSSRProps) {
     challenge,
     challengeHtml,
   } = props;
-  const [state, setState] = useImmer<State>(
+  const [state, setState, getState] = useImmer<State>(
     {
       challengeHtml,
       workspace,
@@ -98,7 +98,18 @@ export function ChallengeModule(props: ChallengeSSRProps) {
         draft.openedSubmission = null;
       });
     },
-    forkSubmission: () => {},
+    forkSubmission: async () => {
+      const { openedSubmission, workspace } = getState();
+      const newWorkspace = await api.submission_forkSubmission(
+        workspace.id,
+        openedSubmission!.id
+      );
+      editorRef.current.openNewWorkspace(newWorkspace);
+      setState(draft => {
+        draft.workspace = newWorkspace;
+        draft.openedSubmission = null;
+      });
+    },
   });
 
   return (

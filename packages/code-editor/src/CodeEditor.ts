@@ -93,6 +93,16 @@ export class CodeEditor {
     }
   }
 
+  clearState() {
+    this.disposeModels();
+    this.models = {};
+    this.modelCommittedText = {};
+    this.activeId = null;
+    this.dirtyMap = {};
+    this.errorMap = {};
+    this.modelBackup = null;
+  }
+
   private _attachHandlers() {
     const monaco = this.monaco;
     this.changeCommandKeybinding(

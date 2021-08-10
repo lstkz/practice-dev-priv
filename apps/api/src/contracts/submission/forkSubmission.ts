@@ -9,6 +9,7 @@ import {
   WorkspaceNodeModel,
 } from '../../collections/WorkspaceNode';
 import { AppError, ForbiddenError } from '../../common/errors';
+import { getWorkspaceNodeS3Key } from '../../common/helper';
 import { createWorkspaceNodesFromSubmission } from '../../common/workspace-tree';
 import { withTransaction } from '../../db';
 import { createContract, createRpcBinding, s3 } from '../../lib';
@@ -56,9 +57,13 @@ export const forkSubmission = createContract('submission.forkSubmission')
         challenge.files,
         submission.nodes
       );
+      workspaceNodes.forEach(node => {
+        node.s3Key = getWorkspaceNodeS3Key(node);
+      });
       await WorkspaceNodeCollection.insertMany(workspaceNodes);
     });
     const files = workspaceNodes.filter(x => x.type === WorkspaceNodeType.File);
+
     await Promise.all(
       files.map(async file => {
         if (!file.sourceS3Key) {
