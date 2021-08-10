@@ -11,10 +11,9 @@
     ],
     "noEmit": true,
     "allowJs": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true
+    "resolveJsonModule": true
   },
   "references": [],
-  "include": ["src", "index.ts"],
+  "include": ["src", "index.ts", "__tests__"],
   "exclude": []
 }
