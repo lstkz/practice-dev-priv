@@ -4,14 +4,38 @@ import { ChevronDownIcon } from '@heroicons/react/solid';
 import { Button, getBaseButtonStyles } from '../../components/Button';
 import tw from 'twin.macro';
 
-const items = [
-  { name: 'Copy Link', href: '#' },
-  { name: 'Edit', href: '#' },
-  { name: 'Remove', href: '#' },
-  { name: 'Report', href: '#', css: tw`text-red-500` },
-];
+interface MenuItemProps {
+  children: React.ReactNode;
+  className?: any;
+  onClick: () => void;
+}
+function MenuItem(props: MenuItemProps) {
+  const { children, className, onClick } = props;
+  return (
+    <Menu.Item onClick={onClick}>
+      {({ active }) => (
+        <div
+          css={[
+            active ? tw`bg-gray-100 text-gray-900` : tw`text-gray-700`,
+            tw`block px-4 py-2 text-sm cursor-pointer`,
+          ]}
+          className={className}
+        >
+          {children}
+        </div>
+      )}
+    </Menu.Item>
+  );
+}
 
-export function SolutionOptions() {
+type SolutionMenuAction = 'copy-link' | 'edit' | 'delete' | 'report';
+
+interface SolutionOptionsProps {
+  onAction: (action: SolutionMenuAction) => void;
+}
+
+export function SolutionOptions(props: SolutionOptionsProps) {
+  const { onAction } = props;
   const focusFixCss = tw`relative focus:ring-0 focus:outline-none focus:ring-offset-0`;
   const [isFocused1, setIsFocused1] = React.useState(false);
   const [isFocused2, setIsFocused2] = React.useState(false);
@@ -74,24 +98,17 @@ export function SolutionOptions() {
                 tw="origin-top-right absolute right-0 mt-2 -mr-1 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-40"
               >
                 <div tw="py-1">
-                  {items.map(item => (
-                    <Menu.Item key={item.name}>
-                      {({ active }) => (
-                        <a
-                          href={item.href}
-                          css={[
-                            active
-                              ? tw`bg-gray-100 text-gray-900`
-                              : tw`text-gray-700`,
-                            tw`block px-4 py-2 text-sm`,
-                            item.css,
-                          ]}
-                        >
-                          {item.name}
-                        </a>
-                      )}
-                    </Menu.Item>
-                  ))}
+                  <MenuItem onClick={() => onAction('copy-link')}>
+                    Copy Link
+                  </MenuItem>
+                  <MenuItem onClick={() => onAction('edit')}>Edit</MenuItem>
+                  <MenuItem onClick={() => onAction('delete')}>Remove</MenuItem>
+                  <MenuItem
+                    onClick={() => onAction('report')}
+                    tw="text-red-500!"
+                  >
+                    Report
+                  </MenuItem>
                 </div>
               </Menu.Items>
             </Transition>
