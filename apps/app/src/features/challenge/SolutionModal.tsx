@@ -82,6 +82,7 @@ export const SolutionModal = React.forwardRef<ModalRef, SolutionModalProps>(
                   </div>
                   <Button
                     type="primary"
+                    htmlType="button"
                     block
                     onClick={() => {
                       modalRef.current?.hide();

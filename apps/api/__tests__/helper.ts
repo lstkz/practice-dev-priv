@@ -33,7 +33,7 @@ export function setupDb() {
       } else if (typeof val === 'string' && /^[a-f0-9]{24}$/.test(val)) {
         hex = val;
       }
-      return !!hex && !hex.startsWith('0000000');
+      return !!hex && !hex.startsWith('0'.repeat(12));
     },
   });
 

@@ -1,84 +1,67 @@
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid';
-import Link from 'next/link';
+import { useImmer } from 'context-api';
 import React from 'react';
-import tw, { styled } from 'twin.macro';
-import { createUrl } from '../../common/url';
-import { Button, getBaseButtonStyles } from '../../components/Button';
+import { Solution, SolutionSortBy } from 'shared';
+import { api } from 'src/services/api';
+import { Button } from '../../components/Button';
 import Select from '../../components/Select';
-import { SolutionOptions } from './SolutionOptions';
+import { useErrorModalActions } from '../ErrorModalModule';
+import { useChallengeState } from './ChallengeModule';
+import { SolutionItem } from './SolutionItem';
 import { TabLoader } from './TabLoader';
 import { TabTitle } from './TabTitle';
 
-interface Solution {
-  name: string;
-  handle: string;
-  imageUrl: string;
-  voted?: 'up' | 'down';
+interface State {
+  isLoaded: boolean;
+  isLoadMore: boolean;
+  total: number;
+  items: Solution[];
+  sortBy: SolutionSortBy;
 }
-
-const solutions: Solution[] = [
-  {
-    name: 'My solution',
-    handle: 'leonardkrasner',
-    imageUrl:
-      'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    voted: 'up',
-  },
-  {
-    name: 'My solution',
-    handle: 'floydmiles',
-    imageUrl:
-      'https://images.unsplash.com/photo-1463453091185-61582044d556?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    voted: 'down',
-  },
-  {
-    name: 'My solution',
-    handle: 'emilyselman',
-    imageUrl:
-      'https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-  },
-  {
-    name: 'My solution',
-    handle: 'kristinwatson',
-    imageUrl:
-      'https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-  },
-  {
-    name: 'My solution',
-    handle: 'leonardkrasner',
-    imageUrl:
-      'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-  },
-  {
-    name: 'My solution',
-    handle: 'emilyselman',
-    imageUrl:
-      'https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-  },
-];
-
-interface IconButtonProps {
-  state?: 'red' | 'green';
-}
-
-const IconButton = styled.button<IconButtonProps>`
-  ${getBaseButtonStyles({
-    type: 'light',
-    focusBg: 'gray-900',
-  })}
-  ${props => props.state === 'red' && tw`bg-red-400 hover:bg-red-500`}
-  ${props => props.state === 'green' && tw`bg-green-400 hover:bg-green-500`}
-  ${tw`h-5 w-6 p-0 rounded-sm`}
-`;
 
 export function SolutionsTab() {
-  const [sortBy, setSortBy] = React.useState('best');
-  const [isLoaded, setIsLoaded] = React.useState(false);
+  const [state, setState, getState] = useImmer<State>(
+    {
+      isLoaded: false,
+      isLoadMore: false,
+      total: 0,
+      items: [],
+      sortBy: SolutionSortBy.Best,
+    },
+    'SubmissionHistoryTab'
+  );
+  const { isLoadMore, isLoaded, items, sortBy, total } = state;
+  const { showError } = useErrorModalActions();
+  const { challenge } = useChallengeState();
+  const searchData = async (loadMore?: boolean) => {
+    try {
+      const { items, total } = await api.solution_searchSolutions({
+        offset: loadMore ? getState().items.length : 0,
+        limit: 20,
+        sortBy: getState().sortBy,
+        challengeId: challenge.id,
+      });
+      setState(draft => {
+        draft.isLoaded = true;
+        draft.isLoadMore = false;
+        draft.total = total;
+        if (loadMore) {
+          draft.items.push(...items);
+        } else {
+          draft.items = items;
+        }
+      });
+    } catch (e) {
+      showError(e);
+      setState(draft => {
+        draft.isLoadMore = false;
+      });
+    }
+  };
+
   React.useEffect(() => {
-    setTimeout(() => {
-      setIsLoaded(true);
-    }, 1000);
+    void searchData(false);
   }, []);
+
   const title = <TabTitle>Solutions</TabTitle>;
   if (!isLoaded) {
     return <TabLoader>{title}</TabLoader>;
@@ -93,79 +76,53 @@ export function SolutionsTab() {
           focusBg="gray-900"
           value={sortBy}
           label={<span tw="text-gray-200">Sort by</span>}
-          onChange={setSortBy}
+          onChange={value => {
+            setState(draft => {
+              draft.sortBy = value;
+            });
+            void searchData();
+          }}
           options={[
             {
               label: 'Best',
-              value: 'best',
+              value: SolutionSortBy.Best,
             },
             {
               label: 'Newest',
-              value: 'newest',
+              value: SolutionSortBy.Newest,
             },
             {
               label: 'Oldest',
-              value: 'oldest',
+              value: SolutionSortBy.Oldest,
             },
           ]}
         />
       </div>
-      <div className="flow-root mt-6">
-        <ul className="-my-5 divide-y divide-gray-700">
-          {solutions.map((item, i) => (
-            <li key={i} className="py-4">
-              <div className="flex items-center space-x-4">
-                <div tw="flex flex-col ml-2">
-                  <IconButton state={item.voted === 'up' ? 'green' : undefined}>
-                    <ChevronUpIcon />
-                  </IconButton>
-                  <span tw="text-base text-center font-bold text-indigo-200 py-1">
-                    10
-                  </span>
-                  <IconButton state={item.voted === 'down' ? 'red' : undefined}>
-                    <ChevronDownIcon />
-                  </IconButton>
-                </div>
-                <div className="flex-shrink-0">
-                  <img
-                    className="h-8 w-8 rounded-full"
-                    src={item.imageUrl}
-                    alt=""
-                  />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-base font-medium text-gray-200 truncate">
-                    {item.name}
-                  </p>
-                  <p className="text-sm text-gray-400 whitespace-nowrap truncate">
-                    by{' '}
-                    <Link
-                      passHref
-                      href={createUrl({
-                        name: 'profile',
-                        username: item.handle,
-                      })}
-                    >
-                      <a>{'@' + item.handle}</a>
-                    </Link>
-                  </p>
-                  <p className="text-sm text-gray-400 truncate">
-                    18:00 3/7/2020
-                  </p>
-                </div>
-                <div tw="flex items-center">
-                  <SolutionOptions />
-                </div>
-              </div>
-            </li>
+      <div tw="flow-root mt-6">
+        {items.length === 0 && (
+          <div tw="text-white text-center">No solutions yet</div>
+        )}
+        <ul tw="-my-5 divide-y divide-gray-700">
+          {items.map(item => (
+            <SolutionItem item={item} key={item.id} />
           ))}
         </ul>
       </div>
-      <div className="mt-6">
-        <Button type="light" block focusBg="gray-900">
-          Load More
-        </Button>
-      </div>
+      {total > items.length && (
+        <div tw="mt-6">
+          <Button
+            type="light"
+            block
+            focusBg="gray-900"
+            loading={isLoadMore}
+            onClick={() => {
+              void searchData(true);
+            }}
+          >
+            Load More
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

@@ -7,6 +7,8 @@ export interface SolutionModel {
   submissionId: ObjectID;
   challengeId: string;
   title: string;
+  createdAt: Date;
+  score: number;
 }
 
 export const SolutionCollection = createCollection<SolutionModel>('solution');
