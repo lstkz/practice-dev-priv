@@ -42,7 +42,7 @@ export class StringSchema<
           return {
             value: convert(value),
           };
-        } catch (e) {
+        } catch (e: any) {
           return {
             stop: true,
             error: {
@@ -67,7 +67,7 @@ export class StringSchema<
           return {
             value: convert(value),
           };
-        } catch (e) {
+        } catch (e: any) {
           return {
             stop: true,
             error: {
