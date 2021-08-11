@@ -4,8 +4,10 @@ import { Solution, SolutionSortBy } from 'shared';
 import { api } from 'src/services/api';
 import { Button } from '../../components/Button';
 import Select from '../../components/Select';
+import { useConfirmModalActions } from '../ConfirmModalModule';
 import { useErrorModalActions } from '../ErrorModalModule';
 import { useChallengeState } from './ChallengeModule';
+import { SolutionEditModal, SolutionModalRef } from './SolutionEditModal';
 import { SolutionItem } from './SolutionItem';
 import { TabLoader } from './TabLoader';
 import { TabTitle } from './TabTitle';
@@ -61,6 +63,8 @@ export function SolutionsTab() {
   React.useEffect(() => {
     void searchData(false);
   }, []);
+  const { showConfirm } = useConfirmModalActions();
+  const solutionEditModalRef = React.useRef<SolutionModalRef>(null!);
 
   const title = <TabTitle>Solutions</TabTitle>;
   if (!isLoaded) {
@@ -69,6 +73,7 @@ export function SolutionsTab() {
 
   return (
     <div>
+      <SolutionEditModal ref={solutionEditModalRef} />
       {title}
       <div style={{ maxWidth: 120 }}>
         <Select
@@ -104,7 +109,40 @@ export function SolutionsTab() {
         )}
         <ul tw="-my-5 divide-y divide-gray-700">
           {items.map(item => (
-            <SolutionItem item={item} key={item.id} />
+            <SolutionItem
+              deleteSolution={() => {
+                showConfirm(
+                  {
+                    title: 'Delete Solution',
+                    children: (
+                      <>Are you sure you want to delete this solution?</>
+                    ),
+                    yesContent: 'Delete',
+                  },
+                  async () => {
+                    await api.solution_deleteSolution(item.id);
+                    setState(draft => {
+                      draft.items = draft.items.filter(x => x.id !== item.id);
+                      draft.total--;
+                    });
+                  }
+                );
+              }}
+              updateSolution={() => {
+                solutionEditModalRef.current.open(item, item => {
+                  setState(draft => {
+                    draft.items = draft.items.map(current => {
+                      if (current.id === item.id) {
+                        return item;
+                      }
+                      return current;
+                    });
+                  });
+                });
+              }}
+              item={item}
+              key={item.id}
+            />
           ))}
         </ul>
       </div>

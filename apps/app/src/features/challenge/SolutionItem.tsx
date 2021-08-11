@@ -11,6 +11,8 @@ import { UserAvatar } from 'src/components/UserAvatar';
 
 interface SolutionItemProps {
   item: Solution;
+  deleteSolution: () => void;
+  updateSolution: () => void;
 }
 
 interface IconButtonProps {
@@ -28,7 +30,7 @@ const IconButton = styled.button<IconButtonProps>`
 `;
 
 export function SolutionItem(props: SolutionItemProps) {
-  const { item } = props;
+  const { item, deleteSolution, updateSolution } = props;
   return (
     <li className="py-4">
       <div className="flex items-center space-x-4">
@@ -67,7 +69,20 @@ export function SolutionItem(props: SolutionItemProps) {
           </p>
         </div>
         <div tw="flex items-center">
-          <SolutionOptions />
+          <SolutionOptions
+            onAction={action => {
+              switch (action) {
+                case 'delete': {
+                  deleteSolution();
+                  break;
+                }
+                case 'edit': {
+                  updateSolution();
+                  break;
+                }
+              }
+            }}
+          />
         </div>
       </div>
     </li>

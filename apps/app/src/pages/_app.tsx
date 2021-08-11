@@ -9,6 +9,7 @@ import { ConfirmEmailChecker } from 'src/features/ConfirmEmailChecker';
 import { clearAccessToken, getAccessToken } from 'src/services/Storage';
 import { User } from 'shared';
 import { createSSRClient } from 'src/common/helper';
+import { ConfirmModalModule } from 'src/features/ConfirmModalModule';
 
 config.autoAddCss = false;
 
@@ -29,10 +30,12 @@ export default function App({
   return (
     <>
       <AuthModule initialUser={initialUser}>
-        <ErrorModalModule>
-          <Component {...pageProps} />
-          <ConfirmEmailChecker />
-        </ErrorModalModule>
+        <ConfirmModalModule>
+          <ErrorModalModule>
+            <Component {...pageProps} />
+            <ConfirmEmailChecker />
+          </ErrorModalModule>
+        </ConfirmModalModule>
       </AuthModule>
       <div id="portals" />
     </>

@@ -4,11 +4,12 @@ import React from 'react';
 import { Button } from './Button';
 import { Modal } from './Modal';
 
-interface ConfirmModalProps {
+export interface ConfirmModalProps {
   testId?: string;
   children: React.ReactNode;
   title: React.ReactNode;
   isOpen: boolean;
+  isLoading?: boolean;
   close: () => void;
   confirm: () => void;
   yesContent?: React.ReactNode;
@@ -16,7 +17,15 @@ interface ConfirmModalProps {
 }
 
 export function ConfirmModal(props: ConfirmModalProps) {
-  const { children, title, confirm, yesContent, noContent, ...rest } = props;
+  const {
+    children,
+    title,
+    confirm,
+    yesContent,
+    noContent,
+    isLoading,
+    ...rest
+  } = props;
 
   return (
     <Modal
@@ -37,6 +46,7 @@ export function ConfirmModal(props: ConfirmModalProps) {
             type="white"
             focusBg="indigo-600"
             onClick={confirm}
+            loading={isLoading}
           >
             {yesContent || 'Yes'}
           </Button>

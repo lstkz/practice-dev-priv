@@ -77,6 +77,9 @@ export class APIClient {
   }): Promise<Solution> {
     return this.call('solution.createSolution', { values });
   }
+  solution_deleteSolution(solutionId: ObjectId): Promise<void> {
+    return this.call('solution.deleteSolution', { solutionId });
+  }
   solution_searchSolutions(criteria: {
     challengeId: string;
     limit: number;
@@ -84,6 +87,12 @@ export class APIClient {
     sortBy: SolutionSortBy;
   }): Promise<PaginatedResult<Solution>> {
     return this.call('solution.searchSolutions', { criteria });
+  }
+  solution_updateSolution(
+    solutionId: ObjectId,
+    values: { title: string }
+  ): Promise<Solution> {
+    return this.call('solution.updateSolution', { solutionId, values });
   }
   submission_forkSubmission(
     workspaceId: ObjectId,
