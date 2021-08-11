@@ -16,15 +16,16 @@ import {
 } from './const';
 import { EditorModule, EditorModuleRef } from './editor/EditorModule';
 import { TesterModule } from './TesterModule';
-import { Challenge, Submission, Workspace } from 'shared';
+import { Challenge, Solution, Submission, Workspace } from 'shared';
 import { api } from 'src/services/api';
 
 interface Actions {
   setLeftSidebarTab: (leftSidebarTab: LeftSidebarTab | null) => void;
   setRightSidebarTab: (rightSidebarTab: RightSidebarTab | null) => void;
   openSubmission: (submission: Submission) => Promise<void>;
-  closeSubmission: () => void;
-  forkSubmission: () => void;
+  openSolution: (solution: Solution) => Promise<void>;
+  closeReadOnlyWorkspace: () => void;
+  fork: () => void;
 }
 
 interface State {
@@ -36,6 +37,7 @@ interface State {
   leftSidebarTab: LeftSidebarTab | null;
   rightSidebarTab: RightSidebarTab | null;
   openedSubmission: Submission | null;
+  openedSolution: Solution | null;
 }
 
 export type LeftSidebarTab =
@@ -67,6 +69,7 @@ export function ChallengeModule(props: ChallengeSSRProps) {
       leftSidebarTab: 'details',
       rightSidebarTab: 'preview',
       openedSubmission: null,
+      openedSolution: null,
     },
     'ChallengeModule'
   );
@@ -92,22 +95,36 @@ export function ChallengeModule(props: ChallengeSSRProps) {
         draft.leftSidebarTab = 'file-explorer';
       });
     },
-    closeSubmission: () => {
+    closeReadOnlyWorkspace: () => {
       editorRef.current.closeReadOnlyWorkspace();
       setState(draft => {
         draft.openedSubmission = null;
+        draft.openedSolution = null;
       });
     },
-    forkSubmission: async () => {
-      const { openedSubmission, workspace } = getState();
-      const newWorkspace = await api.submission_forkSubmission(
-        workspace.id,
-        openedSubmission!.id
-      );
+    fork: async () => {
+      const { openedSubmission, openedSolution, workspace } = getState();
+      const newWorkspace = openedSolution
+        ? await api.solution_forkSolution(workspace.id, openedSolution!.id)
+        : await api.submission_forkSubmission(
+            workspace.id,
+            openedSubmission!.id
+          );
       editorRef.current.openNewWorkspace(newWorkspace);
       setState(draft => {
         draft.workspace = newWorkspace;
         draft.openedSubmission = null;
+        draft.openedSolution = null;
+      });
+    },
+    openSolution: async solution => {
+      const workspace = await api.solution_getSolutionReadonlyWorkspace(
+        solution.id
+      );
+      editorRef.current.openReadOnlyWorkspace(workspace);
+      setState(draft => {
+        draft.openedSolution = solution;
+        draft.leftSidebarTab = 'file-explorer';
       });
     },
   });

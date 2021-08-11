@@ -5,9 +5,9 @@ import {
   AwsUploadContentAuth,
   Challenge,
   Solution,
-  PaginatedResult,
   Workspace,
   ReadOnlyWorkspace,
+  PaginatedResult,
   Submission,
   OkResult,
   AvatarUploadResult,
@@ -79,6 +79,26 @@ export class APIClient {
   }
   solution_deleteSolution(solutionId: ObjectId): Promise<void> {
     return this.call('solution.deleteSolution', { solutionId });
+  }
+  submission_forkAnySubmission(
+    workspaceId: ObjectId,
+    submissionId: ObjectId
+  ): Promise<Workspace> {
+    return this.call('submission.forkAnySubmission', {
+      workspaceId,
+      submissionId,
+    });
+  }
+  solution_forkSolution(
+    workspaceId: ObjectId,
+    solutionId: ObjectId
+  ): Promise<Workspace> {
+    return this.call('solution.forkSolution', { workspaceId, solutionId });
+  }
+  solution_getSolutionReadonlyWorkspace(
+    id: ObjectId
+  ): Promise<ReadOnlyWorkspace> {
+    return this.call('solution.getSolutionReadonlyWorkspace', { id });
   }
   solution_searchSolutions(criteria: {
     challengeId: string;

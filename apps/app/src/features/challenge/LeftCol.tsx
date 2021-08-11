@@ -2,8 +2,8 @@ import React from 'react';
 import { useChallengeState } from './ChallengeModule';
 import { DetailsTab } from './DetailsTab';
 import { FileExplorerTab } from './FileExplorerTab';
-import { SolutionsTab } from './SolutionsTab';
-import { SubmissionHistoryTab } from './SubmissionHistoryTab';
+import { SolutionsTab } from './solutions-tab/SolutionsTab';
+import { SubmissionHistoryTab } from './submissions-tab/SubmissionHistoryTab';
 import { TestSuiteTab } from './TestSuiteTab';
 
 export function LeftCol() {

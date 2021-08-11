@@ -2,6 +2,7 @@ import { S } from 'schema';
 import { ReadOnlyWorkspace } from 'shared';
 import { SubmissionCollection } from '../../collections/Submission';
 import { AppError, ForbiddenError } from '../../common/errors';
+import { mapSubmissionToWorkspace } from '../../common/mapper';
 import { createContract, createRpcBinding } from '../../lib';
 
 export const getSubmissionReadonlyWorkspace = createContract(
@@ -24,20 +25,7 @@ export const getSubmissionReadonlyWorkspace = createContract(
     if (!submission.isCloned) {
       throw new AppError('Workspace not ready');
     }
-    return {
-      id: id.toHexString(),
-      libraries: submission.libraries,
-      items: submission.nodes.map(node => {
-        const mapped = {
-          id: node._id.toString(),
-          name: node.name,
-          hash: 'init',
-          parentId: node.parentId,
-          type: node.type,
-        };
-        return mapped;
-      }),
-    };
+    return mapSubmissionToWorkspace(submission);
   });
 
 export const getSubmissionReadonlyWorkspaceRpc = createRpcBinding({

@@ -1,8 +1,8 @@
 import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { Modal, ModalRef, ModalTitle } from '../../components/GenericModal';
-import { ContextInput } from '../../components/ContextInput';
-import { Button } from '../../components/Button';
+import { Modal, ModalRef, ModalTitle } from '../../../components/GenericModal';
+import { ContextInput } from '../../../components/ContextInput';
+import { Button } from '../../../components/Button';
 import { Validator } from 'src/common/Validator';
 import { Alert } from 'src/components/Alert';
 import { api } from 'src/services/api';
