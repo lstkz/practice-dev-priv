@@ -9,9 +9,12 @@ import { getAccessToken } from 'src/services/Storage';
 
 interface Actions {
   submit: (indexHtmlS3Key: string) => Promise<void>;
+  markAsShared: () => void;
 }
 
 interface State {
+  isShared: boolean;
+  submissionId: string | null;
   isSubmitting: boolean;
   challenge: Challenge;
   tests: TestInfo[];
@@ -44,7 +47,14 @@ export function TesterModule(props: TesterModuleProps) {
     return _getDefaultTests(challenge);
   }, [challenge]);
   const [state, setState] = useImmer<State>(
-    { challenge, isSubmitting: false, tests: defaultTests, result: null },
+    {
+      challenge,
+      isSubmitting: false,
+      tests: defaultTests,
+      result: null,
+      submissionId: null,
+      isShared: false,
+    },
     'TesterModule'
   );
   const unsubscribeRef = React.useRef<(() => void) | null>(null);
@@ -65,6 +75,7 @@ export function TesterModule(props: TesterModuleProps) {
       let done: () => void = null!;
       setState(draft => {
         draft.result = null;
+        draft.isShared = false;
         draft.tests = _getDefaultTests(challenge);
         draft.tests[0].result = 'running';
       });
@@ -97,10 +108,17 @@ export function TesterModule(props: TesterModuleProps) {
         workspaceId: workspace.id,
         indexHtmlS3Key,
       });
+      setState(draft => {
+        draft.submissionId = submissionId;
+      });
       return new Promise(resolve => {
         done = resolve;
       });
     },
+    markAsShared: () =>
+      setState(draft => {
+        draft.isShared = true;
+      }),
   });
 
   return (

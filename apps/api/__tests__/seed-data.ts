@@ -1,6 +1,7 @@
-import { WorkspaceNodeType } from 'shared';
+import { SubmissionStatus, WorkspaceNodeType } from 'shared';
 import { ChallengeCollection } from '../src/collections/Challenge';
 import { ModuleCollection } from '../src/collections/Module';
+import { SubmissionCollection } from '../src/collections/Submission';
 import { WorkspaceCollection } from '../src/collections/Workspace';
 import { WorkspaceNodeCollection } from '../src/collections/WorkspaceNode';
 import { getWorkspaceNodeWithUniqueKey } from '../src/common/workspace-tree';
@@ -138,5 +139,56 @@ export async function createSampleWorkspaceItems() {
       name: 'Button.tsx',
       sourceS3Key: 's2',
     }),
+  ]);
+}
+
+export async function createSampleSubmissions() {
+  await SubmissionCollection.insertMany([
+    {
+      _id: getId(100),
+      challengeUniqId: '1_2',
+      createdAt: new Date(1),
+      indexHtmlS3Key: 'index',
+      isCloned: true,
+      nodes: [
+        {
+          _id: '1',
+          name: '1.txt',
+          parentId: null,
+          type: WorkspaceNodeType.File,
+          sourceS3Key: 's1',
+          s3Key: 'file-key',
+          hash: 'h1',
+        },
+      ],
+      notifyKey: '123',
+      status: SubmissionStatus.Pass,
+      userId: getId(1),
+      workspaceId: getId(10),
+      libraries: [],
+    },
+    {
+      _id: getId(101),
+      challengeUniqId: '1_2',
+      createdAt: new Date(2),
+      indexHtmlS3Key: 'index',
+      isCloned: true,
+      nodes: [
+        {
+          _id: '1',
+          name: '1.txt',
+          parentId: null,
+          type: WorkspaceNodeType.File,
+          sourceS3Key: 's1',
+          s3Key: 'file-key',
+          hash: 'h1',
+        },
+      ],
+      notifyKey: '1234',
+      status: SubmissionStatus.Fail,
+      userId: getId(1),
+      workspaceId: getId(10),
+      libraries: [],
+    },
   ]);
 }

@@ -4,6 +4,7 @@ import fetch from 'cross-fetch';
 import {
   AwsUploadContentAuth,
   Challenge,
+  Solution,
   Workspace,
   ReadOnlyWorkspace,
   PaginatedResult,
@@ -69,6 +70,12 @@ export class APIClient {
     tags: string[];
   }): Promise<void> {
     return this.call('module.updateModule', { values });
+  }
+  solution_createSolution(values: {
+    title: string;
+    submissionId: ObjectId;
+  }): Promise<Solution> {
+    return this.call('solution.createSolution', { values });
   }
   submission_forkSubmission(
     workspaceId: ObjectId,
@@ -180,9 +187,9 @@ export class APIClient {
   }
   user_updateMyProfile(values: {
     name?: string | null | undefined;
+    url?: string | null | undefined;
     about?: string | null | undefined;
     country?: string | null | undefined;
-    url?: string | null | undefined;
   }): Promise<UserProfile> {
     return this.call('user.updateMyProfile', { values });
   }
