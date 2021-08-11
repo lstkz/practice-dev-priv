@@ -2,15 +2,15 @@ import { useImmer } from 'context-api';
 import React from 'react';
 import { Solution, SolutionSortBy } from 'shared';
 import { api } from 'src/services/api';
-import { Button } from '../../components/Button';
-import Select from '../../components/Select';
-import { useConfirmModalActions } from '../ConfirmModalModule';
-import { useErrorModalActions } from '../ErrorModalModule';
-import { useChallengeState } from './ChallengeModule';
+import { Button } from '../../../components/Button';
+import Select from '../../../components/Select';
+import { useConfirmModalActions } from '../../ConfirmModalModule';
+import { useErrorModalActions } from '../../ErrorModalModule';
+import { useChallengeState } from '../ChallengeModule';
 import { SolutionEditModal, SolutionModalRef } from './SolutionEditModal';
 import { SolutionItem } from './SolutionItem';
-import { TabLoader } from './TabLoader';
-import { TabTitle } from './TabTitle';
+import { TabLoader } from '../TabLoader';
+import { TabTitle } from '../TabTitle';
 
 interface State {
   isLoaded: boolean;

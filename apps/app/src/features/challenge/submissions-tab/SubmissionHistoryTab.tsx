@@ -1,10 +1,10 @@
 import React from 'react';
-import { Button } from '../../components/Button';
-import Select from '../../components/Select';
-import { TabLoader } from './TabLoader';
-import { TabTitle } from './TabTitle';
+import { Button } from '../../../components/Button';
+import Select from '../../../components/Select';
+import { TabLoader } from '../TabLoader';
+import { TabTitle } from '../TabTitle';
 import { useImmer } from 'context-api';
-import { useErrorModalActions } from '../ErrorModalModule';
+import { useErrorModalActions } from '../../ErrorModalModule';
 import { Submission, SubmissionSortBy } from 'shared';
 import { api } from 'src/services/api';
 import { SubmissionHistoryItem } from './SubmissionHistoryItem';

@@ -3,8 +3,8 @@ import * as DateFns from 'date-fns';
 import { Submission, SubmissionStatus } from 'shared';
 import Badge from 'src/components/Badge';
 import { Button } from 'src/components/Button';
-import { useChallengeActions } from './ChallengeModule';
-import { useErrorModalActions } from '../ErrorModalModule';
+import { useChallengeActions } from '../ChallengeModule';
+import { useErrorModalActions } from '../../ErrorModalModule';
 
 interface SubmissionHistoryItemProps {
   item: Submission;

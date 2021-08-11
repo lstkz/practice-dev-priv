@@ -2,11 +2,13 @@ import * as R from 'remeda';
 import { UserModel } from '../collections/User';
 import { WorkspaceS3Auth } from '../collections/Workspace';
 import {
+  ReadOnlyWorkspace,
   Solution,
   User,
   WorkspaceS3Auth as MappedWorkspaceS3Auth,
 } from 'shared';
 import { SolutionModel } from '../collections/Solution';
+import { SubmissionModel } from '../collections/Submission';
 
 export function mapUser(user: UserModel): User {
   return {
@@ -53,4 +55,23 @@ export function mapSolutions(
   return solutions.map(solution =>
     mapSolution(solution, userMap[solution.userId.toHexString()])
   );
+}
+
+export function mapSubmissionToWorkspace(
+  submission: SubmissionModel
+): ReadOnlyWorkspace {
+  return {
+    id: submission._id.toHexString(),
+    libraries: submission.libraries,
+    items: submission.nodes.map(node => {
+      const mapped = {
+        id: node._id.toString(),
+        name: node.name,
+        hash: 'init',
+        parentId: node.parentId,
+        type: node.type,
+      };
+      return mapped;
+    }),
+  };
 }

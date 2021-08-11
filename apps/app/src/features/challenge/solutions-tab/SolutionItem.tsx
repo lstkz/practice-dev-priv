@@ -3,13 +3,13 @@ import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid';
 import { Solution } from 'shared';
 import tw, { styled } from 'twin.macro';
 import * as DateFns from 'date-fns';
-import { createUrl } from '../../common/url';
+import { createUrl } from '../../../common/url';
 import { SolutionOptions } from './SolutionOptions';
-import { getBaseButtonStyles } from '../../components/Button';
+import { getBaseButtonStyles } from '../../../components/Button';
 import Link from 'next/link';
 import { UserAvatar } from 'src/components/UserAvatar';
 
-interface SolutionItemProps {
+export interface SolutionItemProps {
   item: Solution;
   deleteSolution: () => void;
   updateSolution: () => void;
@@ -30,7 +30,7 @@ const IconButton = styled.button<IconButtonProps>`
 `;
 
 export function SolutionItem(props: SolutionItemProps) {
-  const { item, deleteSolution, updateSolution } = props;
+  const { item } = props;
   return (
     <li className="py-4">
       <div className="flex items-center space-x-4">
@@ -69,20 +69,7 @@ export function SolutionItem(props: SolutionItemProps) {
           </p>
         </div>
         <div tw="flex items-center">
-          <SolutionOptions
-            onAction={action => {
-              switch (action) {
-                case 'delete': {
-                  deleteSolution();
-                  break;
-                }
-                case 'edit': {
-                  updateSolution();
-                  break;
-                }
-              }
-            }}
-          />
+          <SolutionOptions {...props} />
         </div>
       </div>
     </li>

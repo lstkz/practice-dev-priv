@@ -1,8 +1,11 @@
 import React, { Fragment } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import { ChevronDownIcon } from '@heroicons/react/solid';
-import { Button, getBaseButtonStyles } from '../../components/Button';
+import { Button, getBaseButtonStyles } from '../../../components/Button';
 import tw from 'twin.macro';
+import { useErrorModalActions } from 'src/features/ErrorModalModule';
+import { SolutionItemProps } from './SolutionItem';
+import { useChallengeActions } from '../ChallengeModule';
 
 interface MenuItemProps {
   children: React.ReactNode;
@@ -28,17 +31,16 @@ function MenuItem(props: MenuItemProps) {
   );
 }
 
-type SolutionMenuAction = 'copy-link' | 'edit' | 'delete' | 'report';
-
-interface SolutionOptionsProps {
-  onAction: (action: SolutionMenuAction) => void;
-}
+interface SolutionOptionsProps extends SolutionItemProps {}
 
 export function SolutionOptions(props: SolutionOptionsProps) {
-  const { onAction } = props;
+  const { deleteSolution, item, updateSolution } = props;
   const focusFixCss = tw`relative focus:ring-0 focus:outline-none focus:ring-offset-0`;
   const [isFocused1, setIsFocused1] = React.useState(false);
   const [isFocused2, setIsFocused2] = React.useState(false);
+  const { openSolution } = useChallengeActions();
+  const { showError } = useErrorModalActions();
+  const [isLoading, setIsLoading] = React.useState(false);
   return (
     <span
       css={[
@@ -60,6 +62,16 @@ export function SolutionOptions(props: SolutionOptionsProps) {
         }}
         onBlur={() => {
           setIsFocused1(false);
+        }}
+        loading={isLoading}
+        onClick={async () => {
+          try {
+            setIsLoading(true);
+            await openSolution(item);
+          } catch (e) {
+            showError(e);
+            setIsLoading(false);
+          }
         }}
       >
         Load
@@ -98,13 +110,19 @@ export function SolutionOptions(props: SolutionOptionsProps) {
                 tw="origin-top-right absolute right-0 mt-2 -mr-1 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-40"
               >
                 <div tw="py-1">
-                  <MenuItem onClick={() => onAction('copy-link')}>
+                  <MenuItem
+                    onClick={() => {
+                      //
+                    }}
+                  >
                     Copy Link
                   </MenuItem>
-                  <MenuItem onClick={() => onAction('edit')}>Edit</MenuItem>
-                  <MenuItem onClick={() => onAction('delete')}>Remove</MenuItem>
+                  <MenuItem onClick={updateSolution}>Edit</MenuItem>
+                  <MenuItem onClick={deleteSolution}>Remove</MenuItem>
                   <MenuItem
-                    onClick={() => onAction('report')}
+                    onClick={() => {
+                      //
+                    }}
                     tw="text-red-500!"
                   >
                     Report
