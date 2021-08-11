@@ -35,7 +35,7 @@ export function runEvery(appTask: AppTask, ms: number) {
         return;
       }
       await dispatchTask(appTask);
-    } catch (e) {
+    } catch (e: any) {
       reportError({
         error: e,
         source: 'schedular',

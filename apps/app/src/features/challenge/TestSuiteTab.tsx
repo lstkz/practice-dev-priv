@@ -10,11 +10,12 @@ import { Button } from '../../components/Button';
 import { ModalRef } from '../../components/GenericModal';
 import { SolutionModal } from './SolutionModal';
 import { TabTitle } from './TabTitle';
-import { useTesterState } from './TesterModule';
+import { useTesterActions, useTesterState } from './TesterModule';
 
 export function TestSuiteTab() {
   const modalRef = React.useRef<ModalRef>(null!);
-  const { tests, result } = useTesterState();
+  const { tests, result, submissionId, isShared } = useTesterState();
+  const { markAsShared } = useTesterActions();
   return (
     <div>
       <TabTitle>Test Suite</TabTitle>
@@ -63,7 +64,7 @@ export function TestSuiteTab() {
           PASS
         </div>
       )}
-      {result === 'PASS' && (
+      {result === 'PASS' && !isShared && (
         <Button
           tw="mt-2"
           block
@@ -72,11 +73,16 @@ export function TestSuiteTab() {
           onClick={() => {
             modalRef.current.open();
           }}
+          disabled={isShared}
         >
           Share Your Solution!
         </Button>
       )}
-      <SolutionModal ref={modalRef} />
+      <SolutionModal
+        ref={modalRef}
+        submissionId={submissionId!}
+        markAsShared={markAsShared}
+      />
     </div>
   );
 }

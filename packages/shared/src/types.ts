@@ -211,3 +211,15 @@ export interface UserProfile {
   country?: string | null;
   url?: string | null;
 }
+
+export interface Solution {
+  id: string;
+  title: string;
+  author: Author;
+}
+
+export interface Author {
+  id: string;
+  username: string;
+  avatarId?: string | null;
+}

@@ -21,6 +21,8 @@ export const {
     require('./collections/Workspace'),
     require('./collections/WorkspaceNode'),
     require('./collections/Submission'),
+    require('./collections/Solution'),
+    require('./collections/SolutionLimit'),
     // APPEND
   ],
   uri: config.mongodb.url,

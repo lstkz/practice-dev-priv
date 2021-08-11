@@ -24,6 +24,19 @@ export function getUUID(nr: number) {
 }
 
 export function setupDb() {
+  expect.addSnapshotSerializer({
+    print: () => '<Random ObjectID>',
+    test: val => {
+      let hex = '';
+      if (val instanceof ObjectID) {
+        hex = val.toHexString();
+      } else if (typeof val === 'string' && /^[a-f0-9]{24}$/.test(val)) {
+        hex = val;
+      }
+      return !!hex && !hex.startsWith('0000000');
+    },
+  });
+
   beforeAll(initDb);
   beforeEach(resetDb);
   afterAll(() => {
