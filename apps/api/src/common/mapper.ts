@@ -1,3 +1,4 @@
+import * as R from 'remeda';
 import { UserModel } from '../collections/User';
 import { WorkspaceS3Auth } from '../collections/Workspace';
 import {
@@ -34,10 +35,22 @@ export function mapSolution(
   return {
     id: solution._id.toHexString(),
     title: solution.title,
+    createdAt: solution.createdAt.toISOString(),
+    score: solution.score,
     author: {
       id: user._id.toHexString(),
       username: user.username,
       avatarId: user.avatarId,
     },
   };
+}
+
+export function mapSolutions(
+  solutions: SolutionModel[],
+  users: UserModel[]
+): Solution[] {
+  const userMap = R.indexBy(users, x => x._id);
+  return solutions.map(solution =>
+    mapSolution(solution, userMap[solution.userId.toHexString()])
+  );
 }

@@ -134,6 +134,12 @@ export enum SubmissionSortBy {
   Oldest = 'oldest',
 }
 
+export enum SolutionSortBy {
+  Best = 'best',
+  Newest = 'newest',
+  Oldest = 'oldest',
+}
+
 export interface Workspace {
   id: string;
   items: WorkspaceNode[];
@@ -216,6 +222,8 @@ export interface Solution {
   id: string;
   title: string;
   author: Author;
+  createdAt: string;
+  score: number;
 }
 
 export interface Author {

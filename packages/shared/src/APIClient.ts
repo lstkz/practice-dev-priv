@@ -5,9 +5,9 @@ import {
   AwsUploadContentAuth,
   Challenge,
   Solution,
+  PaginatedResult,
   Workspace,
   ReadOnlyWorkspace,
-  PaginatedResult,
   Submission,
   OkResult,
   AvatarUploadResult,
@@ -20,7 +20,7 @@ import {
 } from './types';
 // IMPORTS END
 
-import { SubmissionSortBy, WorkspaceNodeType } from './types';
+import { SubmissionSortBy, WorkspaceNodeType, SolutionSortBy } from './types';
 type ObjectId = string;
 
 export class APIClient {
@@ -76,6 +76,14 @@ export class APIClient {
     submissionId: ObjectId;
   }): Promise<Solution> {
     return this.call('solution.createSolution', { values });
+  }
+  solution_searchSolutions(criteria: {
+    challengeId: string;
+    limit: number;
+    offset: number;
+    sortBy: SolutionSortBy;
+  }): Promise<PaginatedResult<Solution>> {
+    return this.call('solution.searchSolutions', { criteria });
   }
   submission_forkSubmission(
     workspaceId: ObjectId,
@@ -167,9 +175,9 @@ export class APIClient {
     return this.call('user.logout', {});
   }
   user_register(values: {
-    password: string;
-    username: string;
     email: string;
+    username: string;
+    password: string;
   }): Promise<AuthData> {
     return this.call('user.register', { values });
   }

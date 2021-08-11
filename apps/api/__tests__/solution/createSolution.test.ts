@@ -12,6 +12,7 @@ beforeEach(async () => {
   await registerSampleUsers();
   await createSampleChallenges();
   await createSampleSubmissions();
+  Date.now = () => 10;
 });
 
 it('should throw if submission not found', async () => {
@@ -84,7 +85,9 @@ it('should create a solution', async () => {
         "id": "000000000000000000000001",
         "username": "user1",
       },
+      "createdAt": "1970-01-01T00:00:00.010Z",
       "id": <Random ObjectID>,
+      "score": 0,
       "title": "sol1",
     }
   `);

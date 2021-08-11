@@ -6,6 +6,7 @@ import { SolutionCollection, SolutionModel } from '../../collections/Solution';
 import { SolutionLimitCollection } from '../../collections/SolutionLimit';
 import { SubmissionCollection } from '../../collections/Submission';
 import { AppError, ForbiddenError } from '../../common/errors';
+import { getCurrentDate } from '../../common/helper';
 import { mapSolution } from '../../common/mapper';
 import { withTransaction } from '../../db';
 import { createContract, createRpcBinding } from '../../lib';
@@ -44,6 +45,8 @@ export const createSolution = createContract('solution.createSolution')
       submissionId: submission._id,
       title: values.title,
       userId: user._id,
+      score: 0,
+      createdAt: getCurrentDate(),
     };
     const solutionLimitId = `${user._id}_${challenge._id}`;
     await withTransaction(async () => {
