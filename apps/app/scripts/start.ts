@@ -5,4 +5,4 @@ import { fixTestConfig } from './_utils';
 const config = getConfig();
 fixTestConfig(config);
 
-runScript(config, `yarn run next start -p ${config.web.port}`, 'development');
+runScript(config, `yarn run next start -p ${config.web.port}`, 'production');
