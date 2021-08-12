@@ -4,10 +4,11 @@ import fetch from 'cross-fetch';
 import {
   AwsUploadContentAuth,
   Challenge,
+  PaginatedResult,
+  Module,
   Solution,
   Workspace,
   ReadOnlyWorkspace,
-  PaginatedResult,
   VoteResult,
   Submission,
   OkResult,
@@ -62,13 +63,19 @@ export class APIClient {
   }): Promise<void> {
     return this.call('challenge.updateChallenge', { values });
   }
+  module_searchModules(criteria: {
+    limit: number;
+    offset: number;
+  }): Promise<PaginatedResult<Module>> {
+    return this.call('module.searchModules', { criteria });
+  }
   module_updateModule(values: {
     id: number;
     title: string;
     description: string;
     difficulty: string;
-    mainTechnology: string;
     tags: string[];
+    mainTechnology: string;
   }): Promise<void> {
     return this.call('module.updateModule', { values });
   }

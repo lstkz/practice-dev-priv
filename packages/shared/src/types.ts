@@ -248,3 +248,17 @@ export interface ChallengeStats {
 export interface ModuleStats {
   enrolledUsers: number;
 }
+
+export interface Module {
+  id: number;
+  title: string;
+  description: string;
+  tags: string[];
+  difficulty: string;
+  mainTechnology: string;
+  stats: ModuleStats;
+  totalTime: number;
+  solvedChallenges: number;
+  totalChallenges: number;
+  isAttempted: boolean;
+}

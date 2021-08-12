@@ -1,19 +1,11 @@
 import { UsersIcon, ClockIcon } from '@heroicons/react/outline';
 import Link from 'next/link';
 import React from 'react';
+import { Module } from 'shared';
 import tw from 'twin.macro';
 import { createUrl } from '../../common/url';
 import Badge from '../../components/Badge';
 import { IconStats } from '../../components/IconStats';
-
-interface Module {
-  id: number;
-  title: string;
-  description: React.ReactNode;
-  tags: string[];
-  solved: number;
-  total: number;
-}
 
 interface ModuleListItemProps {
   item: Module;
@@ -21,8 +13,9 @@ interface ModuleListItemProps {
 
 export function ModuleListItem(props: ModuleListItemProps) {
   const { item } = props;
-  const { solved, total } = item;
-  const progress = (solved / total) * 100;
+  const { solvedChallenges, totalChallenges } = item;
+  const progress = (solvedChallenges / totalChallenges) * 100;
+  const allTags = [item.mainTechnology, ...item.tags, item.difficulty];
   return (
     <li>
       <Link passHref href={createUrl({ name: 'module', id: item.id })}>
@@ -46,22 +39,22 @@ export function ModuleListItem(props: ModuleListItemProps) {
                       : tw`bg-yellow-100 text-yellow-800`,
                   ]}
                 >
-                  {solved}/{total}
+                  {solvedChallenges}/{totalChallenges}
                 </div>
               </div>
             </div>
             <div tw="mt-4 ">
               <div tw="flex space-x-4">
                 <IconStats icon={<UsersIcon />} tooltip="Users attempted">
-                  250
+                  {item.stats.enrolledUsers}
                 </IconStats>
                 <IconStats icon={<ClockIcon />} tooltip="Total practice time">
-                  100h
+                  {item.totalTime}m
                 </IconStats>
               </div>
               <div tw="mt-2 space-x-2">
-                {item.tags.map(tag => (
-                  <Badge key={tag} color="purple">
+                {allTags.map((tag, i) => (
+                  <Badge key={i} color="purple">
                     {tag}
                   </Badge>
                 ))}

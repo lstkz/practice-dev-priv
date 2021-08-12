@@ -35,6 +35,7 @@ export const updateStatsOnSubmissionCreated = createContract(
           _id: challengeAttemptId,
           challengeId: challenge._id,
           userId: submission.userId,
+          moduleId: challenge.moduleId,
         });
       }
       await ChallengeCollection.findOneAndUpdate(

@@ -2,39 +2,78 @@ import React from 'react';
 import { Checkbox } from '../../components/Checkbox';
 import { FilterPanel } from '../../components/FilterPanel';
 import { FilterSection } from '../../components/FilterSection';
+import { useUser } from '../AuthModule';
+import {
+  useModulesState,
+  ModulesFilter as ModulesFilterType,
+  useModulesActions,
+} from './ModulesModule';
+
+interface CheckboxListProps {
+  idPrefix: string;
+  filterProps: keyof ModulesFilterType;
+  options: string[];
+  disabledOptions?: Record<string, boolean>;
+}
+
+function CheckboxList(props: CheckboxListProps) {
+  const { filterProps, idPrefix, options, disabledOptions } = props;
+  const { toggleFilter } = useModulesActions();
+  const { filter } = useModulesState();
+
+  return (
+    <>
+      {options.map(option => {
+        const value: any = option.toLowerCase();
+        return (
+          <Checkbox
+            key={value}
+            id={`${idPrefix}-${value}`}
+            name={value}
+            checked={filter[filterProps].includes(value)}
+            disabled={disabledOptions?.[value]}
+            onChange={() => {
+              toggleFilter(filterProps, value);
+            }}
+          >
+            {option}
+          </Checkbox>
+        );
+      })}
+    </>
+  );
+}
 
 export function ModulesFilter() {
+  const user = useUser();
   return (
     <FilterPanel>
-      <FilterSection title="Status">
-        <Checkbox id="status-unattempted" name="status">
-          Unattempted
-        </Checkbox>
-        <Checkbox id="status-attempted" name="status">
-          Attempted
-        </Checkbox>
-      </FilterSection>
+      {user && (
+        <FilterSection title="Status">
+          <CheckboxList
+            filterProps="status"
+            idPrefix="status"
+            options={['Unattempted', 'Attempted']}
+          />
+        </FilterSection>
+      )}
       <FilterSection title="Main Technology">
-        <Checkbox id="main-tech-react" name="main-tech">
-          React
-        </Checkbox>
-        <Checkbox disabled id="main-tech-angular" name="main-tech">
-          Angular
-        </Checkbox>
-        <Checkbox disabled id="main-tech-vue" name="main-tech">
-          Vue
-        </Checkbox>
+        <CheckboxList
+          filterProps="technology"
+          idPrefix="main-tech"
+          options={['React', 'Angular', 'Vue']}
+          disabledOptions={{
+            angular: true,
+            vue: true,
+          }}
+        />
       </FilterSection>
       <FilterSection title="Difficulty">
-        <Checkbox id="difficulty-beginner" name="difficulty">
-          Beginner
-        </Checkbox>
-        <Checkbox id="difficulty-intermediate" name="difficulty">
-          Intermediate
-        </Checkbox>
-        <Checkbox id="difficulty-various" name="difficulty">
-          Various
-        </Checkbox>
+        <CheckboxList
+          filterProps="difficulty"
+          idPrefix="difficulty"
+          options={['Beginner', 'Intermediate', 'Various']}
+        />
       </FilterSection>
     </FilterPanel>
   );
