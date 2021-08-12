@@ -11,6 +11,8 @@ import { SolutionEditModal, SolutionModalRef } from './SolutionEditModal';
 import { SolutionItem } from './SolutionItem';
 import { TabLoader } from '../TabLoader';
 import { TabTitle } from '../TabTitle';
+import { useSubAction } from 'src/features/PubSubContextModule';
+import { safeAssign } from 'src/common/helper';
 
 interface State {
   isLoaded: boolean;
@@ -59,7 +61,6 @@ export function SolutionsTab() {
       });
     }
   };
-
   React.useEffect(() => {
     void searchData(false);
   }, []);
@@ -67,6 +68,18 @@ export function SolutionsTab() {
   const solutionEditModalRef = React.useRef<SolutionModalRef>(null!);
 
   const title = <TabTitle>Solutions</TabTitle>;
+  useSubAction({
+    action: 'solution-vote-stats-updated',
+    fn: ({ solutionId, result }) => {
+      setState(draft => {
+        draft.items.forEach(item => {
+          if (item.id === solutionId) {
+            safeAssign(item, result);
+          }
+        });
+      });
+    },
+  });
   if (!isLoaded) {
     return <TabLoader>{title}</TabLoader>;
   }

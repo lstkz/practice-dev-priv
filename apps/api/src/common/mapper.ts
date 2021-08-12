@@ -9,6 +9,10 @@ import {
 } from 'shared';
 import { SolutionModel } from '../collections/Solution';
 import { SubmissionModel } from '../collections/Submission';
+import {
+  createSolutionVoteId,
+  SolutionVoteModel,
+} from '../collections/SolutionVote';
 
 export function mapUser(user: UserModel): User {
   return {
@@ -32,13 +36,15 @@ export function mapWorkspaceS3Auth(
 
 export function mapSolution(
   solution: SolutionModel,
-  user: UserModel
+  user: UserModel,
+  solutionVote?: SolutionVoteModel | null
 ): Solution {
   return {
     id: solution._id.toHexString(),
     title: solution.title,
     createdAt: solution.createdAt.toISOString(),
     score: solution.score,
+    myScore: solutionVote?.score ?? 0,
     author: {
       id: user._id.toHexString(),
       username: user.username,
@@ -49,12 +55,19 @@ export function mapSolution(
 
 export function mapSolutions(
   solutions: SolutionModel[],
-  users: UserModel[]
+  users: UserModel[],
+  solutionVotes: SolutionVoteModel[]
 ): Solution[] {
   const userMap = R.indexBy(users, x => x._id);
-  return solutions.map(solution =>
-    mapSolution(solution, userMap[solution.userId.toHexString()])
-  );
+  const voteMap = R.indexBy(solutionVotes, x => x._id);
+  return solutions.map(solution => {
+    const user = userMap[solution.userId.toHexString()];
+    const voteId = createSolutionVoteId({
+      userId: user._id,
+      solutionId: solution._id,
+    });
+    return mapSolution(solution, user, voteMap[voteId]);
+  });
 }
 
 export function mapSubmissionToWorkspace(

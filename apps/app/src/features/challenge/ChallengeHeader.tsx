@@ -4,6 +4,7 @@ import { Button } from '../../components/Button';
 import { Logo } from '../../components/Logo';
 import { useChallengeActions, useChallengeState } from './ChallengeModule';
 import { useEditorActions, useEditorState } from './editor/EditorModule';
+import { VoteSolutionControls } from 'src/components/VoteSolutionControls';
 
 interface ForkBarProps {
   onFork: () => void;
@@ -58,7 +59,12 @@ export function ChallengeHeader() {
           />
         ) : openedSolution ? (
           <ForkBar
-            title={<>Solution: {openedSolution.title}</>}
+            title={
+              <div tw="flex items-center">
+                <VoteSolutionControls horizontal solution={openedSolution} />
+                <span tw="ml-2">Solution: {openedSolution.title}</span>
+              </div>
+            }
             onFork={() => setIsConfirmOpen(true)}
             onClose={closeReadOnlyWorkspace}
           />

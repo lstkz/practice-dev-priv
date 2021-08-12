@@ -4,6 +4,10 @@ import { Solution, SubmissionStatus } from 'shared';
 import { ChallengeCollection } from '../../collections/Challenge';
 import { SolutionCollection, SolutionModel } from '../../collections/Solution';
 import { SolutionLimitCollection } from '../../collections/SolutionLimit';
+import {
+  createSolutionVoteId,
+  SolutionVoteCollection,
+} from '../../collections/SolutionVote';
 import { SubmissionCollection } from '../../collections/Submission';
 import { AppError, ForbiddenError } from '../../common/errors';
 import { getCurrentDate } from '../../common/helper';
@@ -45,11 +49,11 @@ export const createSolution = createContract('solution.createSolution')
       submissionId: submission._id,
       title: values.title,
       userId: user._id,
-      score: 0,
+      score: 1,
       createdAt: getCurrentDate(),
     };
     const solutionLimitId = `${user._id}_${challenge._id}`;
-    await withTransaction(async () => {
+    const solutionVote = await withTransaction(async () => {
       let solutionLimit = await SolutionLimitCollection.findById(
         solutionLimitId
       );
@@ -66,10 +70,23 @@ export const createSolution = createContract('solution.createSolution')
         );
       }
       solutionLimit.count++;
-      await SolutionLimitCollection.update(solutionLimit, ['count']);
-      await SolutionCollection.insertOne(solution);
+      const solutionVote = {
+        _id: createSolutionVoteId({
+          userId: user._id,
+          solutionId: solution._id,
+        }),
+        userId: user._id,
+        solutionId: solution._id,
+        score: 1,
+      };
+      await Promise.all([
+        SolutionLimitCollection.update(solutionLimit, ['count']),
+        SolutionCollection.insertOne(solution),
+        SolutionVoteCollection.insertOne(solutionVote),
+      ]);
+      return solutionVote;
     });
-    return mapSolution(solution, user);
+    return mapSolution(solution, user, solutionVote);
   });
 
 export const createSolutionRpc = createRpcBinding({

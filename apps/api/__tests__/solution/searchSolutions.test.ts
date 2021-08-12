@@ -1,5 +1,9 @@
 import { SolutionSortBy } from 'shared';
 import { SolutionCollection } from '../../src/collections/Solution';
+import {
+  createSolutionVoteId,
+  SolutionVoteCollection,
+} from '../../src/collections/SolutionVote';
 import { searchSolutions } from '../../src/contracts/solution/searchSolutions';
 import { execContract, getId, setupDb } from '../helper';
 import { registerSampleUsers } from '../seed-data';
@@ -83,6 +87,7 @@ it('should return results by newest', async () => {
           },
           "createdAt": "1970-01-01T00:00:00.004Z",
           "id": "000000000000000000000103",
+          "myScore": 0,
           "score": 5,
           "title": "s4",
         },
@@ -94,6 +99,7 @@ it('should return results by newest', async () => {
           },
           "createdAt": "1970-01-01T00:00:00.003Z",
           "id": "000000000000000000000102",
+          "myScore": 0,
           "score": 10,
           "title": "s3",
         },
@@ -105,6 +111,7 @@ it('should return results by newest', async () => {
           },
           "createdAt": "1970-01-01T00:00:00.002Z",
           "id": "000000000000000000000101",
+          "myScore": 0,
           "score": 2,
           "title": "s2",
         },
@@ -116,6 +123,7 @@ it('should return results by newest', async () => {
           },
           "createdAt": "1970-01-01T00:00:00.001Z",
           "id": "000000000000000000000100",
+          "myScore": 0,
           "score": 1,
           "title": "s1",
         },
@@ -151,6 +159,7 @@ it('should return results by oldest', async () => {
           },
           "createdAt": "1970-01-01T00:00:00.001Z",
           "id": "000000000000000000000100",
+          "myScore": 0,
           "score": 1,
           "title": "s1",
         },
@@ -162,6 +171,7 @@ it('should return results by oldest', async () => {
           },
           "createdAt": "1970-01-01T00:00:00.002Z",
           "id": "000000000000000000000101",
+          "myScore": 0,
           "score": 2,
           "title": "s2",
         },
@@ -173,6 +183,7 @@ it('should return results by oldest', async () => {
           },
           "createdAt": "1970-01-01T00:00:00.003Z",
           "id": "000000000000000000000102",
+          "myScore": 0,
           "score": 10,
           "title": "s3",
         },
@@ -184,6 +195,7 @@ it('should return results by oldest', async () => {
           },
           "createdAt": "1970-01-01T00:00:00.004Z",
           "id": "000000000000000000000103",
+          "myScore": 0,
           "score": 5,
           "title": "s4",
         },
@@ -219,6 +231,7 @@ it('should return results by best', async () => {
           },
           "createdAt": "1970-01-01T00:00:00.003Z",
           "id": "000000000000000000000102",
+          "myScore": 0,
           "score": 10,
           "title": "s3",
         },
@@ -230,6 +243,7 @@ it('should return results by best', async () => {
           },
           "createdAt": "1970-01-01T00:00:00.004Z",
           "id": "000000000000000000000103",
+          "myScore": 0,
           "score": 5,
           "title": "s4",
         },
@@ -241,6 +255,7 @@ it('should return results by best', async () => {
           },
           "createdAt": "1970-01-01T00:00:00.002Z",
           "id": "000000000000000000000101",
+          "myScore": 0,
           "score": 2,
           "title": "s2",
         },
@@ -252,6 +267,7 @@ it('should return results by best', async () => {
           },
           "createdAt": "1970-01-01T00:00:00.001Z",
           "id": "000000000000000000000100",
+          "myScore": 0,
           "score": 1,
           "title": "s1",
         },
@@ -287,6 +303,7 @@ it('should return results by oldest with offset', async () => {
           },
           "createdAt": "1970-01-01T00:00:00.002Z",
           "id": "000000000000000000000101",
+          "myScore": 0,
           "score": 2,
           "title": "s2",
         },
@@ -298,6 +315,7 @@ it('should return results by oldest with offset', async () => {
           },
           "createdAt": "1970-01-01T00:00:00.003Z",
           "id": "000000000000000000000102",
+          "myScore": 0,
           "score": 10,
           "title": "s3",
         },
@@ -309,6 +327,7 @@ it('should return results by oldest with offset', async () => {
           },
           "createdAt": "1970-01-01T00:00:00.004Z",
           "id": "000000000000000000000103",
+          "myScore": 0,
           "score": 5,
           "title": "s4",
         },
@@ -344,6 +363,7 @@ it('should return results by oldest with limit', async () => {
           },
           "createdAt": "1970-01-01T00:00:00.001Z",
           "id": "000000000000000000000100",
+          "myScore": 0,
           "score": 1,
           "title": "s1",
         },
@@ -355,6 +375,79 @@ it('should return results by oldest with limit', async () => {
           },
           "createdAt": "1970-01-01T00:00:00.002Z",
           "id": "000000000000000000000101",
+          "myScore": 0,
+          "score": 2,
+          "title": "s2",
+        },
+      ],
+      "total": 4,
+    }
+  `);
+});
+
+it('should return results with myScore', async () => {
+  await SolutionCollection.findOneAndUpdate(
+    {
+      _id: getId(100),
+    },
+    {
+      $set: {
+        score: 10,
+      },
+    }
+  );
+  await SolutionVoteCollection.insertMany([
+    {
+      _id: createSolutionVoteId({ userId: getId(1), solutionId: getId(100) }),
+      score: 2,
+      solutionId: getId(100),
+      userId: getId(1),
+    },
+    {
+      _id: createSolutionVoteId({ userId: getId(2), solutionId: getId(100) }),
+      score: 1,
+      solutionId: getId(101),
+      userId: getId(2),
+    },
+  ]);
+  expect(
+    await execContract(
+      searchSolutions,
+      {
+        criteria: {
+          offset: 0,
+          limit: 2,
+          sortBy: SolutionSortBy.Oldest,
+          challengeId: '1',
+        },
+      },
+
+      'user1_token'
+    )
+  ).toMatchInlineSnapshot(`
+    Object {
+      "items": Array [
+        Object {
+          "author": Object {
+            "avatarId": undefined,
+            "id": "000000000000000000000001",
+            "username": "user1",
+          },
+          "createdAt": "1970-01-01T00:00:00.001Z",
+          "id": "000000000000000000000100",
+          "myScore": 2,
+          "score": 10,
+          "title": "s1",
+        },
+        Object {
+          "author": Object {
+            "avatarId": undefined,
+            "id": "000000000000000000000001",
+            "username": "user1",
+          },
+          "createdAt": "1970-01-01T00:00:00.002Z",
+          "id": "000000000000000000000101",
+          "myScore": 0,
           "score": 2,
           "title": "s2",
         },

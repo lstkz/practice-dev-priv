@@ -87,7 +87,8 @@ it('should create a solution', async () => {
       },
       "createdAt": "1970-01-01T00:00:00.010Z",
       "id": <Random ObjectID>,
-      "score": 0,
+      "myScore": 1,
+      "score": 1,
       "title": "sol1",
     }
   `);

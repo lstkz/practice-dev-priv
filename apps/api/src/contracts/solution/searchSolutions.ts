@@ -5,6 +5,7 @@ import { doFn, safeValues } from '../../common/helper';
 import { createContract, createRpcBinding } from '../../lib';
 import { UserCollection } from '../../collections/User';
 import { mapSolutions } from '../../common/mapper';
+import { SolutionVoteCollection } from '../../collections/SolutionVote';
 
 export const searchSolutions = createContract('solution.searchSolutions')
   .params('user', 'criteria')
@@ -42,13 +43,22 @@ export const searchSolutions = createContract('solution.searchSolutions')
         .toArray(),
       SolutionCollection.countDocuments(filter),
     ]);
-    const users = await UserCollection.findAll({
-      _id: {
-        $in: items.map(x => x.userId),
-      },
-    });
+    const userIds = items.map(x => x.userId);
+    const [users, solutionVotes] = await Promise.all([
+      UserCollection.findAll({
+        _id: {
+          $in: userIds,
+        },
+      }),
+      SolutionVoteCollection.findAll({
+        userId: user._id,
+        solutionId: {
+          $in: items.map(x => x._id),
+        },
+      }),
+    ]);
     return {
-      items: mapSolutions(items, users),
+      items: mapSolutions(items, users, solutionVotes),
       total,
     };
   });

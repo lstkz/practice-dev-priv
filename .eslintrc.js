@@ -17,6 +17,7 @@ module.exports = {
   ],
   ignorePatterns: ['**/*.js'],
   rules: {
+    'prefer-const': ['error', { destructuring: 'all' }],
     'no-console': ['error', { allow: ['warn', 'error'] }],
     'no-empty-pattern': 0,
     '@typescript-eslint/no-explicit-any': 0,

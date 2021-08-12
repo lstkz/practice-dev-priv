@@ -23,6 +23,7 @@ export const {
     require('./collections/Submission'),
     require('./collections/Solution'),
     require('./collections/SolutionLimit'),
+    require('./collections/SolutionVote'),
     // APPEND
   ],
   uri: config.mongodb.url,
