@@ -25,6 +25,11 @@ export const updateModule = createContract('module.updateModule')
         $set: {
           ...R.omit(values, ['id']),
         },
+        $setOnInsert: {
+          stats: {
+            enrolledUsers: 0,
+          },
+        },
       },
       {
         upsert: true,

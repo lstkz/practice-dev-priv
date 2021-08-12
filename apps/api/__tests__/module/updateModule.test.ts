@@ -28,18 +28,33 @@ it('should create a new module and update it', async () => {
   );
 
   expect(await ModuleCollection.findByIdOrThrow(1)).toMatchInlineSnapshot(`
-    Object {
-      "_id": 1,
-      "description": "desc1",
-      "difficulty": "diff1",
-      "mainTechnology": "tech1",
-      "tags": Array [
-        "t1",
-        "t2",
-      ],
-      "title": "t1",
+Object {
+  "_id": 1,
+  "description": "desc1",
+  "difficulty": "diff1",
+  "mainTechnology": "tech1",
+  "stats": Object {
+    "enrolledUsers": 0,
+  },
+  "tags": Array [
+    "t1",
+    "t2",
+  ],
+  "title": "t1",
+}
+`);
+  await ModuleCollection.findOneAndUpdate(
+    {
+      _id: 1,
+    },
+    {
+      $set: {
+        stats: {
+          enrolledUsers: 10,
+        },
+      },
     }
-  `);
+  );
   await updateModule({
     id: 1,
     title: 't2',
@@ -49,18 +64,21 @@ it('should create a new module and update it', async () => {
     tags: ['t1', 't3'],
   });
   expect(await ModuleCollection.findByIdOrThrow(1)).toMatchInlineSnapshot(`
-    Object {
-      "_id": 1,
-      "description": "desc2",
-      "difficulty": "diff2",
-      "mainTechnology": "tech2",
-      "tags": Array [
-        "t1",
-        "t3",
-      ],
-      "title": "t2",
-    }
-  `);
+Object {
+  "_id": 1,
+  "description": "desc2",
+  "difficulty": "diff2",
+  "mainTechnology": "tech2",
+  "stats": Object {
+    "enrolledUsers": 10,
+  },
+  "tags": Array [
+    "t1",
+    "t3",
+  ],
+  "title": "t2",
+}
+`);
 });
 
 it('should throw if not admin', async () => {
