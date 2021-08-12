@@ -8,6 +8,7 @@ import {
   Workspace,
   ReadOnlyWorkspace,
   PaginatedResult,
+  VoteResult,
   Submission,
   OkResult,
   AvatarUploadResult,
@@ -117,7 +118,7 @@ export class APIClient {
   solution_voteSolution(
     solutionId: ObjectId,
     vote: 'up' | 'down'
-  ): Promise<{ score: number }> {
+  ): Promise<VoteResult> {
     return this.call('solution.voteSolution', { solutionId, vote });
   }
   submission_forkSubmission(

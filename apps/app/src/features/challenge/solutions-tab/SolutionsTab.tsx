@@ -1,6 +1,6 @@
 import { useImmer } from 'context-api';
 import React from 'react';
-import { Solution, SolutionSortBy } from 'shared';
+import { Solution, SolutionSortBy, VoteResult } from 'shared';
 import { api } from 'src/services/api';
 import { Button } from '../../../components/Button';
 import Select from '../../../components/Select';
@@ -71,6 +71,17 @@ export function SolutionsTab() {
     return <TabLoader>{title}</TabLoader>;
   }
 
+  const updateSolutionVoteStats = (solutionId: string, result: VoteResult) => {
+    setState(draft => {
+      draft.items.forEach(item => {
+        if (item.id === solutionId) {
+          item.myScore = result.myScore;
+          item.score = result.score;
+        }
+      });
+    });
+  };
+
   return (
     <div>
       <SolutionEditModal ref={solutionEditModalRef} />
@@ -140,6 +151,7 @@ export function SolutionsTab() {
                   });
                 });
               }}
+              updateSolutionVoteStats={updateSolutionVoteStats}
               item={item}
               key={item.id}
             />

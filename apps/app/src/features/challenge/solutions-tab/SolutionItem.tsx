@@ -1,6 +1,6 @@
 import React from 'react';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid';
-import { Solution } from 'shared';
+import { Solution, VoteResult } from 'shared';
 import tw, { styled } from 'twin.macro';
 import * as DateFns from 'date-fns';
 import { createUrl } from '../../../common/url';
@@ -8,11 +8,13 @@ import { SolutionOptions } from './SolutionOptions';
 import { getBaseButtonStyles } from '../../../components/Button';
 import Link from 'next/link';
 import { UserAvatar } from 'src/components/UserAvatar';
+import { api } from 'src/services/api';
 
 export interface SolutionItemProps {
   item: Solution;
   deleteSolution: () => void;
   updateSolution: () => void;
+  updateSolutionVoteStats: (solutionId: string, result: VoteResult) => void;
 }
 
 interface IconButtonProps {
@@ -30,18 +32,42 @@ const IconButton = styled.button<IconButtonProps>`
 `;
 
 export function SolutionItem(props: SolutionItemProps) {
-  const { item } = props;
+  const { item, updateSolutionVoteStats } = props;
+  const voteVersionRef = React.useRef(0);
+  const voteSolution = async (vote: 'up' | 'down') => {
+    const diff = vote === 'up' ? 1 : -1;
+    if (Math.abs(item.myScore + diff) > 1) {
+      return;
+    }
+    const version = ++voteVersionRef.current;
+    const tmpResult = {
+      score: item.score + diff,
+      myScore: item.myScore + diff,
+    };
+    updateSolutionVoteStats(item.id, tmpResult);
+    const voteResult = await api.solution_voteSolution(item.id, vote);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    if (version === voteVersionRef.current) {
+      updateSolutionVoteStats(item.id, voteResult);
+    }
+  };
   return (
     <li className="py-4">
       <div className="flex items-center space-x-4">
         <div tw="flex flex-col ml-2">
-          <IconButton state={undefined}>
+          <IconButton
+            state={item.myScore === 1 ? 'green' : undefined}
+            onClick={() => voteSolution('up')}
+          >
             <ChevronUpIcon />
           </IconButton>
           <span tw="text-base text-center font-bold text-indigo-200 py-1">
             {item.score}
           </span>
-          <IconButton state={undefined}>
+          <IconButton
+            state={item.myScore === -1 ? 'red' : undefined}
+            onClick={() => voteSolution('down')}
+          >
             <ChevronDownIcon />
           </IconButton>
         </div>
