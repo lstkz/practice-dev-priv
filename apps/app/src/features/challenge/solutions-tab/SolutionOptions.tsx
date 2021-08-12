@@ -5,7 +5,8 @@ import { Button, getBaseButtonStyles } from '../../../components/Button';
 import tw from 'twin.macro';
 import { useErrorModalActions } from 'src/features/ErrorModalModule';
 import { SolutionItemProps } from './SolutionItem';
-import { useChallengeActions } from '../ChallengeModule';
+import { useChallengeActions, useChallengeState } from '../ChallengeModule';
+import { createUrl } from 'src/common/url';
 
 interface MenuItemProps {
   children: React.ReactNode;
@@ -41,6 +42,7 @@ export function SolutionOptions(props: SolutionOptionsProps) {
   const { openSolution } = useChallengeActions();
   const { showError } = useErrorModalActions();
   const [isLoading, setIsLoading] = React.useState(false);
+  const { challenge } = useChallengeState();
   return (
     <span
       css={[
@@ -112,7 +114,14 @@ export function SolutionOptions(props: SolutionOptionsProps) {
                 <div tw="py-1">
                   <MenuItem
                     onClick={() => {
-                      //
+                      const url =
+                        window.location.origin +
+                        createUrl({
+                          name: 'challenge',
+                          id: challenge.id,
+                          solutionId: item.id,
+                        });
+                      void navigator.clipboard.writeText(url);
                     }}
                   >
                     Copy Link

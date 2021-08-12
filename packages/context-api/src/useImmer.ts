@@ -13,9 +13,13 @@ export function useImmer(initialValue: any, logName?: string) {
   const [state, setState] = React.useState(initialValue);
   const ref = React.useRef(state);
   ref.current = state;
+  const canLog =
+    logName &&
+    process.env.NODE_ENV === 'development' &&
+    typeof window !== 'undefined';
   const getState = React.useCallback(() => ref.current, []);
-  if (logName && process.env.NODE_ENV === 'development') {
-    // tslint:disable-next-line:no-console
+  if (canLog) {
+    // eslint-disable-next-line no-console
     console.log(logName, state);
   }
   return [
@@ -25,8 +29,8 @@ export function useImmer(initialValue: any, logName?: string) {
       const newState = produce(prevState, updater);
       setState(newState);
       ref.current = newState;
-      if (logName && process.env.NODE_ENV === 'development') {
-        // tslint:disable-next-line:no-console
+      if (canLog) {
+        // eslint-disable-next-line no-console
         console.log(logName, newState);
       }
     }, []),
