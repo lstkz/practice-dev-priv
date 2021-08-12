@@ -43,6 +43,9 @@ export async function createSampleChallenges() {
         difficulty: 'easy',
         mainTechnology: 'react',
         tags: [],
+        stats: {
+          enrolledUsers: 0,
+        },
       },
     ]),
     ChallengeCollection.insertMany([

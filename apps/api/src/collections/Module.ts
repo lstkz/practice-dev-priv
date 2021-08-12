@@ -1,3 +1,4 @@
+import { ModuleStats } from 'shared';
 import { createCollection } from '../db';
 
 export interface ModuleModel {
@@ -7,6 +8,7 @@ export interface ModuleModel {
   tags: string[];
   difficulty: string;
   mainTechnology: string;
+  stats: ModuleStats;
 }
 
 export const ModuleCollection = createCollection<ModuleModel>('module');

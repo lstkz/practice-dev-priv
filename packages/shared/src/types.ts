@@ -244,3 +244,7 @@ export interface ChallengeStats {
   totalSubmissions: number;
   solutions: number;
 }
+
+export interface ModuleStats {
+  enrolledUsers: number;
+}
