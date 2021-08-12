@@ -57,7 +57,7 @@ export function FollowersTab() {
                 />
               </div>
               <div className="flex-1 min-w-0">
-                <Link passHref href={createUrl({ name: 'challenge', id: 1 })}>
+                <Link passHref href={createUrl({ name: 'challenge', id: '1' })}>
                   <a tw="text-gray-800 font-semibold">{item.name}</a>
                 </Link>
                 <p className="text-sm font-medium text-gray-500 truncate leading-snug">
