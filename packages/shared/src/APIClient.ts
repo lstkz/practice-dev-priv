@@ -114,6 +114,12 @@ export class APIClient {
   ): Promise<Solution> {
     return this.call('solution.updateSolution', { solutionId, values });
   }
+  solution_voteSolution(
+    solutionId: ObjectId,
+    vote: 'up' | 'down'
+  ): Promise<{ score: number }> {
+    return this.call('solution.voteSolution', { solutionId, vote });
+  }
   submission_forkSubmission(
     workspaceId: ObjectId,
     submissionId: ObjectId

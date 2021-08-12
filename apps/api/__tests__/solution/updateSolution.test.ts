@@ -1,4 +1,8 @@
 import { SolutionCollection } from '../../src/collections/Solution';
+import {
+  createSolutionVoteId,
+  SolutionVoteCollection,
+} from '../../src/collections/SolutionVote';
 import { UserCollection } from '../../src/collections/User';
 import { updateSolution } from '../../src/contracts/solution/updateSolution';
 import { execContract, getId, setupDb } from '../helper';
@@ -54,6 +58,14 @@ it('should throw if no permission', async () => {
 });
 
 it('should update a solution', async () => {
+  await SolutionVoteCollection.insertMany([
+    {
+      _id: createSolutionVoteId({ userId: getId(1), solutionId: getId(100) }),
+      score: 2,
+      solutionId: getId(100),
+      userId: getId(1),
+    },
+  ]);
   await expect(
     await execContract(
       updateSolution,
@@ -75,6 +87,7 @@ it('should update a solution', async () => {
             },
             "createdAt": "1970-01-01T00:00:00.001Z",
             "id": "000000000000000000000100",
+            "myScore": 2,
             "score": 1,
             "title": "sol1",
           }
@@ -113,6 +126,7 @@ it('should update a solution as admin', async () => {
             },
             "createdAt": "1970-01-01T00:00:00.001Z",
             "id": "000000000000000000000100",
+            "myScore": 0,
             "score": 1,
             "title": "sol1",
           }

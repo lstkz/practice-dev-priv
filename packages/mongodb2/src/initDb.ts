@@ -69,19 +69,19 @@ export function initDb(options: InitOptions) {
     );
   };
 
-  const withTransaction = async <T extends () => Promise<R>, R>(
-    fn: T,
+  const withTransaction = async <R>(
+    fn: () => Promise<R>,
     options?: TransactionOptions
   ): Promise<R> => {
     const session = await startSession();
     try {
-      return await dbSessionStorage.run<Promise<R>>(session, async () => {
-        let ret: R = undefined!;
+      let ret: R = undefined!;
+      await dbSessionStorage.run(session, async () => {
         await session.withTransaction(async () => {
           ret = await fn();
         }, options);
-        return ret;
       });
+      return ret;
     } finally {
       await session.endSession();
     }

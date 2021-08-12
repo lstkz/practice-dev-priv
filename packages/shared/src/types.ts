@@ -224,10 +224,16 @@ export interface Solution {
   author: Author;
   createdAt: string;
   score: number;
+  myScore: number;
 }
 
 export interface Author {
   id: string;
   username: string;
   avatarId?: string | null;
+}
+
+export interface VoteResult {
+  score: number;
+  myScore: number;
 }
