@@ -2,28 +2,59 @@ import React from 'react';
 import { InferGetServerSidePropsType } from 'next';
 import { useImmer, createModuleContext, useActions } from 'context-api';
 import { ModulesPage } from './ModulesPage';
-import { createGetServerSideProps } from '../../common/helper';
+import {
+  createGetServerSideProps,
+  createSSRClient,
+  safeAssign,
+} from '../../common/helper';
+import { Module } from 'shared';
 
 interface Actions {
-  test: () => void;
+  updateFilter: (update: Partial<ModulesFilter>) => void;
+  toggleFilter: (name: keyof ModulesFilter, value: any) => void;
+}
+
+export interface ModulesFilter {
+  status: Array<'unattempted' | 'attempted'>;
+  technology: string[];
+  difficulty: string[];
 }
 
 interface State {
-  foo: boolean;
+  modules: Module[];
+  filter: ModulesFilter;
 }
 
 const [Provider, useContext] = createModuleContext<State, Actions>();
 
 export function ModulesModule(props: ModulesSSRProps) {
-  const {} = props;
-  const [state] = useImmer<State>(
+  const [state, setState] = useImmer<State>(
     {
-      foo: false,
+      modules: props.modules,
+      filter: {
+        status: [],
+        technology: [],
+        difficulty: [],
+      },
     },
     'ModulesModule'
   );
   const actions = useActions<Actions>({
-    test: () => {},
+    updateFilter: update => {
+      setState(draft => {
+        safeAssign(draft.filter, update);
+      });
+    },
+    toggleFilter: (name, value) => {
+      setState(draft => {
+        const idx = draft.filter[name].indexOf(value);
+        if (idx !== -1) {
+          draft.filter[name].splice(idx, 1);
+        } else {
+          draft.filter[name].push(value);
+        }
+      });
+    },
   });
 
   return (
@@ -45,8 +76,12 @@ export type ModulesSSRProps = InferGetServerSidePropsType<
   typeof getServerSideProps
 >;
 
-export const getServerSideProps = createGetServerSideProps(async _ctx => {
+export const getServerSideProps = createGetServerSideProps(async ctx => {
+  const api = createSSRClient(ctx);
+  const result = await api.module_searchModules({ limit: 100, offset: 0 });
   return {
-    props: {},
+    props: {
+      modules: result.items,
+    },
   };
 });

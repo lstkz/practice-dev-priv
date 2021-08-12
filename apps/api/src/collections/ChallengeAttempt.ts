@@ -4,6 +4,7 @@ import { createCollection } from '../db';
 export interface ChallengeAttemptModel {
   _id: string;
   userId: ObjectID;
+  moduleId: number;
   challengeId: string;
 }
 
@@ -11,7 +12,7 @@ export const ChallengeAttemptCollection =
   createCollection<ChallengeAttemptModel>('challengeAttempt');
 
 export function getChallengeAttemptId(
-  values: Omit<ChallengeAttemptModel, '_id'>
+  values: Omit<ChallengeAttemptModel, '_id' | 'moduleId'>
 ) {
   const { userId, challengeId } = values;
   return `${userId}_${challengeId}`;

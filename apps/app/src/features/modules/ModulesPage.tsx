@@ -7,55 +7,44 @@ import { ModuleListItem } from './ModuleListItem';
 import { ModulesFilter } from './ModulesFilter';
 import { useModulesActions, useModulesState } from './ModulesModule';
 
-const items = [
-  {
-    id: 1,
-    title: 'React practice',
-    description: (
-      <>
-        This a generic React module that contains various challenges using only
-        React library. Recommended for users who know React basics.
-      </>
-    ),
-    solved: 0,
-    total: 25,
-    tags: ['react', 'various'],
-  },
-  {
-    id: 2,
-    title: 'React basics',
-    description: (
-      <>
-        New to React? Start here! This module is recommended for users who want
-        to learn React from zero.
-      </>
-    ),
-    solved: 13,
-    total: 25,
-    tags: ['react', 'beginner'],
-  },
-  {
-    id: 3,
-    title: 'React + Redux',
-    description: <>Learn the latest version of Redux and Redux toolkit.</>,
-    solved: 25,
-    total: 25,
-    tags: ['react', 'redux', 'intermediate'],
-  },
-];
-
 export function ModulesPage() {
   const {} = useModulesActions();
-  const {} = useModulesState();
+  const { modules, filter } = useModulesState();
+  const filtered = React.useMemo(() => {
+    let filtered = modules;
+    if (filter.difficulty.length) {
+      filtered = filtered.filter(item =>
+        filter.difficulty.some(x => item.difficulty === x)
+      );
+    }
+    if (filter.technology.length) {
+      filtered = filtered.filter(item =>
+        filter.technology.some(x => item.mainTechnology === x)
+      );
+    }
+    if (filter.status.length) {
+      filtered = filtered.filter(item =>
+        filter.status.some(
+          x =>
+            (item.isAttempted && x === 'attempted') ||
+            (!item.isAttempted && x === 'unattempted')
+        )
+      );
+    }
+    return filtered;
+  }, [modules, filter]);
   return (
     <Dashboard>
       <Container>
         <TwoColLayout
           left={
             <ConnectedList>
-              {items.map(item => (
+              {filtered.map(item => (
                 <ModuleListItem item={item} key={item.id} />
               ))}
+              {!filtered.length && (
+                <div tw="text-center py-5">No results found</div>
+              )}
             </ConnectedList>
           }
           right={<ModulesFilter />}
