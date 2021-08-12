@@ -68,7 +68,7 @@ it('should throw if module does not exist', async () => {
   ).rejects.toMatchInlineSnapshot(`[AppError: Module not found]`);
 });
 
-it('should create a new module and update it', async () => {
+it('should create a new challenge and update it', async () => {
   await execContract(
     updateChallenge,
     {
@@ -76,8 +76,8 @@ it('should create a new module and update it', async () => {
     },
     'admin-test'
   );
-  expect(await ChallengeCollection.findByIdOrThrow('1_1'))
-    .toMatchInlineSnapshot(`
+  const challenge = await ChallengeCollection.findByIdOrThrow('1_1');
+  expect(challenge).toMatchInlineSnapshot(`
     Object {
       "_id": "1_1",
       "challengeId": 1,
@@ -107,6 +107,12 @@ it('should create a new module and update it', async () => {
       "moduleId": 1,
       "practiceTime": 10,
       "solutionUrl": "sol",
+      "stats": Object {
+        "passingSubmissions": 0,
+        "solutions": 0,
+        "totalSubmissions": 0,
+        "uniqueAttempts": 0,
+      },
       "testS3Key": "t_s3",
       "tests": Array [
         "test",
@@ -114,6 +120,14 @@ it('should create a new module and update it', async () => {
       "title": "t1",
     }
   `);
+  challenge.stats = {
+    uniqueAttempts: 1,
+    passingSubmissions: 2,
+    solutions: 3,
+    totalSubmissions: 4,
+  };
+  await ChallengeCollection.update(challenge, ['stats']);
+
   await updateChallenge({
     challengeId: 1,
     moduleId: 1,
@@ -165,6 +179,12 @@ it('should create a new module and update it', async () => {
       "moduleId": 1,
       "practiceTime": 20,
       "solutionUrl": "sol2",
+      "stats": Object {
+        "passingSubmissions": 2,
+        "solutions": 3,
+        "totalSubmissions": 4,
+        "uniqueAttempts": 1,
+      },
       "testS3Key": "t_s3x",
       "tests": Array [
         "t3",

@@ -74,10 +74,44 @@ export interface UserEmailUpdatedEvent {
   payload: { userId: string };
 }
 
+export interface SubmissionCreatedEvent {
+  type: 'SubmissionCreated';
+  payload: {
+    submissionId: string;
+  };
+}
+export interface SubmissionPassedEvent {
+  type: 'SubmissionPassed';
+  payload: {
+    submissionId: string;
+  };
+}
+
+export interface SolutionCreatedEvent {
+  type: 'SolutionCreated';
+  payload: {
+    solutionId: string;
+  };
+}
+
+export interface SolutionDeletedEvent {
+  type: 'SolutionDeleted';
+  payload: {
+    solutionId: string;
+    userId: string;
+    submissionId: string;
+    challengeId: string;
+  };
+}
+
 export type AppEvent =
   | UserRegisteredEvent
   | UserEmailVerifiedEvent
-  | UserEmailUpdatedEvent;
+  | UserEmailUpdatedEvent
+  | SubmissionCreatedEvent
+  | SubmissionPassedEvent
+  | SolutionCreatedEvent
+  | SolutionDeletedEvent;
 
 type ExtractType<T> = T extends { type: infer S } ? S : never;
 

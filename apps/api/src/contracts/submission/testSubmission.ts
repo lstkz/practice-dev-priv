@@ -8,6 +8,7 @@ import {
   TestSubmissionLambdaInput,
   TestSubmissionLambdaOutput,
 } from 'shared';
+import { dispatchEvent } from '../../dispatch';
 import { SubmissionCollection } from '../../collections/Submission';
 import { ChallengeCollection } from '../../collections/Challenge';
 import { getCDNUrl } from '../../common/helper';
@@ -54,6 +55,14 @@ export const testSubmission = createContract('workspace.testSubmission')
       ? SubmissionStatus.Pass
       : SubmissionStatus.Fail;
     await SubmissionCollection.update(submission, ['testRun', 'status']);
+    if (output.success) {
+      await dispatchEvent({
+        type: 'SubmissionPassed',
+        payload: {
+          submissionId: submission._id.toHexString(),
+        },
+      });
+    }
   });
 
 export const testSubmissionTask = createTaskBinding({

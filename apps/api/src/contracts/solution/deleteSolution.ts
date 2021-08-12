@@ -2,6 +2,7 @@ import { S } from 'schema';
 import { SolutionCollection } from '../../collections/Solution';
 import { SolutionLimitCollection } from '../../collections/SolutionLimit';
 import { withTransaction } from '../../db';
+import { dispatchEvent } from '../../dispatch';
 import { createContract, createRpcBinding } from '../../lib';
 import { getSolutionWithAccessCheck } from './_common';
 
@@ -23,6 +24,15 @@ export const deleteSolution = createContract('solution.deleteSolution')
       solutionLimit.count--;
       await SolutionLimitCollection.update(solutionLimit, ['count']);
       await SolutionCollection.deleteById(solutionId);
+    });
+    await dispatchEvent({
+      type: 'SolutionDeleted',
+      payload: {
+        solutionId: solution._id.toHexString(),
+        challengeId: solution.challengeId,
+        submissionId: solution.submissionId.toHexString(),
+        userId: solution.userId.toHexString(),
+      },
     });
   });
 

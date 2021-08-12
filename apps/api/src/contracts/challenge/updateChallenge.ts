@@ -52,6 +52,14 @@ export const updateChallenge = createContract('challenge.updateChallenge')
         $set: {
           ...values,
         },
+        $setOnInsert: {
+          stats: {
+            uniqueAttempts: 0,
+            passingSubmissions: 0,
+            totalSubmissions: 0,
+            solutions: 0,
+          },
+        },
       },
       {
         upsert: true,

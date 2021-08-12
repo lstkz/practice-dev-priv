@@ -1,4 +1,4 @@
-import { LibraryDefinition } from 'shared';
+import { ChallengeStats, LibraryDefinition } from 'shared';
 import { createCollection } from '../db';
 
 export interface ChallengeFile {
@@ -23,6 +23,7 @@ export interface ChallengeModel {
   files: ChallengeFile[];
   libraries: LibraryDefinition[];
   tests: string[];
+  stats: ChallengeStats;
 }
 
 export const ChallengeCollection = createCollection<ChallengeModel>(

@@ -13,6 +13,7 @@ import { AppError, ForbiddenError } from '../../common/errors';
 import { getCurrentDate } from '../../common/helper';
 import { mapSolution } from '../../common/mapper';
 import { withTransaction } from '../../db';
+import { dispatchEvent } from '../../dispatch';
 import { createContract, createRpcBinding } from '../../lib';
 
 const MAX_SOLUTIONS = 3;
@@ -85,6 +86,12 @@ export const createSolution = createContract('solution.createSolution')
         SolutionVoteCollection.insertOne(solutionVote),
       ]);
       return solutionVote;
+    });
+    await dispatchEvent({
+      type: 'SolutionCreated',
+      payload: {
+        solutionId: solution._id.toHexString(),
+      },
     });
     return mapSolution(solution, user, solutionVote);
   });
