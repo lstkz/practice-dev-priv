@@ -22,8 +22,18 @@ beforeEach(async () => {
   await ChallengeCollection.update(challenge, ['stats']);
 });
 
+async function _getInputValues(id: number) {
+  const solution = await SolutionCollection.findByIdOrThrow(getId(id));
+  return {
+    solutionId: solution._id,
+    challengeId: solution.challengeId,
+    submissionId: solution.submissionId,
+    userId: solution.userId,
+  };
+}
+
 it('should process a single solution', async () => {
-  await updateStatsOnSolutionDeleted(getId(100));
+  await updateStatsOnSolutionDeleted(await _getInputValues(100));
   const challenge = await ChallengeCollection.findByIdOrThrow('1_2');
   expect(challenge.stats).toMatchInlineSnapshot(`
 Object {
@@ -36,9 +46,11 @@ Object {
 });
 
 it('should process two submissions from the same user', async () => {
+  const input1 = await _getInputValues(100);
+  const input2 = await _getInputValues(101);
   await Promise.all([
-    updateStatsOnSolutionDeleted(getId(100)),
-    updateStatsOnSolutionDeleted(getId(101)),
+    updateStatsOnSolutionDeleted(input1),
+    updateStatsOnSolutionDeleted(input2),
   ]);
   const challenge = await ChallengeCollection.findByIdOrThrow('1_2');
   expect(challenge.stats).toMatchInlineSnapshot(`

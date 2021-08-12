@@ -29,6 +29,9 @@ export const deleteSolution = createContract('solution.deleteSolution')
       type: 'SolutionDeleted',
       payload: {
         solutionId: solution._id.toHexString(),
+        challengeId: solution.challengeId,
+        submissionId: solution.submissionId.toHexString(),
+        userId: solution.userId.toHexString(),
       },
     });
   });

@@ -94,10 +94,13 @@ export interface SolutionCreatedEvent {
   };
 }
 
-export interface SolutionRemovedEvent {
+export interface SolutionDeletedEvent {
   type: 'SolutionDeleted';
   payload: {
     solutionId: string;
+    userId: string;
+    submissionId: string;
+    challengeId: string;
   };
 }
 
@@ -108,7 +111,7 @@ export type AppEvent =
   | SubmissionCreatedEvent
   | SubmissionPassedEvent
   | SolutionCreatedEvent
-  | SolutionRemovedEvent;
+  | SolutionDeletedEvent;
 
 type ExtractType<T> = T extends { type: infer S } ? S : never;
 
