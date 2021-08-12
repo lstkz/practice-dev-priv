@@ -32,7 +32,8 @@ export type UrlOptions =
     }
   | {
       name: 'challenge';
-      id: number;
+      id: string;
+      solutionId?: string;
     }
   | {
       name: 'profile';
@@ -51,12 +52,17 @@ export function createUrl(options: UrlOptions) {
       return '/terms';
     case 'module':
       return '/module/' + options.id;
-    case 'challenge':
-      return '/challenge/' + options.id;
     case 'profile':
       return '/profile/' + options.username;
     case 'settings':
       return options.sub ? '/settings/' + options.sub : '/settings';
+    case 'challenge': {
+      let url = `/challenge/${options.id}`;
+      if (options.solutionId) {
+        url += '?solutionId=' + options.solutionId;
+      }
+      return url;
+    }
     default:
       return '/' + options.name;
   }

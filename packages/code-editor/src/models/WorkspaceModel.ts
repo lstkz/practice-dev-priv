@@ -14,6 +14,7 @@ function randomHash() {
 export class WorkspaceModel extends BaseWorkspaceModel {
   private fileHashMap: Map<string, string> = new Map();
   private workspaceId: string = null!;
+  private isInited = false;
   constructor(
     codeEditor: CodeEditor,
     apiService: IAPIService,
@@ -45,7 +46,15 @@ export class WorkspaceModel extends BaseWorkspaceModel {
     }
   }
 
+  getIsInited() {
+    return this.isInited;
+  }
+
   async init(options: InitWorkspaceOptions) {
+    if (this.isInited) {
+      return;
+    }
+    this.isInited = true;
     await this._init(options);
     this.codeEditor.addEventListener('modified', ({ fileId, hasChanges }) => {
       this.setState(draft => {

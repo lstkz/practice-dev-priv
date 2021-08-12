@@ -285,7 +285,7 @@ export class CodeEditor {
 
   restoreModelBackup() {
     if (!this.modelBackup) {
-      throw new Error('modelBackup not set');
+      return;
     }
     this.models = {};
     Object.values(this.modelBackup.models).forEach(data => {

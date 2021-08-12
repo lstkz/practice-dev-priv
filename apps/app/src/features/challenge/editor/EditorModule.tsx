@@ -53,6 +53,7 @@ interface EditorModuleProps {
   challenge: Challenge;
   children: React.ReactNode;
   workspace: Workspace;
+  noWorkspaceInit?: boolean;
 }
 
 function useServices(workspace: Workspace, challengeId: string) {
@@ -136,7 +137,7 @@ export const EditorModule = React.forwardRef<
   EditorModuleRef,
   EditorModuleProps
 >((props, ref) => {
-  const { challenge, children } = props;
+  const { challenge, children, noWorkspaceInit } = props;
   const [state, setState, getState] = useImmer<State>(
     {
       isLoaded: false,
@@ -158,9 +159,33 @@ export const EditorModule = React.forwardRef<
     monacoLoader,
     editorStateService,
   } = useServices(props.workspace, challenge.id);
+  const loadedDefer = React.useMemo(() => {
+    let resolve: () => void = null!;
+    const promise = new Promise<void>(_resolve => {
+      resolve = _resolve;
+    });
+    return {
+      promise,
+      resolve,
+    };
+  }, []);
+  React.useEffect(() => {
+    if (getState().isLoaded) {
+      loadedDefer.resolve();
+    }
+  }, [state.isLoaded]);
   const { showError } = useErrorModalActions();
   const { setLeftSidebarTab } = useChallengeActions();
   const { submit: testerSubmit } = useTesterActions();
+
+  const initWorkspace = () => {
+    const { workspace } = getState();
+    return workspaceModel.init({
+      fileHashMap: _getFileHashMap(workspace),
+      nodes: mapWorkspaceNodes(workspace.id, workspace.items, 'workspace'),
+      workspaceId: workspace.id,
+    });
+  };
 
   const actions = useActions<Actions>({
     load: async container => {
@@ -174,11 +199,9 @@ export const EditorModule = React.forwardRef<
       );
       await browserPreviewService.waitForLoad();
       browserPreviewService.setLibraries(workspace.libraries);
-      await workspaceModel.init({
-        fileHashMap: _getFileHashMap(workspace),
-        nodes: mapWorkspaceNodes(workspace.id, workspace.items, 'workspace'),
-        workspaceId: workspace.id,
-      });
+      if (!noWorkspaceInit) {
+        await initWorkspace();
+      }
       setState(draft => {
         draft.isLoaded = true;
       });
@@ -213,6 +236,7 @@ export const EditorModule = React.forwardRef<
     ref,
     () => ({
       openReadOnlyWorkspace: async (workspace: ReadOnlyWorkspace) => {
+        await loadedDefer.promise;
         readOnlyCodeEditor.disposeModels();
         if (getState().mode === 'default') {
           codeEditor.makeModelBackup();
@@ -228,11 +252,15 @@ export const EditorModule = React.forwardRef<
           draft.mode = 'readOnly';
         });
       },
-      closeReadOnlyWorkspace: () => {
+      closeReadOnlyWorkspace: async () => {
         readOnlyCodeEditor.disposeModels();
-        codeEditor.restoreModelBackup();
+        if (workspaceModel.getIsInited()) {
+          codeEditor.restoreModelBackup();
+          workspaceModel.loadCode();
+        } else {
+          await initWorkspace();
+        }
         workspaceModel.setReadOnly(false);
-        workspaceModel.loadCode();
         setState(draft => {
           draft.mode = 'default';
         });

@@ -27,7 +27,10 @@ export function ChallengeListItem(props: ChallengeListItemProps) {
   const { item } = props;
   return (
     <li>
-      <Link passHref href={createUrl({ name: 'challenge', id: item.id })}>
+      <Link
+        passHref
+        href={createUrl({ name: 'challenge', id: item.id.toString() })}
+      >
         <a tw="block hover:bg-gray-50 focus:( outline-none bg-gray-100 ) ">
           <div tw="px-4 py-4 sm:px-6">
             <div tw="flex items-center justify-between">

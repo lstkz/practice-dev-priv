@@ -5,6 +5,7 @@ import { ChallengePage } from './ChallengePage';
 import {
   createGetServerSideProps,
   createSSRClient,
+  doFn,
   getCDNUrl,
   safeAssign,
 } from '../../common/helper';
@@ -20,6 +21,8 @@ import { TesterModule } from './TesterModule';
 import { Challenge, Solution, Submission, Workspace } from 'shared';
 import { api } from 'src/services/api';
 import { useSubAction } from '../PubSubContextModule';
+import { useRouter } from 'next/dist/client/router';
+import { createUrl } from 'src/common/url';
 
 interface Actions {
   setLeftSidebarTab: (leftSidebarTab: LeftSidebarTab | null) => void;
@@ -53,6 +56,30 @@ export type RightSidebarTab = 'preview' | 'demo';
 
 const [Provider, useContext] = createModuleContext<State, Actions>();
 
+function useSyncSolutionUrl(challenge: Challenge, solution: Solution | null) {
+  const router = useRouter();
+
+  React.useEffect(() => {
+    const hasSolutionId = location.search.includes('solutionId');
+    if (hasSolutionId && !solution) {
+      void router.replace(
+        createUrl({
+          name: 'challenge',
+          id: challenge.id,
+        })
+      );
+    } else if (solution) {
+      void router.replace(
+        createUrl({
+          name: 'challenge',
+          id: challenge.id,
+          solutionId: solution.id,
+        })
+      );
+    }
+  }, [solution]);
+}
+
 export function ChallengeModule(props: ChallengeSSRProps) {
   const {
     initialLeftSidebar,
@@ -60,6 +87,7 @@ export function ChallengeModule(props: ChallengeSSRProps) {
     workspace,
     challenge,
     challengeHtml,
+    initialSolution,
   } = props;
   const [state, setState, getState] = useImmer<State>(
     {
@@ -71,7 +99,7 @@ export function ChallengeModule(props: ChallengeSSRProps) {
       leftSidebarTab: 'details',
       rightSidebarTab: 'preview',
       openedSubmission: null,
-      openedSolution: null,
+      openedSolution: initialSolution?.solution ?? null,
     },
     'ChallengeModule'
   );
@@ -140,6 +168,13 @@ export function ChallengeModule(props: ChallengeSSRProps) {
       });
     },
   });
+  React.useEffect(() => {
+    if (!initialSolution) {
+      return;
+    }
+    editorRef.current.openReadOnlyWorkspace(initialSolution.solutionWorkspace);
+  }, []);
+  useSyncSolutionUrl(state.challenge, state.openedSolution);
 
   return (
     <Provider state={state} actions={actions}>
@@ -148,6 +183,7 @@ export function ChallengeModule(props: ChallengeSSRProps) {
           challenge={challenge}
           workspace={workspace}
           ref={editorRef}
+          noWorkspaceInit={initialSolution != null}
         >
           <ChallengePage />
         </EditorModule>
@@ -179,13 +215,24 @@ export const getServerSideProps = createGetServerSideProps(async ctx => {
   };
   const initialLeftSidebar = getCookieNum(LEFT_COOKIE_NAME, LEFT_DEFAULT);
   const initialRightSidebar = getCookieNum(RIGHT_COOKIE_NAME, RIGHT_DEFAULT);
+  const solutionId = ctx.query.solutionId;
 
   const api = createSSRClient(ctx);
-  const [workspace, challenge] = await Promise.all([
+  const [workspace, challenge, initialSolution] = await Promise.all([
     api.workspace_getOrCreateWorkspace({
       challengeUniqId: '2_1',
     }),
     api.challenge_getChallenge('2_1'),
+    doFn(async () => {
+      if (!solutionId || typeof solutionId !== 'string') {
+        return null;
+      }
+      const [solution, solutionWorkspace] = await Promise.all([
+        api.solution_getSolution(solutionId),
+        api.solution_getSolutionReadonlyWorkspace(solutionId),
+      ]);
+      return { solution, solutionWorkspace };
+    }),
   ]);
   const challengeHtml = await fetch(getCDNUrl(challenge.htmlS3Key)).then(x =>
     x.text()
@@ -197,6 +244,7 @@ export const getServerSideProps = createGetServerSideProps(async ctx => {
       challenge,
       initialLeftSidebar,
       initialRightSidebar,
+      initialSolution,
     },
   };
 });

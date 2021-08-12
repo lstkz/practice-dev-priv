@@ -96,6 +96,9 @@ export class APIClient {
   ): Promise<Workspace> {
     return this.call('solution.forkSolution', { workspaceId, solutionId });
   }
+  solution_getSolution(id: ObjectId): Promise<Solution> {
+    return this.call('solution.getSolution', { id });
+  }
   solution_getSolutionReadonlyWorkspace(
     id: ObjectId
   ): Promise<ReadOnlyWorkspace> {
