@@ -132,6 +132,8 @@ it('should handle mixed votes', async () => {
     exec('up'),
     exec('down'),
   ]);
+  // flaky
+  await new Promise(resolve => setTimeout(resolve, 10));
   const solution = await SolutionCollection.findOne({});
   expect(solution?.score).toEqual(1);
 });
