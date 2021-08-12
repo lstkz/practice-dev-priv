@@ -6,6 +6,7 @@ import {
   createGetServerSideProps,
   createSSRClient,
   getCDNUrl,
+  safeAssign,
 } from '../../common/helper';
 import { readCookieFromString } from '../../common/cookie';
 import {
@@ -18,6 +19,7 @@ import { EditorModule, EditorModuleRef } from './editor/EditorModule';
 import { TesterModule } from './TesterModule';
 import { Challenge, Solution, Submission, Workspace } from 'shared';
 import { api } from 'src/services/api';
+import { useSubAction } from '../PubSubContextModule';
 
 interface Actions {
   setLeftSidebarTab: (leftSidebarTab: LeftSidebarTab | null) => void;
@@ -125,6 +127,16 @@ export function ChallengeModule(props: ChallengeSSRProps) {
       setState(draft => {
         draft.openedSolution = solution;
         draft.leftSidebarTab = 'file-explorer';
+      });
+    },
+  });
+  useSubAction({
+    action: 'solution-vote-stats-updated',
+    fn: ({ solutionId, result }) => {
+      setState(draft => {
+        if (draft.openedSolution?.id === solutionId) {
+          safeAssign(draft.openedSolution, result);
+        }
       });
     },
   });

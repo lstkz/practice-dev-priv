@@ -10,6 +10,7 @@ import { clearAccessToken, getAccessToken } from 'src/services/Storage';
 import { User } from 'shared';
 import { createSSRClient } from 'src/common/helper';
 import { ConfirmModalModule } from 'src/features/ConfirmModalModule';
+import { PubSubContextModule } from 'src/features/PubSubContextModule';
 
 config.autoAddCss = false;
 
@@ -29,14 +30,16 @@ export default function App({
   }, []);
   return (
     <>
-      <AuthModule initialUser={initialUser}>
-        <ConfirmModalModule>
-          <ErrorModalModule>
-            <Component {...pageProps} />
-            <ConfirmEmailChecker />
-          </ErrorModalModule>
-        </ConfirmModalModule>
-      </AuthModule>
+      <PubSubContextModule>
+        <AuthModule initialUser={initialUser}>
+          <ConfirmModalModule>
+            <ErrorModalModule>
+              <Component {...pageProps} />
+              <ConfirmEmailChecker />
+            </ErrorModalModule>
+          </ConfirmModalModule>
+        </AuthModule>
+      </PubSubContextModule>
       <div id="portals" />
     </>
   );

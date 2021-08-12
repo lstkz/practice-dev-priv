@@ -1,6 +1,6 @@
 import { useImmer } from 'context-api';
 import React from 'react';
-import { Solution, SolutionSortBy, VoteResult } from 'shared';
+import { Solution, SolutionSortBy } from 'shared';
 import { api } from 'src/services/api';
 import { Button } from '../../../components/Button';
 import Select from '../../../components/Select';
@@ -11,6 +11,8 @@ import { SolutionEditModal, SolutionModalRef } from './SolutionEditModal';
 import { SolutionItem } from './SolutionItem';
 import { TabLoader } from '../TabLoader';
 import { TabTitle } from '../TabTitle';
+import { useSubAction } from 'src/features/PubSubContextModule';
+import { safeAssign } from 'src/common/helper';
 
 interface State {
   isLoaded: boolean;
@@ -59,7 +61,6 @@ export function SolutionsTab() {
       });
     }
   };
-
   React.useEffect(() => {
     void searchData(false);
   }, []);
@@ -67,20 +68,21 @@ export function SolutionsTab() {
   const solutionEditModalRef = React.useRef<SolutionModalRef>(null!);
 
   const title = <TabTitle>Solutions</TabTitle>;
+  useSubAction({
+    action: 'solution-vote-stats-updated',
+    fn: ({ solutionId, result }) => {
+      setState(draft => {
+        draft.items.forEach(item => {
+          if (item.id === solutionId) {
+            safeAssign(item, result);
+          }
+        });
+      });
+    },
+  });
   if (!isLoaded) {
     return <TabLoader>{title}</TabLoader>;
   }
-
-  const updateSolutionVoteStats = (solutionId: string, result: VoteResult) => {
-    setState(draft => {
-      draft.items.forEach(item => {
-        if (item.id === solutionId) {
-          item.myScore = result.myScore;
-          item.score = result.score;
-        }
-      });
-    });
-  };
 
   return (
     <div>
@@ -151,7 +153,6 @@ export function SolutionsTab() {
                   });
                 });
               }}
-              updateSolutionVoteStats={updateSolutionVoteStats}
               item={item}
               key={item.id}
             />
