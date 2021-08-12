@@ -7,6 +7,8 @@ import { registerSampleUsers } from '../seed-data';
 
 setupDb();
 
+jest.mock('../../src/dispatch');
+
 beforeEach(async () => {
   await registerSampleUsers();
   await SolutionCollection.insertMany([

@@ -237,3 +237,10 @@ export interface VoteResult {
   score: number;
   myScore: number;
 }
+
+export interface ChallengeStats {
+  uniqueAttempts: number;
+  passingSubmissions: number;
+  totalSubmissions: number;
+  solutions: number;
+}

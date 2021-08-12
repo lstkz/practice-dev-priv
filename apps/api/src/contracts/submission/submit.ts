@@ -9,7 +9,7 @@ import { WorkspaceCollection } from '../../collections/Workspace';
 import { WorkspaceNodeCollection } from '../../collections/WorkspaceNode';
 import { AppError, ForbiddenError } from '../../common/errors';
 import { getCurrentDate, randomUniqString } from '../../common/helper';
-import { dispatchTask } from '../../dispatch';
+import { dispatchTask, dispatchEvent } from '../../dispatch';
 import { createContract, createRpcBinding } from '../../lib';
 
 export const submit = createContract('submission.submit')
@@ -60,18 +60,26 @@ export const submit = createContract('submission.submit')
       isCloned: false,
     };
     await SubmissionCollection.insertOne(submission);
-    await dispatchTask({
-      type: 'TestSubmission',
-      payload: {
-        submissionId: submission._id.toHexString(),
-      },
-    });
-    await dispatchTask({
-      type: 'CloneWorkspaceFiles',
-      payload: {
-        submissionId: submission._id.toHexString(),
-      },
-    });
+    await Promise.all([
+      dispatchTask({
+        type: 'TestSubmission',
+        payload: {
+          submissionId: submission._id.toHexString(),
+        },
+      }),
+      dispatchTask({
+        type: 'CloneWorkspaceFiles',
+        payload: {
+          submissionId: submission._id.toHexString(),
+        },
+      }),
+      dispatchEvent({
+        type: 'SubmissionCreated',
+        payload: {
+          submissionId: submission._id.toHexString(),
+        },
+      }),
+    ]);
     return submission._id.toHexString();
   });
 

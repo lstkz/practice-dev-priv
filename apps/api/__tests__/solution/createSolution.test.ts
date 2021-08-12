@@ -8,6 +8,8 @@ import {
 
 setupDb();
 
+jest.mock('../../src/dispatch');
+
 beforeEach(async () => {
   await registerSampleUsers();
   await createSampleChallenges();

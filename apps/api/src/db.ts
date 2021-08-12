@@ -24,6 +24,7 @@ export const {
     require('./collections/Solution'),
     require('./collections/SolutionLimit'),
     require('./collections/SolutionVote'),
+    require('./collections/ChallengeAttempt'),
     // APPEND
   ],
   uri: config.mongodb.url,

@@ -1,7 +1,11 @@
 import { SubmissionStatus, WorkspaceNodeType } from 'shared';
 import { ChallengeCollection } from '../src/collections/Challenge';
 import { ModuleCollection } from '../src/collections/Module';
-import { SubmissionCollection } from '../src/collections/Submission';
+import { SolutionModel } from '../src/collections/Solution';
+import {
+  SubmissionCollection,
+  SubmissionModel,
+} from '../src/collections/Submission';
 import { WorkspaceCollection } from '../src/collections/Workspace';
 import { WorkspaceNodeCollection } from '../src/collections/WorkspaceNode';
 import { getWorkspaceNodeWithUniqueKey } from '../src/common/workspace-tree';
@@ -73,6 +77,12 @@ export async function createSampleChallenges() {
         title: 'challenge 2',
         libraries: [],
         tests: [],
+        stats: {
+          passingSubmissions: 0,
+          solutions: 0,
+          totalSubmissions: 0,
+          uniqueAttempts: 0,
+        },
       },
     ]),
   ]);
@@ -191,4 +201,46 @@ export async function createSampleSubmissions() {
       libraries: [],
     },
   ]);
+}
+
+export function getSampleSubmissionValues(
+  id: number,
+  values: Partial<SubmissionModel> = {}
+): SubmissionModel {
+  const base = {
+    challengeUniqId: '1_2',
+    createdAt: new Date(1),
+    indexHtmlS3Key: 'index',
+    isCloned: true,
+    nodes: [],
+    status: SubmissionStatus.Pass,
+    userId: getId(1),
+    workspaceId: getId(10),
+    libraries: [],
+  };
+  return {
+    _id: getId(id),
+    notifyKey: id.toString(),
+    ...base,
+    ...values,
+  };
+}
+
+export function getSampleSolutionValues(
+  id: number,
+  values: Partial<SolutionModel> = {}
+): SolutionModel {
+  const base = {
+    challengeId: '1_2',
+    createdAt: new Date(1),
+    score: 1,
+    submissionId: getId(1000),
+    title: 's1',
+    userId: getId(1),
+  };
+  return {
+    _id: getId(id),
+    ...base,
+    ...values,
+  };
 }
