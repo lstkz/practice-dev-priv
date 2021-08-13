@@ -2,7 +2,7 @@ import { ChallengeCollection } from '../../src/collections/Challenge';
 import { ChallengeAttemptCollection } from '../../src/collections/ChallengeAttempt';
 import { ChallengeSolvedCollection } from '../../src/collections/ChallengeSolved';
 import { ModuleCollection } from '../../src/collections/Module';
-import { searchModules } from '../../src/contracts/module/searchModules';
+import { searchChallenges } from '../../src/contracts/challenge/searchChallenges';
 import { execContract, setupDb } from '../helper';
 import {
   getChallengeAttemptValues,
@@ -20,23 +20,17 @@ beforeEach(async () => {
     ModuleCollection.insertMany([
       getSampleModuleValues(1),
       getSampleModuleValues(2),
-      getSampleModuleValues(3),
     ]),
     ChallengeCollection.insertMany([
       getSampleChallengeValues(1, 1),
       getSampleChallengeValues(1, 2),
       getSampleChallengeValues(1, 3),
       getSampleChallengeValues(2, 1),
-      getSampleChallengeValues(2, 2),
-      getSampleChallengeValues(3, 1),
     ]),
     ChallengeSolvedCollection.insertMany([
       getSampleChallengeSolvedValues(1, 1, 1),
       getSampleChallengeSolvedValues(1, 2, 1),
       getSampleChallengeSolvedValues(1, 2, 2),
-      getSampleChallengeSolvedValues(2, 1, 1),
-      getSampleChallengeSolvedValues(2, 1, 2),
-      getSampleChallengeSolvedValues(3, 1, 2),
     ]),
     ChallengeAttemptCollection.insertMany([getChallengeAttemptValues(1, 1, 1)]),
   ]);
@@ -45,63 +39,69 @@ beforeEach(async () => {
 it('should search modules', async () => {
   expect(
     await execContract(
-      searchModules,
+      searchChallenges,
       {
         criteria: {
+          moduleId: 1,
           limit: 100,
           offset: 0,
         },
       },
-
       'user1_token'
     )
   ).toMatchInlineSnapshot(`
     Object {
       "items": Array [
         Object {
+          "challengeId": 1,
           "description": "desc",
           "difficulty": "easy",
-          "id": 1,
+          "id": "1_1",
           "isAttempted": true,
-          "mainTechnology": "react",
-          "solvedChallenges": 2,
+          "isSolved": true,
+          "moduleId": 1,
+          "practiceTime": 10,
           "stats": Object {
-            "enrolledUsers": 0,
+            "passingSubmissions": 0,
+            "solutions": 0,
+            "totalSubmissions": 0,
+            "uniqueAttempts": 0,
           },
-          "tags": Array [],
-          "title": "module1",
-          "totalChallenges": 3,
-          "totalTime": 30,
+          "title": "challenge 1",
         },
         Object {
+          "challengeId": 2,
           "description": "desc",
           "difficulty": "easy",
-          "id": 2,
+          "id": "1_2",
           "isAttempted": false,
-          "mainTechnology": "react",
-          "solvedChallenges": 1,
+          "isSolved": true,
+          "moduleId": 1,
+          "practiceTime": 10,
           "stats": Object {
-            "enrolledUsers": 0,
+            "passingSubmissions": 0,
+            "solutions": 0,
+            "totalSubmissions": 0,
+            "uniqueAttempts": 0,
           },
-          "tags": Array [],
-          "title": "module2",
-          "totalChallenges": 2,
-          "totalTime": 20,
+          "title": "challenge 2",
         },
         Object {
+          "challengeId": 3,
           "description": "desc",
           "difficulty": "easy",
-          "id": 3,
+          "id": "1_3",
           "isAttempted": false,
-          "mainTechnology": "react",
-          "solvedChallenges": 0,
+          "isSolved": false,
+          "moduleId": 1,
+          "practiceTime": 10,
           "stats": Object {
-            "enrolledUsers": 0,
+            "passingSubmissions": 0,
+            "solutions": 0,
+            "totalSubmissions": 0,
+            "uniqueAttempts": 0,
           },
-          "tags": Array [],
-          "title": "module3",
-          "totalChallenges": 1,
-          "totalTime": 10,
+          "title": "challenge 3",
         },
       ],
       "total": 3,
@@ -111,8 +111,9 @@ it('should search modules', async () => {
 
 it('should search modules as anonymous', async () => {
   expect(
-    await execContract(searchModules, {
+    await execContract(searchChallenges, {
       criteria: {
+        moduleId: 1,
         limit: 100,
         offset: 0,
       },
@@ -121,49 +122,55 @@ it('should search modules as anonymous', async () => {
     Object {
       "items": Array [
         Object {
+          "challengeId": 1,
           "description": "desc",
           "difficulty": "easy",
-          "id": 1,
+          "id": "1_1",
           "isAttempted": false,
-          "mainTechnology": "react",
-          "solvedChallenges": 0,
+          "isSolved": false,
+          "moduleId": 1,
+          "practiceTime": 10,
           "stats": Object {
-            "enrolledUsers": 0,
+            "passingSubmissions": 0,
+            "solutions": 0,
+            "totalSubmissions": 0,
+            "uniqueAttempts": 0,
           },
-          "tags": Array [],
-          "title": "module1",
-          "totalChallenges": 3,
-          "totalTime": 30,
+          "title": "challenge 1",
         },
         Object {
+          "challengeId": 2,
           "description": "desc",
           "difficulty": "easy",
-          "id": 2,
+          "id": "1_2",
           "isAttempted": false,
-          "mainTechnology": "react",
-          "solvedChallenges": 0,
+          "isSolved": false,
+          "moduleId": 1,
+          "practiceTime": 10,
           "stats": Object {
-            "enrolledUsers": 0,
+            "passingSubmissions": 0,
+            "solutions": 0,
+            "totalSubmissions": 0,
+            "uniqueAttempts": 0,
           },
-          "tags": Array [],
-          "title": "module2",
-          "totalChallenges": 2,
-          "totalTime": 20,
+          "title": "challenge 2",
         },
         Object {
+          "challengeId": 3,
           "description": "desc",
           "difficulty": "easy",
-          "id": 3,
+          "id": "1_3",
           "isAttempted": false,
-          "mainTechnology": "react",
-          "solvedChallenges": 0,
+          "isSolved": false,
+          "moduleId": 1,
+          "practiceTime": 10,
           "stats": Object {
-            "enrolledUsers": 0,
+            "passingSubmissions": 0,
+            "solutions": 0,
+            "totalSubmissions": 0,
+            "uniqueAttempts": 0,
           },
-          "tags": Array [],
-          "title": "module3",
-          "totalChallenges": 1,
-          "totalTime": 10,
+          "title": "challenge 3",
         },
       ],
       "total": 3,

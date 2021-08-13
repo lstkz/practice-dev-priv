@@ -3,8 +3,9 @@ import fetch from 'cross-fetch';
 // IMPORTS
 import {
   AwsUploadContentAuth,
-  Challenge,
+  ChallengeDetails,
   PaginatedResult,
+  Challenge,
   Module,
   Solution,
   Workspace,
@@ -38,8 +39,15 @@ export class APIClient {
   aws_getAwsUploadContentAuth(): Promise<AwsUploadContentAuth> {
     return this.call('aws.getAwsUploadContentAuth', {});
   }
-  challenge_getChallenge(id: string): Promise<Challenge> {
+  challenge_getChallenge(id: string): Promise<ChallengeDetails> {
     return this.call('challenge.getChallenge', { id });
+  }
+  challenge_searchChallenges(criteria: {
+    moduleId: number;
+    limit: number;
+    offset: number;
+  }): Promise<PaginatedResult<Challenge>> {
+    return this.call('challenge.searchChallenges', { criteria });
   }
   challenge_updateChallenge(values: {
     challengeId: number;
@@ -62,6 +70,9 @@ export class APIClient {
     libraries: { name: string; types: string; source: string }[];
   }): Promise<void> {
     return this.call('challenge.updateChallenge', { values });
+  }
+  module_getModule(id: number): Promise<Module> {
+    return this.call('module.getModule', { id });
   }
   module_searchModules(criteria: {
     limit: number;
