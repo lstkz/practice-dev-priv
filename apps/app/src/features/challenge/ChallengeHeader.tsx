@@ -5,6 +5,7 @@ import { Logo } from '../../components/Logo';
 import { useChallengeActions, useChallengeState } from './ChallengeModule';
 import { useEditorActions, useEditorState } from './editor/EditorModule';
 import { VoteSolutionControls } from 'src/components/VoteSolutionControls';
+import { createUrl } from 'src/common/url';
 
 interface ForkBarProps {
   onFork: () => void;
@@ -30,7 +31,7 @@ function ForkBar(props: ForkBarProps) {
 export function ChallengeHeader() {
   const { submit } = useEditorActions();
   const { isSubmitting } = useEditorState();
-  const { openedSubmission, openedSolution } = useChallengeState();
+  const { openedSubmission, openedSolution, challenge } = useChallengeState();
   const { closeReadOnlyWorkspace, fork } = useChallengeActions();
   const [isConfirmOpen, setIsConfirmOpen] = React.useState(false);
   return (
@@ -49,7 +50,13 @@ export function ChallengeHeader() {
         }}
         isOpen={isConfirmOpen}
       />
-      <Logo tw="h-5" href="/module/1" />
+      <Logo
+        tw="h-5"
+        href={createUrl({
+          name: 'module',
+          id: challenge.moduleId,
+        })}
+      />
       <div tw="ml-auto">
         {openedSubmission ? (
           <ForkBar

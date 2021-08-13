@@ -221,11 +221,12 @@ export const getServerSideProps = createGetServerSideProps(async ctx => {
   const solutionId = ctx.query.solutionId;
 
   const api = createSSRClient(ctx);
+  const id = ctx.query.id as string;
   const [workspace, challenge, initialSolution] = await Promise.all([
     api.workspace_getOrCreateWorkspace({
-      challengeUniqId: '2_1',
+      challengeUniqId: id,
     }),
-    api.challenge_getChallenge('2_1'),
+    api.challenge_getChallenge(id),
     doFn(async () => {
       if (!solutionId || typeof solutionId !== 'string') {
         return null;
