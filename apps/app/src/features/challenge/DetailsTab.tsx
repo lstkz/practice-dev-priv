@@ -17,7 +17,7 @@ const Wrapper = styled.div`
   }
 
   h4 {
-    ${tw`font-semibold text-gray-100`}
+    ${tw`font-semibold text-gray-100 mt-2`}
   }
   ul {
     ${tw`space-y-1 list-disc`}
@@ -28,6 +28,12 @@ const Wrapper = styled.div`
 
   p {
     ${tw`mt-2`}
+  }
+  table {
+    ${tw`table-auto mb-2 w-full`}
+    th, td {
+      ${tw`px-1 py-1 border border-gray-400`}
+    }
   }
   code {
     ${tw`bg-black px-1 rounded-sm`}
