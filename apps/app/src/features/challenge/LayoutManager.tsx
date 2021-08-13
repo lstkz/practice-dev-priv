@@ -84,7 +84,7 @@ export function LayoutManager(props: LayoutManagerProps) {
   }, [rightSize]);
 
   return (
-    <div tw="flex flex-1 h-full overflow-hidden relative" ref={ref}>
+    <div tw="flex flex-1 h-full relative" ref={ref}>
       <div
         css={[tw`h-full flex-shrink-0`, !hasLeft && tw`overflow-hidden`]}
         style={{ width: hasLeft ? leftSize : 0, height: size.height }}
