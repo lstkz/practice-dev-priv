@@ -2,28 +2,50 @@ import React from 'react';
 import { InferGetServerSidePropsType } from 'next';
 import { useImmer, createModuleContext, useActions } from 'context-api';
 import { ModulePage } from './ModulePage';
-import { createGetServerSideProps } from '../../common/helper';
+import { createGetServerSideProps, createSSRClient } from '../../common/helper';
+import { Challenge, Module } from 'shared';
 
 interface Actions {
-  test: () => void;
+  toggleFilter: (name: keyof ModulesFilter, value: any) => void;
+}
+
+export interface ModulesFilter {
+  status: Array<'unattempted' | 'attempted' | 'solved'>;
+  difficulty: string[];
 }
 
 interface State {
-  foo: boolean;
+  module: Module;
+  challenges: Challenge[];
+  filter: ModulesFilter;
 }
 
 const [Provider, useContext] = createModuleContext<State, Actions>();
 
 export function ModuleModule(props: ModuleSSRProps) {
   const {} = props;
-  const [state] = useImmer<State>(
+  const [state, setState] = useImmer<State>(
     {
-      foo: false,
+      module: props.module,
+      challenges: props.challenges,
+      filter: {
+        status: [],
+        difficulty: [],
+      },
     },
     'ModuleModule'
   );
   const actions = useActions<Actions>({
-    test: () => {},
+    toggleFilter: (name, value) => {
+      setState(draft => {
+        const idx = draft.filter[name].indexOf(value);
+        if (idx !== -1) {
+          draft.filter[name].splice(idx, 1);
+        } else {
+          draft.filter[name].push(value);
+        }
+      });
+    },
   });
 
   return (
@@ -45,8 +67,17 @@ export type ModuleSSRProps = InferGetServerSidePropsType<
   typeof getServerSideProps
 >;
 
-export const getServerSideProps = createGetServerSideProps(async _ctx => {
+export const getServerSideProps = createGetServerSideProps(async ctx => {
+  const api = createSSRClient(ctx);
+  const id = Number(ctx.query.id as string);
+  const [module, searchResult] = await Promise.all([
+    api.module_getModule(id),
+    api.challenge_searchChallenges({ limit: 100, offset: 0, moduleId: id }),
+  ]);
   return {
-    props: {},
+    props: {
+      module,
+      challenges: searchResult.items,
+    },
   };
 });

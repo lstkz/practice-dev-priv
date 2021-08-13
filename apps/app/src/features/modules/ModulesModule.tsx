@@ -2,15 +2,10 @@ import React from 'react';
 import { InferGetServerSidePropsType } from 'next';
 import { useImmer, createModuleContext, useActions } from 'context-api';
 import { ModulesPage } from './ModulesPage';
-import {
-  createGetServerSideProps,
-  createSSRClient,
-  safeAssign,
-} from '../../common/helper';
+import { createGetServerSideProps, createSSRClient } from '../../common/helper';
 import { Module } from 'shared';
 
 interface Actions {
-  updateFilter: (update: Partial<ModulesFilter>) => void;
   toggleFilter: (name: keyof ModulesFilter, value: any) => void;
 }
 
@@ -40,11 +35,6 @@ export function ModulesModule(props: ModulesSSRProps) {
     'ModulesModule'
   );
   const actions = useActions<Actions>({
-    updateFilter: update => {
-      setState(draft => {
-        safeAssign(draft.filter, update);
-      });
-    },
     toggleFilter: (name, value) => {
       setState(draft => {
         const idx = draft.filter[name].indexOf(value);

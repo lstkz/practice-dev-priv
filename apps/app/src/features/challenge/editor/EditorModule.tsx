@@ -15,7 +15,7 @@ import { useChallengeActions } from '../ChallengeModule';
 import { useTesterActions } from '../TesterModule';
 import { convertCodeToHtml } from './convertCodeToHtml';
 import {
-  Challenge,
+  ChallengeDetails,
   ReadOnlyWorkspace,
   Workspace,
   WorkspaceNode,
@@ -39,7 +39,7 @@ interface State {
   isLoaded: boolean;
   isSubmitting: boolean;
   workspace: Workspace;
-  challenge: Challenge;
+  challenge: ChallengeDetails;
   mode: 'default' | 'readOnly';
 }
 
@@ -50,7 +50,7 @@ interface FinalState extends State {
 const [Provider, useContext] = createModuleContext<FinalState, Actions>();
 
 interface EditorModuleProps {
-  challenge: Challenge;
+  challenge: ChallengeDetails;
   children: React.ReactNode;
   workspace: Workspace;
   noWorkspaceInit?: boolean;

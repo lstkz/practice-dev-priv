@@ -115,7 +115,7 @@ export interface NotificationSettings {
   newsletter: boolean;
 }
 
-export interface Challenge {
+export interface ChallengeDetails {
   id: string;
   challengeId: number;
   moduleId: number;
@@ -261,4 +261,17 @@ export interface Module {
   solvedChallenges: number;
   totalChallenges: number;
   isAttempted: boolean;
+}
+
+export interface Challenge {
+  id: string;
+  challengeId: number;
+  moduleId: number;
+  title: string;
+  description: string;
+  difficulty: string;
+  practiceTime: number;
+  isSolved: boolean;
+  isAttempted: boolean;
+  stats: ChallengeStats;
 }

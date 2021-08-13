@@ -9,7 +9,13 @@ export interface ChallengeAttemptModel {
 }
 
 export const ChallengeAttemptCollection =
-  createCollection<ChallengeAttemptModel>('challengeAttempt');
+  createCollection<ChallengeAttemptModel>('challengeAttempt', [
+    {
+      key: {
+        userId: 1,
+      },
+    },
+  ]);
 
 export function getChallengeAttemptId(
   values: Omit<ChallengeAttemptModel, '_id' | 'moduleId'>

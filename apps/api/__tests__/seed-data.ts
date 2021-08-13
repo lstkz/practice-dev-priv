@@ -1,6 +1,17 @@
 import { SubmissionStatus, WorkspaceNodeType } from 'shared';
-import { ChallengeCollection } from '../src/collections/Challenge';
-import { ModuleCollection } from '../src/collections/Module';
+import {
+  ChallengeCollection,
+  ChallengeModel,
+} from '../src/collections/Challenge';
+import {
+  ChallengeAttemptModel,
+  getChallengeAttemptId,
+} from '../src/collections/ChallengeAttempt';
+import {
+  ChallengeSolvedModel,
+  getChallengeSolvedId,
+} from '../src/collections/ChallengeSolved';
+import { ModuleCollection, ModuleModel } from '../src/collections/Module';
 import { SolutionModel } from '../src/collections/Solution';
 import {
   SubmissionCollection,
@@ -244,6 +255,93 @@ export function getSampleSolutionValues(
   return {
     _id: getId(id),
     ...base,
+    ...values,
+  };
+}
+
+export function getSampleModuleValues(
+  id: number,
+  values: Partial<ModuleModel> = {}
+): ModuleModel {
+  return {
+    _id: id,
+    title: 'module' + id,
+    description: 'desc',
+    difficulty: 'easy',
+    mainTechnology: 'react',
+    tags: [],
+    stats: {
+      enrolledUsers: 0,
+    },
+    ...values,
+  };
+}
+
+export function getSampleChallengeValues(
+  moduleId: number,
+  challengeId: number,
+  values: Partial<ChallengeModel> = {}
+): ChallengeModel {
+  return {
+    _id: moduleId + '_' + challengeId,
+    challengeId: challengeId,
+    description: 'desc',
+    detailsS3Key: '',
+    testS3Key: 't',
+    difficulty: 'easy',
+    solutionUrl: 'sol',
+    files: [],
+    htmlS3Key: '',
+    moduleId: moduleId,
+    practiceTime: 10,
+    title: 'challenge ' + challengeId,
+    libraries: [],
+    tests: [],
+    stats: {
+      passingSubmissions: 0,
+      solutions: 0,
+      totalSubmissions: 0,
+      uniqueAttempts: 0,
+    },
+    ...values,
+  };
+}
+
+export function getSampleChallengeSolvedValues(
+  moduleId: number,
+  challengeId: number,
+  userId: number,
+  values: Partial<ChallengeSolvedModel> = {}
+) {
+  const userId2 = getId(userId);
+  const challengeUniqId = moduleId + '_' + challengeId;
+  return {
+    _id: getChallengeSolvedId({
+      userId: userId2,
+      challengeId: challengeUniqId,
+    }),
+    userId: userId2,
+    challengeId: challengeUniqId,
+    moduleId,
+    ...values,
+  };
+}
+
+export function getChallengeAttemptValues(
+  moduleId: number,
+  challengeId: number,
+  userId: number,
+  values: Partial<ChallengeAttemptModel> = {}
+) {
+  const challengeStrId = moduleId + '_' + challengeId;
+  return {
+    _id: getChallengeAttemptId({
+      challengeId: challengeStrId,
+      userId: getId(userId),
+    }),
+    challengeId: challengeStrId,
+    moduleId: moduleId,
+    userId: getId(userId),
     ...values,
   };
 }

@@ -18,7 +18,7 @@ import {
 } from './const';
 import { EditorModule, EditorModuleRef } from './editor/EditorModule';
 import { TesterModule } from './TesterModule';
-import { Challenge, Solution, Submission, Workspace } from 'shared';
+import { ChallengeDetails, Solution, Submission, Workspace } from 'shared';
 import { api } from 'src/services/api';
 import { useSubAction } from '../PubSubContextModule';
 import { useRouter } from 'next/dist/client/router';
@@ -35,7 +35,7 @@ interface Actions {
 
 interface State {
   workspace: Workspace;
-  challenge: Challenge;
+  challenge: ChallengeDetails;
   challengeHtml: string;
   initialLeftSidebar: number;
   initialRightSidebar: number;
@@ -56,7 +56,10 @@ export type RightSidebarTab = 'preview' | 'demo';
 
 const [Provider, useContext] = createModuleContext<State, Actions>();
 
-function useSyncSolutionUrl(challenge: Challenge, solution: Solution | null) {
+function useSyncSolutionUrl(
+  challenge: ChallengeDetails,
+  solution: Solution | null
+) {
   const router = useRouter();
 
   React.useEffect(() => {

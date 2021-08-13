@@ -1,6 +1,6 @@
 import * as R from 'remeda';
 import { S } from 'schema';
-import { Challenge } from 'shared';
+import { ChallengeDetails } from 'shared';
 import { ChallengeCollection } from '../../collections/Challenge';
 import { AppError } from '../../common/errors';
 import { createContract, createRpcBinding } from '../../lib';
@@ -10,7 +10,7 @@ export const getChallenge = createContract('challenge.getChallenge')
   .schema({
     id: S.string(),
   })
-  .returns<Challenge>()
+  .returns<ChallengeDetails>()
   .fn(async id => {
     const challenge = await ChallengeCollection.findById(id);
     if (!challenge) {

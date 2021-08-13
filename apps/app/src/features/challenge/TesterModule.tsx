@@ -1,7 +1,7 @@
 import { createModuleContext, useActions, useImmer } from 'context-api';
 import React from 'react';
 import WS from 'reconnecting-websocket';
-import { Challenge, TestInfo, Workspace, AppSocketMsg } from 'shared';
+import { ChallengeDetails, TestInfo, Workspace, AppSocketMsg } from 'shared';
 import { updateTestResult } from 'shared/src/utils';
 import { API_URL } from 'src/config';
 import { api } from 'src/services/api';
@@ -16,7 +16,7 @@ interface State {
   isShared: boolean;
   submissionId: string | null;
   isSubmitting: boolean;
-  challenge: Challenge;
+  challenge: ChallengeDetails;
   tests: TestInfo[];
   result: 'PASS' | 'FAIL' | null;
 }
@@ -25,11 +25,11 @@ const [Provider, useContext] = createModuleContext<State, Actions>();
 
 interface TesterModuleProps {
   children: React.ReactNode;
-  challenge: Challenge;
+  challenge: ChallengeDetails;
   workspace: Workspace;
 }
 
-function _getDefaultTests(challenge: Challenge) {
+function _getDefaultTests(challenge: ChallengeDetails) {
   return challenge.tests.map((test, i) => {
     const item: TestInfo = {
       id: i + 1,
