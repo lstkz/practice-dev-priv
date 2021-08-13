@@ -8,18 +8,19 @@ import { UserAvatar } from 'src/components/UserAvatar';
 import { VoteSolutionControls } from 'src/components/VoteSolutionControls';
 
 export interface SolutionItemProps {
+  readOnly?: boolean;
   item: Solution;
   deleteSolution: () => void;
   updateSolution: () => void;
 }
 
 export function SolutionItem(props: SolutionItemProps) {
-  const { item } = props;
+  const { item, readOnly } = props;
 
   return (
     <li className="py-4">
       <div className="flex items-center space-x-4">
-        <VoteSolutionControls solution={item} />
+        <VoteSolutionControls solution={item} readOnly={readOnly} />
         <div className="flex-shrink-0">
           <UserAvatar size="md" user={item.author} />
         </div>
@@ -43,9 +44,11 @@ export function SolutionItem(props: SolutionItemProps) {
             {DateFns.format(new Date(item.createdAt), 'HH:mm dd/MM/yyyy')}
           </p>
         </div>
-        <div tw="flex items-center">
-          <SolutionOptions {...props} />
-        </div>
+        {!readOnly && (
+          <div tw="flex items-center">
+            <SolutionOptions {...props} />
+          </div>
+        )}
       </div>
     </li>
   );

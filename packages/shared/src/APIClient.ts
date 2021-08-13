@@ -35,6 +35,10 @@ export class APIClient {
     this.baseUrl = baseUrl.replace(/\/$/, '');
   }
 
+  hasToken() {
+    return this.getToken() != null;
+  }
+
   // SIGNATURES
   aws_getAwsUploadContentAuth(): Promise<AwsUploadContentAuth> {
     return this.call('aws.getAwsUploadContentAuth', {});

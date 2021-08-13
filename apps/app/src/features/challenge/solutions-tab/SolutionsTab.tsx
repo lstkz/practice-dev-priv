@@ -13,6 +13,7 @@ import { TabLoader } from '../TabLoader';
 import { TabTitle } from '../TabTitle';
 import { useSubAction } from 'src/features/PubSubContextModule';
 import { safeAssign } from 'src/common/helper';
+import { useUser } from 'src/features/AuthModule';
 
 interface State {
   isLoaded: boolean;
@@ -33,6 +34,7 @@ export function SolutionsTab() {
     },
     'SubmissionHistoryTab'
   );
+  const user = useUser();
   const { isLoadMore, isLoaded, items, sortBy, total } = state;
   const { showError } = useErrorModalActions();
   const { challenge } = useChallengeState();
@@ -123,6 +125,7 @@ export function SolutionsTab() {
         <ul tw="-my-5 divide-y divide-gray-700">
           {items.map(item => (
             <SolutionItem
+              readOnly={!user}
               deleteSolution={() => {
                 showConfirm(
                   {

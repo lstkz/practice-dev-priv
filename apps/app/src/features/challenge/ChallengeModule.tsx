@@ -219,16 +219,18 @@ export const getServerSideProps = createGetServerSideProps(async ctx => {
   const initialLeftSidebar = getCookieNum(LEFT_COOKIE_NAME, LEFT_DEFAULT);
   const initialRightSidebar = getCookieNum(RIGHT_COOKIE_NAME, RIGHT_DEFAULT);
   const solutionId = ctx.query.solutionId;
-
   const api = createSSRClient(ctx);
+  const isLogged = api.hasToken();
   const id = ctx.query.id as string;
   const [workspace, challenge, initialSolution] = await Promise.all([
-    api.workspace_getOrCreateWorkspace({
-      challengeUniqId: id,
-    }),
+    isLogged
+      ? api.workspace_getOrCreateWorkspace({
+          challengeUniqId: id,
+        })
+      : null!,
     api.challenge_getChallenge(id),
     doFn(async () => {
-      if (!solutionId || typeof solutionId !== 'string') {
+      if (!solutionId || typeof solutionId !== 'string' || !isLogged) {
         return null;
       }
       const [solution, solutionWorkspace] = await Promise.all([

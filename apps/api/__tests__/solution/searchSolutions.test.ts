@@ -456,3 +456,46 @@ it('should return results with myScore', async () => {
     }
   `);
 });
+
+it('should should as anonymous', async () => {
+  expect(
+    await execContract(searchSolutions, {
+      criteria: {
+        offset: 0,
+        limit: 2,
+        sortBy: SolutionSortBy.Oldest,
+        challengeId: '1',
+      },
+    })
+  ).toMatchInlineSnapshot(`
+    Object {
+      "items": Array [
+        Object {
+          "author": Object {
+            "avatarId": undefined,
+            "id": "000000000000000000000001",
+            "username": "user1",
+          },
+          "createdAt": "1970-01-01T00:00:00.001Z",
+          "id": "000000000000000000000100",
+          "myScore": 0,
+          "score": 1,
+          "title": "s1",
+        },
+        Object {
+          "author": Object {
+            "avatarId": undefined,
+            "id": "000000000000000000000001",
+            "username": "user1",
+          },
+          "createdAt": "1970-01-01T00:00:00.002Z",
+          "id": "000000000000000000000101",
+          "myScore": 0,
+          "score": 2,
+          "title": "s2",
+        },
+      ],
+      "total": 4,
+    }
+  `);
+});

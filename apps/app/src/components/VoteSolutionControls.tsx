@@ -7,12 +7,13 @@ import { api } from 'src/services/api';
 import { usePub } from 'src/features/PubSubContextModule';
 
 interface VoteSolutionControlsProps {
+  readOnly?: boolean;
   horizontal?: boolean;
   solution: Solution;
 }
 
 export function VoteSolutionControls(props: VoteSolutionControlsProps) {
-  const { solution, horizontal } = props;
+  const { solution, horizontal, readOnly } = props;
   const pub = usePub();
 
   const voteVersionRef = React.useRef(0);
@@ -50,21 +51,25 @@ export function VoteSolutionControls(props: VoteSolutionControlsProps) {
         horizontal ? tw`flex items-center space-x-1` : tw`flex flex-col ml-2`,
       ]}
     >
-      <IconButton
-        state={solution.myScore === 1 ? 'green' : undefined}
-        onClick={() => voteSolution('up')}
-      >
-        <ChevronUpIcon />
-      </IconButton>
+      {!readOnly && (
+        <IconButton
+          state={solution.myScore === 1 ? 'green' : undefined}
+          onClick={() => voteSolution('up')}
+        >
+          <ChevronUpIcon />
+        </IconButton>
+      )}
       <span tw="text-base text-center font-bold text-indigo-200 py-1">
         {solution.score}
       </span>
-      <IconButton
-        state={solution.myScore === -1 ? 'red' : undefined}
-        onClick={() => voteSolution('down')}
-      >
-        <ChevronDownIcon />
-      </IconButton>
+      {!readOnly && (
+        <IconButton
+          state={solution.myScore === -1 ? 'red' : undefined}
+          onClick={() => voteSolution('down')}
+        >
+          <ChevronDownIcon />
+        </IconButton>
+      )}
     </div>
   );
 }

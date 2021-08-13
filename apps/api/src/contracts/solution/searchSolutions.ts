@@ -10,7 +10,7 @@ import { SolutionVoteCollection } from '../../collections/SolutionVote';
 export const searchSolutions = createContract('solution.searchSolutions')
   .params('user', 'criteria')
   .schema({
-    user: S.object().appUser(),
+    user: S.object().appUser().optional(),
     criteria: S.object().keys({
       challengeId: S.string(),
       limit: S.number().integer().min(0),
@@ -50,12 +50,14 @@ export const searchSolutions = createContract('solution.searchSolutions')
           $in: userIds,
         },
       }),
-      SolutionVoteCollection.findAll({
-        userId: user._id,
-        solutionId: {
-          $in: items.map(x => x._id),
-        },
-      }),
+      user
+        ? SolutionVoteCollection.findAll({
+            userId: user._id,
+            solutionId: {
+              $in: items.map(x => x._id),
+            },
+          })
+        : [],
     ]);
     return {
       items: mapSolutions(items, users, solutionVotes),
@@ -65,6 +67,7 @@ export const searchSolutions = createContract('solution.searchSolutions')
 
 export const searchSolutionsRpc = createRpcBinding({
   injectUser: true,
+  public: true,
   signature: 'solution.searchSolutions',
   handler: searchSolutions,
 });

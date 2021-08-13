@@ -26,7 +26,7 @@ export function ChallengeSidebar<T extends string>(
   return (
     <nav aria-label="Sidebar" tw="flex-shrink-0 bg-gray-800 overflow-y-auto">
       <div tw="relative flex flex-col p-2 space-y-3">
-        {items.map(item => (
+        {items.filter(Boolean).map(item => (
           <Tooltip place={tooltipPlace} key={item.name} tooltip={item.label}>
             <button
               className="group"

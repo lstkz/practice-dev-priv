@@ -8,10 +8,12 @@ import {
   faHistory,
 } from '@fortawesome/free-solid-svg-icons';
 import { useChallengeActions, useChallengeState } from './ChallengeModule';
+import { useUser } from '../AuthModule';
 
 export function LeftSidebar() {
   const { setLeftSidebarTab } = useChallengeActions();
   const { leftSidebarTab } = useChallengeState();
+  const user = useUser();
   return (
     <ChallengeSidebar
       tooltipPlace="right"
@@ -29,7 +31,7 @@ export function LeftSidebar() {
           fa: faInfoCircle,
           current: leftSidebarTab === 'details',
         },
-        {
+        user && {
           name: 'file-explorer',
           label: 'File Explorer',
           fa: faCopy,
@@ -47,7 +49,7 @@ export function LeftSidebar() {
           fa: faLightbulb,
           current: leftSidebarTab === 'solutions',
         },
-        {
+        user && {
           name: 'submission-history',
           label: 'Submission History',
           fa: faHistory,
