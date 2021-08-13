@@ -14,6 +14,7 @@ module.exports = {
         'spin-slow': 'spin 3s linear infinite',
       },
       colors: {
+        'editor-bg': '#011627',
         alpha: {
           black30: 'rgba(0, 0, 0, 0.3)',
           black80: 'rgba(0, 0, 0, 0.8)',

@@ -264,6 +264,9 @@ export class CodeEditor {
   }
 
   dispose() {
+    if (!this.isInited) {
+      return;
+    }
     this.highlighter.dispose();
     this.formatter.dispose();
     this.monaco.editor.getModels().forEach(model => model.dispose());

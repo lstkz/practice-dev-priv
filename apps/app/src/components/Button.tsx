@@ -8,7 +8,8 @@ export type FocusBg =
   | 'gray-900'
   | 'red-600'
   | 'green-600'
-  | 'indigo-600';
+  | 'indigo-600'
+  | 'editor-bg';
 export type RingColor = 'white';
 
 export interface BaseButtonProps {
@@ -100,6 +101,9 @@ export function getFocusBgTw(focusBg: FocusBg | undefined) {
   }
   if (focusBg === 'indigo-600') {
     return tw`ring-offset-indigo-600`;
+  }
+  if (focusBg === 'editor-bg') {
+    return tw`ring-offset-editor-bg`;
   }
   return null;
 }

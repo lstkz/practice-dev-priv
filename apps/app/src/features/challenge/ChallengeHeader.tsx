@@ -6,6 +6,8 @@ import { useChallengeActions, useChallengeState } from './ChallengeModule';
 import { useEditorActions, useEditorState } from './editor/EditorModule';
 import { VoteSolutionControls } from 'src/components/VoteSolutionControls';
 import { createUrl } from 'src/common/url';
+import { useUser } from '../AuthModule';
+import { doFn } from 'src/common/helper';
 
 interface ForkBarProps {
   onFork: () => void;
@@ -31,6 +33,7 @@ function ForkBar(props: ForkBarProps) {
 export function ChallengeHeader() {
   const { submit } = useEditorActions();
   const { isSubmitting } = useEditorState();
+  const user = useUser();
   const { openedSubmission, openedSolution, challenge } = useChallengeState();
   const { closeReadOnlyWorkspace, fork } = useChallengeActions();
   const [isConfirmOpen, setIsConfirmOpen] = React.useState(false);
@@ -58,34 +61,48 @@ export function ChallengeHeader() {
         })}
       />
       <div tw="ml-auto">
-        {openedSubmission ? (
-          <ForkBar
-            title="You are viewing a past submission"
-            onFork={() => setIsConfirmOpen(true)}
-            onClose={closeReadOnlyWorkspace}
-          />
-        ) : openedSolution ? (
-          <ForkBar
-            title={
-              <div tw="flex items-center">
-                <VoteSolutionControls horizontal solution={openedSolution} />
-                <span tw="ml-2">Solution: {openedSolution.title}</span>
-              </div>
-            }
-            onFork={() => setIsConfirmOpen(true)}
-            onClose={closeReadOnlyWorkspace}
-          />
-        ) : (
-          <Button
-            loading={isSubmitting}
-            onClick={submit}
-            type="primary"
-            size="small"
-            focusBg="gray-800"
-          >
-            Submit
-          </Button>
-        )}
+        {doFn(() => {
+          if (openedSubmission) {
+            return (
+              <ForkBar
+                title="You are viewing a past submission"
+                onFork={() => setIsConfirmOpen(true)}
+                onClose={closeReadOnlyWorkspace}
+              />
+            );
+          }
+          if (openedSolution) {
+            return (
+              <ForkBar
+                title={
+                  <div tw="flex items-center">
+                    <VoteSolutionControls
+                      horizontal
+                      solution={openedSolution}
+                    />
+                    <span tw="ml-2">Solution: {openedSolution.title}</span>
+                  </div>
+                }
+                onFork={() => setIsConfirmOpen(true)}
+                onClose={closeReadOnlyWorkspace}
+              />
+            );
+          }
+          if (user) {
+            return (
+              <Button
+                loading={isSubmitting}
+                onClick={submit}
+                type="primary"
+                size="small"
+                focusBg="gray-800"
+              >
+                Submit
+              </Button>
+            );
+          }
+          return null;
+        })}
       </div>
     </div>
   );

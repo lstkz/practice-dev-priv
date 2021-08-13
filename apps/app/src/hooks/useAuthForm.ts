@@ -2,7 +2,11 @@ import React from 'react';
 import { AuthData } from 'shared';
 import { getErrorMessage } from 'src/common/helper';
 import { useAuthActions } from 'src/features/AuthModule';
-import { clearAccessToken } from 'src/services/Storage';
+import {
+  clearAccessToken,
+  getAuthRedirect,
+  saveAuthRedirect,
+} from 'src/services/Storage';
 
 interface UseAuthFormOptions {
   redirectUrl?: string;
@@ -21,7 +25,8 @@ export function useAuthForm(options: UseAuthFormOptions) {
     try {
       clearAccessToken();
       const ret = await submit();
-      await authActions.loginUser(ret, redirectUrl);
+      await authActions.loginUser(ret, getAuthRedirect() ?? redirectUrl);
+      saveAuthRedirect(null);
     } catch (e) {
       setError(getErrorMessage(e));
       setIsSubmitting(false);

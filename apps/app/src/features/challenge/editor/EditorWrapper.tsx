@@ -1,4 +1,8 @@
 import React from 'react';
+import { createUrl } from 'src/common/url';
+import { Button } from 'src/components/Button';
+import { useUser } from 'src/features/AuthModule';
+import { saveAuthRedirect } from 'src/services/Storage';
 import { styled } from 'twin.macro';
 import { useEditorActions } from './EditorModule';
 
@@ -38,12 +42,33 @@ const Wrapper = styled.div`
 `;
 
 export function EditorWrapper() {
+  const user = useUser();
   const wrapperRef = React.useRef<HTMLDivElement>(null!);
   const { load } = useEditorActions();
 
   React.useEffect(() => {
+    if (!user) {
+      return;
+    }
     load(wrapperRef.current);
-  }, []);
-
+  }, [user]);
+  if (!user) {
+    return (
+      <div tw="text-white text-center py-12">
+        <div>Create an account to start coding</div>
+        <Button
+          href={createUrl({ name: 'register' })}
+          type="light"
+          focusBg="editor-bg"
+          tw="mx-auto mt-4"
+          onClick={() => {
+            saveAuthRedirect(location.pathname);
+          }}
+        >
+          Create account
+        </Button>
+      </div>
+    );
+  }
   return <Wrapper ref={wrapperRef} style={{ height: '100%' }}></Wrapper>;
 }

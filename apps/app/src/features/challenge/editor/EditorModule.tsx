@@ -28,6 +28,7 @@ import { BundlerService } from 'code-editor/src/services/BundlerService';
 import { EditorFactory } from 'code-editor/src/EditorFactory';
 import { MonacoLoader } from './MonacoLoader';
 import { migrateTabState } from './migrateTabState';
+import { MockAPIService } from './MockAPIService';
 
 interface Actions {
   load: (container: HTMLDivElement) => void;
@@ -58,7 +59,9 @@ interface EditorModuleProps {
 
 function useServices(workspace: Workspace, challengeId: string) {
   return React.useMemo(() => {
-    const apiService = new APIService(workspace.id, workspace.s3Auth);
+    const apiService = workspace
+      ? new APIService(workspace.id, workspace.s3Auth)
+      : new MockAPIService();
     const codeEditor = new CodeEditor(false);
     const readOnlyCodeEditor = new CodeEditor(true);
     const editorStateService = new EditorStateService(challengeId);

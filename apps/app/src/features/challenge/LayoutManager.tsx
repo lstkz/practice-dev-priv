@@ -71,7 +71,7 @@ export function LayoutManager(props: LayoutManagerProps) {
     });
 
     resizeObserver.observe(ref.current!);
-    () => {
+    return () => {
       document.body.style.overflow = '';
       resizeObserver.disconnect();
     };

@@ -4,12 +4,7 @@ import { EditorWrapper } from './editor/EditorWrapper';
 
 export function MainCol() {
   return (
-    <div
-      tw="h-full border-l border-gray-800"
-      style={{
-        background: '#011627',
-      }}
-    >
+    <div tw="h-full border-l border-gray-800 bg-editor-bg">
       <EditorTabs />
       <EditorWrapper />
     </div>
