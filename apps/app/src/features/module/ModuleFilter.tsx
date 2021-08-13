@@ -2,61 +2,61 @@ import React from 'react';
 import { Checkbox } from '../../components/Checkbox';
 import { FilterPanel } from '../../components/FilterPanel';
 import { FilterSection } from '../../components/FilterSection';
+import {
+  ModulesFilter as ModuleFilterType,
+  useModuleActions,
+  useModuleState,
+} from './ModuleModule';
+
+interface CheckboxListProps {
+  idPrefix: string;
+  filterProps: keyof ModuleFilterType;
+  options: string[];
+}
+
+function CheckboxList(props: CheckboxListProps) {
+  const { filterProps, idPrefix, options } = props;
+  const { toggleFilter } = useModuleActions();
+  const { filter } = useModuleState();
+
+  return (
+    <>
+      {options.map(option => {
+        const value: any = option.toLowerCase();
+        return (
+          <Checkbox
+            key={value}
+            id={`${idPrefix}-${value}`}
+            name={value}
+            checked={filter[filterProps].includes(value)}
+            onChange={() => {
+              toggleFilter(filterProps, value);
+            }}
+          >
+            {option}
+          </Checkbox>
+        );
+      })}
+    </>
+  );
+}
 
 export function ModuleFilter() {
   return (
     <FilterPanel>
       <FilterSection title="Status">
-        <Checkbox
-          id="status-unattempted"
-          name="status"
-          checked={false}
-          onChange={() => {}}
-        >
-          Unattempted
-        </Checkbox>
-        <Checkbox
-          id="status-attempted"
-          name="status"
-          checked={false}
-          onChange={() => {}}
-        >
-          Attempted
-        </Checkbox>
-        <Checkbox
-          id="status-solved"
-          name="solved"
-          checked={false}
-          onChange={() => {}}
-        >
-          Solved
-        </Checkbox>
+        <CheckboxList
+          filterProps="status"
+          idPrefix="status"
+          options={['Unattempted', 'Attempted', 'Solved']}
+        />
       </FilterSection>
       <FilterSection title="Difficulty">
-        <Checkbox
-          id="difficulty-beginner"
-          name="difficulty"
-          checked={false}
-          onChange={() => {}}
-        >
-          Beginner
-        </Checkbox>
-        <Checkbox
-          id="difficulty-intermediate"
-          name="difficulty"
-          checked={false}
-          onChange={() => {}}
-        >
-          Intermediate
-        </Checkbox>
-        <Checkbox
-          id="difficulty-various"
-          name="difficulty"
-          checked={false}
-          onChange={() => {}}
-        >
-          Various
-        </Checkbox>
+        <CheckboxList
+          filterProps="difficulty"
+          idPrefix="difficulty"
+          options={['Beginner', 'Intermediate', 'Various']}
+        />
       </FilterSection>
     </FilterPanel>
   );

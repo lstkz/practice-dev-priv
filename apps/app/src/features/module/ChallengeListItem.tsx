@@ -6,18 +6,12 @@ import {
 } from '@heroicons/react/outline';
 import Link from 'next/link';
 import React from 'react';
+import { Challenge } from 'shared';
+import { doFn } from 'src/common/helper';
 import { createUrl } from '../../common/url';
 import Badge from '../../components/Badge';
 import DotBadge from '../../components/DotBadge';
 import { IconStats } from '../../components/IconStats';
-
-export interface Challenge {
-  id: number;
-  title: string;
-  description: string;
-  tags: string[];
-  status: 'solved' | 'attempted' | 'unattempted';
-}
 
 interface ChallengeListItemProps {
   item: Challenge;
@@ -25,6 +19,7 @@ interface ChallengeListItemProps {
 
 export function ChallengeListItem(props: ChallengeListItemProps) {
   const { item } = props;
+  const allTags = [item.difficulty];
   return (
     <li>
       <Link
@@ -43,32 +38,37 @@ export function ChallengeListItem(props: ChallengeListItemProps) {
               <div tw="ml-6">
                 <DotBadge
                   color={
-                    item.status === 'unattempted'
-                      ? 'gray'
-                      : item.status === 'attempted'
-                      ? 'red'
-                      : 'green'
+                    item.isSolved ? 'green' : item.isAttempted ? 'red' : 'gray'
                   }
                 />
               </div>
             </div>
             <div tw="mt-4 flex space-x-4">
               <IconStats icon={<UsersIcon />} tooltip="Users attempted">
-                250
+                {item.stats.uniqueAttempts}
               </IconStats>
               <IconStats icon={<ClockIcon />} tooltip="Total practice time">
-                15m
+                {item.practiceTime}m
               </IconStats>
               <IconStats icon={<ChartSquareBarIcon />} tooltip="Success rate">
-                94%
+                {doFn(() => {
+                  const { totalSubmissions, passingSubmissions } = item.stats;
+                  if (!totalSubmissions) {
+                    return '-';
+                  }
+                  const percent = Math.floor(
+                    (passingSubmissions / totalSubmissions) * 100
+                  );
+                  return percent + '%';
+                })}
               </IconStats>
               <IconStats icon={<ClipboardCheckIcon />} tooltip="Solutions">
-                15
+                {item.stats.solutions}
               </IconStats>
             </div>
             <div tw="mt-2 space-x-2">
-              {item.tags.map(tag => (
-                <Badge key={tag} color="purple">
+              {allTags.map((tag, i) => (
+                <Badge key={i} color="purple">
                   {tag}
                 </Badge>
               ))}
