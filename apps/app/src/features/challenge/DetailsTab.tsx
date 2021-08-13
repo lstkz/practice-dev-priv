@@ -16,8 +16,21 @@ const Wrapper = styled.div`
     ${tw`text-xl font-bold leading-7 text-gray-100 mt-2 text-center`}
   }
 
+  h4 {
+    ${tw`font-semibold text-gray-100`}
+  }
+  ul {
+    ${tw`space-y-1 list-disc`}
+    li {
+      ${tw`ml-6`}
+    }
+  }
+
   p {
     ${tw`mt-2`}
+  }
+  code {
+    ${tw`bg-black px-1 rounded-sm`}
   }
 `;
 

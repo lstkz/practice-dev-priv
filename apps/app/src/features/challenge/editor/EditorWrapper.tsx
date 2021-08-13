@@ -51,7 +51,7 @@ export function EditorWrapper() {
       return;
     }
     load(wrapperRef.current);
-  }, [user]);
+  }, []);
   if (!user) {
     return (
       <div tw="text-white text-center py-12">
