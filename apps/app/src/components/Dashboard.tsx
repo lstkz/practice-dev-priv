@@ -1,7 +1,6 @@
 import React from 'react';
 import { Disclosure } from '@headlessui/react';
 import { MenuIcon, XIcon } from '@heroicons/react/outline';
-import tw from 'twin.macro';
 import { ProfileDropdown } from './ProfileDropdown';
 import Link from 'next/link';
 import { createUrl } from '../common/url';
@@ -10,13 +9,7 @@ import Footer from '../features/landing/Footer';
 import logo from '../../public/logo.png';
 import { useUser } from 'src/features/AuthModule';
 import { VerifyAccountAlert } from './VerifyAccountAlert';
-
-const navigation = [
-  { name: 'Dashboard', href: '#', current: true },
-  { name: 'Team', href: '#', current: false },
-  { name: 'Projects', href: '#', current: false },
-  { name: 'Calendar', href: '#', current: false },
-];
+import { MainMenu } from './MainMenu';
 
 interface DashboardProps {
   children: React.ReactNode;
@@ -56,25 +49,7 @@ export default function Dashboard(props: DashboardProps) {
                       </a>
                     </Link>
                   </div>
-                  <div className="hidden sm:block sm:ml-6">
-                    <div className="flex space-x-4">
-                      {navigation.map(item => (
-                        <a
-                          key={item.name}
-                          href={item.href}
-                          css={[
-                            item.current
-                              ? tw`bg-gray-900 text-white`
-                              : tw`text-gray-300 hover:bg-gray-700 hover:text-white`,
-                            tw`px-3 py-2 rounded-md text-sm font-medium`,
-                          ]}
-                          aria-current={item.current ? 'page' : undefined}
-                        >
-                          {item.name}
-                        </a>
-                      ))}
-                    </div>
-                  </div>
+                  <MainMenu />
                 </div>
                 <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                   {user ? (
@@ -100,26 +75,7 @@ export default function Dashboard(props: DashboardProps) {
                 </div>
               </div>
             </div>
-
-            <Disclosure.Panel className="sm:hidden">
-              <div className="px-2 pt-2 pb-3 space-y-1">
-                {navigation.map(item => (
-                  <a
-                    key={item.name}
-                    href={item.href}
-                    css={[
-                      item.current
-                        ? tw`bg-gray-900 text-white`
-                        : tw`text-gray-300 hover:bg-gray-700 hover:text-white`,
-                      tw`block px-3 py-2 rounded-md text-base font-medium`,
-                    ]}
-                    aria-current={item.current ? 'page' : undefined}
-                  >
-                    {item.name}
-                  </a>
-                ))}
-              </div>
-            </Disclosure.Panel>
+            <MainMenu mobile />
           </>
         )}
       </Disclosure>
