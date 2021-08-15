@@ -7,6 +7,12 @@ import {
 } from '../seed-data';
 import { ChallengeCollection } from '../../src/collections/Challenge';
 import { updateStatsOnSubmissionPassed } from '../../src/contracts/challenge/updateStatsOnSubmissionPassed';
+import { mocked } from 'ts-jest/utils';
+import { dispatchEvent } from '../../src/dispatch';
+
+jest.mock('../../src/dispatch');
+
+const mocked_dispatchEvent = mocked(dispatchEvent);
 
 setupDb();
 
@@ -17,6 +23,7 @@ beforeEach(async () => {
     getSampleSubmissionValues(100),
     getSampleSubmissionValues(101),
   ]);
+  mocked_dispatchEvent.mockReset();
 });
 
 it('should process a single submission', async () => {
@@ -30,6 +37,7 @@ Object {
   "uniqueAttempts": 0,
 }
 `);
+  expect(mocked_dispatchEvent).toBeCalledTimes(1);
 });
 
 it('should process two submissions', async () => {
@@ -46,4 +54,5 @@ Object {
   "uniqueAttempts": 0,
 }
 `);
+  expect(mocked_dispatchEvent).toBeCalledTimes(1);
 });

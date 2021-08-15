@@ -27,6 +27,7 @@ export const {
     require('./collections/ChallengeAttempt'),
     require('./collections/ModuleUserEnrolled'),
     require('./collections/ChallengeSolved'),
+    require('./collections/Activity'),
     // APPEND
   ],
   uri: config.mongodb.url,

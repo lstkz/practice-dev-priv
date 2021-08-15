@@ -1,7 +1,7 @@
 import React from 'react';
 import Dashboard from '../../components/Dashboard';
-import { useProfileActions, useProfileState } from './ProfileModule';
-import { UserTimeline } from './UserTimeline';
+import { useProfileState } from './ProfileModule';
+import { UserActivityFeed } from './UserActivityFeed';
 import { Container } from '../../components/Container';
 import { ProfileHeader } from './ProfileHeader';
 import { Tabs } from '../../components/Tabs';
@@ -11,7 +11,6 @@ import { SubmissionsTab } from './SubmissionsTab';
 import { FollowersTab } from './FollowersTab';
 
 export function ProfilePage() {
-  const {} = useProfileActions();
   const { profile } = useProfileState();
   const [tab, setTab] = React.useState('overview');
   return (
@@ -54,7 +53,7 @@ export function ProfilePage() {
               </div>
             </div>
           </div>
-          <UserTimeline />
+          <UserActivityFeed />
         </div>
       </Container>
     </Dashboard>

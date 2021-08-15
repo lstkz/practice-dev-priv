@@ -291,3 +291,29 @@ export interface UserPublicProfile {
   lastSeen: string;
   about: string;
 }
+
+export interface ActivityChallengeSolved {
+  type: 'challenge-solved';
+  values: {
+    createdAt: string;
+    module: {
+      id: number;
+      title: string;
+    };
+    challenge: {
+      id: string;
+      challengeId: number;
+      title: string;
+    };
+  };
+}
+export interface ActivityRegistered {
+  type: 'registered';
+  values: {
+    createdAt: string;
+  };
+}
+
+export type Activity = ActivityChallengeSolved | ActivityRegistered;
+
+export type ExtractType<T> = T extends { type: infer S } ? S : never;
