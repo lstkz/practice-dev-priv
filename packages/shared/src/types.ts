@@ -225,6 +225,10 @@ export interface Solution {
   createdAt: string;
   score: number;
   myScore: number;
+  challenge: {
+    id: string;
+    title: string;
+  };
 }
 
 export interface Author {

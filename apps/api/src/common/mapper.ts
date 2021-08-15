@@ -13,6 +13,7 @@ import {
   createSolutionVoteId,
   SolutionVoteModel,
 } from '../collections/SolutionVote';
+import { ChallengeModel } from '../collections/Challenge';
 
 export function mapUser(user: UserModel): User {
   return {
@@ -37,6 +38,7 @@ export function mapWorkspaceS3Auth(
 export function mapSolution(
   solution: SolutionModel,
   user: UserModel,
+  challenge: ChallengeModel,
   solutionVote?: SolutionVoteModel | null
 ): Solution {
   return {
@@ -50,23 +52,30 @@ export function mapSolution(
       username: user.username,
       avatarId: user.avatarId,
     },
+    challenge: {
+      id: challenge._id,
+      title: challenge.title,
+    },
   };
 }
 
 export function mapSolutions(
   solutions: SolutionModel[],
   users: UserModel[],
+  challenges: ChallengeModel[],
   solutionVotes: SolutionVoteModel[]
 ): Solution[] {
   const userMap = R.indexBy(users, x => x._id);
+  const challengeMap = R.indexBy(challenges, x => x._id);
   const voteMap = R.indexBy(solutionVotes, x => x._id);
   return solutions.map(solution => {
     const user = userMap[solution.userId.toHexString()];
+    const challenge = challengeMap[solution.challengeId];
     const voteId = createSolutionVoteId({
       userId: user._id,
       solutionId: solution._id,
     });
-    return mapSolution(solution, user, voteMap[voteId]);
+    return mapSolution(solution, user, challenge, voteMap[voteId]);
   });
 }
 

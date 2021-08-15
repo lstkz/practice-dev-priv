@@ -1,56 +1,33 @@
 import Link from 'next/link';
 import React from 'react';
+import * as DateFns from 'date-fns';
+import { SolutionSortBy } from 'shared/src/types';
+import { useSolutionLoader } from 'src/hooks/useSolutionLoader';
 import { createUrl } from '../../common/url';
 import { Button } from '../../components/Button';
 import Select from '../../components/Select';
-
-interface Solution {
-  challenge: string;
-  name: string;
-  imageUrl: string;
-}
-
-const solutions: Solution[] = [
-  {
-    challenge: 'Simple Counter',
-    name: 'My solution',
-    imageUrl:
-      'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-  },
-  {
-    challenge: 'Simple Counter',
-    name: 'My solution',
-    imageUrl:
-      'https://images.unsplash.com/photo-1463453091185-61582044d556?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-  },
-  {
-    challenge: 'Simple Counter',
-    name: 'My solution',
-    imageUrl:
-      'https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-  },
-  {
-    challenge: 'Simple Counter',
-    name: 'My solution',
-    imageUrl:
-      'https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-  },
-  {
-    challenge: 'Simple Counter',
-    name: 'My solution',
-    imageUrl:
-      'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-  },
-  {
-    challenge: 'Simple Counter',
-    name: 'My solution',
-    imageUrl:
-      'https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-  },
-];
+import { useProfileState } from './ProfileModule';
+import { UserAvatar } from 'src/components/UserAvatar';
+import { ProfileTabLoader } from './ProfileTabLoader';
 
 export function SolutionsTab() {
-  const [sortBy, setSortBy] = React.useState('best');
+  const { profile } = useProfileState();
+  const {
+    state: { isLoadMore, isLoaded, items, sortBy, total },
+    search,
+    updateSort,
+  } = useSolutionLoader({
+    baseFilter: {
+      username: profile.username,
+    },
+  });
+
+  if (!isLoaded) {
+    return <ProfileTabLoader />;
+  }
+  if (!total) {
+    return <div tw="text-center py-12 text-gray-700">No solutions</div>;
+  }
 
   return (
     <div className="px-4 py-5 sm:px-6">
@@ -59,67 +36,89 @@ export function SolutionsTab() {
           type="white"
           value={sortBy}
           label={<span>Sort by</span>}
-          onChange={setSortBy}
+          onChange={updateSort}
           options={[
             {
               label: 'Best',
-              value: 'best',
+              value: SolutionSortBy.Best,
             },
             {
               label: 'Newest',
-              value: 'newest',
+              value: SolutionSortBy.Newest,
             },
             {
               label: 'Oldest',
-              value: 'oldest',
+              value: SolutionSortBy.Oldest,
             },
           ]}
         />
       </div>
       <div className="flow-root mt-6">
         <ul className="-my-5 divide-y divide-gray-200">
-          {solutions.map((item, i) => (
+          {items.map((item, i) => (
             <li key={i} className="py-4">
               <div className="flex items-center space-x-4">
                 <div tw="flex flex-col ml-2">
                   <span tw="text-base text-center font-bold text-gray-700 py-1">
-                    10
+                    {item.score}
                   </span>
                 </div>
                 <div className="flex-shrink-0">
-                  <img
-                    className="h-8 w-8 rounded-full"
-                    src={item.imageUrl}
-                    alt=""
-                  />
+                  <UserAvatar size="md" user={item.author} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <Link
                     passHref
-                    href={createUrl({ name: 'challenge', id: '1' })}
+                    href={createUrl({
+                      name: 'challenge',
+                      id: item.challenge.id,
+                    })}
                   >
-                    <a tw="text-gray-800 font-semibold">{item.challenge}</a>
+                    <a tw="text-gray-800 font-semibold">
+                      {item.challenge.title}
+                    </a>
                   </Link>
                   <p className="text-sm font-medium text-gray-500 truncate leading-snug">
-                    {item.name}
+                    {item.title}
                   </p>
                   <p className="text-sm text-gray-500 truncate">
-                    18:00 3/7/2020
+                    {DateFns.format(
+                      new Date(item.createdAt),
+                      'HH:mm dd/MM/yyyy'
+                    )}
                   </p>
                 </div>
                 <div tw="flex items-center">
-                  <Button type="white">Show</Button>
+                  <Button
+                    type="white"
+                    href={createUrl({
+                      name: 'challenge',
+                      id: item.challenge.id,
+                      solutionId: item.id,
+                    })}
+                  >
+                    Show
+                  </Button>
                 </div>
               </div>
             </li>
           ))}
         </ul>
       </div>
-      <div className="mt-6 text-center">
-        <Button type="primary" tw="px-10">
-          Load More
-        </Button>
-      </div>
+      {total > items.length && (
+        <div className="mt-6">
+          <Button
+            type="primary"
+            tw="px-10"
+            loading={isLoadMore}
+            onClick={() => {
+              void search(true);
+            }}
+          >
+            Load More
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

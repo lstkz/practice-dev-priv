@@ -1,71 +1,33 @@
-import { useImmer } from 'context-api';
 import React from 'react';
-import { Solution, SolutionSortBy } from 'shared';
+import { SolutionSortBy } from 'shared';
 import { api } from 'src/services/api';
 import { Button } from '../../../components/Button';
 import Select from '../../../components/Select';
 import { useConfirmModalActions } from '../../ConfirmModalModule';
-import { useErrorModalActions } from '../../ErrorModalModule';
 import { useChallengeState } from '../ChallengeModule';
 import { SolutionEditModal, SolutionModalRef } from './SolutionEditModal';
 import { SolutionItem } from './SolutionItem';
 import { TabLoader } from '../TabLoader';
 import { TabTitle } from '../TabTitle';
 import { useSubAction } from 'src/features/PubSubContextModule';
-import { safeAssign } from 'src/common/helper';
 import { useUser } from 'src/features/AuthModule';
-
-interface State {
-  isLoaded: boolean;
-  isLoadMore: boolean;
-  total: number;
-  items: Solution[];
-  sortBy: SolutionSortBy;
-}
+import { useSolutionLoader } from 'src/hooks/useSolutionLoader';
 
 export function SolutionsTab() {
-  const [state, setState, getState] = useImmer<State>(
-    {
-      isLoaded: false,
-      isLoadMore: false,
-      total: 0,
-      items: [],
-      sortBy: SolutionSortBy.Best,
-    },
-    'SubmissionHistoryTab'
-  );
-  const user = useUser();
-  const { isLoadMore, isLoaded, items, sortBy, total } = state;
-  const { showError } = useErrorModalActions();
   const { challenge } = useChallengeState();
-  const searchData = async (loadMore?: boolean) => {
-    try {
-      const { items, total } = await api.solution_searchSolutions({
-        offset: loadMore ? getState().items.length : 0,
-        limit: 20,
-        sortBy: getState().sortBy,
-        challengeId: challenge.id,
-      });
-      setState(draft => {
-        draft.isLoaded = true;
-        draft.isLoadMore = false;
-        draft.total = total;
-        if (loadMore) {
-          draft.items.push(...items);
-        } else {
-          draft.items = items;
-        }
-      });
-    } catch (e) {
-      showError(e);
-      setState(draft => {
-        draft.isLoadMore = false;
-      });
-    }
-  };
-  React.useEffect(() => {
-    void searchData(false);
-  }, []);
+  const {
+    state: { isLoadMore, isLoaded, items, sortBy, total },
+    search,
+    updateSort,
+    updateSolutionVote,
+    deleteSolution,
+    updateSolution,
+  } = useSolutionLoader({
+    baseFilter: {
+      challengeId: challenge.id,
+    },
+  });
+  const user = useUser();
   const { showConfirm } = useConfirmModalActions();
   const solutionEditModalRef = React.useRef<SolutionModalRef>(null!);
 
@@ -73,13 +35,7 @@ export function SolutionsTab() {
   useSubAction({
     action: 'solution-vote-stats-updated',
     fn: ({ solutionId, result }) => {
-      setState(draft => {
-        draft.items.forEach(item => {
-          if (item.id === solutionId) {
-            safeAssign(item, result);
-          }
-        });
-      });
+      updateSolutionVote(solutionId, result);
     },
   });
   if (!isLoaded) {
@@ -96,12 +52,7 @@ export function SolutionsTab() {
           focusBg="gray-900"
           value={sortBy}
           label={<span tw="text-gray-200">Sort by</span>}
-          onChange={value => {
-            setState(draft => {
-              draft.sortBy = value;
-            });
-            void searchData();
-          }}
+          onChange={updateSort}
           options={[
             {
               label: 'Best',
@@ -137,24 +88,12 @@ export function SolutionsTab() {
                   },
                   async () => {
                     await api.solution_deleteSolution(item.id);
-                    setState(draft => {
-                      draft.items = draft.items.filter(x => x.id !== item.id);
-                      draft.total--;
-                    });
+                    deleteSolution(item);
                   }
                 );
               }}
               updateSolution={() => {
-                solutionEditModalRef.current.open(item, item => {
-                  setState(draft => {
-                    draft.items = draft.items.map(current => {
-                      if (current.id === item.id) {
-                        return item;
-                      }
-                      return current;
-                    });
-                  });
-                });
+                solutionEditModalRef.current.open(item, updateSolution);
               }}
               item={item}
               key={item.id}
@@ -170,7 +109,7 @@ export function SolutionsTab() {
             focusBg="gray-900"
             loading={isLoadMore}
             onClick={() => {
-              void searchData(true);
+              void search(true);
             }}
           >
             Load More

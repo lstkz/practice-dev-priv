@@ -6,16 +6,17 @@ import {
 import { UserCollection } from '../../src/collections/User';
 import { updateSolution } from '../../src/contracts/solution/updateSolution';
 import { execContract, getId, setupDb } from '../helper';
-import { registerSampleUsers } from '../seed-data';
+import { createSampleChallenges, registerSampleUsers } from '../seed-data';
 
 setupDb();
 
 beforeEach(async () => {
   await registerSampleUsers();
+  await createSampleChallenges();
   await SolutionCollection.insertMany([
     {
       _id: getId(100),
-      challengeId: '1',
+      challengeId: '1_2',
       createdAt: new Date(1),
       score: 1,
       submissionId: getId(1000),
@@ -85,6 +86,10 @@ it('should update a solution', async () => {
               "id": "000000000000000000000001",
               "username": "user1",
             },
+            "challenge": Object {
+              "id": "1_2",
+              "title": "challenge 2",
+            },
             "createdAt": "1970-01-01T00:00:00.001Z",
             "id": "000000000000000000000100",
             "myScore": 2,
@@ -123,6 +128,10 @@ it('should update a solution as admin', async () => {
               "avatarId": undefined,
               "id": "000000000000000000000001",
               "username": "user1",
+            },
+            "challenge": Object {
+              "id": "1_2",
+              "title": "challenge 2",
             },
             "createdAt": "1970-01-01T00:00:00.001Z",
             "id": "000000000000000000000100",

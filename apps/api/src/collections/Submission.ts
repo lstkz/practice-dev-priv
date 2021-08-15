@@ -41,5 +41,14 @@ export const SubmissionCollection = createCollection<SubmissionModel>(
       },
       unique: true,
     },
+    {
+      key: { userId: 1 },
+    },
+    {
+      key: { challengeUniqId: 1 },
+    },
+    {
+      key: { createdAt: 1 },
+    },
   ]
 );
