@@ -70,8 +70,9 @@ export function MainMenu(props: MainMenuProps) {
     return (
       <Disclosure.Panel tw="sm:hidden">
         <div tw="px-2 pt-2 pb-3 space-y-1">
-          {navigation.map(item => (
+          {navigation.map((item, i) => (
             <MenuItem
+              key={i}
               href={item.href}
               comingSoon={item.comingSoon}
               current={router.pathname === item.href}
@@ -87,8 +88,9 @@ export function MainMenu(props: MainMenuProps) {
   return (
     <div tw="hidden sm:block sm:ml-6">
       <div tw="flex space-x-4">
-        {navigation.map(item => (
+        {navigation.map((item, i) => (
           <MenuItem
+            key={i}
             href={item.href}
             comingSoon={item.comingSoon}
             current={router.pathname === item.href}

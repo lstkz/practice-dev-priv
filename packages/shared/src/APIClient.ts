@@ -2,9 +2,10 @@ import fetch from 'cross-fetch';
 
 // IMPORTS
 import {
+  PaginatedResult,
+  Activity,
   AwsUploadContentAuth,
   ChallengeDetails,
-  PaginatedResult,
   Challenge,
   Module,
   Solution,
@@ -41,6 +42,13 @@ export class APIClient {
   }
 
   // SIGNATURES
+  activity_searchActivities(criteria: {
+    username: string;
+    limit: number;
+    offset: number;
+  }): Promise<PaginatedResult<Activity>> {
+    return this.call('activity.searchActivities', { criteria });
+  }
   aws_getAwsUploadContentAuth(): Promise<AwsUploadContentAuth> {
     return this.call('aws.getAwsUploadContentAuth', {});
   }
@@ -48,9 +56,9 @@ export class APIClient {
     return this.call('challenge.getChallenge', { id });
   }
   challenge_searchChallenges(criteria: {
-    moduleId: number;
     limit: number;
     offset: number;
+    moduleId: number;
   }): Promise<PaginatedResult<Challenge>> {
     return this.call('challenge.searchChallenges', { criteria });
   }
@@ -128,9 +136,9 @@ export class APIClient {
     return this.call('solution.getSolutionReadonlyWorkspace', { id });
   }
   solution_searchSolutions(criteria: {
-    challengeId: string;
     limit: number;
     offset: number;
+    challengeId: string;
     sortBy: SolutionSortBy;
   }): Promise<PaginatedResult<Solution>> {
     return this.call('solution.searchSolutions', { criteria });
@@ -240,8 +248,8 @@ export class APIClient {
     return this.call('user.logout', {});
   }
   user_register(values: {
-    email: string;
     username: string;
+    email: string;
     password: string;
   }): Promise<AuthData> {
     return this.call('user.register', { values });

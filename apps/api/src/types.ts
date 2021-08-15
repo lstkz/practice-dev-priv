@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { ExtractType } from 'shared';
 import { UserModel } from './collections/User';
 
 export type Handler = (req: Request, res: Response, next: NextFunction) => void;
@@ -104,6 +105,15 @@ export interface SolutionDeletedEvent {
   };
 }
 
+export interface ChallengeSolvedEvent {
+  type: 'ChallengeSolved';
+  payload: {
+    userId: string;
+    challengeId: string;
+    moduleId: number;
+  };
+}
+
 export type AppEvent =
   | UserRegisteredEvent
   | UserEmailVerifiedEvent
@@ -111,9 +121,8 @@ export type AppEvent =
   | SubmissionCreatedEvent
   | SubmissionPassedEvent
   | SolutionCreatedEvent
-  | SolutionDeletedEvent;
-
-type ExtractType<T> = T extends { type: infer S } ? S : never;
+  | SolutionDeletedEvent
+  | ChallengeSolvedEvent;
 
 export type AppEventType = ExtractType<Pick<AppEvent, 'type'>>;
 export type AppTaskType = ExtractType<Pick<AppTask, 'type'>>;
