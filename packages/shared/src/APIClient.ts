@@ -138,8 +138,9 @@ export class APIClient {
   solution_searchSolutions(criteria: {
     limit: number;
     offset: number;
-    challengeId: string;
     sortBy: SolutionSortBy;
+    username?: string | undefined;
+    challengeId?: string | undefined;
   }): Promise<PaginatedResult<Solution>> {
     return this.call('solution.searchSolutions', { criteria });
   }

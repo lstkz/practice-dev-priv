@@ -1,13 +1,8 @@
 import { S } from 'schema';
 import { Solution } from 'shared';
 import { SolutionCollection } from '../../collections/Solution';
-import {
-  createSolutionVoteId,
-  SolutionVoteCollection,
-} from '../../collections/SolutionVote';
-import { UserCollection } from '../../collections/User';
-import { mapSolution } from '../../common/mapper';
 import { createContract, createRpcBinding } from '../../lib';
+import { getSolution } from './getSolution';
 import { getSolutionWithAccessCheck } from './_common';
 
 export const updateSolution = createContract('solution.updateSolution')
@@ -24,13 +19,7 @@ export const updateSolution = createContract('solution.updateSolution')
     const solution = await getSolutionWithAccessCheck(solutionId, user);
     solution.title = values.title;
     await SolutionCollection.update(solution, ['title']);
-    const solutionUser = await UserCollection.findByIdOrThrow(solution.userId);
-    const voteId = createSolutionVoteId({
-      userId: user._id,
-      solutionId,
-    });
-    const solutionVote = await SolutionVoteCollection.findById(voteId);
-    return mapSolution(solution, solutionUser, solutionVote);
+    return getSolution(user, solutionId);
   });
 
 export const updateSolutionRpc = createRpcBinding({

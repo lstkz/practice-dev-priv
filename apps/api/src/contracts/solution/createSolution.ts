@@ -93,7 +93,7 @@ export const createSolution = createContract('solution.createSolution')
         solutionId: solution._id.toHexString(),
       },
     });
-    return mapSolution(solution, user, solutionVote);
+    return mapSolution(solution, user, challenge, solutionVote);
   });
 
 export const createSolutionRpc = createRpcBinding({

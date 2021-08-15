@@ -1,5 +1,6 @@
 import { S } from 'schema';
 import { Solution } from 'shared';
+import { ChallengeCollection } from '../../collections/Challenge';
 import { SolutionCollection } from '../../collections/Solution';
 import {
   createSolutionVoteId,
@@ -36,8 +37,11 @@ export const getSolution = createContract('solution.getSolution')
     if (!solution) {
       throw new AppError('Solution not found');
     }
-    const solutionUser = await UserCollection.findByIdOrThrow(solution.userId);
-    return mapSolution(solution, solutionUser, solutionVote);
+    const [solutionUser, challenge] = await Promise.all([
+      UserCollection.findByIdOrThrow(solution.userId),
+      ChallengeCollection.findByIdOrThrow(solution.challengeId),
+    ]);
+    return mapSolution(solution, solutionUser, challenge, solutionVote);
   });
 
 export const getSolutionRpc = createRpcBinding({

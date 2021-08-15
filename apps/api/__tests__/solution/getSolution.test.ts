@@ -5,16 +5,17 @@ import {
 } from '../../src/collections/SolutionVote';
 import { getSolution } from '../../src/contracts/solution/getSolution';
 import { execContract, getId, setupDb } from '../helper';
-import { registerSampleUsers } from '../seed-data';
+import { createSampleChallenges, registerSampleUsers } from '../seed-data';
 
 setupDb();
 
 beforeEach(async () => {
   await registerSampleUsers();
+  await createSampleChallenges();
   await SolutionCollection.insertMany([
     {
       _id: getId(100),
-      challengeId: '1',
+      challengeId: '1_2',
       createdAt: new Date(1),
       score: 3,
       submissionId: getId(1000),
@@ -52,6 +53,7 @@ it('should return a solution', async () => {
       {
         id: getId(100),
       },
+
       'user1_token'
     )
   ).toMatchInlineSnapshot(`
@@ -60,6 +62,10 @@ it('should return a solution', async () => {
         "avatarId": undefined,
         "id": "000000000000000000000001",
         "username": "user1",
+      },
+      "challenge": Object {
+        "id": "1_2",
+        "title": "challenge 2",
       },
       "createdAt": "1970-01-01T00:00:00.001Z",
       "id": "000000000000000000000100",
@@ -81,6 +87,10 @@ it('should return a solution as anonymous', async () => {
         "avatarId": undefined,
         "id": "000000000000000000000001",
         "username": "user1",
+      },
+      "challenge": Object {
+        "id": "1_2",
+        "title": "challenge 2",
       },
       "createdAt": "1970-01-01T00:00:00.001Z",
       "id": "000000000000000000000100",
