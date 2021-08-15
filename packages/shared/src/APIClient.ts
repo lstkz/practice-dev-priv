@@ -19,6 +19,7 @@ import {
   User,
   UserProfile,
   NotificationSettings,
+  UserPublicProfile,
   WorkspaceS3Auth,
 } from './types';
 // IMPORTS END
@@ -219,6 +220,9 @@ export class APIClient {
   }
   user_getNotificationSettings(): Promise<NotificationSettings> {
     return this.call('user.getNotificationSettings', {});
+  }
+  user_getPublicProfile(username: string): Promise<UserPublicProfile> {
+    return this.call('user.getPublicProfile', { username });
   }
   user_login(values: {
     password: string;

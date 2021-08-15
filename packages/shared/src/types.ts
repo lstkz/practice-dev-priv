@@ -275,3 +275,19 @@ export interface Challenge {
   isAttempted: boolean;
   stats: ChallengeStats;
 }
+
+export interface UserPublicProfile {
+  id: string;
+  username: string;
+  name: string;
+  avatarId?: string | null;
+  rank: number;
+  crypto: number;
+  solutions: number;
+  submissions: number;
+  followers: number;
+  following: number;
+  memberSince: string;
+  lastSeen: string;
+  about: string;
+}

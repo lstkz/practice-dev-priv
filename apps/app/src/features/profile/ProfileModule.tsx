@@ -2,23 +2,23 @@ import React from 'react';
 import { InferGetServerSidePropsType } from 'next';
 import { useImmer, createModuleContext, useActions } from 'context-api';
 import { ProfilePage } from './ProfilePage';
-import { createGetServerSideProps } from '../../common/helper';
+import { createGetServerSideProps, createSSRClient } from '../../common/helper';
+import { UserPublicProfile } from 'shared';
 
 interface Actions {
   test: () => void;
 }
 
 interface State {
-  foo: boolean;
+  profile: UserPublicProfile;
 }
 
 const [Provider, useContext] = createModuleContext<State, Actions>();
 
 export function ProfileModule(props: ProfileSSRProps) {
-  const {} = props;
   const [state] = useImmer<State>(
     {
-      foo: false,
+      profile: props.profile,
     },
     'ProfileModule'
   );
@@ -45,8 +45,13 @@ export type ProfileSSRProps = InferGetServerSidePropsType<
   typeof getServerSideProps
 >;
 
-export const getServerSideProps = createGetServerSideProps(async _ctx => {
+export const getServerSideProps = createGetServerSideProps(async ctx => {
+  const api = createSSRClient(ctx);
+  const username = ctx.query.username as string;
+  const profile = await api.user_getPublicProfile(username);
   return {
-    props: {},
+    props: {
+      profile,
+    },
   };
 });

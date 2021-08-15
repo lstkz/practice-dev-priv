@@ -12,7 +12,7 @@ import { FollowersTab } from './FollowersTab';
 
 export function ProfilePage() {
   const {} = useProfileActions();
-  const {} = useProfileState();
+  const { profile } = useProfileState();
   const [tab, setTab] = React.useState('overview');
   return (
     <Dashboard>
@@ -32,17 +32,17 @@ export function ProfilePage() {
                   {
                     name: 'solutions',
                     title: 'Solutions',
-                    count: 50,
+                    count: profile.solutions,
                   },
                   {
                     name: 'submissions',
                     title: 'Submissions',
-                    count: '2k',
+                    count: profile.submissions,
                   },
                   {
                     name: 'followers',
                     title: 'Followers',
-                    count: 100,
+                    count: profile.followers,
                   },
                 ]}
               />
