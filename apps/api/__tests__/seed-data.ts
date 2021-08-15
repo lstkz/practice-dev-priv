@@ -33,6 +33,8 @@ export async function registerSampleUsers(isVerified = true) {
       password: 'password1',
       isVerified: isVerified,
       subscribeNewsletter: true,
+      registeredAt: new Date(1),
+      lastSeenAt: new Date(2),
     }).then(() => createToken(getId(1), 'user1_token')),
     createUser({
       userId: getId(2),
@@ -40,6 +42,8 @@ export async function registerSampleUsers(isVerified = true) {
       email: 'user2@example.com',
       password: 'password2',
       isVerified: isVerified,
+      registeredAt: new Date(10),
+      lastSeenAt: new Date(20),
     }).then(() => createToken(getId(2), 'user2_token')),
   ]);
 }

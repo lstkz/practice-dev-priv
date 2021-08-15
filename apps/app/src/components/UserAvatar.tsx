@@ -3,7 +3,7 @@ import tw from 'twin.macro';
 
 interface UserAvatarProps {
   user: { username: string; avatarId?: string | null };
-  size?: 'xl' | 'md' | 'lg';
+  size?: 'xxl' | 'xl' | 'md' | 'lg';
 }
 
 export function UserAvatar(props: UserAvatarProps) {
@@ -11,7 +11,8 @@ export function UserAvatar(props: UserAvatarProps) {
   const sizeCss = [
     size === 'md' && tw`w-8 h-8`,
     size === 'lg' && tw`w-12 h-12`,
-    size === 'xl' && tw`w-32 h-32`,
+    size === 'xl' && tw`w-16 h-16`,
+    size === 'xxl' && tw`w-32 h-32`,
   ];
   return (
     <>

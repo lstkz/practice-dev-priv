@@ -95,7 +95,7 @@ export function UserPhoto() {
         </div>
         <div tw="hidden lg:block">
           <div tw="relative rounded-full overflow-hidden flex justify-center">
-            <UserAvatar user={user} size="xl" />
+            <UserAvatar user={user} size="xxl" />
           </div>
           {buttons}
         </div>

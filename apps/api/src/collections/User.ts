@@ -21,6 +21,8 @@ export interface UserModel {
   githubId?: number;
   profile?: UserProfile;
   notificationSettings?: NotificationSettings;
+  registeredAt: Date;
+  lastSeenAt: Date;
 }
 
 export const UserCollection = safeExtend(

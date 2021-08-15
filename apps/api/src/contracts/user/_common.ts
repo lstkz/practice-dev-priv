@@ -3,6 +3,7 @@ import {
   createPasswordHash,
   randomInt,
   randomUniqString,
+  getCurrentDate,
 } from '../../common/helper';
 import { UserCollection, UserModel } from '../../collections/User';
 import { ObjectID } from 'mongodb';
@@ -27,6 +28,8 @@ interface CreateUserValues {
   isVerified: boolean;
   githubId?: number;
   subscribeNewsletter?: boolean;
+  lastSeenAt?: Date;
+  registeredAt?: Date;
 }
 
 export async function createUser(
@@ -46,6 +49,8 @@ export async function createUser(
     password,
     isVerified: values.isVerified,
     githubId: values.githubId,
+    lastSeenAt: values.lastSeenAt ?? getCurrentDate(),
+    registeredAt: values.registeredAt ?? getCurrentDate(),
   };
   if (!user.githubId) {
     delete user.githubId;

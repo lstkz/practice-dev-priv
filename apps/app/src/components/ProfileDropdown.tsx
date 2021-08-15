@@ -66,7 +66,15 @@ export function ProfileDropdown() {
             >
               <Menu.Item>
                 {({ active }) => (
-                  <MenuLink active={active}>Your Profile</MenuLink>
+                  <MenuLink
+                    href={createUrl({
+                      name: 'profile',
+                      username: user.username,
+                    })}
+                    active={active}
+                  >
+                    Your Profile
+                  </MenuLink>
                 )}
               </Menu.Item>
               <Menu.Item>

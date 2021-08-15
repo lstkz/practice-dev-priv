@@ -13,6 +13,8 @@ function _createUser(username: string) {
     salt: '',
     password: '',
     isVerified: true,
+    lastSeenAt: new Date(0),
+    registeredAt: new Date(0),
   };
   return user;
 }
