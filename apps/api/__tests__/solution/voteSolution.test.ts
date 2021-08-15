@@ -123,17 +123,7 @@ it('should handle mixed votes', async () => {
 
       'user1_token'
     );
-  await Promise.all([
-    exec('up'),
-    exec('down'),
-    exec('up'),
-    exec('up'),
-    exec('down'),
-    exec('up'),
-    exec('down'),
-  ]);
-  // flaky
-  await new Promise(resolve => setTimeout(resolve, 10));
+  await Promise.all([exec('up'), exec('down'), exec('up')]);
   const solution = await SolutionCollection.findOne({});
   expect(solution?.score).toEqual(1);
 });
