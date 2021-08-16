@@ -18,6 +18,7 @@ import {
   SubmissionCollection,
   SubmissionModel,
 } from '../src/collections/Submission';
+import { UserModel } from '../src/collections/User';
 import { WorkspaceCollection } from '../src/collections/Workspace';
 import { WorkspaceNodeCollection } from '../src/collections/WorkspaceNode';
 import { getWorkspaceNodeWithUniqueKey } from '../src/common/workspace-tree';
@@ -27,25 +28,20 @@ import { getId, getUUID } from './helper';
 
 export async function registerSampleUsers(isVerified = true) {
   await Promise.all([
-    createUser({
-      userId: getId(1),
-      username: 'user1',
-      email: 'user1@example.com',
-      password: 'password1',
-      isVerified: isVerified,
-      subscribeNewsletter: true,
-      registeredAt: new Date(1),
-      lastSeenAt: new Date(2),
-    }).then(() => createToken(getId(1), 'user1_token')),
-    createUser({
-      userId: getId(2),
-      username: 'user2',
-      email: 'user2@example.com',
-      password: 'password2',
-      isVerified: isVerified,
-      registeredAt: new Date(10),
-      lastSeenAt: new Date(20),
-    }).then(() => createToken(getId(2), 'user2_token')),
+    createUser(
+      getUserValues(1, {
+        isVerified: isVerified,
+        registeredAt: new Date(1),
+        lastSeenAt: new Date(2),
+      })
+    ).then(() => createToken(getId(1), 'user1_token')),
+    createUser(
+      getUserValues(2, {
+        isVerified: isVerified,
+        registeredAt: new Date(10),
+        lastSeenAt: new Date(20),
+      })
+    ).then(() => createToken(getId(2), 'user2_token')),
   ]);
 }
 
@@ -364,6 +360,19 @@ export function getFollowerValues(
     targetUserId: getId(targetUserId),
     fromUserId: getId(fromUserId),
     createdAt: new Date(1),
+    ...values,
+  };
+}
+
+export function getUserValues(id: number, values: Partial<UserModel> = {}) {
+  return {
+    userId: getId(id),
+    username: 'user' + id,
+    email: `user${id}@example.com`,
+    password: 'password' + id,
+    isVerified: true,
+    registeredAt: new Date(1),
+    lastSeenAt: new Date(2),
     ...values,
   };
 }

@@ -27,7 +27,6 @@ interface CreateUserValues {
   password: string;
   isVerified: boolean;
   githubId?: number;
-  subscribeNewsletter?: boolean;
   lastSeenAt?: Date;
   registeredAt?: Date;
 }

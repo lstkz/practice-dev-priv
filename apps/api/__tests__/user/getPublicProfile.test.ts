@@ -32,7 +32,11 @@ beforeEach(async () => {
       },
     }
   );
-  await FollowerCollection.insertMany([getFollowerValues(1, 2)]);
+  await FollowerCollection.insertMany([
+    getFollowerValues(1, 2),
+    getFollowerValues(1, 3),
+    getFollowerValues(4, 1),
+  ]);
 });
 
 it('should throw if not found', async () => {
@@ -63,8 +67,8 @@ it('should return user1 (logged as user2)', async () => {
       "about": "about field",
       "avatarId": undefined,
       "crypto": 0,
-      "followers": 0,
-      "following": 0,
+      "followers": 1,
+      "following": 2,
       "id": "000000000000000000000001",
       "isFollowing": false,
       "lastSeen": "1970-01-01T00:00:00.002Z",
@@ -93,7 +97,7 @@ it('should return user2 (logged as user1)', async () => {
       "about": "",
       "avatarId": undefined,
       "crypto": 0,
-      "followers": 0,
+      "followers": 1,
       "following": 0,
       "id": "000000000000000000000002",
       "isFollowing": true,
@@ -118,8 +122,8 @@ it('should return user1 (anonymous)', async () => {
       "about": "about field",
       "avatarId": undefined,
       "crypto": 0,
-      "followers": 0,
-      "following": 0,
+      "followers": 1,
+      "following": 2,
       "id": "000000000000000000000001",
       "isFollowing": false,
       "lastSeen": "1970-01-01T00:00:00.002Z",

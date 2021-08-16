@@ -326,3 +326,11 @@ export interface ActivityRegistered {
 export type Activity = ActivityChallengeSolved | ActivityRegistered;
 
 export type ExtractType<T> = T extends { type: infer S } ? S : never;
+
+export interface Follower {
+  id: string;
+  username: string;
+  name: string;
+  avatarId?: string | null;
+  isFollowing: boolean;
+}
