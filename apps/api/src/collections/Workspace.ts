@@ -17,7 +17,7 @@ export interface WorkspaceS3Auth {
 export interface WorkspaceModel {
   _id: ObjectID;
   userId: ObjectID;
-  challengeUniqId: string;
+  challengeId: string;
   dedupKey?: string;
   isReady: boolean;
   s3Auth: WorkspaceS3Auth;
@@ -30,7 +30,7 @@ export const WorkspaceCollection = createCollection<WorkspaceModel>(
     {
       key: {
         userId: 1,
-        challengeUniqId: 1,
+        challengeId: 1,
       },
     },
     {

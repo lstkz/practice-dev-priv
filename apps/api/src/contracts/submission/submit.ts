@@ -50,7 +50,7 @@ export const submit = createContract('submission.submit')
       _id: new ObjectID(),
       userId: user._id,
       workspaceId: workspace._id,
-      challengeUniqId: workspace.challengeUniqId,
+      challengeId: workspace.challengeId,
       indexHtmlS3Key: values.indexHtmlS3Key,
       nodes,
       createdAt: getCurrentDate(),

@@ -20,7 +20,7 @@ export const updateStatsOnSubmissionCreated = createContract(
   .fn(async submissionId => {
     const submission = await SubmissionCollection.findByIdOrThrow(submissionId);
     const challenge = await ChallengeCollection.findByIdOrThrow(
-      submission.challengeUniqId
+      submission.challengeId
     );
     await withTransaction(async () => {
       const challengeAttemptId = getChallengeAttemptId({
@@ -40,7 +40,7 @@ export const updateStatsOnSubmissionCreated = createContract(
       }
       await ChallengeCollection.findOneAndUpdate(
         {
-          _id: submission.challengeUniqId,
+          _id: submission.challengeId,
         },
         {
           $inc: {

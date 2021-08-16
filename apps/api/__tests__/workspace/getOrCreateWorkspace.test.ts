@@ -38,7 +38,7 @@ it('should throw if challenge not found', async () => {
   await expect(
     execContract(
       getOrCreateWorkspace,
-      { values: { challengeUniqId: '12_32' } },
+      { values: { challengeId: '12_32' } },
       'user1_token'
     )
   ).rejects.toMatchInlineSnapshot(`[AppError: Challenge not found: 12_32]`);
@@ -47,7 +47,7 @@ it('should throw if challenge not found', async () => {
 it('should create a workspace', async () => {
   const ret = await execContract(
     getOrCreateWorkspace,
-    { values: { challengeUniqId: '1_2' } },
+    { values: { challengeId: '1_2' } },
     'user1_token'
   );
   expect(ret.items).toHaveLength(4);
@@ -57,7 +57,7 @@ it('should create a workspace and return the same files if parallel requests', a
   const exec = () =>
     execContract(
       getOrCreateWorkspace,
-      { values: { challengeUniqId: '1_2' } },
+      { values: { challengeId: '1_2' } },
       'user1_token'
     );
   const ret = await Promise.all([exec(), exec(), exec()]);
@@ -68,7 +68,7 @@ it('should create a workspace and return the same files if parallel requests', a
 it('should return an existing workspace', async () => {
   await WorkspaceCollection.insertOne({
     _id: getId(100),
-    challengeUniqId: '1_2',
+    challengeId: '1_2',
     dedupKey: `1_2_${getId(1)}_default`,
     isReady: true,
     userId: getId(1),
@@ -104,7 +104,7 @@ it('should return an existing workspace', async () => {
   ]);
   const ret = await execContract(
     getOrCreateWorkspace,
-    { values: { challengeUniqId: '1_2' } },
+    { values: { challengeId: '1_2' } },
     'user1_token'
   );
 

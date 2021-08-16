@@ -31,7 +31,7 @@ beforeEach(async () => {
   await SubmissionCollection.insertMany([
     {
       _id: getId(100),
-      challengeUniqId: '1_2',
+      challengeId: '1_2',
       createdAt: new Date(1),
       indexHtmlS3Key: 'index',
       isCloned: true,

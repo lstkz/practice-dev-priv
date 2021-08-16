@@ -107,7 +107,7 @@ export async function createSampleWorkspaces() {
   await WorkspaceCollection.insertMany([
     {
       _id: getId(10),
-      challengeUniqId: '1_2',
+      challengeId: '1_2',
       isReady: true,
       userId: getId(1),
       s3Auth: null!,
@@ -115,7 +115,7 @@ export async function createSampleWorkspaces() {
     },
     {
       _id: getId(11),
-      challengeUniqId: '1_2',
+      challengeId: '1_2',
       isReady: true,
       userId: getId(1),
       s3Auth: null!,
@@ -171,7 +171,7 @@ export async function createSampleSubmissions() {
   await SubmissionCollection.insertMany([
     {
       _id: getId(100),
-      challengeUniqId: '1_2',
+      challengeId: '1_2',
       createdAt: new Date(1),
       indexHtmlS3Key: 'index',
       isCloned: true,
@@ -194,7 +194,7 @@ export async function createSampleSubmissions() {
     },
     {
       _id: getId(101),
-      challengeUniqId: '1_2',
+      challengeId: '1_2',
       createdAt: new Date(2),
       indexHtmlS3Key: 'index',
       isCloned: true,
@@ -223,7 +223,7 @@ export function getSampleSubmissionValues(
   values: Partial<SubmissionModel> = {}
 ): SubmissionModel {
   const base = {
-    challengeUniqId: '1_2',
+    challengeId: '1_2',
     createdAt: new Date(1),
     indexHtmlS3Key: 'index',
     isCloned: true,
@@ -315,14 +315,14 @@ export function getSampleChallengeSolvedValues(
   values: Partial<ChallengeSolvedModel> = {}
 ) {
   const userId2 = getId(userId);
-  const challengeUniqId = moduleId + '_' + challengeModuleId;
+  const challengeId = moduleId + '_' + challengeModuleId;
   return {
     _id: getChallengeSolvedId({
       userId: userId2,
-      challengeId: challengeUniqId,
+      challengeId: challengeId,
     }),
     userId: userId2,
-    challengeId: challengeUniqId,
+    challengeId: challengeId,
     moduleId,
     ...values,
   };

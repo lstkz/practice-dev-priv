@@ -73,7 +73,7 @@ it('should submit successfully', async () => {
   const submission = await SubmissionCollection.findOne({});
   expect(R.omit(submission!, ['_id', 'notifyKey'])).toMatchInlineSnapshot(`
 Object {
-  "challengeUniqId": "1_2",
+  "challengeId": "1_2",
   "createdAt": 1970-01-01T00:00:00.001Z,
   "indexHtmlS3Key": "html",
   "isCloned": false,

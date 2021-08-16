@@ -305,7 +305,7 @@ export class APIClient {
     return this.call('workspace.deleteWorkspaceNode', { id });
   }
   workspace_getOrCreateWorkspace(values: {
-    challengeUniqId: string;
+    challengeId: string;
   }): Promise<Workspace> {
     return this.call('workspace.getOrCreateWorkspace', { values });
   }
