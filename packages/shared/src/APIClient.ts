@@ -7,6 +7,7 @@ import {
   AwsUploadContentAuth,
   ChallengeDetails,
   Challenge,
+  Follower,
   Module,
   Solution,
   Workspace,
@@ -86,6 +87,13 @@ export class APIClient {
   }
   follower_followUser(username: string): Promise<void> {
     return this.call('follower.followUser', { username });
+  }
+  follower_searchFollowers(criteria: {
+    username: string;
+    limit: number;
+    offset: number;
+  }): Promise<PaginatedResult<Follower>> {
+    return this.call('follower.searchFollowers', { criteria });
   }
   follower_unfollowUser(username: string): Promise<void> {
     return this.call('follower.unfollowUser', { username });

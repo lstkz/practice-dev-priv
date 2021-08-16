@@ -1,14 +1,13 @@
 import React from 'react';
 import { UserAvatar } from 'src/components/UserAvatar';
-import { Button } from '../../components/Button';
 import { useUser } from '../AuthModule';
+import { FollowButton } from './FollowButton';
 import { useProfileActions, useProfileState } from './ProfileModule';
 
 export function ProfileHeader() {
   const { profile } = useProfileState();
   const { follow, unfollow } = useProfileActions();
   const user = useUser();
-  const [isLoading, setIsLoading] = React.useState(false);
   return (
     <div tw="md:flex md:items-center md:justify-between md:space-x-5">
       <div tw="flex items-center space-x-5">
@@ -30,32 +29,16 @@ export function ProfileHeader() {
       </div>
       {user && user.id !== profile.id && (
         <div tw="mt-6 md:mt-0">
-          <Button
-            onClick={async () => {
-              try {
-                setIsLoading(true);
-                if (profile.isFollowing) {
-                  await unfollow();
-                } else {
-                  await follow();
-                }
-              } finally {
-                setIsLoading(false);
+          <FollowButton
+            isFollowing={profile.isFollowing}
+            onToggle={async () => {
+              if (profile.isFollowing) {
+                await unfollow();
+              } else {
+                await follow();
               }
             }}
-            type={profile.isFollowing ? 'white' : 'primary'}
-            loading={isLoading}
-            className="group"
-          >
-            {profile.isFollowing ? (
-              <>
-                <span tw="group-hover:hidden">Following</span>
-                <span tw="hidden group-hover:block">Unfollow</span>
-              </>
-            ) : (
-              'Follow'
-            )}
-          </Button>
+          />
         </div>
       )}
     </div>

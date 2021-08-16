@@ -1,81 +1,112 @@
-import Link from 'next/link';
+import { useImmer } from 'context-api';
 import React from 'react';
-import { createUrl } from '../../common/url';
+import { Follower } from 'shared';
+import { api } from 'src/services/api';
 import { Button } from '../../components/Button';
+import { useUser } from '../AuthModule';
+import { useErrorModalActions } from '../ErrorModalModule';
+import { FollowerItem } from './FollowerItem';
+import { useProfileState } from './ProfileModule';
+import { ProfileTabLoader } from './ProfileTabLoader';
 
-interface Follower {
-  name: string;
-  username: string;
-  imageUrl: string;
+interface State {
+  isLoaded: boolean;
+  isLoadMore: boolean;
+  total: number;
+  items: Follower[];
 }
 
-const followers: Follower[] = [
-  {
-    name: 'Ricardo Cooper',
-    username: 'user1',
-    imageUrl:
-      'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-  },
-  {
-    name: 'Ricardo Cooper',
-    username: 'user2',
-    imageUrl:
-      'https://images.unsplash.com/photo-1463453091185-61582044d556?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-  },
-  {
-    name: 'Ricardo Cooper',
-    username: 'user3',
-    imageUrl:
-      'https://images.unsplash.com/photo-1463453091185-61582044d556?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-  },
-  {
-    name: 'Ricardo Cooper',
-    username: 'user4',
-    imageUrl:
-      'https://images.unsplash.com/photo-1463453091185-61582044d556?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-  },
-  {
-    name: 'Ricardo Cooper',
-    username: 'user5',
-    imageUrl:
-      'https://images.unsplash.com/photo-1463453091185-61582044d556?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-  },
-];
-
 export function FollowersTab() {
+  const [state, setState, getState] = useImmer<State>(
+    {
+      isLoaded: false,
+      isLoadMore: false,
+      total: 0,
+      items: [],
+    },
+    'Followers'
+  );
+  const user = useUser();
+  const { profile } = useProfileState();
+  const { showError } = useErrorModalActions();
+  const search = async (loadMore?: boolean) => {
+    try {
+      const { items, total } = await api.follower_searchFollowers({
+        offset: loadMore ? getState().items.length : 0,
+        limit: 20,
+        username: profile.username,
+      });
+      setState(draft => {
+        draft.isLoaded = true;
+        draft.isLoadMore = false;
+        draft.total = total;
+        if (loadMore) {
+          draft.items.push(...items);
+        } else {
+          draft.items = items;
+        }
+      });
+    } catch (e) {
+      showError(e);
+      setState(draft => {
+        draft.isLoadMore = false;
+      });
+    }
+  };
+  const toggleFollow = async (follower: Follower) => {
+    try {
+      if (follower.isFollowing) {
+        await api.follower_unfollowUser(follower.username);
+      } else {
+        await api.follower_followUser(follower.username);
+      }
+      setState(draft => {
+        draft.items.forEach(item => {
+          if (item.id === follower.id) {
+            item.isFollowing = !item.isFollowing;
+          }
+        });
+      });
+    } catch (e) {
+      showError(e);
+    }
+  };
+  React.useEffect(() => {
+    void search(false);
+  }, []);
+  const { isLoadMore, isLoaded, items, total } = state;
+  if (!isLoaded) {
+    return <ProfileTabLoader />;
+  }
+  if (!total) {
+    return <div tw="text-center py-12 text-gray-700">No followers</div>;
+  }
   return (
     <div className="px-4 py-5 sm:px-6">
       <ul className="-my-5 divide-y divide-gray-200">
-        {followers.map((item, i) => (
-          <li key={i} className="py-4">
-            <div className="flex items-center space-x-4">
-              <div className="flex-shrink-0">
-                <img
-                  className="h-8 w-8 rounded-full"
-                  src={item.imageUrl}
-                  alt=""
-                />
-              </div>
-              <div className="flex-1 min-w-0">
-                <Link passHref href={createUrl({ name: 'challenge', id: '1' })}>
-                  <a tw="text-gray-800 font-semibold">{item.name}</a>
-                </Link>
-                <p className="text-sm font-medium text-gray-500 truncate leading-snug">
-                  @{item.username}
-                </p>
-              </div>
-              <div tw="flex items-center">
-                <Button type="primary">Follow</Button>
-              </div>
-            </div>
-          </li>
+        {items.map(item => (
+          <FollowerItem
+            toggleFollow={toggleFollow}
+            follower={item}
+            key={item.id}
+            loggedUser={user}
+          />
         ))}
       </ul>
-      <div className="mt-6 text-center">
-        <Button type="primary" tw="px-10">
-          Load More
-        </Button>
-      </div>
+      {total > items.length && (
+        <div className="mt-6">
+          <Button
+            type="primary"
+            tw="px-10"
+            loading={isLoadMore}
+            onClick={() => {
+              void search(true);
+            }}
+          >
+            Load More
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

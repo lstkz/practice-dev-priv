@@ -22,22 +22,29 @@ export const getPublicProfile = createContract('user.getPublicProfile')
     if (!viewUser) {
       throw new AppError('User not found');
     }
-    const [submissions, solutions, follower] = await Promise.all([
-      SubmissionCollection.countDocuments({
-        userId: viewUser._id,
-      }),
-      SolutionCollection.countDocuments({
-        userId: viewUser._id,
-      }),
-      !user
-        ? null
-        : FollowerCollection.findById(
-            createFollowerId({
-              fromUserId: user._id,
-              targetUserId: viewUser._id,
-            })
-          ),
-    ]);
+    const [submissions, solutions, currentFollower, followers, following] =
+      await Promise.all([
+        SubmissionCollection.countDocuments({
+          userId: viewUser._id,
+        }),
+        SolutionCollection.countDocuments({
+          userId: viewUser._id,
+        }),
+        !user
+          ? null
+          : FollowerCollection.findById(
+              createFollowerId({
+                fromUserId: user._id,
+                targetUserId: viewUser._id,
+              })
+            ),
+        FollowerCollection.countDocuments({
+          targetUserId: viewUser._id,
+        }),
+        FollowerCollection.countDocuments({
+          fromUserId: viewUser._id,
+        }),
+      ]);
 
     return {
       id: viewUser._id.toHexString(),
@@ -48,12 +55,12 @@ export const getPublicProfile = createContract('user.getPublicProfile')
       crypto: 0,
       solutions,
       submissions,
-      followers: 0,
-      following: 0,
+      followers,
+      following,
       memberSince: viewUser.registeredAt.toISOString(),
       lastSeen: viewUser.lastSeenAt.toISOString(),
       about: viewUser.profile?.about ?? '',
-      isFollowing: follower != null,
+      isFollowing: currentFollower != null,
     };
   });
 
