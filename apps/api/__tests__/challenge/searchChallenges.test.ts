@@ -62,6 +62,7 @@ it('should search modules', async () => {
           "isSolved": true,
           "moduleId": 1,
           "practiceTime": 10,
+          "slug": "1/challenge-1",
           "stats": Object {
             "passingSubmissions": 0,
             "solutions": 0,
@@ -79,6 +80,7 @@ it('should search modules', async () => {
           "isSolved": true,
           "moduleId": 1,
           "practiceTime": 10,
+          "slug": "1/challenge-2",
           "stats": Object {
             "passingSubmissions": 0,
             "solutions": 0,
@@ -96,6 +98,7 @@ it('should search modules', async () => {
           "isSolved": false,
           "moduleId": 1,
           "practiceTime": 10,
+          "slug": "1/challenge-3",
           "stats": Object {
             "passingSubmissions": 0,
             "solutions": 0,
@@ -131,6 +134,7 @@ it('should search modules as anonymous', async () => {
           "isSolved": false,
           "moduleId": 1,
           "practiceTime": 10,
+          "slug": "1/challenge-1",
           "stats": Object {
             "passingSubmissions": 0,
             "solutions": 0,
@@ -148,6 +152,7 @@ it('should search modules as anonymous', async () => {
           "isSolved": false,
           "moduleId": 1,
           "practiceTime": 10,
+          "slug": "1/challenge-2",
           "stats": Object {
             "passingSubmissions": 0,
             "solutions": 0,
@@ -165,6 +170,7 @@ it('should search modules as anonymous', async () => {
           "isSolved": false,
           "moduleId": 1,
           "practiceTime": 10,
+          "slug": "1/challenge-3",
           "stats": Object {
             "passingSubmissions": 0,
             "solutions": 0,

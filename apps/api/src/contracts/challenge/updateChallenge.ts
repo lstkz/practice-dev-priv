@@ -12,6 +12,7 @@ export const updateChallenge = createContract('challenge.updateChallenge')
       moduleId: S.number(),
       challengeModuleId: S.number(),
       title: S.string(),
+      slug: S.string(),
       description: S.string(),
       difficulty: S.string(),
       practiceTime: S.number(),

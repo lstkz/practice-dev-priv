@@ -18,6 +18,7 @@ it('should create a new module and update it', async () => {
       values: {
         id: 1,
         title: 't1',
+        slug: 't1',
         description: 'desc1',
         mainTechnology: 'tech1',
         difficulty: 'diff1',
@@ -33,6 +34,7 @@ Object {
   "description": "desc1",
   "difficulty": "diff1",
   "mainTechnology": "tech1",
+  "slug": "t1",
   "stats": Object {
     "enrolledUsers": 0,
   },
@@ -58,6 +60,7 @@ Object {
   await updateModule({
     id: 1,
     title: 't2',
+    slug: 't-2',
     description: 'desc2',
     mainTechnology: 'tech2',
     difficulty: 'diff2',
@@ -69,6 +72,7 @@ Object {
   "description": "desc2",
   "difficulty": "diff2",
   "mainTechnology": "tech2",
+  "slug": "t-2",
   "stats": Object {
     "enrolledUsers": 10,
   },
@@ -89,6 +93,7 @@ it('should throw if not admin', async () => {
         values: {
           id: 1,
           title: 't1',
+          slug: 't1',
           description: 'desc1',
           mainTechnology: 'tech1',
           difficulty: 'diff1',

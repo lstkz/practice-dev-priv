@@ -69,7 +69,7 @@ export function SolutionsTab() {
                     passHref
                     href={createUrl({
                       name: 'challenge',
-                      id: item.challenge.id,
+                      slug: item.challenge.slug,
                     })}
                   >
                     <a tw="text-gray-800 font-semibold">
@@ -91,7 +91,7 @@ export function SolutionsTab() {
                     type="white"
                     href={createUrl({
                       name: 'challenge',
-                      id: item.challenge.id,
+                      slug: item.challenge.slug,
                       solutionId: item.id,
                     })}
                   >

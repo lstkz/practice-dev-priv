@@ -55,6 +55,7 @@ export function mapSolution(
     challenge: {
       id: challenge._id,
       title: challenge.title,
+      slug: challenge.slug,
     },
   };
 }

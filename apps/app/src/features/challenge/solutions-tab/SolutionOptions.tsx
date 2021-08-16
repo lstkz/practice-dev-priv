@@ -5,7 +5,7 @@ import { Button, getBaseButtonStyles } from '../../../components/Button';
 import tw from 'twin.macro';
 import { useErrorModalActions } from 'src/features/ErrorModalModule';
 import { SolutionItemProps } from './SolutionItem';
-import { useChallengeActions, useChallengeState } from '../ChallengeModule';
+import { useChallengeActions } from '../ChallengeModule';
 import { createUrl } from 'src/common/url';
 
 interface MenuItemProps {
@@ -42,7 +42,6 @@ export function SolutionOptions(props: SolutionOptionsProps) {
   const { openSolution } = useChallengeActions();
   const { showError } = useErrorModalActions();
   const [isLoading, setIsLoading] = React.useState(false);
-  const { challenge } = useChallengeState();
   return (
     <span
       css={[
@@ -118,7 +117,7 @@ export function SolutionOptions(props: SolutionOptionsProps) {
                         window.location.origin +
                         createUrl({
                           name: 'challenge',
-                          id: challenge.id,
+                          slug: item.challenge.slug,
                           solutionId: item.id,
                         });
                       void navigator.clipboard.writeText(url);

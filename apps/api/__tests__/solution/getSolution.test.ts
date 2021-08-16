@@ -65,6 +65,7 @@ it('should return a solution', async () => {
       },
       "challenge": Object {
         "id": "1_2",
+        "slug": "challenge-2",
         "title": "challenge 2",
       },
       "createdAt": "1970-01-01T00:00:00.001Z",
@@ -90,6 +91,7 @@ it('should return a solution as anonymous', async () => {
       },
       "challenge": Object {
         "id": "1_2",
+        "slug": "challenge-2",
         "title": "challenge 2",
       },
       "createdAt": "1970-01-01T00:00:00.001Z",

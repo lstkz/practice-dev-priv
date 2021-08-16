@@ -53,8 +53,11 @@ export class APIClient {
   aws_getAwsUploadContentAuth(): Promise<AwsUploadContentAuth> {
     return this.call('aws.getAwsUploadContentAuth', {});
   }
-  challenge_getChallenge(id: string): Promise<ChallengeDetails> {
-    return this.call('challenge.getChallenge', { id });
+  challenge_getChallenge(values: {
+    id?: string | undefined;
+    slug?: string | undefined;
+  }): Promise<ChallengeDetails> {
+    return this.call('challenge.getChallenge', { values });
   }
   challenge_searchChallenges(criteria: {
     limit: number;
@@ -64,9 +67,10 @@ export class APIClient {
     return this.call('challenge.searchChallenges', { criteria });
   }
   challenge_updateChallenge(values: {
+    slug: string;
     challengeModuleId: number;
-    moduleId: number;
     title: string;
+    moduleId: number;
     description: string;
     difficulty: string;
     practiceTime: number;
@@ -98,8 +102,11 @@ export class APIClient {
   follower_unfollowUser(username: string): Promise<void> {
     return this.call('follower.unfollowUser', { username });
   }
-  module_getModule(id: number): Promise<Module> {
-    return this.call('module.getModule', { id });
+  module_getModule(values: {
+    id?: number | undefined;
+    slug?: string | undefined;
+  }): Promise<Module> {
+    return this.call('module.getModule', { values });
   }
   module_searchModules(criteria: {
     limit: number;
@@ -109,6 +116,7 @@ export class APIClient {
   }
   module_updateModule(values: {
     id: number;
+    slug: string;
     title: string;
     description: string;
     difficulty: string;

@@ -68,14 +68,14 @@ function useSyncSolutionUrl(
       void router.replace(
         createUrl({
           name: 'challenge',
-          id: challenge.id,
+          slug: challenge.slug,
         })
       );
     } else if (solution) {
       void router.replace(
         createUrl({
           name: 'challenge',
-          id: challenge.id,
+          slug: challenge.slug,
           solutionId: solution.id,
         })
       );
@@ -221,14 +221,17 @@ export const getServerSideProps = createGetServerSideProps(async ctx => {
   const solutionId = ctx.query.solutionId;
   const api = createSSRClient(ctx);
   const isLogged = api.hasToken();
-  const id = ctx.query.id as string;
-  const [workspace, challenge, initialSolution] = await Promise.all([
+  const moduleSlug = ctx.query.moduleSlug as string;
+  const slug = ctx.query.slug as string;
+  const challenge = await api.challenge_getChallenge({
+    slug: moduleSlug + '/challenge/' + slug,
+  });
+  const [workspace, initialSolution] = await Promise.all([
     isLogged
       ? api.workspace_getOrCreateWorkspace({
-          challengeId: id,
+          challengeId: challenge.id,
         })
       : null!,
-    api.challenge_getChallenge(id),
     doFn(async () => {
       if (!solutionId || typeof solutionId !== 'string' || !isLogged) {
         return null;

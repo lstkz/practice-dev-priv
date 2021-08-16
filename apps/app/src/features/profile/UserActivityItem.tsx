@@ -65,11 +65,11 @@ export function UserActivityItem(props: UserActivityItemProps) {
         return (
           <>
             Solved a challenge{' '}
-            <Link href={createUrl({ name: 'challenge', id: challenge.id })}>
+            <Link href={createUrl({ name: 'challenge', slug: challenge.slug })}>
               <a>{challenge.title}</a>
             </Link>
             {' in '}
-            <Link href={createUrl({ name: 'module', id: module.id })}>
+            <Link href={createUrl({ name: 'module', slug: module.slug })}>
               <a>{module.title}</a>
             </Link>
           </>

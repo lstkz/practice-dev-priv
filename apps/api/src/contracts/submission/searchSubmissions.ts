@@ -63,6 +63,7 @@ export const searchSubmissions = createContract('submission.searchSubmissions')
           challenge: {
             id: challenge._id,
             title: challenge.title,
+            slug: challenge.slug,
           },
         };
       }),

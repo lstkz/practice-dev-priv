@@ -8,7 +8,7 @@ import Link from 'next/link';
 import React from 'react';
 import { Challenge } from 'shared';
 import { doFn } from 'src/common/helper';
-import { createUrl } from '../../common/url';
+import { createUrl } from 'src/common/url';
 import Badge from '../../components/Badge';
 import DotBadge from '../../components/DotBadge';
 import { IconStats } from '../../components/IconStats';
@@ -24,7 +24,10 @@ export function ChallengeListItem(props: ChallengeListItemProps) {
     <li>
       <Link
         passHref
-        href={createUrl({ name: 'challenge', id: item.id.toString() })}
+        href={createUrl({
+          name: 'challenge',
+          slug: item.slug,
+        })}
       >
         <a tw="block hover:bg-gray-50 focus:( outline-none bg-gray-100 ) ">
           <div tw="px-4 py-4 sm:px-6">

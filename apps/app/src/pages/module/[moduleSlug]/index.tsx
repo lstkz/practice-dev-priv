@@ -1,4 +1,4 @@
 export {
   ModuleModule as default,
   getServerSideProps,
-} from '../../features/module/ModuleModule';
+} from '../../../features/module/ModuleModule';

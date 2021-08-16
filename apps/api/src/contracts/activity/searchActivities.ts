@@ -72,10 +72,12 @@ async function _mapChallengeSolved(items: ActivityModel[]) {
             title: challenge.title,
             moduleId: challenge.moduleId,
             challengeModuleId: challenge.challengeModuleId,
+            slug: challenge.slug,
           },
           module: {
             id: module._id,
             title: module.title,
+            slug: module.slug,
           },
         },
       };

@@ -118,8 +118,9 @@ export interface NotificationSettings {
 export interface ChallengeDetails {
   id: string;
   challengeModuleId: number;
-  moduleId: number;
   title: string;
+  slug: string;
+  moduleId: number;
   description: string;
   difficulty: string;
   practiceTime: number;
@@ -186,6 +187,7 @@ export interface Submission {
   challenge: {
     id: string;
     title: string;
+    slug: string;
   };
 }
 
@@ -232,6 +234,7 @@ export interface Solution {
   challenge: {
     id: string;
     title: string;
+    slug: string;
   };
 }
 
@@ -260,6 +263,7 @@ export interface ModuleStats {
 export interface Module {
   id: number;
   title: string;
+  slug: string;
   description: string;
   tags: string[];
   difficulty: string;
@@ -276,6 +280,7 @@ export interface Challenge {
   moduleId: number;
   challengeModuleId: number;
   title: string;
+  slug: string;
   description: string;
   difficulty: string;
   practiceTime: number;
@@ -308,12 +313,14 @@ export interface ActivityChallengeSolved {
     module: {
       id: number;
       title: string;
+      slug: string;
     };
     challenge: {
       id: string;
       moduleId: number;
       challengeModuleId: number;
       title: string;
+      slug: string;
     };
   };
 }

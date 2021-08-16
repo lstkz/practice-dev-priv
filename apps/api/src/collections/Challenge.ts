@@ -12,6 +12,7 @@ export interface ChallengeModel {
   _id: string;
   moduleId: number;
   challengeModuleId: number;
+  slug: string;
   title: string;
   description: string;
   difficulty: string;
@@ -33,6 +34,12 @@ export const ChallengeCollection = createCollection<ChallengeModel>(
       key: {
         challengeModuleId: 1,
         moduleId: 1,
+      },
+      unique: true,
+    },
+    {
+      key: {
+        slug: 1,
       },
       unique: true,
     },

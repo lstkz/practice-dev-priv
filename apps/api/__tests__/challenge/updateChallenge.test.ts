@@ -11,6 +11,7 @@ beforeEach(async () => {
   await updateModule({
     id: 1,
     title: 't1',
+    slug: 't1',
     description: 'desc1',
     mainTechnology: 'tech1',
     difficulty: 'diff1',
@@ -23,6 +24,7 @@ function getValidValues() {
     moduleId: 1,
     challengeModuleId: 1,
     title: 't1',
+    slug: 't1',
     description: 'desc1',
     difficulty: 'diff1',
     detailsS3Key: 'd_s3',
@@ -106,6 +108,7 @@ it('should create a new challenge and update it', async () => {
       ],
       "moduleId": 1,
       "practiceTime": 10,
+      "slug": "t1",
       "solutionUrl": "sol",
       "stats": Object {
         "passingSubmissions": 0,
@@ -132,6 +135,7 @@ it('should create a new challenge and update it', async () => {
     moduleId: 1,
     challengeModuleId: 1,
     title: 't1x',
+    slug: 't1-x',
     description: 'desc1x',
     difficulty: 'diff1x',
     detailsS3Key: 'd_s3x',
@@ -178,6 +182,7 @@ it('should create a new challenge and update it', async () => {
       "libraries": Array [],
       "moduleId": 1,
       "practiceTime": 20,
+      "slug": "t1-x",
       "solutionUrl": "sol2",
       "stats": Object {
         "passingSubmissions": 2,

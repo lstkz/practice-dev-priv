@@ -26,26 +26,57 @@ beforeEach(async () => {
   ]);
 });
 
-it('should throw if module not found', async () => {
+it('should throw if module no values', async () => {
   await expect(
     execContract(
       getModule,
       {
-        id: 100,
+        values: {},
       },
 
+      'user1_token'
+    )
+  ).rejects.toMatchInlineSnapshot(`[AppError: id or slug required]`);
+});
+
+it('should throw if module not found by id', async () => {
+  await expect(
+    execContract(
+      getModule,
+      {
+        values: {
+          id: 100,
+        },
+      },
       'user1_token'
     )
   ).rejects.toMatchInlineSnapshot(`[AppError: Module not found]`);
 });
 
-it('should return a module', async () => {
+it('should throw if module not found by slug', async () => {
+  await expect(
+    execContract(
+      getModule,
+      {
+        values: {
+          slug: 'aaaaa',
+        },
+      },
+      'user1_token'
+    )
+  ).rejects.toMatchInlineSnapshot(`[AppError: Module not found]`);
+});
+
+it('should return a module by id', async () => {
   expect(
     await execContract(
       getModule,
       {
-        id: 1,
+        values: {
+          id: 1,
+        },
       },
+
       'user1_token'
     )
   ).toMatchInlineSnapshot(`
@@ -55,6 +86,39 @@ it('should return a module', async () => {
       "id": 1,
       "isAttempted": false,
       "mainTechnology": "react",
+      "slug": "m-1",
+      "solvedChallenges": 1,
+      "stats": Object {
+        "enrolledUsers": 0,
+      },
+      "tags": Array [],
+      "title": "module1",
+      "totalChallenges": 2,
+      "totalTime": 20,
+    }
+  `);
+});
+
+it('should return a module by slug', async () => {
+  expect(
+    await execContract(
+      getModule,
+      {
+        values: {
+          slug: 'm-1',
+        },
+      },
+
+      'user1_token'
+    )
+  ).toMatchInlineSnapshot(`
+    Object {
+      "description": "desc",
+      "difficulty": "easy",
+      "id": 1,
+      "isAttempted": false,
+      "mainTechnology": "react",
+      "slug": "m-1",
       "solvedChallenges": 1,
       "stats": Object {
         "enrolledUsers": 0,
@@ -70,7 +134,9 @@ it('should return a module', async () => {
 it('should return a module as anonymous', async () => {
   expect(
     await execContract(getModule, {
-      id: 1,
+      values: {
+        id: 1,
+      },
     })
   ).toMatchInlineSnapshot(`
     Object {
@@ -79,6 +145,7 @@ it('should return a module as anonymous', async () => {
       "id": 1,
       "isAttempted": false,
       "mainTechnology": "react",
+      "slug": "m-1",
       "solvedChallenges": 0,
       "stats": Object {
         "enrolledUsers": 0,

@@ -3,16 +3,30 @@ import { S } from 'schema';
 import { ChallengeDetails } from 'shared';
 import { ChallengeCollection } from '../../collections/Challenge';
 import { AppError } from '../../common/errors';
+import { doFn } from '../../common/helper';
 import { createContract, createRpcBinding } from '../../lib';
 
 export const getChallenge = createContract('challenge.getChallenge')
-  .params('id')
+  .params('values')
   .schema({
-    id: S.string(),
+    values: S.object().keys({
+      id: S.string().optional(),
+      slug: S.string().optional(),
+    }),
   })
   .returns<ChallengeDetails>()
-  .fn(async id => {
-    const challenge = await ChallengeCollection.findById(id);
+  .fn(async values => {
+    if (!values.id && !values.slug) {
+      throw new AppError('id or slug required');
+    }
+    const challenge = await doFn(async () => {
+      if (values.id) {
+        return ChallengeCollection.findById(values.id);
+      }
+      return ChallengeCollection.findOne({
+        slug: values.slug,
+      });
+    });
     if (!challenge) {
       throw new AppError('Challenge not found');
     }
@@ -20,8 +34,9 @@ export const getChallenge = createContract('challenge.getChallenge')
       id: challenge._id,
       ...R.pick(challenge, [
         'challengeModuleId',
-        'moduleId',
         'title',
+        'slug',
+        'moduleId',
         'description',
         'difficulty',
         'practiceTime',

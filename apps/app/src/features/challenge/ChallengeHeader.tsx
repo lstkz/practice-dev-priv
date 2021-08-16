@@ -57,7 +57,7 @@ export function ChallengeHeader() {
         tw="h-5"
         href={createUrl({
           name: 'module',
-          id: challenge.moduleId,
+          slug: challenge.slug.split('/')[0],
         })}
       />
       <div tw="ml-auto">

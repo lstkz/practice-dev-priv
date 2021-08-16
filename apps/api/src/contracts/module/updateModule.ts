@@ -9,6 +9,7 @@ export const updateModule = createContract('module.updateModule')
     values: S.object().keys({
       id: S.number(),
       title: S.string(),
+      slug: S.string(),
       description: S.string(),
       mainTechnology: S.string(),
       difficulty: S.string(),
