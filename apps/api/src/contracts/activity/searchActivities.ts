@@ -70,7 +70,8 @@ async function _mapChallengeSolved(items: ActivityModel[]) {
           challenge: {
             id: challenge._id,
             title: challenge.title,
-            challengeId: challenge.challengeId,
+            moduleId: challenge.moduleId,
+            challengeModuleId: challenge.challengeModuleId,
           },
           module: {
             id: module._id,

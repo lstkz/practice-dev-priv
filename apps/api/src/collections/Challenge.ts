@@ -10,8 +10,8 @@ export interface ChallengeFile {
 
 export interface ChallengeModel {
   _id: string;
-  challengeId: number;
   moduleId: number;
+  challengeModuleId: number;
   title: string;
   description: string;
   difficulty: string;
@@ -31,7 +31,7 @@ export const ChallengeCollection = createCollection<ChallengeModel>(
   [
     {
       key: {
-        challengeId: 1,
+        challengeModuleId: 1,
         moduleId: 1,
       },
       unique: true,

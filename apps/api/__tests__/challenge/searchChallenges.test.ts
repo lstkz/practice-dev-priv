@@ -47,13 +47,14 @@ it('should search modules', async () => {
           offset: 0,
         },
       },
+
       'user1_token'
     )
   ).toMatchInlineSnapshot(`
     Object {
       "items": Array [
         Object {
-          "challengeId": 1,
+          "challengeModuleId": 1,
           "description": "desc",
           "difficulty": "easy",
           "id": "1_1",
@@ -70,7 +71,7 @@ it('should search modules', async () => {
           "title": "challenge 1",
         },
         Object {
-          "challengeId": 2,
+          "challengeModuleId": 2,
           "description": "desc",
           "difficulty": "easy",
           "id": "1_2",
@@ -87,7 +88,7 @@ it('should search modules', async () => {
           "title": "challenge 2",
         },
         Object {
-          "challengeId": 3,
+          "challengeModuleId": 3,
           "description": "desc",
           "difficulty": "easy",
           "id": "1_3",
@@ -122,7 +123,7 @@ it('should search modules as anonymous', async () => {
     Object {
       "items": Array [
         Object {
-          "challengeId": 1,
+          "challengeModuleId": 1,
           "description": "desc",
           "difficulty": "easy",
           "id": "1_1",
@@ -139,7 +140,7 @@ it('should search modules as anonymous', async () => {
           "title": "challenge 1",
         },
         Object {
-          "challengeId": 2,
+          "challengeModuleId": 2,
           "description": "desc",
           "difficulty": "easy",
           "id": "1_2",
@@ -156,7 +157,7 @@ it('should search modules as anonymous', async () => {
           "title": "challenge 2",
         },
         Object {
-          "challengeId": 3,
+          "challengeModuleId": 3,
           "description": "desc",
           "difficulty": "easy",
           "id": "1_3",

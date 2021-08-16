@@ -22,7 +22,7 @@ export const searchChallenges = createContract('challenge.searchChallenges')
     const [items, total] = await Promise.all([
       ChallengeCollection.find(filter)
         .sort({
-          challengeId: 1,
+          challengeModuleId: 1,
         })
         .skip(criteria.offset)
         .limit(criteria.limit)
