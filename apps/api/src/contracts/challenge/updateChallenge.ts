@@ -4,7 +4,6 @@ import { createContract, createRpcBinding } from '../../lib';
 import { getChallengeId } from '../../common/helper';
 import { ModuleCollection } from '../../collections/Module';
 import { AppError } from '../../common/errors';
-import { SLUG_REGEX } from 'shared';
 
 export const updateChallenge = createContract('challenge.updateChallenge')
   .params('values')
@@ -13,7 +12,7 @@ export const updateChallenge = createContract('challenge.updateChallenge')
       moduleId: S.number(),
       challengeModuleId: S.number(),
       title: S.string(),
-      slug: S.string().regex(SLUG_REGEX),
+      slug: S.string(),
       description: S.string(),
       difficulty: S.string(),
       practiceTime: S.number(),

@@ -69,11 +69,15 @@ export type ModuleSSRProps = InferGetServerSidePropsType<
 
 export const getServerSideProps = createGetServerSideProps(async ctx => {
   const api = createSSRClient(ctx);
-  const id = Number(ctx.query.id as string);
-  const [module, searchResult] = await Promise.all([
-    api.module_getModule(id),
-    api.challenge_searchChallenges({ limit: 100, offset: 0, moduleId: id }),
-  ]);
+  const moduleSlug = ctx.query.moduleSlug as string;
+  const module = await api.module_getModule({
+    slug: moduleSlug,
+  });
+  const searchResult = await api.challenge_searchChallenges({
+    limit: 100,
+    offset: 0,
+    moduleId: module.id,
+  });
   return {
     props: {
       module,

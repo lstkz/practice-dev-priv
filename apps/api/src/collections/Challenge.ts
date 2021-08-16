@@ -39,7 +39,6 @@ export const ChallengeCollection = createCollection<ChallengeModel>(
     },
     {
       key: {
-        moduleId: 1,
         slug: 1,
       },
       unique: true,

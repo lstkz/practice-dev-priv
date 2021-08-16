@@ -299,7 +299,7 @@ export function getSampleChallengeValues(
     moduleId: moduleId,
     practiceTime: 10,
     title: 'challenge ' + challengeModuleId,
-    slug: 'challenge-' + challengeModuleId,
+    slug: moduleId + '/challenge-' + challengeModuleId,
     libraries: [],
     tests: [],
     stats: {

@@ -105,6 +105,7 @@ describe('by challenge id', () => {
             },
             "challenge": Object {
               "id": "1_1",
+              "slug": "1/challenge-1",
               "title": "challenge 1",
             },
             "createdAt": "1970-01-01T00:00:00.004Z",
@@ -121,6 +122,7 @@ describe('by challenge id', () => {
             },
             "challenge": Object {
               "id": "1_1",
+              "slug": "1/challenge-1",
               "title": "challenge 1",
             },
             "createdAt": "1970-01-01T00:00:00.003Z",
@@ -137,6 +139,7 @@ describe('by challenge id', () => {
             },
             "challenge": Object {
               "id": "1_1",
+              "slug": "1/challenge-1",
               "title": "challenge 1",
             },
             "createdAt": "1970-01-01T00:00:00.002Z",
@@ -153,6 +156,7 @@ describe('by challenge id', () => {
             },
             "challenge": Object {
               "id": "1_1",
+              "slug": "1/challenge-1",
               "title": "challenge 1",
             },
             "createdAt": "1970-01-01T00:00:00.001Z",
@@ -193,6 +197,7 @@ describe('by challenge id', () => {
             },
             "challenge": Object {
               "id": "1_1",
+              "slug": "1/challenge-1",
               "title": "challenge 1",
             },
             "createdAt": "1970-01-01T00:00:00.001Z",
@@ -209,6 +214,7 @@ describe('by challenge id', () => {
             },
             "challenge": Object {
               "id": "1_1",
+              "slug": "1/challenge-1",
               "title": "challenge 1",
             },
             "createdAt": "1970-01-01T00:00:00.002Z",
@@ -225,6 +231,7 @@ describe('by challenge id', () => {
             },
             "challenge": Object {
               "id": "1_1",
+              "slug": "1/challenge-1",
               "title": "challenge 1",
             },
             "createdAt": "1970-01-01T00:00:00.003Z",
@@ -241,6 +248,7 @@ describe('by challenge id', () => {
             },
             "challenge": Object {
               "id": "1_1",
+              "slug": "1/challenge-1",
               "title": "challenge 1",
             },
             "createdAt": "1970-01-01T00:00:00.004Z",
@@ -281,6 +289,7 @@ describe('by challenge id', () => {
             },
             "challenge": Object {
               "id": "1_1",
+              "slug": "1/challenge-1",
               "title": "challenge 1",
             },
             "createdAt": "1970-01-01T00:00:00.003Z",
@@ -297,6 +306,7 @@ describe('by challenge id', () => {
             },
             "challenge": Object {
               "id": "1_1",
+              "slug": "1/challenge-1",
               "title": "challenge 1",
             },
             "createdAt": "1970-01-01T00:00:00.004Z",
@@ -313,6 +323,7 @@ describe('by challenge id', () => {
             },
             "challenge": Object {
               "id": "1_1",
+              "slug": "1/challenge-1",
               "title": "challenge 1",
             },
             "createdAt": "1970-01-01T00:00:00.002Z",
@@ -329,6 +340,7 @@ describe('by challenge id', () => {
             },
             "challenge": Object {
               "id": "1_1",
+              "slug": "1/challenge-1",
               "title": "challenge 1",
             },
             "createdAt": "1970-01-01T00:00:00.001Z",
@@ -369,6 +381,7 @@ describe('by challenge id', () => {
             },
             "challenge": Object {
               "id": "1_1",
+              "slug": "1/challenge-1",
               "title": "challenge 1",
             },
             "createdAt": "1970-01-01T00:00:00.002Z",
@@ -385,6 +398,7 @@ describe('by challenge id', () => {
             },
             "challenge": Object {
               "id": "1_1",
+              "slug": "1/challenge-1",
               "title": "challenge 1",
             },
             "createdAt": "1970-01-01T00:00:00.003Z",
@@ -401,6 +415,7 @@ describe('by challenge id', () => {
             },
             "challenge": Object {
               "id": "1_1",
+              "slug": "1/challenge-1",
               "title": "challenge 1",
             },
             "createdAt": "1970-01-01T00:00:00.004Z",
@@ -441,6 +456,7 @@ describe('by challenge id', () => {
             },
             "challenge": Object {
               "id": "1_1",
+              "slug": "1/challenge-1",
               "title": "challenge 1",
             },
             "createdAt": "1970-01-01T00:00:00.001Z",
@@ -457,6 +473,7 @@ describe('by challenge id', () => {
             },
             "challenge": Object {
               "id": "1_1",
+              "slug": "1/challenge-1",
               "title": "challenge 1",
             },
             "createdAt": "1970-01-01T00:00:00.002Z",
@@ -521,6 +538,7 @@ describe('by challenge id', () => {
             },
             "challenge": Object {
               "id": "1_1",
+              "slug": "1/challenge-1",
               "title": "challenge 1",
             },
             "createdAt": "1970-01-01T00:00:00.001Z",
@@ -537,6 +555,7 @@ describe('by challenge id', () => {
             },
             "challenge": Object {
               "id": "1_1",
+              "slug": "1/challenge-1",
               "title": "challenge 1",
             },
             "createdAt": "1970-01-01T00:00:00.002Z",
@@ -572,6 +591,7 @@ describe('by challenge id', () => {
             },
             "challenge": Object {
               "id": "1_1",
+              "slug": "1/challenge-1",
               "title": "challenge 1",
             },
             "createdAt": "1970-01-01T00:00:00.001Z",
@@ -588,6 +608,7 @@ describe('by challenge id', () => {
             },
             "challenge": Object {
               "id": "1_1",
+              "slug": "1/challenge-1",
               "title": "challenge 1",
             },
             "createdAt": "1970-01-01T00:00:00.002Z",
@@ -643,6 +664,7 @@ describe('by username', () => {
             },
             "challenge": Object {
               "id": "1_1",
+              "slug": "1/challenge-1",
               "title": "challenge 1",
             },
             "createdAt": "1970-01-01T00:00:00.003Z",
@@ -659,6 +681,7 @@ describe('by username', () => {
             },
             "challenge": Object {
               "id": "1_1",
+              "slug": "1/challenge-1",
               "title": "challenge 1",
             },
             "createdAt": "1970-01-01T00:00:00.002Z",
@@ -675,6 +698,7 @@ describe('by username', () => {
             },
             "challenge": Object {
               "id": "1_1",
+              "slug": "1/challenge-1",
               "title": "challenge 1",
             },
             "createdAt": "1970-01-01T00:00:00.001Z",

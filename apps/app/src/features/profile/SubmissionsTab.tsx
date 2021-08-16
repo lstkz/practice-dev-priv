@@ -57,7 +57,7 @@ export function SubmissionsTab() {
                     passHref
                     href={createUrl({
                       name: 'challenge',
-                      id: item.challenge.id,
+                      slug: item.challenge.slug,
                     })}
                   >
                     <a tw="text-gray-800 font-semibold">

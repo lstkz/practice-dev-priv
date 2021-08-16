@@ -65,6 +65,7 @@ export async function populateChallenges(
         'difficulty',
         'practiceTime',
         'stats',
+        'slug',
       ]),
       isAttempted: attemptedStatsMap[item._id] ?? false,
       isSolved: solvedStatsMap[item._id] ?? false,

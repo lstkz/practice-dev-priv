@@ -28,11 +28,11 @@ export type UrlOptions =
     }
   | {
       name: 'module';
-      id: number;
+      slug: string;
     }
   | {
       name: 'challenge';
-      id: string;
+      slug: string;
       solutionId?: string;
     }
   | {
@@ -51,13 +51,13 @@ export function createUrl(options: UrlOptions) {
     case 'tos':
       return '/terms';
     case 'module':
-      return '/module/' + options.id;
+      return '/module/' + options.slug;
     case 'profile':
       return '/profile/' + options.username;
     case 'settings':
       return options.sub ? '/settings/' + options.sub : '/settings';
     case 'challenge': {
-      let url = `/challenge/${options.id}`;
+      let url = `/module/${options.slug}`;
       if (options.solutionId) {
         url += '?solutionId=' + options.solutionId;
       }

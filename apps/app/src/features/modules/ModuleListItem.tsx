@@ -18,7 +18,7 @@ export function ModuleListItem(props: ModuleListItemProps) {
   const allTags = [item.mainTechnology, ...item.tags, item.difficulty];
   return (
     <li>
-      <Link passHref href={createUrl({ name: 'module', id: item.id })}>
+      <Link passHref href={createUrl({ name: 'module', slug: item.slug })}>
         <a tw="block hover:bg-gray-50 focus:( outline-none bg-gray-100 ) ">
           <div tw="px-4 py-4 sm:px-6">
             <div tw="flex items-center justify-between">

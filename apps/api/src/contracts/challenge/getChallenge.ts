@@ -2,7 +2,6 @@ import * as R from 'remeda';
 import { S } from 'schema';
 import { ChallengeDetails } from 'shared';
 import { ChallengeCollection } from '../../collections/Challenge';
-import { ModuleCollection } from '../../collections/Module';
 import { AppError } from '../../common/errors';
 import { doFn } from '../../common/helper';
 import { createContract, createRpcBinding } from '../../lib';
@@ -12,27 +11,19 @@ export const getChallenge = createContract('challenge.getChallenge')
   .schema({
     values: S.object().keys({
       id: S.string().optional(),
-      moduleSlug: S.string().optional(),
       slug: S.string().optional(),
     }),
   })
   .returns<ChallengeDetails>()
   .fn(async values => {
+    if (!values.id && !values.slug) {
+      throw new AppError('id or slug required');
+    }
     const challenge = await doFn(async () => {
       if (values.id) {
         return ChallengeCollection.findById(values.id);
       }
-      if (!values.moduleSlug || !values.slug) {
-        throw new AppError('Both moduleSlug and slug are required');
-      }
-      const module = await ModuleCollection.findOne({
-        slug: values.moduleSlug,
-      });
-      if (!module) {
-        throw new AppError('Module not found');
-      }
       return ChallengeCollection.findOne({
-        moduleId: module._id,
         slug: values.slug,
       });
     });
@@ -43,8 +34,9 @@ export const getChallenge = createContract('challenge.getChallenge')
       id: challenge._id,
       ...R.pick(challenge, [
         'challengeModuleId',
-        'moduleId',
         'title',
+        'slug',
+        'moduleId',
         'description',
         'difficulty',
         'practiceTime',
