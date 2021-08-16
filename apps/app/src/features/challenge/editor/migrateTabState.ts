@@ -6,6 +6,7 @@ interface MigrateTabStateOptions {
   tabState: TabsState;
   nodes: TreeNode[];
   newNodes: TreeNode[];
+  defaultNodePath?: string;
 }
 
 type TreeNodeWithPath = TreeNode & { path: string };
@@ -30,7 +31,7 @@ function _indexNodes(nodes: TreeNode[]) {
 }
 
 export function migrateTabState(options: MigrateTabStateOptions) {
-  const { tabState, nodes, newNodes } = options;
+  const { tabState, nodes, newNodes, defaultNodePath } = options;
   const [nodeMap] = _indexNodes(nodes);
   const [, newPathMap] = _indexNodes(newNodes);
   const newTabState: TabsState = {
@@ -53,6 +54,15 @@ export function migrateTabState(options: MigrateTabStateOptions) {
       };
     })
     .filter(tab => tab.id);
-
+  if (defaultNodePath && !newTabState.tabs.length) {
+    const defaultNode = newPathMap[defaultNodePath];
+    if (defaultNode) {
+      newTabState.tabs.push({
+        id: defaultNode.id,
+        name: defaultNode.name,
+      });
+      newTabState.activeTabId = defaultNode.id;
+    }
+  }
   return newTabState;
 }

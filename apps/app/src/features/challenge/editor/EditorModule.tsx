@@ -279,6 +279,7 @@ export const EditorModule = React.forwardRef<
           tabState: readOnlyWorkspaceModel.getModelState().state,
           newNodes,
           nodes: readOnlyWorkspaceModel.getModelState().state.nodes,
+          defaultNodePath: 'App.tsx',
         });
         editorStateService.updateTabsState(tabState);
         workspaceModel.setReadOnly(false);
