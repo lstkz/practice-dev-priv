@@ -31,6 +31,7 @@ interface Actions {
   openSolution: (solution: Solution) => Promise<void>;
   closeReadOnlyWorkspace: () => void;
   fork: () => void;
+  resetWorkspace: () => void;
 }
 
 interface State {
@@ -157,6 +158,15 @@ export function ChallengeModule(props: ChallengeSSRProps) {
       editorRef.current.openReadOnlyWorkspace(workspace);
       setState(draft => {
         draft.openedSolution = solution;
+        draft.leftSidebarTab = 'file-explorer';
+      });
+    },
+    resetWorkspace: async () => {
+      const workspace = await api.workspace_resetWorkspace(
+        getState().workspace.id
+      );
+      editorRef.current.openNewWorkspace(workspace);
+      setState(draft => {
         draft.leftSidebarTab = 'file-explorer';
       });
     },

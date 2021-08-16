@@ -8,6 +8,7 @@ import { VoteSolutionControls } from 'src/components/VoteSolutionControls';
 import { createUrl } from 'src/common/url';
 import { useUser } from '../AuthModule';
 import { doFn } from 'src/common/helper';
+import { ChallengeMenu } from './ChallengeMenu';
 
 interface ForkBarProps {
   onFork: () => void;
@@ -90,15 +91,18 @@ export function ChallengeHeader() {
           }
           if (user) {
             return (
-              <Button
-                loading={isSubmitting}
-                onClick={submit}
-                type="primary"
-                size="small"
-                focusBg="gray-800"
-              >
-                Submit
-              </Button>
+              <div tw="flex items-center space-x-1">
+                <Button
+                  loading={isSubmitting}
+                  onClick={submit}
+                  type="primary"
+                  size="small"
+                  focusBg="gray-800"
+                >
+                  Submit
+                </Button>
+                <ChallengeMenu />
+              </div>
             );
           }
           return null;

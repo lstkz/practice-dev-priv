@@ -322,6 +322,9 @@ export class APIClient {
   ): Promise<WorkspaceS3Auth> {
     return this.call('workspace.getWorkspaceS3Auth', { workspaceId });
   }
+  workspace_resetWorkspace(workspaceId: ObjectId): Promise<Workspace> {
+    return this.call('workspace.resetWorkspace', { workspaceId });
+  }
   workspace_updateWorkspaceNode(values: {
     id: string;
     name?: string | null | undefined;

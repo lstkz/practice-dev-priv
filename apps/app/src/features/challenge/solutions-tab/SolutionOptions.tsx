@@ -1,5 +1,5 @@
-import React, { Fragment } from 'react';
-import { Menu, Transition } from '@headlessui/react';
+import React from 'react';
+import { Menu } from '@headlessui/react';
 import { ChevronDownIcon } from '@heroicons/react/solid';
 import { Button, getBaseButtonStyles } from '../../../components/Button';
 import tw from 'twin.macro';
@@ -7,6 +7,7 @@ import { useErrorModalActions } from 'src/features/ErrorModalModule';
 import { SolutionItemProps } from './SolutionItem';
 import { useChallengeActions } from '../ChallengeModule';
 import { createUrl } from 'src/common/url';
+import { DefaultTransition } from 'src/components/DefaultTransition';
 
 interface MenuItemProps {
   children: React.ReactNode;
@@ -96,16 +97,7 @@ export function SolutionOptions(props: SolutionOptionsProps) {
               <span tw="sr-only">Open options</span>
               <ChevronDownIcon tw="h-5 w-5" aria-hidden="true" />
             </Menu.Button>
-            <Transition
-              show={open}
-              as={Fragment as any}
-              enter="transition ease-out duration-100"
-              enterFrom="transform opacity-0 scale-95"
-              enterTo="transform opacity-100 scale-100"
-              leave="transition ease-in duration-75"
-              leaveFrom="transform opacity-100 scale-100"
-              leaveTo="transform opacity-0 scale-95"
-            >
+            <DefaultTransition open={open}>
               <Menu.Items
                 static
                 tw="origin-top-right absolute right-0 mt-2 -mr-1 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-40"
@@ -137,7 +129,7 @@ export function SolutionOptions(props: SolutionOptionsProps) {
                   </MenuItem>
                 </div>
               </Menu.Items>
-            </Transition>
+            </DefaultTransition>
           </>
         )}
       </Menu>
