@@ -12,7 +12,6 @@ function randomHash() {
 }
 
 export class WorkspaceModel extends BaseWorkspaceModel {
-  private fileHashMap: Map<string, string> = new Map();
   private workspaceId: string = null!;
   private isInited = false;
   constructor(
