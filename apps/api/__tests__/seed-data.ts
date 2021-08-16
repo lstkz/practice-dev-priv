@@ -11,6 +11,7 @@ import {
   ChallengeSolvedModel,
   getChallengeSolvedId,
 } from '../src/collections/ChallengeSolved';
+import { createFollowerId, FollowerModel } from '../src/collections/Follower';
 import { ModuleCollection, ModuleModel } from '../src/collections/Module';
 import { SolutionModel } from '../src/collections/Solution';
 import {
@@ -346,6 +347,23 @@ export function getChallengeAttemptValues(
     challengeId: challengeStrId,
     moduleId: moduleId,
     userId: getId(userId),
+    ...values,
+  };
+}
+
+export function getFollowerValues(
+  fromUserId: number,
+  targetUserId: number,
+  values: Partial<FollowerModel> = {}
+) {
+  return {
+    _id: createFollowerId({
+      targetUserId: getId(targetUserId),
+      fromUserId: getId(fromUserId),
+    }),
+    targetUserId: getId(targetUserId),
+    fromUserId: getId(fromUserId),
+    createdAt: new Date(1),
     ...values,
   };
 }

@@ -1,5 +1,9 @@
 import { S } from 'schema';
 import { UserPublicProfile } from 'shared';
+import {
+  createFollowerId,
+  FollowerCollection,
+} from '../../collections/Follower';
 import { SolutionCollection } from '../../collections/Solution';
 import { SubmissionCollection } from '../../collections/Submission';
 import { UserCollection } from '../../collections/User';
@@ -18,13 +22,21 @@ export const getPublicProfile = createContract('user.getPublicProfile')
     if (!viewUser) {
       throw new AppError('User not found');
     }
-    const [submissions, solutions] = await Promise.all([
+    const [submissions, solutions, follower] = await Promise.all([
       SubmissionCollection.countDocuments({
         userId: viewUser._id,
       }),
       SolutionCollection.countDocuments({
         userId: viewUser._id,
       }),
+      !user
+        ? null
+        : FollowerCollection.findById(
+            createFollowerId({
+              fromUserId: user._id,
+              targetUserId: viewUser._id,
+            })
+          ),
     ]);
 
     return {
@@ -41,6 +53,7 @@ export const getPublicProfile = createContract('user.getPublicProfile')
       memberSince: viewUser.registeredAt.toISOString(),
       lastSeen: viewUser.lastSeenAt.toISOString(),
       about: viewUser.profile?.about ?? '',
+      isFollowing: follower != null,
     };
   });
 

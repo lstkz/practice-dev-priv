@@ -298,6 +298,7 @@ export interface UserPublicProfile {
   memberSince: string;
   lastSeen: string;
   about: string;
+  isFollowing: boolean;
 }
 
 export interface ActivityChallengeSolved {
