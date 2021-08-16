@@ -58,8 +58,8 @@ export async function populateChallenges(
     const mapped: Challenge = {
       id: item._id,
       ...R.pick(item, [
-        'challengeId',
         'moduleId',
+        'challengeModuleId',
         'title',
         'description',
         'difficulty',

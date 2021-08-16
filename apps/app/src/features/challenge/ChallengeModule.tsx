@@ -225,7 +225,7 @@ export const getServerSideProps = createGetServerSideProps(async ctx => {
   const [workspace, challenge, initialSolution] = await Promise.all([
     isLogged
       ? api.workspace_getOrCreateWorkspace({
-          challengeUniqId: id,
+          challengeId: id,
         })
       : null!,
     api.challenge_getChallenge(id),

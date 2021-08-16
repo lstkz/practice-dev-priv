@@ -20,7 +20,7 @@ export const prepareWorkspace = createContract('workspace.prepareWorkspace')
       return;
     }
     const challenge = await ChallengeCollection.findByIdOrThrow(
-      workspace.challengeUniqId
+      workspace.challengeId
     );
     const workspaceItems = createWorkspaceNodes(
       {

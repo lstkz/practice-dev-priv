@@ -103,8 +103,9 @@ it('should return activities', async () => {
           "type": "challenge-solved",
           "values": Object {
             "challenge": Object {
-              "challengeId": 1,
+              "challengeModuleId": 1,
               "id": "1_1",
+              "moduleId": 1,
               "title": "challenge 1",
             },
             "createdAt": "1970-01-01T00:00:00.010Z",
@@ -118,8 +119,9 @@ it('should return activities', async () => {
           "type": "challenge-solved",
           "values": Object {
             "challenge": Object {
-              "challengeId": 2,
+              "challengeModuleId": 2,
               "id": "1_2",
+              "moduleId": 1,
               "title": "challenge 2",
             },
             "createdAt": "1970-01-01T00:00:00.002Z",

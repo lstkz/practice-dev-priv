@@ -18,18 +18,18 @@ it('should throw if not found', async () => {
 it('should return a challenge', async () => {
   expect(await execContract(getChallenge, { id: '1_2' }))
     .toMatchInlineSnapshot(`
-Object {
-  "challengeId": 2,
-  "description": "desc",
-  "detailsS3Key": "",
-  "difficulty": "easy",
-  "htmlS3Key": "",
-  "id": "1_2",
-  "moduleId": 1,
-  "practiceTime": 10,
-  "solutionUrl": "sol",
-  "tests": Array [],
-  "title": "challenge 2",
-}
-`);
+    Object {
+      "challengeModuleId": 2,
+      "description": "desc",
+      "detailsS3Key": "",
+      "difficulty": "easy",
+      "htmlS3Key": "",
+      "id": "1_2",
+      "moduleId": 1,
+      "practiceTime": 10,
+      "solutionUrl": "sol",
+      "tests": Array [],
+      "title": "challenge 2",
+    }
+  `);
 });

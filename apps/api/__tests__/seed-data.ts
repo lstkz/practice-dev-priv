@@ -63,7 +63,7 @@ export async function createSampleChallenges() {
     ChallengeCollection.insertMany([
       {
         _id: '1_2',
-        challengeId: 2,
+        challengeModuleId: 2,
         description: 'desc',
         detailsS3Key: '',
         testS3Key: 't',
@@ -107,7 +107,7 @@ export async function createSampleWorkspaces() {
   await WorkspaceCollection.insertMany([
     {
       _id: getId(10),
-      challengeUniqId: '1_2',
+      challengeId: '1_2',
       isReady: true,
       userId: getId(1),
       s3Auth: null!,
@@ -115,7 +115,7 @@ export async function createSampleWorkspaces() {
     },
     {
       _id: getId(11),
-      challengeUniqId: '1_2',
+      challengeId: '1_2',
       isReady: true,
       userId: getId(1),
       s3Auth: null!,
@@ -171,7 +171,7 @@ export async function createSampleSubmissions() {
   await SubmissionCollection.insertMany([
     {
       _id: getId(100),
-      challengeUniqId: '1_2',
+      challengeId: '1_2',
       createdAt: new Date(1),
       indexHtmlS3Key: 'index',
       isCloned: true,
@@ -194,7 +194,7 @@ export async function createSampleSubmissions() {
     },
     {
       _id: getId(101),
-      challengeUniqId: '1_2',
+      challengeId: '1_2',
       createdAt: new Date(2),
       indexHtmlS3Key: 'index',
       isCloned: true,
@@ -223,7 +223,7 @@ export function getSampleSubmissionValues(
   values: Partial<SubmissionModel> = {}
 ): SubmissionModel {
   const base = {
-    challengeUniqId: '1_2',
+    challengeId: '1_2',
     createdAt: new Date(1),
     indexHtmlS3Key: 'index',
     isCloned: true,
@@ -280,12 +280,12 @@ export function getSampleModuleValues(
 
 export function getSampleChallengeValues(
   moduleId: number,
-  challengeId: number,
+  challengeModuleId: number,
   values: Partial<ChallengeModel> = {}
 ): ChallengeModel {
   return {
-    _id: moduleId + '_' + challengeId,
-    challengeId: challengeId,
+    _id: moduleId + '_' + challengeModuleId,
+    challengeModuleId: challengeModuleId,
     description: 'desc',
     detailsS3Key: '',
     testS3Key: 't',
@@ -295,7 +295,7 @@ export function getSampleChallengeValues(
     htmlS3Key: '',
     moduleId: moduleId,
     practiceTime: 10,
-    title: 'challenge ' + challengeId,
+    title: 'challenge ' + challengeModuleId,
     libraries: [],
     tests: [],
     stats: {
@@ -310,19 +310,19 @@ export function getSampleChallengeValues(
 
 export function getSampleChallengeSolvedValues(
   moduleId: number,
-  challengeId: number,
+  challengeModuleId: number,
   userId: number,
   values: Partial<ChallengeSolvedModel> = {}
 ) {
   const userId2 = getId(userId);
-  const challengeUniqId = moduleId + '_' + challengeId;
+  const challengeId = moduleId + '_' + challengeModuleId;
   return {
     _id: getChallengeSolvedId({
       userId: userId2,
-      challengeId: challengeUniqId,
+      challengeId: challengeId,
     }),
     userId: userId2,
-    challengeId: challengeUniqId,
+    challengeId: challengeId,
     moduleId,
     ...values,
   };
@@ -330,11 +330,11 @@ export function getSampleChallengeSolvedValues(
 
 export function getChallengeAttemptValues(
   moduleId: number,
-  challengeId: number,
+  challengeModuleId: number,
   userId: number,
   values: Partial<ChallengeAttemptModel> = {}
 ) {
-  const challengeStrId = moduleId + '_' + challengeId;
+  const challengeStrId = moduleId + '_' + challengeModuleId;
   return {
     _id: getChallengeAttemptId({
       challengeId: challengeStrId,

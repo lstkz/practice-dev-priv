@@ -9,8 +9,8 @@ export const updateChallenge = createContract('challenge.updateChallenge')
   .params('values')
   .schema({
     values: S.object().keys({
-      challengeId: S.number(),
       moduleId: S.number(),
+      challengeModuleId: S.number(),
       title: S.string(),
       description: S.string(),
       difficulty: S.string(),

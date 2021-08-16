@@ -20,8 +20,8 @@ beforeEach(async () => {
 
 function getValidValues() {
   return {
-    challengeId: 1,
     moduleId: 1,
+    challengeModuleId: 1,
     title: 't1',
     description: 'desc1',
     difficulty: 'diff1',
@@ -80,7 +80,7 @@ it('should create a new challenge and update it', async () => {
   expect(challenge).toMatchInlineSnapshot(`
     Object {
       "_id": "1_1",
-      "challengeId": 1,
+      "challengeModuleId": 1,
       "description": "desc1",
       "detailsS3Key": "d_s3",
       "difficulty": "diff1",
@@ -129,8 +129,8 @@ it('should create a new challenge and update it', async () => {
   await ChallengeCollection.update(challenge, ['stats']);
 
   await updateChallenge({
-    challengeId: 1,
     moduleId: 1,
+    challengeModuleId: 1,
     title: 't1x',
     description: 'desc1x',
     difficulty: 'diff1x',
@@ -158,7 +158,7 @@ it('should create a new challenge and update it', async () => {
     .toMatchInlineSnapshot(`
     Object {
       "_id": "1_1",
-      "challengeId": 1,
+      "challengeModuleId": 1,
       "description": "desc1x",
       "detailsS3Key": "d_s3x",
       "difficulty": "diff1x",

@@ -21,7 +21,7 @@ export const updateStatsOnSubmissionCreated = createContract(
   .fn(async submissionId => {
     const submission = await SubmissionCollection.findByIdOrThrow(submissionId);
     const challenge = await ChallengeCollection.findByIdOrThrow(
-      submission.challengeUniqId
+      submission.challengeId
     );
     const module = await ModuleCollection.findByIdOrThrow(challenge.moduleId);
     await withTransaction(async () => {

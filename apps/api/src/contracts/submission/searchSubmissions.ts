@@ -24,7 +24,7 @@ export const searchSubmissions = createContract('submission.searchSubmissions')
   .fn(async (user, criteria) => {
     const filter: Record<string, any> = {};
     if (criteria.challengeId) {
-      filter.challengeUniqId = criteria.challengeId;
+      filter.challengeId = criteria.challengeId;
     }
     if (criteria.username) {
       const author = await UserCollection.findOneByUsername(criteria.username);
@@ -46,7 +46,7 @@ export const searchSubmissions = createContract('submission.searchSubmissions')
         .toArray(),
       SubmissionCollection.countDocuments(filter),
     ]);
-    const challengeIds = items.map(x => x.challengeUniqId);
+    const challengeIds = items.map(x => x.challengeId);
     const challenges = await ChallengeCollection.findAll({
       _id: {
         $in: challengeIds,
@@ -55,7 +55,7 @@ export const searchSubmissions = createContract('submission.searchSubmissions')
     const challengeMap = R.indexBy(challenges, x => x._id);
     return {
       items: items.map(item => {
-        const challenge = challengeMap[item.challengeUniqId];
+        const challenge = challengeMap[item.challengeId];
         return {
           id: item._id.toHexString(),
           createdAt: item.createdAt.toISOString(),

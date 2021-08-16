@@ -19,7 +19,7 @@ beforeEach(async () => {
   ]);
   const defaultValues: SubmissionModel = {
     _id: getId(100),
-    challengeUniqId: '1_2',
+    challengeId: '1_2',
     createdAt: new Date(0),
     indexHtmlS3Key: 'index',
     nodes: [],
@@ -55,7 +55,7 @@ beforeEach(async () => {
     },
     {
       ...defaultValues,
-      challengeUniqId: '1_3',
+      challengeId: '1_3',
       _id: getId(103),
       status: SubmissionStatus.Fail,
       createdAt: new Date(4),

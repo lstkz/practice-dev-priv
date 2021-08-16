@@ -21,7 +21,7 @@ export interface SubmissionModel {
   _id: ObjectID;
   userId: ObjectID;
   workspaceId: ObjectID;
-  challengeUniqId: string;
+  challengeId: string;
   indexHtmlS3Key: string;
   nodes: SubmissionNodeModel[];
   libraries: LibraryDefinition[];
@@ -45,7 +45,7 @@ export const SubmissionCollection = createCollection<SubmissionModel>(
       key: { userId: 1 },
     },
     {
-      key: { challengeUniqId: 1 },
+      key: { challengeId: 1 },
     },
     {
       key: { createdAt: 1 },

@@ -21,7 +21,7 @@ export const testSubmission = createContract('workspace.testSubmission')
   .fn(async submissionId => {
     const submission = await SubmissionCollection.findByIdOrThrow(submissionId);
     const challenge = await ChallengeCollection.findByIdOrThrow(
-      submission.challengeUniqId
+      submission.challengeId
     );
     const payload: TestSubmissionLambdaInput = {
       submissionId: submissionId.toHexString(),

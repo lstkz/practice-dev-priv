@@ -29,7 +29,7 @@ export const forkAnySubmission = createContract('submission.forkAnySubmission')
       SubmissionCollection.findByIdOrThrow(submissionId),
     ]);
     const challenge = await ChallengeCollection.findByIdOrThrow(
-      workspace.challengeUniqId
+      workspace.challengeId
     );
 
     let workspaceNodes: WorkspaceNodeModel[] = null!;

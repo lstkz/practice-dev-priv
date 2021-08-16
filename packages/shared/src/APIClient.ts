@@ -64,7 +64,7 @@ export class APIClient {
     return this.call('challenge.searchChallenges', { criteria });
   }
   challenge_updateChallenge(values: {
-    challengeId: number;
+    challengeModuleId: number;
     moduleId: number;
     title: string;
     description: string;
@@ -305,7 +305,7 @@ export class APIClient {
     return this.call('workspace.deleteWorkspaceNode', { id });
   }
   workspace_getOrCreateWorkspace(values: {
-    challengeUniqId: string;
+    challengeId: string;
   }): Promise<Workspace> {
     return this.call('workspace.getOrCreateWorkspace', { values });
   }

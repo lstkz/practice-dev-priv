@@ -19,7 +19,7 @@ export const getChallenge = createContract('challenge.getChallenge')
     return {
       id: challenge._id,
       ...R.pick(challenge, [
-        'challengeId',
+        'challengeModuleId',
         'moduleId',
         'title',
         'description',

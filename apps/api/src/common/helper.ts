@@ -123,9 +123,9 @@ export function doFn<T>(fn: () => T) {
 
 export function getChallengeId(values: {
   moduleId: number;
-  challengeId: number;
+  challengeModuleId: number;
 }) {
-  return `${values.moduleId}_${values.challengeId}`;
+  return `${values.moduleId}_${values.challengeModuleId}`;
 }
 
 export function renameId<T extends { _id: any }>(

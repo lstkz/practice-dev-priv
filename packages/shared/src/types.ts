@@ -117,7 +117,7 @@ export interface NotificationSettings {
 
 export interface ChallengeDetails {
   id: string;
-  challengeId: number;
+  challengeModuleId: number;
   moduleId: number;
   title: string;
   description: string;
@@ -273,8 +273,8 @@ export interface Module {
 
 export interface Challenge {
   id: string;
-  challengeId: number;
   moduleId: number;
+  challengeModuleId: number;
   title: string;
   description: string;
   difficulty: string;
@@ -311,7 +311,8 @@ export interface ActivityChallengeSolved {
     };
     challenge: {
       id: string;
-      challengeId: number;
+      moduleId: number;
+      challengeModuleId: number;
       title: string;
     };
   };

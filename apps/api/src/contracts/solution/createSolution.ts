@@ -42,7 +42,7 @@ export const createSolution = createContract('solution.createSolution')
       );
     }
     const challenge = await ChallengeCollection.findByIdOrThrow(
-      submission.challengeUniqId
+      submission.challengeId
     );
     const solution: SolutionModel = {
       _id: new ObjectID(),

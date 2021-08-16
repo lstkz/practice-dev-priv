@@ -21,10 +21,10 @@ async function _getOrCreate(
   challenge: ChallengeModel,
   {
     dedupKey,
-    challengeUniqId,
+    challengeId,
   }: {
     dedupKey: string;
-    challengeUniqId: string;
+    challengeId: string;
   }
 ) {
   const existing = await WorkspaceCollection.findOne({ dedupKey });
@@ -33,7 +33,7 @@ async function _getOrCreate(
   }
   const workspace: WorkspaceModel = {
     _id: new ObjectID(),
-    challengeUniqId: challengeUniqId,
+    challengeId: challengeId,
     userId: appUser._id,
     dedupKey,
     isReady: false,
@@ -61,21 +61,19 @@ export const getOrCreateWorkspace = createContract(
   .schema({
     user: S.object().appUser(),
     values: S.object().keys({
-      challengeUniqId: S.string(),
+      challengeId: S.string(),
     }),
   })
   .returns<Workspace>()
   .fn(async (user, values) => {
-    const challenge = await ChallengeCollection.findById(
-      values.challengeUniqId
-    );
+    const challenge = await ChallengeCollection.findById(values.challengeId);
     if (!challenge) {
-      throw new AppError('Challenge not found: ' + values.challengeUniqId);
+      throw new AppError('Challenge not found: ' + values.challengeId);
     }
-    const dedupKey = `${values.challengeUniqId}_${user._id}_default`;
+    const dedupKey = `${values.challengeId}_${user._id}_default`;
     const workspace = await _getOrCreate(user, challenge, {
       dedupKey,
-      challengeUniqId: values.challengeUniqId,
+      challengeId: values.challengeId,
     });
     if (!workspace.isReady) {
       await prepareWorkspace(workspace._id);
