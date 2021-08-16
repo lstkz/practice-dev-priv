@@ -64,6 +64,7 @@ it('should search modules', async () => {
           "id": 1,
           "isAttempted": true,
           "mainTechnology": "react",
+          "slug": "m-1",
           "solvedChallenges": 2,
           "stats": Object {
             "enrolledUsers": 0,
@@ -79,6 +80,7 @@ it('should search modules', async () => {
           "id": 2,
           "isAttempted": false,
           "mainTechnology": "react",
+          "slug": "m-2",
           "solvedChallenges": 1,
           "stats": Object {
             "enrolledUsers": 0,
@@ -94,6 +96,7 @@ it('should search modules', async () => {
           "id": 3,
           "isAttempted": false,
           "mainTechnology": "react",
+          "slug": "m-3",
           "solvedChallenges": 0,
           "stats": Object {
             "enrolledUsers": 0,
@@ -126,6 +129,7 @@ it('should search modules as anonymous', async () => {
           "id": 1,
           "isAttempted": false,
           "mainTechnology": "react",
+          "slug": "m-1",
           "solvedChallenges": 0,
           "stats": Object {
             "enrolledUsers": 0,
@@ -141,6 +145,7 @@ it('should search modules as anonymous', async () => {
           "id": 2,
           "isAttempted": false,
           "mainTechnology": "react",
+          "slug": "m-2",
           "solvedChallenges": 0,
           "stats": Object {
             "enrolledUsers": 0,
@@ -156,6 +161,7 @@ it('should search modules as anonymous', async () => {
           "id": 3,
           "isAttempted": false,
           "mainTechnology": "react",
+          "slug": "m-3",
           "solvedChallenges": 0,
           "stats": Object {
             "enrolledUsers": 0,

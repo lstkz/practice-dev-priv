@@ -19,3 +19,5 @@ export const URL_REGEX =
 
 export const FILENAME_REGEX = /^[\w\-. ]+$/;
 export const FILENAME_MAX_LENGTH = 50;
+
+export const SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;

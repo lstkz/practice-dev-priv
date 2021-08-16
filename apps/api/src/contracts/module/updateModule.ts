@@ -2,6 +2,7 @@ import { S } from 'schema';
 import * as R from 'remeda';
 import { createContract, createRpcBinding } from '../../lib';
 import { ModuleCollection } from '../../collections/Module';
+import { SLUG_REGEX } from 'shared';
 
 export const updateModule = createContract('module.updateModule')
   .params('values')
@@ -9,6 +10,7 @@ export const updateModule = createContract('module.updateModule')
     values: S.object().keys({
       id: S.number(),
       title: S.string(),
+      slug: S.string().regex(SLUG_REGEX),
       description: S.string(),
       mainTechnology: S.string(),
       difficulty: S.string(),

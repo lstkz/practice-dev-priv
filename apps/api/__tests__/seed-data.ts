@@ -50,6 +50,7 @@ export async function createSampleChallenges() {
     ModuleCollection.insertMany([
       {
         _id: 1,
+        slug: 'm1',
         title: 'module1',
         description: 'desc',
         difficulty: 'easy',
@@ -63,6 +64,7 @@ export async function createSampleChallenges() {
     ChallengeCollection.insertMany([
       {
         _id: '1_2',
+        slug: 'challenge-2',
         challengeModuleId: 2,
         description: 'desc',
         detailsS3Key: '',
@@ -267,6 +269,7 @@ export function getSampleModuleValues(
   return {
     _id: id,
     title: 'module' + id,
+    slug: 'm-' + id,
     description: 'desc',
     difficulty: 'easy',
     mainTechnology: 'react',
@@ -296,6 +299,7 @@ export function getSampleChallengeValues(
     moduleId: moduleId,
     practiceTime: 10,
     title: 'challenge ' + challengeModuleId,
+    slug: 'challenge-' + challengeModuleId,
     libraries: [],
     tests: [],
     stats: {
