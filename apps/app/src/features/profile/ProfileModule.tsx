@@ -9,6 +9,8 @@ import { api } from 'src/services/api';
 
 interface Actions {
   loadMoreActivity: () => void;
+  unfollow: () => Promise<void>;
+  follow: () => Promise<void>;
 }
 
 interface State {
@@ -57,6 +59,26 @@ export function ProfileModule(props: ProfileSSRProps) {
         setState(draft => {
           draft.activity.isLoadMore = false;
         });
+      }
+    },
+    follow: async () => {
+      try {
+        await api.follower_followUser(getState().profile.username);
+        setState(draft => {
+          draft.profile.isFollowing = true;
+        });
+      } catch (e) {
+        showError(e);
+      }
+    },
+    unfollow: async () => {
+      try {
+        await api.follower_unfollowUser(getState().profile.username);
+        setState(draft => {
+          draft.profile.isFollowing = false;
+        });
+      } catch (e) {
+        showError(e);
       }
     },
   });

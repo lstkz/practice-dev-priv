@@ -1,9 +1,11 @@
+import { FollowerCollection } from '../../src/collections/Follower';
 import { SolutionCollection } from '../../src/collections/Solution';
 import { SubmissionCollection } from '../../src/collections/Submission';
 import { UserCollection } from '../../src/collections/User';
 import { getPublicProfile } from '../../src/contracts/user/getPublicProfile';
 import { execContract, getId, setupDb } from '../helper';
 import {
+  getFollowerValues,
   getSampleSolutionValues,
   getSampleSubmissionValues,
   registerSampleUsers,
@@ -30,6 +32,7 @@ beforeEach(async () => {
       },
     }
   );
+  await FollowerCollection.insertMany([getFollowerValues(1, 2)]);
 });
 
 it('should throw if not found', async () => {
@@ -63,6 +66,7 @@ it('should return user1 (logged as user2)', async () => {
       "followers": 0,
       "following": 0,
       "id": "000000000000000000000001",
+      "isFollowing": false,
       "lastSeen": "1970-01-01T00:00:00.002Z",
       "memberSince": "1970-01-01T00:00:00.001Z",
       "name": "",
@@ -92,6 +96,7 @@ it('should return user2 (logged as user1)', async () => {
       "followers": 0,
       "following": 0,
       "id": "000000000000000000000002",
+      "isFollowing": true,
       "lastSeen": "1970-01-01T00:00:00.020Z",
       "memberSince": "1970-01-01T00:00:00.010Z",
       "name": "",
@@ -116,6 +121,7 @@ it('should return user1 (anonymous)', async () => {
       "followers": 0,
       "following": 0,
       "id": "000000000000000000000001",
+      "isFollowing": false,
       "lastSeen": "1970-01-01T00:00:00.002Z",
       "memberSince": "1970-01-01T00:00:00.001Z",
       "name": "",

@@ -84,6 +84,12 @@ export class APIClient {
   }): Promise<void> {
     return this.call('challenge.updateChallenge', { values });
   }
+  follower_followUser(username: string): Promise<void> {
+    return this.call('follower.followUser', { username });
+  }
+  follower_unfollowUser(username: string): Promise<void> {
+    return this.call('follower.unfollowUser', { username });
+  }
   module_getModule(id: number): Promise<Module> {
     return this.call('module.getModule', { id });
   }
