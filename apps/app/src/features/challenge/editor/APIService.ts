@@ -38,7 +38,6 @@ export class APIService implements IAPIService {
     if (hash) {
       url += `?h=${hash}`;
     }
-    // const url = `${CDN_BASE_URL}/workspace/${workspaceId}/${fileId}?h=${hash}`;
     return fetch(url).then(x => x.text());
   }
 

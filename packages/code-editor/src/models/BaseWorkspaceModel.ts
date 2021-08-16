@@ -23,6 +23,7 @@ const TODO_INPUT_FILE = './index.tsx';
 
 export abstract class BaseWorkspaceModel implements IWorkspaceModel {
   protected modelState: ModelState<WorkspaceState> = null!;
+  protected fileHashMap: Map<string, string> = new Map();
 
   constructor(
     protected codeEditor: CodeEditor,
@@ -73,7 +74,10 @@ export abstract class BaseWorkspaceModel implements IWorkspaceModel {
           this.codeEditor.addFile({
             id: node.id,
             path: pathHelper.getPath(node.id),
-            source: await this.apiService.getFileContent(node.contentUrl!),
+            source: await this.apiService.getFileContent(
+              node.contentUrl!,
+              this.fileHashMap.get(node.id)
+            ),
           });
         }
       })
