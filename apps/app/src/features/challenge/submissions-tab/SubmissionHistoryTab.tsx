@@ -3,62 +3,23 @@ import { Button } from '../../../components/Button';
 import Select from '../../../components/Select';
 import { TabLoader } from '../TabLoader';
 import { TabTitle } from '../TabTitle';
-import { useImmer } from 'context-api';
-import { useErrorModalActions } from '../../ErrorModalModule';
-import { Submission, SubmissionSortBy } from 'shared';
-import { api } from 'src/services/api';
+import { SubmissionSortBy } from 'shared';
 import { SubmissionHistoryItem } from './SubmissionHistoryItem';
-
-interface State {
-  isLoaded: boolean;
-  isLoadMore: boolean;
-  total: number;
-  items: Submission[];
-  sortBy: SubmissionSortBy;
-}
+import { useUser } from 'src/features/AuthModule';
+import { useChallengeState } from '../ChallengeModule';
+import { useSubmissionLoader } from 'src/hooks/useSubmissionLoader';
 
 export function SubmissionHistoryTab() {
-  const [state, setState, getState] = useImmer<State>(
-    {
-      isLoaded: false,
-      isLoadMore: false,
-      total: 0,
-      items: [],
-      sortBy: SubmissionSortBy.Newest,
+  const user = useUser();
+  const { challenge } = useChallengeState();
+  const { state, search, updateSort } = useSubmissionLoader({
+    baseFilter: {
+      challengeId: challenge.id,
+      username: user.username,
     },
-    'SubmissionHistoryTab'
-  );
+  });
   const { isLoadMore, isLoaded, items, sortBy, total } = state;
-  const { showError } = useErrorModalActions();
 
-  const searchData = async (loadMore?: boolean) => {
-    try {
-      const { items, total } = await api.submission_searchSubmissions({
-        offset: loadMore ? getState().items.length : 0,
-        limit: 20,
-        sortBy: getState().sortBy,
-      });
-      setState(draft => {
-        draft.isLoaded = true;
-        draft.isLoadMore = false;
-        draft.total = total;
-        if (loadMore) {
-          draft.items.push(...items);
-        } else {
-          draft.items = items;
-        }
-      });
-    } catch (e) {
-      showError(e);
-      setState(draft => {
-        draft.isLoadMore = false;
-      });
-    }
-  };
-
-  React.useEffect(() => {
-    void searchData(false);
-  }, []);
   const title = <TabTitle>Submission History</TabTitle>;
   if (!isLoaded) {
     return <TabLoader>{title}</TabLoader>;
@@ -72,12 +33,7 @@ export function SubmissionHistoryTab() {
           focusBg="gray-900"
           value={sortBy}
           label={<span tw="text-gray-200">Sort by</span>}
-          onChange={value => {
-            setState(draft => {
-              draft.sortBy = value;
-            });
-            void searchData();
-          }}
+          onChange={updateSort}
           options={[
             {
               label: 'Newest',
@@ -105,7 +61,7 @@ export function SubmissionHistoryTab() {
             focusBg="gray-900"
             loading={isLoadMore}
             onClick={() => {
-              void searchData(true);
+              void search(true);
             }}
           >
             Load More

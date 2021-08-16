@@ -21,14 +21,12 @@ export function SolutionsTab() {
       username: profile.username,
     },
   });
-
   if (!isLoaded) {
     return <ProfileTabLoader />;
   }
   if (!total) {
     return <div tw="text-center py-12 text-gray-700">No solutions</div>;
   }
-
   return (
     <div className="px-4 py-5 sm:px-6">
       <div style={{ maxWidth: 120 }}>

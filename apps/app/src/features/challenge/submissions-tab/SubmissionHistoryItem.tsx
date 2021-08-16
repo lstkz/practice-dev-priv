@@ -1,10 +1,10 @@
 import React from 'react';
 import * as DateFns from 'date-fns';
-import { Submission, SubmissionStatus } from 'shared';
-import Badge from 'src/components/Badge';
+import { Submission } from 'shared';
 import { Button } from 'src/components/Button';
 import { useChallengeActions } from '../ChallengeModule';
 import { useErrorModalActions } from '../../ErrorModalModule';
+import { SubmissionStatusBadge } from 'src/components/SubmissionStatusBadge';
 
 interface SubmissionHistoryItemProps {
   item: Submission;
@@ -18,18 +18,7 @@ export function SubmissionHistoryItem(props: SubmissionHistoryItemProps) {
   return (
     <li tw="py-4">
       <div tw="flex items-center space-x-4">
-        <Badge
-          dark
-          color={
-            item.status === SubmissionStatus.Fail
-              ? 'red'
-              : item.status === SubmissionStatus.Pass
-              ? 'green'
-              : 'gray'
-          }
-        >
-          {item.status.toUpperCase()}
-        </Badge>
+        <SubmissionStatusBadge status={item.status} />
         <div tw="flex-1 min-w-0">
           <p tw="text-sm text-gray-400 truncate">
             {DateFns.format(new Date(item.createdAt), 'HH:mm dd/MM/yyyy')}
