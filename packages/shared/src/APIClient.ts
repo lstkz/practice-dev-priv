@@ -177,6 +177,8 @@ export class APIClient {
     limit: number;
     offset: number;
     sortBy: SubmissionSortBy;
+    username?: string | undefined;
+    challengeId?: string | undefined;
   }): Promise<PaginatedResult<Submission>> {
     return this.call('submission.searchSubmissions', { criteria });
   }

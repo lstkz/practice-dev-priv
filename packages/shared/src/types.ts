@@ -183,6 +183,10 @@ export interface Submission {
   id: string;
   createdAt: string;
   status: SubmissionStatus;
+  challenge: {
+    id: string;
+    title: string;
+  };
 }
 
 export interface SubmissionNode {

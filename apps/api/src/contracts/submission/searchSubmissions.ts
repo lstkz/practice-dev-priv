@@ -1,14 +1,20 @@
 import { S } from 'schema';
+import * as R from 'remeda';
 import { PaginatedResult, Submission, SubmissionSortBy } from 'shared';
+import { ChallengeCollection } from '../../collections/Challenge';
 import { SubmissionCollection } from '../../collections/Submission';
+import { UserCollection } from '../../collections/User';
+import { AppError } from '../../common/errors';
 import { safeValues } from '../../common/helper';
 import { createContract, createRpcBinding } from '../../lib';
 
 export const searchSubmissions = createContract('submission.searchSubmissions')
   .params('user', 'criteria')
   .schema({
-    user: S.object().appUser(),
+    user: S.object().appUser().optional(),
     criteria: S.object().keys({
+      challengeId: S.string().optional(),
+      username: S.string().optional(),
       limit: S.number().integer().min(0),
       offset: S.number().integer().min(0).max(100),
       sortBy: S.enum().literal(...safeValues(SubmissionSortBy)),
@@ -16,9 +22,20 @@ export const searchSubmissions = createContract('submission.searchSubmissions')
   })
   .returns<PaginatedResult<Submission>>()
   .fn(async (user, criteria) => {
-    const filter = {
-      userId: user._id,
-    };
+    const filter: Record<string, any> = {};
+    if (criteria.challengeId) {
+      filter.challengeUniqId = criteria.challengeId;
+    }
+    if (criteria.username) {
+      const author = await UserCollection.findOneByUsername(criteria.username);
+      if (!author) {
+        throw new AppError('User not found');
+      }
+      filter.userId = author._id;
+    }
+    if (Object.keys(filter).length === 0) {
+      throw new AppError('challengeId or userId required');
+    }
     const [items, total] = await Promise.all([
       SubmissionCollection.find(filter)
         .sort({
@@ -29,18 +46,33 @@ export const searchSubmissions = createContract('submission.searchSubmissions')
         .toArray(),
       SubmissionCollection.countDocuments(filter),
     ]);
+    const challengeIds = items.map(x => x.challengeUniqId);
+    const challenges = await ChallengeCollection.findAll({
+      _id: {
+        $in: challengeIds,
+      },
+    });
+    const challengeMap = R.indexBy(challenges, x => x._id);
     return {
-      items: items.map(item => ({
-        id: item._id.toHexString(),
-        createdAt: item.createdAt.toISOString(),
-        status: item.status,
-      })),
+      items: items.map(item => {
+        const challenge = challengeMap[item.challengeUniqId];
+        return {
+          id: item._id.toHexString(),
+          createdAt: item.createdAt.toISOString(),
+          status: item.status,
+          challenge: {
+            id: challenge._id,
+            title: challenge.title,
+          },
+        };
+      }),
       total,
     };
   });
 
 export const searchSubmissionsRpc = createRpcBinding({
   injectUser: true,
+  public: true,
   signature: 'submission.searchSubmissions',
   handler: searchSubmissions,
 });

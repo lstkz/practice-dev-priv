@@ -1,53 +1,31 @@
 import Link from 'next/link';
 import React from 'react';
+import * as DateFns from 'date-fns';
+import { useSubmissionLoader } from 'src/hooks/useSubmissionLoader';
 import { createUrl } from '../../common/url';
-import Badge from '../../components/Badge';
 import { Button } from '../../components/Button';
 import Select from '../../components/Select';
-
-interface Submission {
-  id: string;
-  challenge: string;
-  date: string;
-  result: 'PASS' | 'FAIL' | 'PENDING';
-}
-
-const submissions: Submission[] = [
-  {
-    id: '1',
-    challenge: 'Simple Counter',
-    date: '18:00 3/7/2020',
-    result: 'PENDING',
-  },
-  {
-    id: '2',
-    challenge: 'Simple Counter',
-    date: '18:00 3/7/2020',
-    result: 'PASS',
-  },
-  {
-    id: '3',
-    challenge: 'Simple Counter',
-    date: '18:00 3/7/2020',
-    result: 'FAIL',
-  },
-  {
-    id: '4',
-    challenge: 'Simple Counter',
-    date: '18:00 3/7/2020',
-    result: 'FAIL',
-  },
-  {
-    id: '5',
-    challenge: 'Simple Counter',
-    date: '18:00 3/7/2020',
-    result: 'FAIL',
-  },
-];
+import { useProfileState } from './ProfileModule';
+import { ProfileTabLoader } from './ProfileTabLoader';
+import { SubmissionStatusBadge } from 'src/components/SubmissionStatusBadge';
 
 export function SubmissionsTab() {
-  const [sortBy, setSortBy] = React.useState('newest');
-
+  const { profile } = useProfileState();
+  const {
+    state: { isLoadMore, isLoaded, items, sortBy, total },
+    search,
+    updateSort,
+  } = useSubmissionLoader({
+    baseFilter: {
+      username: profile.username,
+    },
+  });
+  if (!isLoaded) {
+    return <ProfileTabLoader />;
+  }
+  if (!total) {
+    return <div tw="text-center py-12 text-gray-700">No submissions</div>;
+  }
   return (
     <div className="px-4 py-5 sm:px-6">
       <div style={{ maxWidth: 120 }}>
@@ -55,7 +33,7 @@ export function SubmissionsTab() {
           type="white"
           value={sortBy}
           label={<span>Sort by</span>}
-          onChange={setSortBy}
+          onChange={updateSort}
           options={[
             {
               label: 'Newest',
@@ -70,44 +48,48 @@ export function SubmissionsTab() {
       </div>
       <div className="flow-root mt-6">
         <ul className="-my-5 divide-y divide-gray-200">
-          {submissions.map((item, i) => (
+          {items.map((item, i) => (
             <li key={i} className="py-4">
               <div className="flex items-center space-x-4">
-                <Badge
-                  color={
-                    item.result === 'FAIL'
-                      ? 'red'
-                      : item.result === 'PASS'
-                      ? 'green'
-                      : 'gray'
-                  }
-                >
-                  {item.result}
-                </Badge>
+                <SubmissionStatusBadge status={item.status} />
                 <div className="flex-1 min-w-0">
                   <Link
                     passHref
-                    href={createUrl({ name: 'challenge', id: '1' })}
+                    href={createUrl({
+                      name: 'challenge',
+                      id: item.challenge.id,
+                    })}
                   >
-                    <a tw="text-gray-800 font-semibold">{item.challenge}</a>
+                    <a tw="text-gray-800 font-semibold">
+                      {item.challenge.title}
+                    </a>
                   </Link>
                   <p className="text-sm text-gray-500 truncate">
-                    18:00 3/7/2020
+                    {DateFns.format(
+                      new Date(item.createdAt),
+                      'HH:mm dd/MM/yyyy'
+                    )}
                   </p>
-                </div>
-                <div tw="flex items-center">
-                  <Button type="white">Show</Button>
                 </div>
               </div>
             </li>
           ))}
         </ul>
       </div>
-      <div className="mt-6 text-center">
-        <Button type="primary" tw="px-10">
-          Load More
-        </Button>
-      </div>
+      {total > items.length && (
+        <div className="mt-6">
+          <Button
+            type="primary"
+            tw="px-10"
+            loading={isLoadMore}
+            onClick={() => {
+              void search(true);
+            }}
+          >
+            Load More
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
