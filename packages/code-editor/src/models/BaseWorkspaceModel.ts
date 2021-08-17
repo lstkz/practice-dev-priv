@@ -5,6 +5,7 @@ import {
   TreeNode,
   WorkspaceState,
   IAPIService,
+  FileNode,
 } from '../types';
 import { FileTreeHelper } from '../lib/tree';
 import { BundlerService } from '../services/BundlerService';
@@ -67,21 +68,24 @@ export abstract class BaseWorkspaceModel implements IWorkspaceModel {
   protected async _addNodesToEditor() {
     const { nodes } = this.state;
     const pathHelper = new FileTreeHelper(nodes);
-
-    await Promise.all(
-      nodes.map(async node => {
-        if (node.type === 'file') {
-          this.codeEditor.addFile({
+    const fileNodes = await Promise.all(
+      nodes
+        .filter(node => node.type === 'file')
+        .map(async node => {
+          node = node as FileNode;
+          return {
             id: node.id,
             path: pathHelper.getPath(node.id),
             source: await this.apiService.getFileContent(
               node.contentUrl!,
               this.fileHashMap.get(node.id)
             ),
-          });
-        }
-      })
+          };
+        })
     );
+    fileNodes.forEach(node => {
+      this.codeEditor.addFile(node);
+    });
   }
 
   protected _loadCode() {

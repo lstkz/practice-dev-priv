@@ -1,4 +1,4 @@
-import { FormatterAction, FormatterCallbackAction, Monaco } from '../types';
+import { FormatterAction, FormatterCallbackAction } from '../types';
 
 interface CallbackDefer {
   resolve: (code: string) => void;
@@ -10,7 +10,10 @@ export class FormatterService {
   private version = 0;
   private deferMap: Record<number, CallbackDefer> = {};
 
-  constructor(private monaco: Monaco) {
+  init() {
+    if (this.worker) {
+      return;
+    }
     this.worker = new Worker(
       new URL('./FormatterService.worker.ts', import.meta.url)
     );
@@ -32,21 +35,11 @@ export class FormatterService {
         }
       }
     });
-
-    this.monaco.languages.registerDocumentFormattingEditProvider('typescript', {
-      provideDocumentFormattingEdits: async model => {
-        return [
-          {
-            text: await this.formatCode('typescript', model.getValue()),
-            range: model.getFullModelRange(),
-          },
-        ];
-      },
-    });
   }
 
   dispose() {
-    this.worker.terminate();
+    this.worker?.terminate();
+    this.worker = null!;
   }
 
   formatCode(lang: string, code: string) {

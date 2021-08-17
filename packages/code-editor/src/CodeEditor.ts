@@ -214,6 +214,7 @@ export class CodeEditor {
   }
 
   addFile(file: EditorFile) {
+    console.log('add file', file);
     const model = this.monaco.editor.createModel(
       file.source,
       _getModelLanguage(file.path),
@@ -285,7 +286,9 @@ export class CodeEditor {
     }
     this.highlighter.dispose();
     this.formatter.dispose();
-    this.monaco.editor.getModels().forEach(model => model.dispose());
+    this.monaco.editor.getModels().forEach(model => {
+      model.dispose();
+    });
   }
 
   makeModelBackup() {
@@ -310,7 +313,7 @@ export class CodeEditor {
     Object.values(this.modelBackup.models).forEach(data => {
       const model = this.monaco.editor.createModel(
         data.source,
-        'typescript',
+        _getModelLanguage(data.uri.path),
         data.uri
       );
       this.models[data.id] = model;
@@ -324,8 +327,15 @@ export class CodeEditor {
   }
 
   disposeModels() {
-    Object.values(this.models).forEach(model => {
-      model.dispose();
+    if (!this.isInited) {
+      return;
+    }
+    this.monaco.editor.getModels().forEach(model => {
+      if (!model.uri.path.startsWith('/node_modules/')) {
+        if (!model.isDisposed()) {
+          model.dispose();
+        }
+      }
     });
     this.activeId = null;
   }

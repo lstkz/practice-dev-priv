@@ -5,9 +5,19 @@ import { APIService } from './APIService';
 import { useModelState } from './useModelState';
 import {
   IWorkspaceModel,
-  ReadOnlyWorkspaceModel,
   TreeNode,
-  WorkspaceModel,
+  WorkspaceModelNext,
+  BundlerService,
+  BrowserPreviewService,
+  EditorStateService,
+  EditorFactory,
+  CodeEditorModel,
+  FormatterService,
+  ModelCollection,
+  CodeActionsCallbackMap,
+  HighlighterService,
+  ThemeService,
+  EditorCreator,
 } from 'code-editor';
 import { CDN_BASE_URL, IFRAME_ORIGIN } from 'src/config';
 import { useErrorModalActions } from 'src/features/ErrorModalModule';
@@ -21,11 +31,6 @@ import {
   WorkspaceNode,
   WorkspaceNodeType,
 } from 'shared';
-import { CodeEditor } from 'code-editor/src/CodeEditor';
-import { EditorStateService } from 'code-editor/src/services/EditorStateService';
-import { BrowserPreviewService } from 'code-editor/src/services/BrowserPreviewService';
-import { BundlerService } from 'code-editor/src/services/BundlerService';
-import { EditorFactory } from 'code-editor/src/EditorFactory';
 import { MonacoLoader } from './MonacoLoader';
 import { migrateTabState } from './migrateTabState';
 import { MockAPIService } from './MockAPIService';
@@ -62,36 +67,23 @@ function useServices(workspace: Workspace, challengeId: string) {
     const apiService = workspace
       ? new APIService(workspace.id, workspace.s3Auth)
       : new MockAPIService();
-    const codeEditor = new CodeEditor(false);
-    const readOnlyCodeEditor = new CodeEditor(true);
     const editorStateService = new EditorStateService(challengeId);
     const browserPreviewService = new BrowserPreviewService(IFRAME_ORIGIN);
-    const bundlerService = new BundlerService(browserPreviewService);
-    const readOnlyBundlerService = new BundlerService(browserPreviewService);
-    const workspaceModel = new WorkspaceModel(
-      codeEditor,
+
+    const creator = new EditorCreator(
       apiService,
-      editorStateService,
-      bundlerService
-    );
-    const readOnlyWorkspaceModel = new ReadOnlyWorkspaceModel(
-      readOnlyCodeEditor,
-      apiService,
-      readOnlyBundlerService
+      browserPreviewService,
+      editorStateService
     );
     const editorFactory = new EditorFactory();
     const monacoLoader = new MonacoLoader();
     return {
-      codeEditor,
-      readOnlyCodeEditor,
+      editorFactory,
+      monacoLoader,
+      apiService,
       editorStateService,
       browserPreviewService,
-      bundlerService,
-      workspaceModel,
-      editorFactory,
-      apiService,
-      readOnlyWorkspaceModel,
-      monacoLoader,
+      creator,
     };
   }, []);
 }
@@ -152,16 +144,13 @@ export const EditorModule = React.forwardRef<
     'EditorModule'
   );
   const {
-    readOnlyCodeEditor,
-    codeEditor,
-    workspaceModel,
-    readOnlyWorkspaceModel,
-    browserPreviewService,
-    apiService,
     editorFactory,
     monacoLoader,
-    editorStateService,
+    apiService,
+    browserPreviewService,
+    creator,
   } = useServices(props.workspace, challenge.id);
+  const { workspaceModel, themeService } = creator;
   const loadedDefer = React.useMemo(() => {
     let resolve: () => void = null!;
     const promise = new Promise<void>(_resolve => {
@@ -196,9 +185,15 @@ export const EditorModule = React.forwardRef<
       await monacoLoader.init();
       const monaco = monacoLoader.getMonaco();
       editorFactory.init(monaco, container);
-      codeEditor.init(monaco, editorFactory);
+      themeService.init();
+      creator.init(monaco, editorFactory.create());
+      // bundlerService.init();
+      // highlighterService.init(monaco);
+      // codeEditor.init(monaco, editorFactory);
       await Promise.all(
-        workspace.libraries.map(lib => codeEditor.addLib(lib.name, lib.types))
+        workspace.libraries.map(lib =>
+          creator.modelCollection.addLib(lib.name, lib.types)
+        )
       );
       await browserPreviewService.waitForLoad();
       browserPreviewService.setLibraries(workspace.libraries);
@@ -213,25 +208,25 @@ export const EditorModule = React.forwardRef<
       browserPreviewService.load(iframe);
     },
     submit: async () => {
-      const { workspace } = getState();
-      try {
-        setState(draft => {
-          draft.isSubmitting = true;
-        });
-        workspaceModel.setReadOnly(true);
-        setLeftSidebarTab('test-suite');
-        const data = await workspaceModel.getBundledCode();
-        const html = convertCodeToHtml(data, workspace.libraries);
-        const indexHtmlS3Key = await apiService.uploadIndexFile(html);
-        await testerSubmit(indexHtmlS3Key);
-      } catch (e) {
-        showError(e);
-      } finally {
-        workspaceModel.setReadOnly(false);
-        setState(draft => {
-          draft.isSubmitting = false;
-        });
-      }
+      // const { workspace } = getState();
+      // try {
+      //   setState(draft => {
+      //     draft.isSubmitting = true;
+      //   });
+      //   workspaceModel.setReadOnly(true);
+      //   setLeftSidebarTab('test-suite');
+      //   const data = await workspaceModel.getBundledCode();
+      //   const html = convertCodeToHtml(data, workspace.libraries);
+      //   const indexHtmlS3Key = await apiService.uploadIndexFile(html);
+      //   await testerSubmit(indexHtmlS3Key);
+      // } catch (e) {
+      //   showError(e);
+      // } finally {
+      //   workspaceModel.setReadOnly(false);
+      //   setState(draft => {
+      //     draft.isSubmitting = false;
+      //   });
+      // }
     },
   });
 
@@ -239,59 +234,59 @@ export const EditorModule = React.forwardRef<
     ref,
     () => ({
       openReadOnlyWorkspace: async (workspace: ReadOnlyWorkspace) => {
-        await loadedDefer.promise;
-        readOnlyCodeEditor.disposeModels();
-        if (getState().mode === 'default') {
-          codeEditor.makeModelBackup();
-          codeEditor.disposeModels();
-        }
-        const monaco = monacoLoader.getMonaco();
-        readOnlyCodeEditor.init(monaco, editorFactory);
-        await readOnlyWorkspaceModel.init({
-          defaultOpenFiles: ['./App.tsx'],
-          nodes: mapWorkspaceNodes(workspace.id, workspace.items, 'submission'),
-        });
-        setState(draft => {
-          draft.mode = 'readOnly';
-        });
+        // await loadedDefer.promise;
+        // readOnlyCodeEditor.disposeModels();
+        // if (getState().mode === 'default') {
+        //   codeEditor.makeModelBackup();
+        //   codeEditor.disposeModels();
+        // }
+        // const monaco = monacoLoader.getMonaco();
+        // readOnlyCodeEditor.init(monaco, editorFactory);
+        // await readOnlyWorkspaceModel.init({
+        //   defaultOpenFiles: ['./App.tsx'],
+        //   nodes: mapWorkspaceNodes(workspace.id, workspace.items, 'submission'),
+        // });
+        // setState(draft => {
+        //   draft.mode = 'readOnly';
+        // });
       },
       closeReadOnlyWorkspace: async () => {
-        readOnlyCodeEditor.disposeModels();
-        if (workspaceModel.getIsInited()) {
-          codeEditor.restoreModelBackup();
-          workspaceModel.loadCode();
-        } else {
-          await initWorkspace();
-        }
-        workspaceModel.setReadOnly(false);
-        setState(draft => {
-          draft.mode = 'default';
-        });
+        // readOnlyCodeEditor.disposeModels();
+        // if (workspaceModel.getIsInited()) {
+        //   codeEditor.restoreModelBackup();
+        //   workspaceModel.loadCode();
+        // } else {
+        //   await initWorkspace();
+        // }
+        // workspaceModel.setReadOnly(false);
+        // setState(draft => {
+        //   draft.mode = 'default';
+        // });
       },
       openNewWorkspace: async newWorkspace => {
-        readOnlyCodeEditor.disposeModels();
-        const newNodes = mapWorkspaceNodes(
-          newWorkspace.id,
-          newWorkspace.items,
-          'workspace'
-        );
-        const tabState = migrateTabState({
-          tabState: readOnlyWorkspaceModel.getModelState().state,
-          newNodes,
-          nodes: readOnlyWorkspaceModel.getModelState().state.nodes,
-          defaultNodePath: 'App.tsx',
-        });
-        editorStateService.updateTabsState(tabState);
-        workspaceModel.setReadOnly(false);
-        await workspaceModel.reload({
-          fileHashMap: _getFileHashMap(newWorkspace),
-          nodes: newNodes,
-          workspaceId: newWorkspace.id,
-        });
-        setState(draft => {
-          draft.mode = 'default';
-          draft.workspace = newWorkspace;
-        });
+        // readOnlyCodeEditor.disposeModels();
+        // const newNodes = mapWorkspaceNodes(
+        //   newWorkspace.id,
+        //   newWorkspace.items,
+        //   'workspace'
+        // );
+        // const tabState = migrateTabState({
+        //   tabState: readOnlyWorkspaceModel.getModelState().state,
+        //   newNodes,
+        //   nodes: readOnlyWorkspaceModel.getModelState().state.nodes,
+        //   defaultNodePath: 'App.tsx',
+        // });
+        // editorStateService.updateTabsState(tabState);
+        // workspaceModel.setReadOnly(false);
+        // await workspaceModel.reload({
+        //   fileHashMap: _getFileHashMap(newWorkspace),
+        //   nodes: newNodes,
+        //   workspaceId: newWorkspace.id,
+        // });
+        // setState(draft => {
+        //   draft.mode = 'default';
+        //   draft.workspace = newWorkspace;
+        // });
       },
     }),
     []
@@ -301,18 +296,14 @@ export const EditorModule = React.forwardRef<
   usePreventEditorNavigation(dirtyMap);
   React.useEffect(() => {
     return () => {
-      workspaceModel.dispose();
-      codeEditor.dispose();
-      browserPreviewService.dispose();
+      creator.dispose();
     };
   }, []);
-  const { mode } = state;
   return (
     <Provider
       state={{
         ...state,
-        workspaceModel:
-          mode === 'default' ? workspaceModel : readOnlyWorkspaceModel,
+        workspaceModel,
       }}
       actions={actions}
     >
