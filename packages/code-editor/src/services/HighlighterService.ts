@@ -2,10 +2,10 @@ import type { editor } from 'monaco-editor';
 import { ThemeService } from './ThemeService';
 import { HighlighterAction, HighlighterCallbackAction, Monaco } from '../types';
 
-const DEBUG_TYPE = true;
+const DEBUG_TYPE = process.env.NODE_ENV === 'development';
 
 export class HighlighterService {
-  private lastDecorations: string[] = [];
+  private lastDecorations: Record<string, string[]> = {};
   private worker: Worker = null!;
 
   constructor(
@@ -19,7 +19,11 @@ export class HighlighterService {
     this.worker.addEventListener('message', e => {
       const action = e.data as HighlighterCallbackAction;
       const { classifications, version } = action.payload;
-      const currentVersion = this.editor.getModel()?.getVersionId();
+      const model = this.editor.getModel();
+      if (!model) {
+        return;
+      }
+      const currentVersion = model.getVersionId();
       if (currentVersion == null || currentVersion !== version) {
         return;
       }
@@ -41,9 +45,10 @@ export class HighlighterService {
         };
       });
 
-      this.lastDecorations = this.editor
-        .getModel()!
-        .deltaDecorations(this.lastDecorations, decorations);
+      this.lastDecorations[model.id] = model.deltaDecorations(
+        this.lastDecorations[model.id],
+        decorations
+      );
     });
     void this.highlight();
     editor.onDidChangeModelContent(this.highlight);
