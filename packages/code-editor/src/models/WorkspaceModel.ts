@@ -1,102 +1,149 @@
 import * as R from 'remeda';
 import { doFn } from '../lib/helper';
-import { FileTreeHelper } from '../lib/tree';
-import { CodeEditor } from '../CodeEditor';
-import { IAPIService, InitWorkspaceOptions, TreeNode } from '../types';
+import { ModelState, ModelStateUpdater } from '../lib/ModelState';
+import { FileTreeHelper, findFileByPath } from '../lib/tree';
+import { TypedEventEmitter } from '../lib/TypedEventEmitter';
 import { BundlerService } from '../services/BundlerService';
 import { EditorStateService } from '../services/EditorStateService';
-import { BaseWorkspaceModel } from './BaseWorkspaceModel';
+import {
+  CodeActionsCallbackMap,
+  FileNode,
+  IAPIService,
+  InitWorkspaceOptions,
+  TreeNode,
+  WorkspaceState,
+} from '../types';
+import { CodeEditorModel } from './CodeEditorModel';
+import { ModelCollection } from './ModelCollection';
+
+function getDefaultState(): WorkspaceState {
+  return {
+    activeTabId: null,
+    tabs: [],
+    dirtyMap: {},
+    nodes: [],
+    nodeState: {},
+  };
+}
 
 function randomHash() {
   return R.randomString(15);
 }
 
-export class WorkspaceModel extends BaseWorkspaceModel {
-  private workspaceId: string = null!;
-  private isInited = false;
+const TODO_INPUT_FILE = './index.tsx';
+
+export class WorkspaceModel {
+  private modelState: ModelState<WorkspaceState> = null!;
+  private fileHashMap: Map<string, string> = new Map();
+  private options: InitWorkspaceOptions = null!;
+  private hasAttachedEvents = false;
+
   constructor(
-    codeEditor: CodeEditor,
-    apiService: IAPIService,
+    private codeEditorModel: CodeEditorModel,
+    private emitter: TypedEventEmitter<CodeActionsCallbackMap>,
+    private apiService: IAPIService,
     private editorStateService: EditorStateService,
-    bundlerService: BundlerService
+    private bundlerService: BundlerService,
+    private modelCollection: ModelCollection
   ) {
-    super(codeEditor, apiService, bundlerService, 'WorkspaceModel');
-  }
-
-  async reload(options: InitWorkspaceOptions) {
-    this.codeEditor.clearState();
-    this.fileHashMap = new Map();
-    await this._init(options);
-  }
-
-  private async _init(options: InitWorkspaceOptions) {
-    const tabsState = this.editorStateService.loadTabsState();
-    this.workspaceId = options.workspaceId;
-    this.fileHashMap = options.fileHashMap;
-    this.setState(draft => {
-      draft.activeTabId = tabsState.activeTabId;
-      draft.tabs = tabsState.tabs;
-      draft.nodes = options.nodes;
-    });
-    await this._addNodesToEditor();
-    this._loadCode();
-    if (tabsState.activeTabId) {
-      this.codeEditor.openFile(tabsState.activeTabId);
-    }
-  }
-
-  getIsInited() {
-    return this.isInited;
+    this.modelState = new ModelState(getDefaultState(), 'WorkspaceModelNext');
   }
 
   async init(options: InitWorkspaceOptions) {
-    if (this.isInited) {
-      return;
-    }
-    this.isInited = true;
-    await this._init(options);
-    this.codeEditor.addEventListener('modified', ({ fileId, hasChanges }) => {
-      this.setState(draft => {
-        if (hasChanges) {
-          draft.dirtyMap[fileId] = hasChanges;
-        } else {
-          delete draft.dirtyMap[fileId];
+    this.options = options;
+    const { defaultOpenFiles, fileHashMap, nodes, readOnly } = options;
+    const tabsState = readOnly
+      ? {
+          activeTabId: null,
+          tabs: [],
         }
-      });
+      : this.editorStateService.loadTabsState();
+    this.fileHashMap = fileHashMap;
+    const nodeMap = R.indexBy(nodes, x => x.id);
+    tabsState.tabs = tabsState.tabs.filter(x => nodeMap[x.id]);
+    if (tabsState.activeTabId && !nodeMap[tabsState.activeTabId]) {
+      tabsState.activeTabId = null;
+    }
+    const pathHelper = new FileTreeHelper(nodes);
+    if (!tabsState.tabs.length && defaultOpenFiles.length) {
+      const tree = pathHelper.buildRecTree();
+      const tabs = defaultOpenFiles
+        .map(path => findFileByPath(tree, path))
+        .map(node => ({
+          id: node.id,
+          name: node.name,
+        }));
+      tabsState.tabs = tabs;
+    }
+    if (!tabsState.activeTabId && tabsState.tabs.length) {
+      tabsState.activeTabId = tabsState.tabs[0].id;
+    }
+    this.setState(draft => {
+      draft.activeTabId = tabsState.activeTabId;
+      draft.tabs = tabsState.tabs;
+      draft.nodes = nodes;
     });
-    this.codeEditor.addEventListener('saved', ({ fileId, content }) => {
-      this.setState(draft => {
-        delete draft.dirtyMap[fileId];
-      });
-      const newHash = randomHash();
-      void this.apiService.updateNode({
-        id: fileId,
-        content,
-        hash: newHash,
-      });
-      this.fileHashMap.set(fileId, newHash);
-      this._loadCode();
+    const fileNodes = await Promise.all(
+      nodes
+        .filter(node => node.type === 'file')
+        .map(async node => {
+          node = node as FileNode;
+          return {
+            id: node.id,
+            path: pathHelper.getPath(node.id),
+            source: await this.apiService.getFileContent(
+              node.contentUrl!,
+              this.fileHashMap.get(node.id)
+            ),
+          };
+        })
+    );
+    this.modelCollection.replaceFiles(fileNodes);
+    if (tabsState.activeTabId) {
+      this.modelCollection.openFile(tabsState.activeTabId);
+    }
+    this.attachEvents();
+    this.loadCode();
+    this.setReadOnly(options.readOnly ?? false);
+  }
+
+  public getModelState() {
+    return this.modelState;
+  }
+
+  protected get state() {
+    return this.modelState.state;
+  }
+
+  protected setState(updater: ModelStateUpdater<WorkspaceState>) {
+    this.modelState.update(updater);
+  }
+
+  openFile(id: string) {
+    this.openTab(id);
+    this.modelCollection.openFile(id);
+    this.syncTabs();
+  }
+
+  closeFile(id: string) {
+    let newActiveId: string | null | -1 = -1;
+    this.setState(draft => {
+      draft.tabs = draft.tabs.filter(x => x.id !== id);
+      if (draft.activeTabId === id) {
+        draft.activeTabId = draft.tabs[0]?.id ?? null;
+        newActiveId = draft.activeTabId;
+      }
     });
-    this.codeEditor.addEventListener('opened', ({ fileId }) => {
-      this._openTab(fileId);
-      this._syncTabs();
-    });
-    this.codeEditor.addEventListener('errorsChanged', ({ diffErrorMap }) => {
-      this.setState(draft => {
-        Object.keys(diffErrorMap).forEach(fileId => {
-          if (diffErrorMap[fileId]) {
-            draft.nodeState[fileId] = 'error';
-          } else {
-            delete draft.nodeState[fileId];
-          }
-        });
-      });
-    });
+    if (newActiveId !== -1) {
+      this.modelCollection.openFile(newActiveId);
+    }
+    this.modelCollection.revertDirty(id);
+    this.syncTabs();
   }
 
   async removeNode(nodeId: string) {
     void this.apiService.deleteNode(nodeId);
-    const node = this._getNodeById(nodeId);
+    const node = this.getNodeById(nodeId);
     const nodesToRemove = doFn(() => {
       if (node.type === 'directory') {
         const treeHelper = new FileTreeHelper(this.state.nodes);
@@ -106,7 +153,7 @@ export class WorkspaceModel extends BaseWorkspaceModel {
     });
     nodesToRemove.forEach(node => {
       if (node.type === 'file') {
-        this.codeEditor.removeFile(node.id);
+        this.modelCollection.removeFile(node.id);
       }
     });
     const removedMap = R.indexBy(nodesToRemove, x => x.id);
@@ -120,9 +167,9 @@ export class WorkspaceModel extends BaseWorkspaceModel {
       }
       draft.nodes = draft.nodes.filter(x => !removedMap[x.id]);
     });
-    this.codeEditor.openFile(this.state.activeTabId);
-    this._syncTabs();
-    this._loadCode();
+    this.modelCollection.openFile(this.state.activeTabId);
+    this.syncTabs();
+    this.loadCode();
   }
 
   async renameNode(nodeId: string, name: string) {
@@ -143,20 +190,13 @@ export class WorkspaceModel extends BaseWorkspaceModel {
     const renameNodes = treeHelper.flattenDirectory(nodeId);
     renameNodes.forEach(node => {
       if (node.type === 'file') {
-        this.codeEditor.changeFilePath(node.id, treeHelper.getPath(node.id));
+        this.modelCollection.changeFilePath(
+          node.id,
+          treeHelper.getPath(node.id)
+        );
       }
     });
-    this._loadCode();
-  }
-
-  openFile(id: string) {
-    super.openFile(id);
-    this._syncTabs();
-  }
-
-  closeFile(id: string) {
-    super.closeFile(id);
-    this._syncTabs();
+    this.loadCode();
   }
 
   addNew(newNode: TreeNode) {
@@ -165,7 +205,7 @@ export class WorkspaceModel extends BaseWorkspaceModel {
     this.fileHashMap.set(nodeId, hash);
     void this.apiService.addNode({
       ...newNode,
-      workspaceId: this.workspaceId,
+      workspaceId: this.options.workspaceId,
       hash,
     });
     this.setState(draft => {
@@ -175,37 +215,107 @@ export class WorkspaceModel extends BaseWorkspaceModel {
       return;
     }
     const pathHelper = new FileTreeHelper(this.state.nodes);
-    this.codeEditor.addFile({
+    this.modelCollection.addFile({
       id: nodeId,
       path: pathHelper.getPath(nodeId),
       source: '',
     });
     this.openFile(nodeId);
     requestAnimationFrame(() => {
-      this.codeEditor.focus();
+      this.codeEditorModel.focus();
     });
   }
 
-  dispose() {
-    this.bundlerService.dispose();
-    this.codeEditor.dispose();
-  }
+  dispose() {}
 
   setReadOnly(readOnly: boolean) {
-    this.codeEditor.setReadOnly(readOnly);
-  }
-
-  loadCode() {
-    this._loadCode();
+    this.codeEditorModel.setReadOnly(readOnly);
   }
 
   getBundledCode() {
-    return this.bundlerService.loadCodeAsync(this._getLoadCodeOptions());
+    return this.bundlerService.loadCodeAsync(this.getLoadCodeOptions());
   }
 
-  ////
+  ///
 
-  private _syncTabs() {
+  private attachEvents() {
+    if (this.hasAttachedEvents) {
+      return;
+    }
+    this.hasAttachedEvents = true;
+    this.emitter.addEventListener('modified', ({ fileId, hasChanges }) => {
+      this.setState(draft => {
+        if (hasChanges) {
+          draft.dirtyMap[fileId] = hasChanges;
+        } else {
+          delete draft.dirtyMap[fileId];
+        }
+      });
+    });
+    this.emitter.addEventListener('saved', ({ fileId, content }) => {
+      this.setState(draft => {
+        delete draft.dirtyMap[fileId];
+      });
+      const newHash = randomHash();
+      void this.apiService.updateNode({
+        id: fileId,
+        content,
+        hash: newHash,
+      });
+      this.fileHashMap.set(fileId, newHash);
+      this.loadCode();
+    });
+    this.emitter.addEventListener('opened', ({ fileId }) => {
+      this.openTab(fileId);
+      this.syncTabs();
+    });
+    this.emitter.addEventListener('errorsChanged', ({ diffErrorMap }) => {
+      this.setState(draft => {
+        Object.keys(diffErrorMap).forEach(fileId => {
+          if (diffErrorMap[fileId]) {
+            draft.nodeState[fileId] = 'error';
+          } else {
+            delete draft.nodeState[fileId];
+          }
+        });
+      });
+    });
+  }
+
+  private getNodeById(id: string) {
+    const { nodes } = this.state;
+    return nodes.find(x => x.id === id)!;
+  }
+
+  private openTab(id: string) {
+    const file = this.getNodeById(id);
+    this.setState(draft => {
+      draft.activeTabId = id;
+      if (!draft.tabs.some(x => x.id === id)) {
+        draft.tabs.push({
+          id: id,
+          name: file.name,
+        });
+      }
+    });
+  }
+
+  private loadCode() {
+    this.bundlerService.init();
+    this.bundlerService.loadCode(this.getLoadCodeOptions());
+  }
+
+  private getLoadCodeOptions() {
+    return {
+      fileMap: this.modelCollection.getFileMap(),
+      inputFile: TODO_INPUT_FILE,
+    };
+  }
+
+  private syncTabs() {
+    if (this.options.readOnly) {
+      return;
+    }
     const { activeTabId, tabs } = this.state;
     this.editorStateService.updateTabsState({
       activeTabId,

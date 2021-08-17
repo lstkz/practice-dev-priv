@@ -3,7 +3,7 @@ import { EditorFactory } from './EditorFactory';
 import { TypedEventEmitter } from './lib/TypedEventEmitter';
 import { CodeEditorModel } from './models/CodeEditorModel';
 import { ModelCollection } from './models/ModelCollection';
-import { WorkspaceModelNext } from './models/WorkspaceModelNext';
+import { WorkspaceModel } from './models/WorkspaceModel';
 import { BrowserPreviewService } from './services/BrowserPreviewService';
 import { BundlerService } from './services/BundlerService';
 import { EditorStateService } from './services/EditorStateService';
@@ -20,7 +20,7 @@ export class EditorCreator {
   highlighterService: HighlighterService;
   modelCollection: ModelCollection;
   codeEditorModel: CodeEditorModel;
-  workspaceModel: WorkspaceModelNext;
+  workspaceModel: WorkspaceModel;
   editorFactory: EditorFactory;
 
   constructor(
@@ -41,7 +41,7 @@ export class EditorCreator {
       this.formatterService,
       this.modelCollection
     );
-    this.workspaceModel = new WorkspaceModelNext(
+    this.workspaceModel = new WorkspaceModel(
       this.codeEditorModel,
       this.emitter,
       this.apiService,
