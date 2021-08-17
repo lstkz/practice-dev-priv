@@ -2,6 +2,11 @@ export * from '@pvd/types';
 
 import { TesterSocketMessage, TestInfo } from '@pvd/types';
 
+export interface BundleData {
+  code: string;
+  css: string;
+}
+
 export interface User {
   id: string;
   email: string;
@@ -19,7 +24,7 @@ export interface AuthData {
 export type IframeMessage =
   | {
       type: 'inject';
-      payload: { code: string; importMap: Record<string, string> };
+      payload: { data: BundleData; importMap: Record<string, string> };
     }
   | {
       type: 'error';

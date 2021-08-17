@@ -1,5 +1,5 @@
 import * as Babel from '@babel/standalone';
-import { rollup } from 'rollup';
+import { OutputAsset, OutputChunk, RenderedModule, rollup } from 'rollup';
 import { BundlerAction, BundlerCallbackAction, SourceCode } from '../types';
 
 declare const self: Worker;
@@ -32,10 +32,44 @@ async function buildSourceCode(options: BuildSourceCodeOptions) {
   const { input, modules } = options;
 
   const extensions = ['.ts', '.tsx', '.js', '.jsx'];
+  const styles: Record<string, string> = {};
   return rollup({
     input,
-
     plugins: [
+      {
+        name: 'import-css',
+        transform(code, id) {
+          if (!id.endsWith('.css')) {
+            return;
+          }
+          styles[id] = code;
+          return {
+            code: `export default ${JSON.stringify(code)};`,
+            map: { mappings: '' },
+          };
+        },
+        generateBundle(opts, bundle) {
+          const modules: Record<string, RenderedModule> = {};
+          for (const file in bundle) {
+            const data = bundle[file];
+            if ('modules' in data) {
+              Object.assign(modules, data.modules);
+            }
+          }
+          const css = Object.keys(styles)
+            .filter(id => !modules[id])
+            .map(id => styles[id])
+            .join('\n');
+          if (css.trim().length <= 0) {
+            return;
+          }
+          this.emitFile({
+            type: 'asset',
+            fileName: `styles.css`,
+            source: css,
+          });
+        },
+      },
       {
         name: 'test',
         resolveId(target, parent) {
@@ -86,16 +120,20 @@ self.addEventListener('message', async event => {
       inlineDynamicImports: true,
       format: 'es',
     });
-    if (output.length !== 1) {
-      throw new Error('Expected single output, got: ' + output.length);
+    const chunks = output.filter(x => x.type === 'chunk') as OutputChunk[];
+    const assets = output.filter(x => x.type === 'asset') as OutputAsset[];
+    if (chunks.length !== 1) {
+      throw new Error('Expected single chunk, got: ' + chunks.length);
     }
     const code =
-      output[0].code + '\n//# sourceMappingURL=' + output[0].map!.toUrl();
+      chunks[0].code + '\n//# sourceMappingURL=' + chunks[0].map!.toUrl();
+    const css = assets[0]?.source as string;
     sendMessage({
       type: 'bundled',
       payload: {
         code,
         version,
+        css,
       },
     });
   } catch (e: any) {
