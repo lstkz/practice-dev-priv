@@ -220,8 +220,8 @@ export const EditorModule = React.forwardRef<
         });
         workspaceModel.setReadOnly(true);
         setLeftSidebarTab('test-suite');
-        const code = await workspaceModel.getBundledCode();
-        const html = convertCodeToHtml(code, workspace.libraries);
+        const data = await workspaceModel.getBundledCode();
+        const html = convertCodeToHtml(data, workspace.libraries);
         const indexHtmlS3Key = await apiService.uploadIndexFile(html);
         await testerSubmit(indexHtmlS3Key);
       } catch (e) {

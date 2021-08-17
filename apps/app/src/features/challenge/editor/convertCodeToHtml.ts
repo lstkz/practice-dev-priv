@@ -1,7 +1,8 @@
+import { BundleData } from 'code-editor';
 import { LibraryDefinition } from 'shared';
 
 export function convertCodeToHtml(
-  code: string,
+  data: BundleData,
   libraries: LibraryDefinition[]
 ) {
   const importMap: Record<string, string> = {};
@@ -16,6 +17,9 @@ export function convertCodeToHtml(
       <meta charset="utf-8" />
       <title>Your awesome app</title>
       <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <style type="text/css">
+      ${escape(data.css ?? '')}
+      </style>
       <script type="importmap">
       ${escape(
         JSON.stringify(
@@ -28,7 +32,7 @@ export function convertCodeToHtml(
       )}
       </script>
       <script type="module" id="__app">
-        ${escape(code)}
+        ${escape(data.code)}
       </script> 
     </head>
     <body>

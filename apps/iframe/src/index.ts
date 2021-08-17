@@ -53,7 +53,7 @@ window.addEventListener('message', e => {
     }
     case 'inject': {
       document.getElementById('__bundler-error')?.remove();
-      const { code, importMap } = action.payload;
+      const { data, importMap } = action.payload;
       if (!document.body.querySelector('#root')) {
         const root = document.createElement('div');
         root.setAttribute('id', 'root');
@@ -73,15 +73,20 @@ window.addEventListener('message', e => {
         );
         head.append(importScript);
       }
-      const existing = head.querySelector('#__app');
-      if (existing) {
-        existing.remove();
-      }
+      head.querySelector('#__app')?.remove();
       const script = document.createElement('script');
       script.setAttribute('type', 'module');
       script.setAttribute('id', '__app');
-      script.innerHTML = code;
+      script.innerHTML = data.code;
       head.append(script);
+      head.querySelector('#__css')?.remove();
+      if (data.css) {
+        const style = document.createElement('style');
+        style.setAttribute('type', 'text/css');
+        style.setAttribute('id', '__css');
+        style.innerHTML = data.css;
+        head.append(style);
+      }
       break;
     }
   }

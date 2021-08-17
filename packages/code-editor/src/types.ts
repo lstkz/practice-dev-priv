@@ -114,6 +114,7 @@ export type BundlerCallbackAction =
       type: 'bundled';
       payload: {
         code: string;
+        css: string;
         version: number;
       };
     }
@@ -184,4 +185,9 @@ export interface IWorkspaceModel {
   openFile(id: string): void;
   closeFile(id: string): void;
   addNew(newNode: TreeNode): void;
+}
+
+export interface BundleData {
+  code: string;
+  css: string;
 }

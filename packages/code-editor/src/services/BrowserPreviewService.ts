@@ -1,12 +1,12 @@
 import { IframeCallbackMessage, IframeMessage } from 'shared';
-import { LibraryDep } from '../types';
+import { BundleData, LibraryDep } from '../types';
 
 export class BrowserPreviewService {
   private iframe: HTMLIFrameElement = null!;
   private markLoaded: () => void = null!;
   private loadedPromise: Promise<void> = null!;
   private importMap: Record<string, string> = {};
-  private lastInjectedCode: string | null = null;
+  private lastInjectedCode: BundleData | null = null;
   private lastError: any | null = null;
   private onMessage: (e: MessageEvent<any>) => void = null!;
 
@@ -65,12 +65,12 @@ export class BrowserPreviewService {
     this.importMap = map;
   }
 
-  inject(code: string) {
+  inject(data: BundleData) {
     this.lastError = null;
-    this.lastInjectedCode = code;
+    this.lastInjectedCode = data;
     this.sendMessage({
       type: 'inject',
-      payload: { code, importMap: this.importMap },
+      payload: { data, importMap: this.importMap },
     });
   }
 

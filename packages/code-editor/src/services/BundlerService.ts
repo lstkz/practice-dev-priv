@@ -1,4 +1,9 @@
-import { BundlerAction, BundlerCallbackAction, SourceCode } from '../types';
+import {
+  BundleData,
+  BundlerAction,
+  BundlerCallbackAction,
+  SourceCode,
+} from '../types';
 import { BrowserPreviewService } from './BrowserPreviewService';
 
 export interface BundleOptions {
@@ -7,7 +12,7 @@ export interface BundleOptions {
 }
 
 interface CallbackDefer {
-  resolve: (code: string) => void;
+  resolve: (data: BundleData) => void;
   reject: (err: any) => void;
 }
 
@@ -45,8 +50,8 @@ export class BundlerService {
       }
       switch (action.type) {
         case 'bundled': {
-          const { code } = action.payload;
-          this.defer.resolve(code);
+          const { code, css } = action.payload;
+          this.defer.resolve({ code, css });
           break;
         }
         case 'error': {
@@ -57,9 +62,9 @@ export class BundlerService {
       }
     });
   }
-  private async bundle(options: BundleOptions): Promise<string> {
+  private async bundle(options: BundleOptions): Promise<BundleData> {
     const version = ++this.version;
-    return new Promise<string>((resolve, reject) => {
+    return new Promise<BundleData>((resolve, reject) => {
       this.defer = {
         resolve,
         reject,

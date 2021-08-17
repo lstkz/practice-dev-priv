@@ -24,6 +24,22 @@ interface BackupModel {
   uri: Uri;
 }
 
+function _getModelLanguage(path: string) {
+  if (/.tsx?$/.test(path)) {
+    return 'typescript';
+  }
+  if (/.jsx?$/.test(path)) {
+    return 'javascript';
+  }
+  if (/.css$/.test(path)) {
+    return 'css';
+  }
+  if (/.html$/.test(path)) {
+    return 'html';
+  }
+  return 'text';
+}
+
 export interface CallbackMap {
   modified: (data: { fileId: string; hasChanges: boolean }) => void;
   saved: (data: { fileId: string; content: string }) => void;
@@ -200,7 +216,7 @@ export class CodeEditor {
   addFile(file: EditorFile) {
     const model = this.monaco.editor.createModel(
       file.source,
-      'typescript',
+      _getModelLanguage(file.path),
       this.monaco.Uri.parse(fixFilePath(file.path))
     );
     this.models[file.id] = model;
