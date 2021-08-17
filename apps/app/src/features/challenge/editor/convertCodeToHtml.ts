@@ -1,4 +1,4 @@
-import { BundleData } from 'code-editor';
+import { BundleData } from 'shared';
 import { LibraryDefinition } from 'shared';
 
 export function convertCodeToHtml(

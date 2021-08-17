@@ -1,7 +1,11 @@
 export * from '@pvd/types';
 
 import { TesterSocketMessage, TestInfo } from '@pvd/types';
-import { BundleData } from 'code-editor';
+
+export interface BundleData {
+  code: string;
+  css: string;
+}
 
 export interface User {
   id: string;
