@@ -60,4 +60,8 @@ export class CodeEditorModel {
   dispose() {
     this.editor.dispose();
   }
+
+  setReadOnly(readOnly: boolean) {
+    this.editor.updateOptions({ readOnly });
+  }
 }

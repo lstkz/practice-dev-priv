@@ -155,6 +155,7 @@ export interface IAPIService {
 }
 
 export interface InitWorkspaceOptions {
+  defaultOpenFiles: string[];
   workspaceId: string;
   nodes: TreeNode[];
   fileHashMap: Map<string, string>;

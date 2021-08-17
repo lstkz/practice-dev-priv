@@ -1,7 +1,7 @@
 import * as R from 'remeda';
 import { doFn } from '../lib/helper';
 import { ModelState, ModelStateUpdater } from '../lib/ModelState';
-import { FileTreeHelper } from '../lib/tree';
+import { FileTreeHelper, findFileByPath } from '../lib/tree';
 import { TypedEventEmitter } from '../lib/TypedEventEmitter';
 import { BundlerService } from '../services/BundlerService';
 import { EditorStateService } from '../services/EditorStateService';
@@ -51,15 +51,38 @@ export class WorkspaceModelNext {
 
   async init(options: InitWorkspaceOptions) {
     this.options = options;
-    const tabsState = this.editorStateService.loadTabsState();
-    this.fileHashMap = options.fileHashMap;
+    const { defaultOpenFiles, fileHashMap, nodes, readOnly } = options;
+    const tabsState = readOnly
+      ? {
+          activeTabId: null,
+          tabs: [],
+        }
+      : this.editorStateService.loadTabsState();
+    this.fileHashMap = fileHashMap;
+    const nodeMap = R.indexBy(nodes, x => x.id);
+    tabsState.tabs = tabsState.tabs.filter(x => nodeMap[x.id]);
+    if (tabsState.activeTabId && !nodeMap[tabsState.activeTabId]) {
+      tabsState.activeTabId = null;
+    }
+    const pathHelper = new FileTreeHelper(nodes);
+    if (!tabsState.tabs.length && defaultOpenFiles.length) {
+      const tree = pathHelper.buildRecTree();
+      const tabs = defaultOpenFiles
+        .map(path => findFileByPath(tree, path))
+        .map(node => ({
+          id: node.id,
+          name: node.name,
+        }));
+      tabsState.tabs = tabs;
+    }
+    if (!tabsState.activeTabId && tabsState.tabs.length) {
+      tabsState.activeTabId = tabsState.tabs[0].id;
+    }
     this.setState(draft => {
       draft.activeTabId = tabsState.activeTabId;
       draft.tabs = tabsState.tabs;
-      draft.nodes = options.nodes;
+      draft.nodes = nodes;
     });
-    const { nodes } = options;
-    const pathHelper = new FileTreeHelper(nodes);
     const fileNodes = await Promise.all(
       nodes
         .filter(node => node.type === 'file')
@@ -81,6 +104,7 @@ export class WorkspaceModelNext {
     }
     this.attachEvents();
     this.loadCode();
+    this.setReadOnly(options.readOnly ?? false);
   }
 
   public getModelState() {
@@ -203,6 +227,14 @@ export class WorkspaceModelNext {
   }
 
   dispose() {}
+
+  setReadOnly(readOnly: boolean) {
+    this.codeEditorModel.setReadOnly(readOnly);
+  }
+
+  getBundledCode() {
+    return this.bundlerService.loadCodeAsync(this.getLoadCodeOptions());
+  }
 
   ///
 

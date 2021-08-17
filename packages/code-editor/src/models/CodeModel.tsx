@@ -123,6 +123,7 @@ export class CodeModel {
     }
     this.setHasError(false);
     this.id = newId;
+    this.committedText = newContent;
     this.vsModel.setValue(newContent);
     if (this.isOpened) {
       this.isOpened = false;

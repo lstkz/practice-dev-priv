@@ -6,17 +6,9 @@ import { useModelState } from './useModelState';
 import {
   IWorkspaceModel,
   TreeNode,
-  WorkspaceModelNext,
-  BundlerService,
   BrowserPreviewService,
   EditorStateService,
   EditorFactory,
-  CodeEditorModel,
-  FormatterService,
-  ModelCollection,
-  CodeActionsCallbackMap,
-  HighlighterService,
-  ThemeService,
   EditorCreator,
 } from 'code-editor';
 import { CDN_BASE_URL, IFRAME_ORIGIN } from 'src/config';
@@ -34,6 +26,7 @@ import {
 import { MonacoLoader } from './MonacoLoader';
 import { migrateTabState } from './migrateTabState';
 import { MockAPIService } from './MockAPIService';
+import { api } from 'src/services/api';
 
 interface Actions {
   load: (container: HTMLDivElement) => void;
@@ -120,7 +113,7 @@ export interface EditorModuleRef {
   openNewWorkspace: (newWorkspace: Workspace) => void;
 }
 
-function _getFileHashMap(workspace: Workspace) {
+function _getFileHashMap(workspace: Workspace | ReadOnlyWorkspace) {
   const fileHashMap = new Map<string, string>();
   workspace.items.forEach(item => {
     fileHashMap.set(item.id, item.hash);
@@ -150,7 +143,7 @@ export const EditorModule = React.forwardRef<
     browserPreviewService,
     creator,
   } = useServices(props.workspace, challenge.id);
-  const { workspaceModel, themeService } = creator;
+  const { workspaceModel, themeService, editorStateService } = creator;
   const loadedDefer = React.useMemo(() => {
     let resolve: () => void = null!;
     const promise = new Promise<void>(_resolve => {
@@ -170,12 +163,17 @@ export const EditorModule = React.forwardRef<
   const { setLeftSidebarTab } = useChallengeActions();
   const { submit: testerSubmit } = useTesterActions();
 
-  const initWorkspace = () => {
-    const { workspace } = getState();
+  const initWorkspace = (
+    workspace: Workspace | ReadOnlyWorkspace,
+    type: 'workspace' | 'submission',
+    readOnly = false
+  ) => {
     return workspaceModel.init({
+      defaultOpenFiles: ['./App.tsx'],
       fileHashMap: _getFileHashMap(workspace),
-      nodes: mapWorkspaceNodes(workspace.id, workspace.items, 'workspace'),
+      nodes: mapWorkspaceNodes(workspace.id, workspace.items, type),
       workspaceId: workspace.id,
+      readOnly,
     });
   };
 
@@ -187,9 +185,6 @@ export const EditorModule = React.forwardRef<
       editorFactory.init(monaco, container);
       themeService.init();
       creator.init(monaco, editorFactory.create());
-      // bundlerService.init();
-      // highlighterService.init(monaco);
-      // codeEditor.init(monaco, editorFactory);
       await Promise.all(
         workspace.libraries.map(lib =>
           creator.modelCollection.addLib(lib.name, lib.types)
@@ -198,7 +193,7 @@ export const EditorModule = React.forwardRef<
       await browserPreviewService.waitForLoad();
       browserPreviewService.setLibraries(workspace.libraries);
       if (!noWorkspaceInit) {
-        await initWorkspace();
+        await initWorkspace(workspace, 'workspace');
       }
       setState(draft => {
         draft.isLoaded = true;
@@ -208,25 +203,25 @@ export const EditorModule = React.forwardRef<
       browserPreviewService.load(iframe);
     },
     submit: async () => {
-      // const { workspace } = getState();
-      // try {
-      //   setState(draft => {
-      //     draft.isSubmitting = true;
-      //   });
-      //   workspaceModel.setReadOnly(true);
-      //   setLeftSidebarTab('test-suite');
-      //   const data = await workspaceModel.getBundledCode();
-      //   const html = convertCodeToHtml(data, workspace.libraries);
-      //   const indexHtmlS3Key = await apiService.uploadIndexFile(html);
-      //   await testerSubmit(indexHtmlS3Key);
-      // } catch (e) {
-      //   showError(e);
-      // } finally {
-      //   workspaceModel.setReadOnly(false);
-      //   setState(draft => {
-      //     draft.isSubmitting = false;
-      //   });
-      // }
+      const { workspace } = getState();
+      try {
+        setState(draft => {
+          draft.isSubmitting = true;
+        });
+        workspaceModel.setReadOnly(true);
+        setLeftSidebarTab('test-suite');
+        const data = await workspaceModel.getBundledCode();
+        const html = convertCodeToHtml(data, workspace.libraries);
+        const indexHtmlS3Key = await apiService.uploadIndexFile(html);
+        await testerSubmit(indexHtmlS3Key);
+      } catch (e) {
+        showError(e);
+      } finally {
+        workspaceModel.setReadOnly(false);
+        setState(draft => {
+          draft.isSubmitting = false;
+        });
+      }
     },
   });
 
@@ -234,59 +229,40 @@ export const EditorModule = React.forwardRef<
     ref,
     () => ({
       openReadOnlyWorkspace: async (workspace: ReadOnlyWorkspace) => {
-        // await loadedDefer.promise;
-        // readOnlyCodeEditor.disposeModels();
-        // if (getState().mode === 'default') {
-        //   codeEditor.makeModelBackup();
-        //   codeEditor.disposeModels();
-        // }
-        // const monaco = monacoLoader.getMonaco();
-        // readOnlyCodeEditor.init(monaco, editorFactory);
-        // await readOnlyWorkspaceModel.init({
-        //   defaultOpenFiles: ['./App.tsx'],
-        //   nodes: mapWorkspaceNodes(workspace.id, workspace.items, 'submission'),
-        // });
-        // setState(draft => {
-        //   draft.mode = 'readOnly';
-        // });
+        await loadedDefer.promise;
+        await initWorkspace(workspace, 'submission', true);
+
+        setState(draft => {
+          draft.mode = 'readOnly';
+        });
       },
       closeReadOnlyWorkspace: async () => {
-        // readOnlyCodeEditor.disposeModels();
-        // if (workspaceModel.getIsInited()) {
-        //   codeEditor.restoreModelBackup();
-        //   workspaceModel.loadCode();
-        // } else {
-        //   await initWorkspace();
-        // }
-        // workspaceModel.setReadOnly(false);
-        // setState(draft => {
-        //   draft.mode = 'default';
-        // });
+        const workspace = await api.workspace_getOrCreateWorkspace({
+          challengeId: challenge.id,
+        });
+        await initWorkspace(workspace, 'workspace');
+        setState(draft => {
+          draft.mode = 'default';
+        });
       },
       openNewWorkspace: async newWorkspace => {
-        // readOnlyCodeEditor.disposeModels();
-        // const newNodes = mapWorkspaceNodes(
-        //   newWorkspace.id,
-        //   newWorkspace.items,
-        //   'workspace'
-        // );
-        // const tabState = migrateTabState({
-        //   tabState: readOnlyWorkspaceModel.getModelState().state,
-        //   newNodes,
-        //   nodes: readOnlyWorkspaceModel.getModelState().state.nodes,
-        //   defaultNodePath: 'App.tsx',
-        // });
-        // editorStateService.updateTabsState(tabState);
-        // workspaceModel.setReadOnly(false);
-        // await workspaceModel.reload({
-        //   fileHashMap: _getFileHashMap(newWorkspace),
-        //   nodes: newNodes,
-        //   workspaceId: newWorkspace.id,
-        // });
-        // setState(draft => {
-        //   draft.mode = 'default';
-        //   draft.workspace = newWorkspace;
-        // });
+        const newNodes = mapWorkspaceNodes(
+          newWorkspace.id,
+          newWorkspace.items,
+          'workspace'
+        );
+        const tabState = migrateTabState({
+          tabState: workspaceModel.getModelState().state,
+          newNodes,
+          nodes: workspaceModel.getModelState().state.nodes,
+          defaultNodePath: 'App.tsx',
+        });
+        editorStateService.updateTabsState(tabState);
+        await initWorkspace(newWorkspace, 'workspace');
+        setState(draft => {
+          draft.mode = 'default';
+          draft.workspace = newWorkspace;
+        });
       },
     }),
     []
