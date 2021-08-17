@@ -30,7 +30,7 @@ interface Actions {
   openSubmission: (submission: Submission) => Promise<void>;
   openSolution: (solution: Solution) => Promise<void>;
   closeReadOnlyWorkspace: () => void;
-  fork: () => void;
+  fork: () => Promise<void>;
   resetWorkspace: () => void;
 }
 

@@ -38,6 +38,7 @@ export function ChallengeHeader() {
   const { openedSubmission, openedSolution, challenge } = useChallengeState();
   const { closeReadOnlyWorkspace, fork } = useChallengeActions();
   const [isConfirmOpen, setIsConfirmOpen] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
   return (
     <div tw="bg-gray-800 h-10 flex items-center px-2 flex-shrink-0">
       <ConfirmModal
@@ -48,10 +49,16 @@ export function ChallengeHeader() {
         close={() => {
           setIsConfirmOpen(false);
         }}
-        confirm={() => {
-          setIsConfirmOpen(false);
-          fork();
+        confirm={async () => {
+          try {
+            setIsLoading(true);
+            await fork();
+          } finally {
+            setIsLoading(false);
+            setIsConfirmOpen(false);
+          }
         }}
+        isLoading={isLoading}
         isOpen={isConfirmOpen}
       />
       <Logo
