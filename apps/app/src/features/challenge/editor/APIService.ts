@@ -33,6 +33,16 @@ export class APIService implements IAPIService {
     this.bucketName = auth.bucketName;
   }
 
+  updateAuth(auth: WorkspaceS3Auth) {
+    this.s3 = new S3({
+      credentials: auth.credentials,
+      region: 'eu-central-1',
+    });
+  }
+  updateWorkspaceId(workspaceId: string) {
+    this.workspaceId = workspaceId;
+  }
+
   async getFileContent(contentUrl: string, hash?: string) {
     let url = contentUrl;
     if (hash) {
