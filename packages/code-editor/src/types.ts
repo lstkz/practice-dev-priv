@@ -155,9 +155,11 @@ export interface IAPIService {
 }
 
 export interface InitWorkspaceOptions {
+  defaultOpenFiles: string[];
   workspaceId: string;
   nodes: TreeNode[];
   fileHashMap: Map<string, string>;
+  readOnly?: boolean;
 }
 
 export interface InitReadOnlyWorkspaceOptions {
@@ -190,4 +192,11 @@ export interface IWorkspaceModel {
 export interface BundleData {
   code: string;
   css: string;
+}
+
+export interface CodeActionsCallbackMap {
+  modified: (data: { fileId: string; hasChanges: boolean }) => void;
+  saved: (data: { fileId: string; content: string }) => void;
+  opened: (data: { fileId: string }) => void;
+  errorsChanged: (data: { diffErrorMap: Record<string, boolean> }) => void;
 }

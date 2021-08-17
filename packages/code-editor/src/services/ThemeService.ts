@@ -1,3 +1,5 @@
+import DarkThemeNew from '../themes/dark-theme-new.json';
+
 interface TokenStyle {
   foreground: string;
   fontStyle: string;
@@ -18,6 +20,11 @@ export class ThemeService {
   private settings: ThemeSettings = null!;
   private map: Map<string, { style: TokenStyle; className: string }> = null!;
   private scopeCache: Map<string, string> = null!;
+
+  init() {
+    this.loadTheme(DarkThemeNew as any);
+    this.injectStyles();
+  }
 
   loadTheme(settings: ThemeSettings) {
     this.settings = settings;
@@ -107,4 +114,6 @@ ${this.generateCSS(style)}
     this.scopeCache.set(scope, ret);
     return ret;
   }
+
+  dispose() {}
 }

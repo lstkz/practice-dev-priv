@@ -4,29 +4,32 @@ import { HighlighterAction, HighlighterCallbackAction, Monaco } from '../types';
 
 const DEBUG_TYPE = process.env.NODE_ENV === 'development';
 
-export class HighlighterService {
-  private lastDecorations: Record<string, string[]> = {};
-  private worker: Worker = null!;
+interface CallbackDefer {
+  resolve: (decorations: editor.IModelDeltaDecoration[]) => void;
+  reject: (err: any) => void;
+}
 
-  constructor(
-    private monaco: Monaco,
-    private editor: editor.IStandaloneCodeEditor,
-    private themer: ThemeService
-  ) {
+export class HighlighterService {
+  private worker: Worker = null!;
+  private version = 0;
+  private deferMap: Record<number, CallbackDefer> = {};
+  private monaco: Monaco = null!;
+
+  constructor(private themer: ThemeService) {}
+
+  init(monaco: Monaco) {
+    this.monaco = monaco;
+    if (this.worker) {
+      return;
+    }
     this.worker = new Worker(
       new URL('./HighlighterService.worker.ts', import.meta.url)
     );
     this.worker.addEventListener('message', e => {
       const action = e.data as HighlighterCallbackAction;
       const { classifications, version } = action.payload;
-      const model = this.editor.getModel();
-      if (!model) {
-        return;
-      }
-      const currentVersion = model.getVersionId();
-      if (currentVersion == null || currentVersion !== version) {
-        return;
-      }
+      const defer = this.deferMap[version];
+      delete this.deferMap[version];
       const decorations = classifications.map(classification => {
         let className = this.themer.getClassNameForScope(classification.scope);
         if (DEBUG_TYPE) {
@@ -44,30 +47,25 @@ export class HighlighterService {
           },
         };
       });
-
-      this.lastDecorations[model.id] = model.deltaDecorations(
-        this.lastDecorations[model.id],
-        decorations
-      );
+      defer.resolve(decorations);
     });
-    void this.highlight();
-    editor.onDidChangeModelContent(this.highlight);
-    editor.onDidChangeModel(this.highlight);
   }
 
-  highlight = async () => {
-    const code = this.editor.getValue();
-    const currentVersion = this.editor.getModel()?.getVersionId();
-    if (currentVersion == null) {
-      return;
-    }
-    this.sendMessage({
-      type: 'highlight',
-      payload: {
-        lang: 'ts',
-        code,
-        version: currentVersion,
-      },
+  highlight = async (code: string) => {
+    return new Promise<editor.IModelDeltaDecoration[]>((resolve, reject) => {
+      const version = ++this.version;
+      this.deferMap[version] = {
+        reject,
+        resolve,
+      };
+      this.sendMessage({
+        type: 'highlight',
+        payload: {
+          lang: 'ts',
+          code,
+          version,
+        },
+      });
     });
   };
 

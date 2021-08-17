@@ -26,4 +26,8 @@ export class TypedEventEmitter<TCallbackMap> {
       }
     });
   }
+
+  dispose() {
+    this.callbacks = [];
+  }
 }
