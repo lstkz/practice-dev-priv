@@ -5,6 +5,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
+import { IS_SSR } from 'src/config';
 import { useLayoutEffectFix } from 'src/hooks/useLayoutEffectFix';
 import tw from 'twin.macro';
 import { Button } from '../../components/Button';
@@ -13,16 +14,80 @@ import { SolutionModal } from './SolutionModal';
 import { TabTitle } from './TabTitle';
 import { useTesterActions, useTesterState } from './TesterModule';
 
+declare global {
+  interface Element {
+    scrollIntoViewIfNeeded(centerIfNeeded?: boolean): void;
+  }
+}
+
+if (!IS_SSR && !Element.prototype.scrollIntoViewIfNeeded) {
+  Element.prototype.scrollIntoViewIfNeeded = function (
+    this: any,
+    centerIfNeeded
+  ) {
+    centerIfNeeded = arguments.length === 0 ? true : !!centerIfNeeded;
+    const parent = this.parentNode;
+    const parentComputedStyle = window.getComputedStyle(parent, null);
+    const parentBorderTopWidth = parseInt(
+      parentComputedStyle.getPropertyValue('border-top-width')
+    );
+    const parentBorderLeftWidth = parseInt(
+      parentComputedStyle.getPropertyValue('border-left-width')
+    );
+    const overTop = this.offsetTop - parent.offsetTop < parent.scrollTop;
+    const overBottom =
+      this.offsetTop -
+        parent.offsetTop +
+        this.clientHeight -
+        parentBorderTopWidth >
+      parent.scrollTop + parent.clientHeight;
+    const overLeft = this.offsetLeft - parent.offsetLeft < parent.scrollLeft;
+    const overRight =
+      this.offsetLeft -
+        parent.offsetLeft +
+        this.clientWidth -
+        parentBorderLeftWidth >
+      parent.scrollLeft + parent.clientWidth;
+    const alignWithTop = overTop && !overBottom;
+
+    if ((overTop || overBottom) && centerIfNeeded) {
+      parent.scrollTop =
+        this.offsetTop -
+        parent.offsetTop -
+        parent.clientHeight / 2 -
+        parentBorderTopWidth +
+        this.clientHeight / 2;
+    }
+
+    if ((overLeft || overRight) && centerIfNeeded) {
+      parent.scrollLeft =
+        this.offsetLeft -
+        parent.offsetLeft -
+        parent.clientWidth / 2 -
+        parentBorderLeftWidth +
+        this.clientWidth / 2;
+    }
+
+    if ((overTop || overBottom || overLeft || overRight) && !centerIfNeeded) {
+      this.scrollIntoView(alignWithTop);
+    }
+  };
+}
+
 export function TestSuiteTab() {
   const modalRef = React.useRef<ModalRef>(null!);
   const { tests, result, submissionId, isShared } = useTesterState();
   const { markAsShared } = useTesterActions();
   const ref = React.useRef<HTMLDivElement>(null!);
   useLayoutEffectFix(() => {
-    const node = ref.current;
-    if (node) {
-      node.scrollTop = node.scrollHeight;
-      return;
+    const test =
+      tests.find(x => x.result === 'pending') ||
+      [...tests].reverse().find(x => x.result !== 'fail-skipped');
+    if (test) {
+      const node = document.getElementById('test-' + test.id);
+      if (node?.scrollIntoViewIfNeeded) {
+        node.scrollIntoViewIfNeeded();
+      }
     }
   }, [tests]);
   return (
