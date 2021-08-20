@@ -12,13 +12,24 @@ function sendMessage(action: HighlighterCallbackAction) {
   self.postMessage(action);
 }
 
+const extMap: Record<string, string> = {
+  css: 'css.tmLanguage.json',
+  html: 'html.tmLanguage.json',
+  js: 'JavaScript.tmLanguage.json',
+  jsx: 'JavaScriptReact.tmLanguage.json',
+  ts: 'TypeScript.tmLanguage.json',
+  tsx: 'TypeScriptReact.tmLanguage.json',
+};
+
 const registry = new Registry({
-  getGrammarDefinition: async _scopeName => {
+  getGrammarDefinition: async scopeName => {
+    const name = extMap[scopeName];
+    if (!name) {
+      throw new Error('Lang not supported');
+    }
     return {
-      format: 'plist',
-      content: await fetch('/grammars/TypeScriptReact.tmLanguage.plist').then(
-        x => x.text()
-      ),
+      format: 'json',
+      content: await fetch(`/grammars/${name}`).then(x => x.text()),
     };
   },
 });
@@ -34,6 +45,9 @@ self.addEventListener('message', async event => {
   const { lang, code, version } = action.payload;
   if (!initPromise) {
     initPromise = init();
+  }
+  if (!lang || !extMap[lang]) {
+    return;
   }
   await initPromise;
   const grammar = await registry.loadGrammar(lang);
