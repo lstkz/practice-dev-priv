@@ -16,6 +16,10 @@ beforeEach(() => {
   next = 1;
 });
 
+afterAll(done => {
+  setTimeout(done);
+});
+
 describe('createWorkspaceNodes', () => {
   it('should create a tree without directories', () => {
     expect(

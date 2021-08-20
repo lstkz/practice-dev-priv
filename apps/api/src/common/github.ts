@@ -36,14 +36,23 @@ export async function exchangeCode(code: string) {
   return body.access_token;
 }
 
-export interface GitHubUserData {
+interface SharedGithubData {
+  id: number;
+  name?: string;
+  blog?: string;
+  location?: string;
+  country?: string;
+  bio?: string;
+  avatar_url?: string;
+}
+
+export interface GitHubUserData extends SharedGithubData {
   id: number;
   username: string;
   email: string;
 }
 
-interface GithubUser {
-  id: number;
+interface GithubUser extends SharedGithubData {
   login: string;
 }
 
@@ -64,9 +73,8 @@ export async function getUserData(accessToken: string) {
       headers: getHeaders(accessToken),
     }).then(res => getResponseBody<GithubEmail[]>('Get user emails', res)),
   ]);
-
   const userData: GitHubUserData = {
-    id: user.id,
+    ...user,
     username: user.login,
     email: '',
   };

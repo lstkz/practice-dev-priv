@@ -4,13 +4,16 @@ import {
   randomInt,
   randomUniqString,
   getCurrentDate,
+  doFn,
+  randomString,
 } from '../../common/helper';
+import jimp from 'jimp';
 import { UserCollection, UserModel } from '../../collections/User';
 import { ObjectID } from 'mongodb';
 import { config } from 'config';
 import { AppError, UnauthorizedError } from '../../common/errors';
 import { dispatchEvent, dispatchTask } from '../../dispatch';
-import { AuthData } from 'shared';
+import { AuthData, UserProfile } from 'shared';
 import { mapUser } from '../../common/mapper';
 import { createToken } from './createToken';
 import {
@@ -19,6 +22,7 @@ import {
 } from '../../collections/ConfirmEmailCode';
 import { AppUser } from '../../types';
 import { AccessTokenCollection } from '../../collections/AccessToken';
+import { s3 } from '../../lib';
 
 interface CreateUserValues {
   userId?: ObjectID;
@@ -29,6 +33,7 @@ interface CreateUserValues {
   githubId?: number;
   lastSeenAt?: Date;
   registeredAt?: Date;
+  profile?: UserProfile;
 }
 
 export async function createUser(
@@ -50,6 +55,7 @@ export async function createUser(
     githubId: values.githubId,
     lastSeenAt: values.lastSeenAt ?? getCurrentDate(),
     registeredAt: values.registeredAt ?? getCurrentDate(),
+    profile: values.profile,
   };
   if (!user.githubId) {
     delete user.githubId;
@@ -138,4 +144,45 @@ export async function getAppUser(token: string): Promise<AppUser> {
     ...ret,
     accessToken: token,
   };
+}
+
+export async function uploadUserAvatar(imgBuffer: Buffer) {
+  const img = await jimp.read(imgBuffer).catch(() => {
+    throw new AppError('Uploaded file is not a valid image');
+  });
+  if (img.bitmap.width !== img.bitmap.height) {
+    throw new AppError('Image must be square');
+  }
+  const getPath = (size: string) => `cdn/avatars/${id}-${size}.png`;
+  const id = randomString(20);
+  await Promise.all([
+    doFn(async () => {
+      await s3
+        .upload({
+          Bucket: config.aws.s3Bucket,
+          Key: getPath('org'),
+          Body: await img.clone().getBufferAsync('image/png'),
+        })
+        .promise();
+    }),
+    doFn(async () => {
+      await s3
+        .upload({
+          Bucket: config.aws.s3Bucket,
+          Key: getPath('280x280'),
+          Body: await img.clone().resize(280, 280).getBufferAsync('image/png'),
+        })
+        .promise();
+    }),
+    doFn(async () => {
+      await s3
+        .upload({
+          Bucket: config.aws.s3Bucket,
+          Key: getPath('80x80'),
+          Body: await img.clone().resize(80, 80).getBufferAsync('image/png'),
+        })
+        .promise();
+    }),
+  ]);
+  return id;
 }

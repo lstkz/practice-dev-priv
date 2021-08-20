@@ -5,6 +5,7 @@ import { WorkspaceNodeModel } from '../collections/WorkspaceNode';
 import { ObjectID } from 'mongodb2';
 import { config } from 'config';
 import { SubmissionNodeModel } from '../collections/Submission';
+import { countryList } from 'shared';
 
 const SECURITY = {
   SALT_LENGTH: 64,
@@ -174,4 +175,12 @@ export function getNotifyTestPubKey(options: {
 }) {
   const { challengeId, userId } = options;
   return `NOTIFY_TEST:${challengeId}:${userId}`;
+}
+
+export function countryNameToCode(name: string | undefined | null) {
+  if (!name) {
+    return undefined;
+  }
+  return countryList.find(x => x.name.toLowerCase() === name.toLowerCase())
+    ?.code;
 }
