@@ -52,9 +52,11 @@ export function LayoutManager(props: LayoutManagerProps) {
 
   useLayoutEffectFix(() => {
     document.body.style.overflow = 'hidden';
-    const resizeObserver = new ResizeObserver(entries => {
-      const item = entries[0];
-      const width = item.contentRect.width;
+    const onResize = () => {
+      if (!ref.current) {
+        return;
+      }
+      const width = document.body.clientWidth - ref.current.offsetLeft * 2;
       const mainSize = width - getLeftSize() - getRightSize();
       let sizeNeeded = MAIN_MIN - mainSize;
       if (sizeNeeded > 0) {
@@ -66,14 +68,13 @@ export function LayoutManager(props: LayoutManagerProps) {
       }
       setSize({
         width,
-        height: item.contentRect.height,
+        height: ref.current.clientHeight,
       });
-    });
-
-    resizeObserver.observe(ref.current!);
+    };
+    window.addEventListener('resize', onResize);
     return () => {
       document.body.style.overflow = '';
-      resizeObserver.disconnect();
+      window.removeEventListener('resize', onResize);
     };
   }, []);
   React.useEffect(() => {
