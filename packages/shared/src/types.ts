@@ -297,8 +297,8 @@ export interface Challenge {
 export interface UserPublicProfile {
   id: string;
   username: string;
-  name: string;
-  avatarId?: string | null;
+  name?: string | null | undefined;
+  avatarId?: string | null | undefined;
   rank: number;
   crypto: number;
   solutions: number;
@@ -307,8 +307,10 @@ export interface UserPublicProfile {
   following: number;
   memberSince: string;
   lastSeen: string;
-  about: string;
+  about?: string | null | undefined;
   isFollowing: boolean;
+  country?: string | null | undefined;
+  url?: string | null | undefined;
 }
 
 export interface ActivityChallengeSolved {

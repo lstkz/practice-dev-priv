@@ -49,7 +49,7 @@ export const getPublicProfile = createContract('user.getPublicProfile')
     return {
       id: viewUser._id.toHexString(),
       username: viewUser.username,
-      name: viewUser.profile?.name ?? '',
+      name: viewUser.profile?.name,
       avatarId: viewUser.avatarId,
       rank: 0,
       crypto: 0,
@@ -59,8 +59,10 @@ export const getPublicProfile = createContract('user.getPublicProfile')
       following,
       memberSince: viewUser.registeredAt.toISOString(),
       lastSeen: viewUser.lastSeenAt.toISOString(),
-      about: viewUser.profile?.about ?? '',
+      about: viewUser.profile?.about,
       isFollowing: currentFollower != null,
+      country: viewUser.profile?.country,
+      url: viewUser.profile?.url,
     };
   });
 

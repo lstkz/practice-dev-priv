@@ -1,4 +1,5 @@
 import React from 'react';
+import { countryList } from 'shared';
 import { UserAvatar } from 'src/components/UserAvatar';
 import { useUser } from '../AuthModule';
 import { FollowButton } from './FollowButton';
@@ -8,6 +9,9 @@ export function ProfileHeader() {
   const { profile } = useProfileState();
   const { follow, unfollow } = useProfileActions();
   const user = useUser();
+  const country = React.useMemo(() => {
+    return countryList.find(x => x.code === profile.country);
+  }, [profile]);
   return (
     <div tw="md:flex md:items-center md:justify-between md:space-x-5">
       <div tw="flex items-center space-x-5">
@@ -19,11 +23,15 @@ export function ProfileHeader() {
         <div>
           {profile.name ? (
             <>
-              <h1 tw="text-2xl font-bold text-gray-900">{profile.name}</h1>
+              <h1 tw="text-2xl font-bold text-gray-900">
+                {profile.name} {country?.emoji}
+              </h1>
               <p tw="text-sm font-medium text-gray-500">@{profile.username}</p>
             </>
           ) : (
-            <h1 tw="text-xl font-bold text-gray-900">@{profile.username}</h1>
+            <h1 tw="text-xl font-bold text-gray-900">
+              @{profile.username} {country?.emoji}
+            </h1>
           )}
         </div>
       </div>

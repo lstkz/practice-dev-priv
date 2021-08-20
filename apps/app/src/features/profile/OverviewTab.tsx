@@ -35,9 +35,18 @@ export function OverviewTab() {
         <Stats label="Last Seen">
           {DateFns.format(new Date(profile.lastSeen), 'dd MMM yyyy')}
         </Stats>
-        <Stats label="About" double>
-          {profile.about}
-        </Stats>
+        {profile.url && (
+          <Stats label="Url" double>
+            <a href={profile.url} target="_blank" rel="noopener">
+              {profile.url}
+            </a>
+          </Stats>
+        )}
+        {profile.about && (
+          <Stats label="About" double>
+            {profile.about}
+          </Stats>
+        )}
       </dl>
     </div>
   );
