@@ -20,7 +20,7 @@ export function UserAvatar(props: UserAvatarProps) {
         <img
           tw="relative rounded-full "
           css={[sizeCss]}
-          src={getAvatarUrl(user.avatarId, size === 'xl' ? 280 : 80)}
+          src={getAvatarUrl(user.avatarId, size === 'md' ? 80 : 280)}
           alt=""
         />
       ) : (

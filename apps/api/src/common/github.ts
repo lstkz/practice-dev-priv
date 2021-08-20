@@ -40,11 +40,22 @@ export interface GitHubUserData {
   id: number;
   username: string;
   email: string;
+  name: string;
+  blog: string;
+  location: string;
+  bio: string;
+  avatar_url: string;
 }
 
 interface GithubUser {
   id: number;
   login: string;
+  name: string;
+  blog: string;
+  location: string;
+  country: string;
+  bio: string;
+  avatar_url: string;
 }
 
 interface GithubEmail {
@@ -64,9 +75,8 @@ export async function getUserData(accessToken: string) {
       headers: getHeaders(accessToken),
     }).then(res => getResponseBody<GithubEmail[]>('Get user emails', res)),
   ]);
-
   const userData: GitHubUserData = {
-    id: user.id,
+    ...user,
     username: user.login,
     email: '',
   };

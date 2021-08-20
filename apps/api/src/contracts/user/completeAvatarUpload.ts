@@ -1,15 +1,11 @@
 import { config } from 'config';
 import { S } from 'schema';
-import jimp from 'jimp';
 import { AppError } from '../../common/errors';
-import {
-  doFn,
-  getUserAvatarUploadKey,
-  randomString,
-} from '../../common/helper';
+import { getUserAvatarUploadKey } from '../../common/helper';
 import { createContract, createRpcBinding, s3 } from '../../lib';
 import { UserCollection } from '../../collections/User';
 import { AvatarUploadResult } from 'shared';
+import { uploadUserAvatar } from './_common';
 
 export const completeAvatarUpload = createContract('user.completeAvatarUpload')
   .params('user')
@@ -33,46 +29,7 @@ export const completeAvatarUpload = createContract('user.completeAvatarUpload')
     if (!(s3Object.Body instanceof Buffer)) {
       throw new Error('Expected buffer');
     }
-    const img = await jimp.read(s3Object.Body).catch(() => {
-      throw new AppError('Uploaded file is not a valid image');
-    });
-    if (img.bitmap.width !== img.bitmap.height) {
-      throw new AppError('Image must be square');
-    }
-    const getPath = (size: string) => `cdn/avatars/${id}-${size}.png`;
-    const id = randomString(20);
-    await Promise.all([
-      doFn(async () => {
-        await s3
-          .upload({
-            Bucket: config.aws.s3Bucket,
-            Key: getPath('org'),
-            Body: await img.clone().getBufferAsync('image/png'),
-          })
-          .promise();
-      }),
-      doFn(async () => {
-        await s3
-          .upload({
-            Bucket: config.aws.s3Bucket,
-            Key: getPath('280x280'),
-            Body: await img
-              .clone()
-              .resize(280, 280)
-              .getBufferAsync('image/png'),
-          })
-          .promise();
-      }),
-      doFn(async () => {
-        await s3
-          .upload({
-            Bucket: config.aws.s3Bucket,
-            Key: getPath('80x80'),
-            Body: await img.clone().resize(80, 80).getBufferAsync('image/png'),
-          })
-          .promise();
-      }),
-    ]);
+    const id = await uploadUserAvatar(s3Object.Body);
     user.avatarId = id;
     await UserCollection.update(user, ['avatarId']);
     return {
