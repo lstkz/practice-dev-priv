@@ -16,11 +16,19 @@ export function ChallengePage() {
     initialLeftSidebar,
     initialRightSidebar,
   } = useChallengeState();
-
+  const [overflow, setOverflow] = React.useState<string | undefined>('hidden');
+  React.useEffect(() => {
+    const id = setTimeout(() => {
+      setOverflow(undefined);
+    }, 0);
+    return () => {
+      clearTimeout(id);
+    };
+  }, []);
   return (
     <div tw="h-full flex flex-col">
       <ChallengeHeader />
-      <div tw="flex" style={{ height: `calc(100% - 2.5rem)` }}>
+      <div tw="flex" style={{ height: `calc(100% - 2.5rem)`, overflow }}>
         <LeftSidebar />
         <LayoutManager
           initialLeftSidebar={initialLeftSidebar}
