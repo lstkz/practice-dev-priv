@@ -79,7 +79,7 @@ export default function Dashboard(props: DashboardProps) {
           </>
         )}
       </Disclosure>
-      <div tw="bg-gray-50 flex-1">
+      <div tw="bg-gray-50 flex-1 pb-10">
         {user && !user.isVerified && <VerifyAccountAlert />}
         {children}
       </div>
