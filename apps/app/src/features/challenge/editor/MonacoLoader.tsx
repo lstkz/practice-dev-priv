@@ -5,6 +5,11 @@ export class MonacoLoader {
   monaco: Monaco = null!;
 
   async init() {
+    loader.config({
+      paths: {
+        vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.27.0/min/vs',
+      },
+    });
     this.monaco = await loader.init();
   }
 
