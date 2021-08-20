@@ -66,6 +66,7 @@ it('should return user1 (logged as user2)', async () => {
     Object {
       "about": "about field",
       "avatarId": undefined,
+      "country": undefined,
       "crypto": 0,
       "followers": 1,
       "following": 2,
@@ -73,10 +74,11 @@ it('should return user1 (logged as user2)', async () => {
       "isFollowing": false,
       "lastSeen": "1970-01-01T00:00:00.002Z",
       "memberSince": "1970-01-01T00:00:00.001Z",
-      "name": "",
+      "name": undefined,
       "rank": 0,
       "solutions": 1,
       "submissions": 2,
+      "url": undefined,
       "username": "user1",
     }
   `);
@@ -94,8 +96,9 @@ it('should return user2 (logged as user1)', async () => {
     )
   ).toMatchInlineSnapshot(`
     Object {
-      "about": "",
+      "about": undefined,
       "avatarId": undefined,
+      "country": undefined,
       "crypto": 0,
       "followers": 1,
       "following": 0,
@@ -103,10 +106,11 @@ it('should return user2 (logged as user1)', async () => {
       "isFollowing": true,
       "lastSeen": "1970-01-01T00:00:00.020Z",
       "memberSince": "1970-01-01T00:00:00.010Z",
-      "name": "",
+      "name": undefined,
       "rank": 0,
       "solutions": 0,
       "submissions": 0,
+      "url": undefined,
       "username": "user2",
     }
   `);
@@ -121,6 +125,7 @@ it('should return user1 (anonymous)', async () => {
     Object {
       "about": "about field",
       "avatarId": undefined,
+      "country": undefined,
       "crypto": 0,
       "followers": 1,
       "following": 2,
@@ -128,10 +133,11 @@ it('should return user1 (anonymous)', async () => {
       "isFollowing": false,
       "lastSeen": "1970-01-01T00:00:00.002Z",
       "memberSince": "1970-01-01T00:00:00.001Z",
-      "name": "",
+      "name": undefined,
       "rank": 0,
       "solutions": 1,
       "submissions": 2,
+      "url": undefined,
       "username": "user1",
     }
   `);
