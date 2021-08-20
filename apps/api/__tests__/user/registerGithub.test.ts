@@ -1,4 +1,6 @@
+import { ObjectID } from 'mongodb2';
 import { mocked } from 'ts-jest/utils';
+import { UserCollection } from '../../src/collections/User';
 import { exchangeCode, getUserData } from '../../src/common/github';
 import { registerGithub } from '../../src/contracts/user/registerGithub';
 import { createUser } from '../../src/contracts/user/_common';
@@ -18,20 +20,35 @@ beforeAll(async () => {
     email: 'new-user1@example.com',
     id: 123,
     username: 'git123',
+    avatar_url: '',
+    bio: 'bio',
+    blog: 'http://url',
+    location: 'Poland',
+    name: 'User1',
   }));
 });
 
 it('should register successfully', async () => {
   const ret = await execContract(registerGithub, { code: 'abc' });
-  ret.user.id = '';
   expect(ret.user).toMatchInlineSnapshot(`
 Object {
   "avatarId": undefined,
   "email": "new-user1@example.com",
-  "id": "",
+  "id": <Random ObjectID>,
   "isAdmin": undefined,
   "isVerified": true,
   "username": "git123",
+}
+`);
+  const user = await UserCollection.findById(
+    ObjectID.createFromHexString(ret.user.id)
+  );
+  expect(user?.profile).toMatchInlineSnapshot(`
+Object {
+  "about": "bio",
+  "country": "PL",
+  "name": "User1",
+  "url": "http://url",
 }
 `);
 });

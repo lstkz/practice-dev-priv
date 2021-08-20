@@ -36,26 +36,24 @@ export async function exchangeCode(code: string) {
   return body.access_token;
 }
 
-export interface GitHubUserData {
+interface SharedGithubData {
+  id: number;
+  name?: string;
+  blog?: string;
+  location?: string;
+  country?: string;
+  bio?: string;
+  avatar_url?: string;
+}
+
+export interface GitHubUserData extends SharedGithubData {
   id: number;
   username: string;
   email: string;
-  name: string;
-  blog: string;
-  location: string;
-  bio: string;
-  avatar_url: string;
 }
 
-interface GithubUser {
-  id: number;
+interface GithubUser extends SharedGithubData {
   login: string;
-  name: string;
-  blog: string;
-  location: string;
-  country: string;
-  bio: string;
-  avatar_url: string;
 }
 
 interface GithubEmail {
