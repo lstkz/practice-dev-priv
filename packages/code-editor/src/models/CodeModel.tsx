@@ -1,3 +1,4 @@
+import * as R from 'remeda';
 import type { editor } from 'monaco-editor';
 import { TypedEventEmitter } from '../lib/TypedEventEmitter';
 import { HighlighterService } from '../services/HighlighterService';
@@ -31,6 +32,7 @@ export class CodeModel {
   private hasError = false;
   private isOpened = false;
   private highlighVersion = 0;
+  private ext = '';
 
   constructor(
     private monaco: Monaco,
@@ -137,6 +139,7 @@ export class CodeModel {
     if (this.vsModel) {
       this.vsModel.dispose();
     }
+    this.ext = R.last(path.split('.')) ?? '';
     this.vsModel = this.monaco.editor.createModel(
       source,
       _getModelLanguage(path),
@@ -163,7 +166,7 @@ export class CodeModel {
   private highlight(code: string) {
     const version = ++this.highlighVersion;
     void this.highlighter
-      .highlight(code)
+      .highlight(code, this.ext)
       .then(newDecorations => {
         if (version !== this.highlighVersion) {
           return;

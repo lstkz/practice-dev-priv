@@ -51,7 +51,7 @@ export class HighlighterService {
     });
   }
 
-  highlight = async (code: string) => {
+  highlight = async (code: string, lang: string) => {
     return new Promise<editor.IModelDeltaDecoration[]>((resolve, reject) => {
       const version = ++this.version;
       this.deferMap[version] = {
@@ -61,7 +61,7 @@ export class HighlighterService {
       this.sendMessage({
         type: 'highlight',
         payload: {
-          lang: 'ts',
+          lang,
           code,
           version,
         },
