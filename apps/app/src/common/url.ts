@@ -27,6 +27,9 @@ export type UrlOptions =
       name: 'modules';
     }
   | {
+      name: 'roadmap';
+    }
+  | {
       name: 'module';
       slug: string;
     }

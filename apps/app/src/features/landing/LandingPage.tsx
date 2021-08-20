@@ -6,6 +6,7 @@ import { FAQSection } from './FAQSection';
 import Footer from './Footer';
 import HowItWorksSection from './HowItWorksSection';
 import { MainSection } from './MainSection';
+import { RoadmapSection } from './RoadmapSection';
 import { StatsSection } from './StatsSection';
 import TestimonialsSection from './TestimonialsSection';
 import { WhatsPracticeDevSection } from './WhatsPracticeDevSection';
@@ -26,6 +27,7 @@ export function LandingPage() {
       <StatsSection />
       <TestimonialsSection />
       <FAQSection />
+      <RoadmapSection />
       <CTASection />
       <Footer />
     </>

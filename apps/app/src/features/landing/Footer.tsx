@@ -5,9 +5,9 @@ import { createUrl } from '../../common/url';
 const navigation = {
   main: [
     { name: 'Modules', href: createUrl({ name: 'modules' }) },
-    { name: 'Projects', href: '/' },
     { name: 'FAQ', href: '/' },
     { name: 'Contact us', href: '/' },
+    { name: 'Roadmap', href: createUrl({ name: 'roadmap' }) },
     { name: 'Terms', href: '/' },
     { name: 'Privacy Policy', href: '/' },
   ],
