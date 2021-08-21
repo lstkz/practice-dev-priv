@@ -1,15 +1,16 @@
 import Link from 'next/link';
 import { createUrl } from '../../common/url';
 
-/* This example requires Tailwind CSS v2.0+ */
+createUrl({ name: 'privacy' });
+
 const navigation = {
   main: [
     { name: 'Modules', href: createUrl({ name: 'modules' }) },
     { name: 'FAQ', href: '/' },
     { name: 'Contact us', href: '/' },
     { name: 'Roadmap', href: createUrl({ name: 'roadmap' }) },
-    { name: 'Terms', href: '/' },
-    { name: 'Privacy Policy', href: '/' },
+    { name: 'Terms', href: createUrl({ name: 'terms' }) },
+    { name: 'Privacy Policy', href: createUrl({ name: 'privacy' }) },
   ],
   social: [
     {

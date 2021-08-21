@@ -15,7 +15,7 @@ export type UrlOptions =
       name: 'contact-us';
     }
   | {
-      name: 'tos';
+      name: 'terms';
     }
   | {
       name: 'privacy';
@@ -51,8 +51,6 @@ export function createUrl(options: UrlOptions) {
   switch (options.name) {
     case 'home':
       return '/modules';
-    case 'tos':
-      return '/terms';
     case 'module':
       return '/module/' + options.slug;
     case 'profile':
