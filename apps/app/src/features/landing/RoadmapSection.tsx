@@ -59,7 +59,7 @@ export function RoadmapSection() {
           Roadmap
         </h2>
         <p className="mt-4 max-w-3xl mx-auto text-center text-xl text-gray-500">
-          Check our planning features.
+          Check our planning features. Using the platform will be always free.
         </p>
         <div className="flow-root max-w-lg mx-auto px-6 mt-10 text-left">
           <ul role="list" className="-mb-8">
@@ -87,10 +87,16 @@ export function RoadmapSection() {
             </>
             <RoadmapItem title="Q4 2021" />
             <>
+              <RoadmapItem title="Reach $1M TVL on uniswap." small />
               <RoadmapItem
                 title="Enable token deposits on the website."
                 small
               />
+              <RoadmapItem
+                title="Create a voting system using deposited tokens."
+                small
+              />
+              <RoadmapItem title="Gamification system." small />
               <RoadmapItem title="Reach 100 challenges." small />
               <RoadmapItem title="React tutorial from basics." small />
               <RoadmapItem
@@ -101,11 +107,11 @@ export function RoadmapSection() {
             </>
             <RoadmapItem title="Q1 2022" />
             <>
-              <RoadmapItem title="Reach $1M TVL on uniswap." small />
               <RoadmapItem title="Reach 200 challenges." small />
               <RoadmapItem title="HTML tutorial from basics." small />
+              <RoadmapItem title="CSS tutorial from basics." small />
               <RoadmapItem
-                title="CSS tutorial from basics."
+                title="TailwindCSS tutorial from basics."
                 small
                 isLastSmall
               />
@@ -113,13 +119,19 @@ export function RoadmapSection() {
             <RoadmapItem title="Q2 2022" />
             <>
               <RoadmapItem title="Support Vue.js." small />
-              <RoadmapItem title="Support Angular." small isLastSmall />
+              <RoadmapItem title="Support Angular." small />
+              <RoadmapItem title="Vue.js tutorial from basics." small />
+              <RoadmapItem
+                title="Angular tutorial from basics."
+                small
+                isLastSmall
+              />
             </>
             <RoadmapItem title="Q3 2022" />
             <>
               <RoadmapItem title="Reach 500 challenges." small />
               <RoadmapItem
-                title={<span tw="font-bold">Live collaboration mode</span>}
+                title={<span tw="font-bold">Live collaboration mode.</span>}
                 small
                 isLastSmall
               />
@@ -127,10 +139,16 @@ export function RoadmapSection() {
             <RoadmapItem title="Q4 2022" />
             <>
               <RoadmapItem
+                title={
+                  <span tw="font-bold">Workshop hosting for educators.</span>
+                }
+                small
+              />
+              <RoadmapItem
                 title="Support Node.js using Web Containers."
                 small
-                noLine
               />
+              <RoadmapItem title="Node.js tutorial from basics" small noLine />
             </>
           </ul>
         </div>
