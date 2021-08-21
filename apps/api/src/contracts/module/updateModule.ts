@@ -14,6 +14,7 @@ export const updateModule = createContract('module.updateModule')
       mainTechnology: S.string(),
       difficulty: S.string(),
       tags: S.array().items(S.string()),
+      isComingSoon: S.boolean().optional(),
     }),
   })
   .returns<void>()

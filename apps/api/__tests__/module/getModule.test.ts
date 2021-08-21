@@ -53,6 +53,31 @@ it('should throw if module not found by id', async () => {
   ).rejects.toMatchInlineSnapshot(`[AppError: Module not found]`);
 });
 
+it('should throw if module is coming soon', async () => {
+  await ModuleCollection.findOneAndUpdate(
+    {
+      _id: 1,
+    },
+    {
+      $set: {
+        isComingSoon: true,
+      },
+    }
+  );
+  await expect(
+    execContract(
+      getModule,
+      {
+        values: {
+          id: 1,
+        },
+      },
+
+      'user1_token'
+    )
+  ).rejects.toMatchInlineSnapshot(`[AppError: Module is not published]`);
+});
+
 it('should throw if module not found by slug', async () => {
   await expect(
     execContract(

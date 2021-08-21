@@ -31,6 +31,9 @@ export const getModule = createContract('module.getModule')
     if (!module) {
       throw new AppError('Module not found');
     }
+    if (module.isComingSoon) {
+      throw new AppError('Module is not published');
+    }
     const populated = await populateModules(user, [module]);
     return populated[0];
   });

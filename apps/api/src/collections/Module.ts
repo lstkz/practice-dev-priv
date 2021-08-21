@@ -10,6 +10,7 @@ export interface ModuleModel {
   difficulty: string;
   mainTechnology: string;
   stats: ModuleStats;
+  isComingSoon?: boolean;
 }
 
 export const ModuleCollection = createCollection<ModuleModel>('module', [
