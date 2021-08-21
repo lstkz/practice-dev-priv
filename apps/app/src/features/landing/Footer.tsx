@@ -6,7 +6,7 @@ createUrl({ name: 'privacy' });
 const navigation = {
   main: [
     { name: 'Modules', href: createUrl({ name: 'modules' }) },
-    { name: 'FAQ', href: '/' },
+    { name: 'FAQ', href: createUrl({ name: 'faq' }) },
     { name: 'Contact us', href: createUrl({ name: 'contact-us' }) },
     { name: 'Roadmap', href: createUrl({ name: 'roadmap' }) },
     { name: 'Terms', href: createUrl({ name: 'terms' }) },

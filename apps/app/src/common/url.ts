@@ -30,6 +30,9 @@ export type UrlOptions =
       name: 'roadmap';
     }
   | {
+      name: 'faq';
+    }
+  | {
       name: 'module';
       slug: string;
     }
