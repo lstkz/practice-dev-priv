@@ -31,7 +31,12 @@ function ForkBar(props: ForkBarProps) {
   );
 }
 
-export function ChallengeHeader() {
+interface ChallengeHeaderProps {
+  isTabView: boolean;
+}
+
+export function ChallengeHeader(props: ChallengeHeaderProps) {
+  const { isTabView } = props;
   const { submit } = useEditorActions();
   const { isSubmitting } = useEditorState();
   const user = useUser();
@@ -70,6 +75,9 @@ export function ChallengeHeader() {
       />
       <div tw="ml-auto">
         {doFn(() => {
+          if (isTabView) {
+            return null;
+          }
           if (openedSubmission) {
             return (
               <ForkBar
