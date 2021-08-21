@@ -278,6 +278,7 @@ export interface Module {
   solvedChallenges: number;
   totalChallenges: number;
   isAttempted: boolean;
+  isComingSoon?: boolean;
 }
 
 export interface Challenge {
