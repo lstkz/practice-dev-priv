@@ -25,3 +25,5 @@ if (!CDN_BASE_URL) {
 if (!IFRAME_ORIGIN) {
   throw new Error('IFRAME_ORIGIN is not set');
 }
+
+export const IDE_MOBILE_THRESHOLD = 650;

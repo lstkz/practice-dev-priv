@@ -7,6 +7,9 @@ import { LeftSidebar } from './LeftSidebar';
 import { RightSidebar } from './RightSidebar';
 import { RightCol } from './RightCol';
 import { LayoutManager } from './LayoutManager';
+import { MobileTabs } from './MobileTabs';
+import { useIDETabView } from 'src/hooks/useIsIDETabView';
+import { IS_SSR } from 'src/config';
 
 export function ChallengePage() {
   const {} = useChallengeActions();
@@ -25,22 +28,38 @@ export function ChallengePage() {
       clearTimeout(id);
     };
   }, []);
+  const [ideNode] = React.useState<HTMLDivElement>(() => {
+    if (IS_SSR) {
+      return null!;
+    }
+    const node = document.createElement('div');
+    node.style.height = '100%';
+    return node;
+  });
+  const isTabView = useIDETabView();
+  const height = `calc(100% - 2.5rem)`;
   return (
     <div tw="h-full flex flex-col">
-      <ChallengeHeader />
-      <div tw="flex" style={{ height: `calc(100% - 2.5rem)`, overflow }}>
-        <LeftSidebar />
-        <LayoutManager
-          initialLeftSidebar={initialLeftSidebar}
-          initialRightSidebar={initialRightSidebar}
-          left={<LeftCol />}
-          hasLeft={leftSidebarTab != null}
-          main={<MainCol />}
-          right={<RightCol />}
-          hasRight={rightSidebarTab != null}
-        />
-        <RightSidebar />
-      </div>
+      <ChallengeHeader isTabView={isTabView} />
+      {isTabView ? (
+        <div style={{ height }}>
+          <MobileTabs />
+        </div>
+      ) : (
+        <div tw="flex" style={{ height, overflow }}>
+          <LeftSidebar />
+          <LayoutManager
+            initialLeftSidebar={initialLeftSidebar}
+            initialRightSidebar={initialRightSidebar}
+            left={<LeftCol />}
+            hasLeft={leftSidebarTab != null}
+            main={<MainCol ideNode={ideNode} />}
+            right={<RightCol />}
+            hasRight={rightSidebarTab != null}
+          />
+          <RightSidebar />
+        </div>
+      )}
     </div>
   );
 }

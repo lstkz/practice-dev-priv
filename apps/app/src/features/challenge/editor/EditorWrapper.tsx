@@ -41,17 +41,23 @@ const Wrapper = styled.div`
   }
 `;
 
-export function EditorWrapper() {
+interface EditorWrapperProps {
+  ideNode: HTMLDivElement | null;
+}
+
+export function EditorWrapper(props: EditorWrapperProps) {
+  const { ideNode } = props;
   const user = useUser();
   const wrapperRef = React.useRef<HTMLDivElement>(null!);
   const { load } = useEditorActions();
 
   React.useEffect(() => {
-    if (!user) {
+    if (!user || !ideNode) {
       return;
     }
-    load(wrapperRef.current);
-  }, []);
+    wrapperRef.current.append(ideNode);
+    load(ideNode);
+  }, [ideNode]);
   if (!user) {
     return (
       <div tw="text-white text-center py-12">

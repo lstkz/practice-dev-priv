@@ -178,6 +178,9 @@ export const EditorModule = React.forwardRef<
 
   const actions = useActions<Actions>({
     load: async container => {
+      if (getState().isLoaded) {
+        return;
+      }
       const { workspace } = getState();
       await monacoLoader.init();
       const monaco = monacoLoader.getMonaco();
