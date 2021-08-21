@@ -23,9 +23,9 @@ export function ModuleListItem(props: ModuleListItemProps) {
           <p tw="text-xl font-medium text-gray-800  truncate flex items-center">
             {item.title}
             {isComingSoon && (
-              <div tw="ml-2 inline-flex items-center px-1 rounded text-xs font-medium bg-yellow-400 text-gray-800">
+              <span tw="ml-2 inline-flex items-center px-1 rounded text-xs font-medium bg-yellow-400 text-gray-800">
                 Coming soon
-              </div>
+              </span>
             )}
           </p>
           <p tw="text-sm mt-2 text-gray-600">{item.description}</p>
