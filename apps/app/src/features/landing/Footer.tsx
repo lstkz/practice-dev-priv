@@ -7,7 +7,7 @@ const navigation = {
   main: [
     { name: 'Modules', href: createUrl({ name: 'modules' }) },
     { name: 'FAQ', href: '/' },
-    { name: 'Contact us', href: '/' },
+    { name: 'Contact us', href: createUrl({ name: 'contact-us' }) },
     { name: 'Roadmap', href: createUrl({ name: 'roadmap' }) },
     { name: 'Terms', href: createUrl({ name: 'terms' }) },
     { name: 'Privacy Policy', href: createUrl({ name: 'privacy' }) },
