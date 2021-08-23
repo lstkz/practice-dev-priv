@@ -72,6 +72,7 @@ export function LayoutManager(props: LayoutManagerProps) {
       });
     };
     window.addEventListener('resize', onResize);
+    onResize();
     return () => {
       document.body.style.overflow = '';
       window.removeEventListener('resize', onResize);
