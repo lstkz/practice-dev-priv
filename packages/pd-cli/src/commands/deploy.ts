@@ -8,14 +8,25 @@ export function init() {
     .command('deploy')
     .option('--stage', 'deploy to stage')
     .action(async ({ stage }) => {
-      await cpToPromise(
-        spawn('yarn', ['run', 'build'], {
-          env: {
-            ...process.env,
-          },
-          ...getSpawnOptions('tester'),
-        })
-      );
+      await Promise.all([
+        cpToPromise(
+          spawn('yarn', ['run', 'build'], {
+            env: {
+              ...process.env,
+            },
+            ...getSpawnOptions('tester'),
+          })
+        ),
+        cpToPromise(
+          spawn('yarn', ['run', 'build'], {
+            env: {
+              ...process.env,
+              ...getMaybeStagePasswordEnv(stage),
+            },
+            ...getSpawnOptions('app'),
+          })
+        ),
+      ]);
       await cpToPromise(
         spawn('pulumi', ['up', '-s', stage ? 'dev' : 'prod', '-y'], {
           env: {

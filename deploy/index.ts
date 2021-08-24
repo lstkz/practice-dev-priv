@@ -1,6 +1,8 @@
 import Path from 'path';
 import * as aws from '@pulumi/aws';
 import * as pulumi from '@pulumi/pulumi';
+import * as awsx from '@pulumi/awsx';
+import { getMaybeStagePasswordEnv, config } from 'config';
 
 function createTester() {
   const lambdaLogging = new aws.iam.Policy('pd-lambda-logging', {
@@ -157,8 +159,290 @@ function createBucketCDN() {
   return { mainBucket, distribution };
 }
 
+function createBucketRole(mainBucket: aws.s3.Bucket) {
+  const role = new aws.iam.Role('bucket-role', {
+    assumeRolePolicy: {
+      Version: '2012-10-17',
+      Statement: aws.getCallerIdentity({}).then(x => [
+        {
+          Principal: {
+            AWS: `arn:aws:iam::${x.accountId}:root`,
+          },
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+        },
+      ]),
+    },
+    inlinePolicies: [
+      {
+        name: 'p1',
+        policy: mainBucket.arn.apply(arn =>
+          JSON.stringify({
+            Version: '2012-10-17',
+            Statement: [
+              {
+                Resource: [arn, arn + '/*'],
+                Action: ['s3:*'],
+                Effect: 'Allow',
+              },
+            ],
+          })
+        ),
+      },
+    ],
+  });
+  return role.arn;
+}
+
+function createApp(mainBucket: aws.s3.Bucket) {
+  const vpc = awsx.ec2.Vpc.getDefault();
+  const sgGroup = new awsx.ec2.SecurityGroup('pd-lb-sg', {
+    vpc: vpc,
+    ingress: [
+      {
+        fromPort: 443,
+        toPort: 443,
+        protocol: 'tcp',
+        cidrBlocks: [vpc.vpc.cidrBlock],
+        // ipv6CidrBlocks: [vpc.vpc.ipv6CidrBlock],
+      },
+      {
+        fromPort: 80,
+        toPort: 80,
+        protocol: 'tcp',
+        cidrBlocks: [vpc.vpc.cidrBlock],
+        // ipv6CidrBlocks: [vpc.vpc.ipv6CidrBlock],
+      },
+    ],
+    egress: [
+      {
+        fromPort: 0,
+        toPort: 0,
+        protocol: '-1',
+        cidrBlocks: ['0.0.0.0/0'],
+        ipv6CidrBlocks: ['::/0'],
+      },
+    ],
+  });
+  const loadBalancer = new awsx.elasticloadbalancingv2.ApplicationLoadBalancer(
+    'pd-lb',
+    {
+      vpc,
+
+      securityGroups: [sgGroup],
+    }
+  );
+  const lbListener = loadBalancer.createListener('HttpsListener', {
+    protocol: 'HTTPS',
+    certificateArn: config.deploy.lbCertArn,
+    defaultAction: {
+      type: 'fixed-response',
+      fixedResponse: {
+        contentType: 'text/plain',
+        statusCode: '200',
+        messageBody: 'ok',
+      },
+    },
+  });
+
+  loadBalancer.createListener('HttpListener', {
+    protocol: 'HTTP',
+    defaultAction: {
+      type: 'redirect',
+      redirect: {
+        protocol: 'HTTPS',
+        port: '443',
+        statusCode: 'HTTP_301',
+      },
+    },
+  });
+
+  const webEnv: Record<string, string> = getMaybeStagePasswordEnv();
+  const environment = Object.keys(webEnv).map(name => ({
+    name,
+    value: webEnv[name],
+  }));
+  const cluster = new awsx.ecs.Cluster('pd_cluster', {
+    vpc,
+  });
+  const image = awsx.ecs.Image.fromPath('all', Path.join(__dirname, '../'));
+  const apiGroup = new awsx.elasticloadbalancingv2.ApplicationTargetGroup(
+    'ApiGroup',
+    {
+      vpc,
+      loadBalancer: loadBalancer,
+      deregistrationDelay: 10,
+      protocol: 'HTTP',
+      port: config.api.port,
+      stickiness: {
+        cookieDuration: 60 * 2,
+        type: 'lb_cookie',
+      },
+      healthCheck: {
+        path: '/rpc/ping',
+        timeout: 4,
+        interval: 20,
+        healthyThreshold: 2,
+      },
+    }
+  );
+  const taskRole = new aws.iam.Role('task-role', {
+    assumeRolePolicy: {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Principal: {
+            Service: 'ecs-tasks.amazonaws.com',
+          },
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+        },
+      ],
+    },
+    inlinePolicies: [
+      {
+        name: 'p1',
+        policy: mainBucket.arn.apply(arn =>
+          JSON.stringify({
+            Version: '2012-10-17',
+            Statement: [
+              {
+                Resource: [arn, arn + '/*'],
+                Action: ['s3:*'],
+                Effect: 'Allow',
+              },
+            ],
+          })
+        ),
+      },
+      {
+        name: 'p2',
+        policy: JSON.stringify({
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Resource: '*',
+              Action: ['sts:*'],
+              Effect: 'Allow',
+            },
+          ],
+        }),
+      },
+    ],
+  });
+  const apiService = new awsx.ecs.FargateService('api', {
+    cluster,
+    desiredCount: config.deploy.api.count,
+    healthCheckGracePeriodSeconds: 600,
+    taskDefinitionArgs: {
+      memory: config.deploy.api.memory.toString(),
+      cpu: config.deploy.api.cpu.toString(),
+      vpc,
+      taskRole: taskRole,
+      containers: {
+        api: {
+          command: ['yarn', 'run', 'start:api'],
+          image,
+          portMappings: [apiGroup],
+          environment,
+        },
+      },
+    },
+  });
+  lbListener.addListenerRule('ApiListenerRule', {
+    actions: [
+      {
+        type: 'forward',
+        targetGroupArn: apiGroup.targetGroup.arn,
+      },
+    ],
+    conditions: [
+      {
+        hostHeader: { values: [config.deploy.lbDomain] },
+      },
+      {
+        pathPattern: {
+          values: ['/rpc/*', '/socket', '/track/*'],
+        },
+      },
+    ],
+    priority: 10,
+  });
+
+  const webGroup = new awsx.elasticloadbalancingv2.ApplicationTargetGroup(
+    'WebGroup',
+    {
+      vpc,
+      loadBalancer: loadBalancer,
+      deregistrationDelay: 10,
+      protocol: 'HTTP',
+      port: config.web.port,
+      stickiness: {
+        cookieDuration: 60 * 2,
+        type: 'lb_cookie',
+      },
+      healthCheck: {
+        path: '/',
+        timeout: 4,
+        interval: 5,
+        healthyThreshold: 2,
+      },
+    }
+  );
+  const webService = new awsx.ecs.FargateService('web', {
+    cluster,
+    desiredCount: config.deploy.web.count,
+    healthCheckGracePeriodSeconds: 20,
+    taskDefinitionArgs: {
+      memory: config.deploy.web.memory.toString(),
+      cpu: config.deploy.web.cpu.toString(),
+      vpc,
+      containers: {
+        web: {
+          command: ['yarn', 'run', 'start:app'],
+          image,
+          portMappings: [webGroup],
+          environment,
+        },
+      },
+    },
+  });
+  lbListener.addListenerRule('WebListenerRule', {
+    actions: [
+      {
+        type: 'forward',
+        targetGroupArn: webGroup.targetGroup.arn,
+      },
+    ],
+    conditions: [
+      {
+        hostHeader: { values: [config.deploy.lbDomain] },
+      },
+    ],
+    priority: 20,
+  });
+
+  new aws.route53.Record('main-record', {
+    zoneId: config.deploy.zone.hostedZoneId,
+    name: config.deploy.zone.zoneName,
+    type: 'A',
+    aliases: [
+      {
+        name: loadBalancer.loadBalancer.dnsName,
+        zoneId: loadBalancer.loadBalancer.zoneId,
+        evaluateTargetHealth: true,
+      },
+    ],
+  });
+
+  // const taskPolicy = new aws.iam.PolicyStatement();
+  return { appUrl: `https://${config.deploy.zone.zoneName}/` };
+}
+
 const { distribution, mainBucket } = createBucketCDN();
 const testerLambda = createTester();
+export const { appUrl } = createApp(mainBucket);
+export const bucketRoleArn = createBucketRole(mainBucket);
 
 export const bucketName = mainBucket.bucket;
 export const cdnDomain = distribution.domainName;

@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "start:app": "cd apps/app && yarn start",
-    "start:api": "cd apps/api && yarn start",
+    "start:api": "cd apps/api && yarn run start:api",
     "lint": "eslint . --ext .ts --ext .tsx",
     "tsc": "tsc",
     "sync:in": "rsync -r --exclude=dist --exclude=node_modules ../practice-dev-public-new/packages/ ./packages-pvd ",

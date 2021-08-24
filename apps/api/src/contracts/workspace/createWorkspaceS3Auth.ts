@@ -16,9 +16,10 @@ export const createWorkspaceS3Auth = createContract(
     const baseArn = 'arn:aws:s3:::' + config.aws.s3Bucket;
     const resource = `${baseArn}/${getWorkspaceS3Prefix(workspaceId)}*`;
     const ret = await sts
-      .getFederationToken(
+      .assumeRole(
         {
-          Name: 'file-upload',
+          RoleArn: config.aws.bucketRoleArn,
+          RoleSessionName: 'workspace-' + workspaceId,
           DurationSeconds:
             getDuration(config.workspace.expirationHours, 'h') / 1000,
           Policy: JSON.stringify(

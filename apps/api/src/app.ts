@@ -38,8 +38,14 @@ Promise.all([connect(), ampq.connect(['publish', 'socket'])])
         extended: false,
       })
     );
+    const uniqId = Math.floor(Math.random() * 1000);
+    const ping = `Practice.dev API 💪 (${uniqId})`;
     app.get('/', (req, res) => {
-      res.send('Practice.dev API 💪');
+      res.send(ping);
+      res.end();
+    });
+    app.get('/rpc/ping', (req, res) => {
+      res.send(ping);
       res.end();
     });
     const apiRouter = express.Router();
