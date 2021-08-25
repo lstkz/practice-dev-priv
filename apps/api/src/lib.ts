@@ -92,8 +92,6 @@ AWS.config.update({ region: config.aws.region });
 
 export const s3 = new AWS.S3();
 
-export const ec2 = new AWS.EC2();
-
 export const route53 = new AWS.Route53();
 
 export const sts = new AWS.STS();

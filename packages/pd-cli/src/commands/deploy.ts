@@ -44,35 +44,50 @@ export function init() {
     .command('deploy')
     .option('--stage', 'deploy to stage')
     .option('--prod', 'deploy to prod')
-    .action(async ({ stage, prod }) => {
+    .option('--no-build', 'skip build')
+    .action(async ({ stage, prod, build }) => {
       if (!stage && !prod) {
         throw new Error('stage or prod must be defined');
       }
-      const config = getConfig(stage ? 'stage' : 'prod');
-      await Promise.all([
-        cpToPromise(
-          spawn('yarn', ['run', 'build'], {
-            env: {
-              ...process.env,
-            },
-            ...getSpawnOptions('tester'),
-          })
-        ),
-        cpToPromise(
-          spawn('yarn', ['run', 'build'], {
-            env: {
-              ...process.env,
-              ...getMaybeStagePasswordEnv(stage),
-            },
-            ...getSpawnOptions('app'),
-          })
-        ),
-      ]);
-      await uploadS3(
-        'app/.next/static',
-        config.aws.s3Bucket,
-        'cdn/_next/static/'
-      );
+      if (build) {
+        const config = getConfig(stage ? 'stage' : 'prod');
+        await Promise.all([
+          cpToPromise(
+            spawn('yarn', ['run', 'build'], {
+              env: {
+                ...process.env,
+              },
+              ...getSpawnOptions('tester'),
+            })
+          ),
+          cpToPromise(
+            spawn('yarn', ['run', 'build'], {
+              env: {
+                ...process.env,
+                ...getMaybeStagePasswordEnv(stage),
+              },
+              ...getSpawnOptions('app'),
+            })
+          ),
+          cpToPromise(
+            spawn('yarn', ['run', 'build'], {
+              env: {
+                ...process.env,
+                ...getMaybeStagePasswordEnv(stage),
+              },
+              ...getSpawnOptions('iframe'),
+            })
+          ),
+        ]);
+        await await Promise.all([
+          uploadS3(
+            'app/.next/static',
+            config.aws.s3Bucket,
+            'cdn/_next/static/'
+          ),
+          uploadS3('iframe/build', config.aws.s3Bucket, 'iframe/'),
+        ]);
+      }
       await cpToPromise(
         spawn('pulumi', ['up', '-s', stage ? 'dev' : 'prod', '-y'], {
           env: {

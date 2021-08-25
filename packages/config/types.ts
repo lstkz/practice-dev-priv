@@ -85,8 +85,12 @@ export interface AppConfig {
       memory: number;
       count: number;
     };
-    cdn?: {
-      certArn?: string;
+    cdn: {
+      certArn: string;
+      domainName: string;
+    };
+    iframe: {
+      certArn: string;
       domainName: string;
     };
   };

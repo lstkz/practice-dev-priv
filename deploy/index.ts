@@ -152,8 +152,91 @@ function createBucketCDN() {
     },
     orderedCacheBehaviors: [],
     viewerCertificate: {
-      cloudfrontDefaultCertificate: true,
+      acmCertificateArn: config.deploy.cdn.certArn,
+      minimumProtocolVersion: 'TLSv1.2_2019',
+      sslSupportMethod: 'sni-only',
     },
+    aliases: [config.deploy.cdn.domainName],
+  });
+  new aws.route53.Record('cdn-record', {
+    zoneId: config.deploy.zone.hostedZoneId,
+    name: config.deploy.cdn.domainName,
+    type: 'A',
+    aliases: [
+      {
+        name: distribution.domainName,
+        zoneId: distribution.hostedZoneId,
+        evaluateTargetHealth: true,
+      },
+    ],
+  });
+
+  const iframeDistribution = new aws.cloudfront.Distribution('pd-iframe', {
+    enabled: true,
+    defaultRootObject: 'index.html',
+    origins: [
+      {
+        originPath: '/iframe',
+        domainName: mainBucket.bucketRegionalDomainName,
+        originId: mainBucket.arn,
+        s3OriginConfig: {
+          originAccessIdentity: cfIdentity.cloudfrontAccessIdentityPath,
+        },
+      },
+    ],
+    customErrorResponses: [
+      {
+        errorCode: 403,
+        errorCachingMinTtl: 1,
+        responsePagePath: '/index.html',
+        responseCode: 200,
+      },
+    ],
+    restrictions: {
+      geoRestriction: {
+        restrictionType: 'none',
+      },
+    },
+    priceClass: 'PriceClass_100',
+    httpVersion: 'http2',
+    isIpv6Enabled: true,
+    defaultCacheBehavior: {
+      allowedMethods: ['GET', 'HEAD', 'OPTIONS'],
+      cachedMethods: ['GET', 'HEAD', 'OPTIONS'],
+      viewerProtocolPolicy: 'redirect-to-https',
+      targetOriginId: mainBucket.arn,
+      forwardedValues: {
+        queryString: false,
+        headers: [
+          'Origin',
+          'Access-Control-Request-Headers',
+          'Access-Control-Request-Method',
+        ],
+        cookies: {
+          forward: 'none',
+        },
+      },
+      compress: true,
+    },
+    orderedCacheBehaviors: [],
+    viewerCertificate: {
+      acmCertificateArn: config.deploy.iframe.certArn,
+      minimumProtocolVersion: 'TLSv1.2_2019',
+      sslSupportMethod: 'sni-only',
+    },
+    aliases: [config.deploy.iframe.domainName],
+  });
+  new aws.route53.Record('iframe-record', {
+    zoneId: config.deploy.zone.hostedZoneId,
+    name: config.deploy.iframe.domainName,
+    type: 'A',
+    aliases: [
+      {
+        name: iframeDistribution.domainName,
+        zoneId: iframeDistribution.hostedZoneId,
+        evaluateTargetHealth: true,
+      },
+    ],
   });
 
   return { mainBucket, distribution };
@@ -275,6 +358,7 @@ function createApp(mainBucket: aws.s3.Bucket) {
       protocol: 'HTTP',
       port: config.api.port,
       stickiness: {
+        enabled: false,
         cookieDuration: 60 * 2,
         type: 'lb_cookie',
       },
@@ -378,6 +462,7 @@ function createApp(mainBucket: aws.s3.Bucket) {
       protocol: 'HTTP',
       port: config.web.port,
       stickiness: {
+        enabled: false,
         cookieDuration: 60 * 2,
         type: 'lb_cookie',
       },
@@ -420,6 +505,23 @@ function createApp(mainBucket: aws.s3.Bucket) {
       },
     ],
     priority: 20,
+  });
+
+  new awsx.ecs.FargateService('worker', {
+    cluster,
+    desiredCount: config.deploy.worker.count,
+    taskDefinitionArgs: {
+      memory: config.deploy.worker.memory.toString(),
+      cpu: config.deploy.worker.cpu.toString(),
+      vpc,
+      containers: {
+        worker: {
+          command: ['yarn', 'run', 'start:worker'],
+          image,
+          environment,
+        },
+      },
+    },
   });
 
   new aws.route53.Record('main-record', {
