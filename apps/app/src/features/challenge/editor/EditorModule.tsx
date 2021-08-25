@@ -27,6 +27,7 @@ import { MonacoLoader } from './MonacoLoader';
 import { migrateTabState } from './migrateTabState';
 import { api } from 'src/services/api';
 import { useS3Refresh } from './useS3Refresh';
+import { MockAPIService } from './MockAPIService';
 
 interface Actions {
   load: (container: HTMLDivElement) => void;
@@ -55,9 +56,11 @@ interface EditorModuleProps {
   noWorkspaceInit?: boolean;
 }
 
-function useServices(workspace: Workspace, challengeId: string) {
+function useServices(workspace: Workspace | null, challengeId: string) {
   return React.useMemo(() => {
-    const apiService = new APIService(workspace.id, workspace.s3Auth);
+    const apiService = workspace
+      ? new APIService(workspace.id, workspace.s3Auth)
+      : new MockAPIService();
 
     const editorStateService = new EditorStateService(challengeId);
     const browserPreviewService = new BrowserPreviewService(IFRAME_ORIGIN);
@@ -279,7 +282,7 @@ export const EditorModule = React.forwardRef<
       creator.dispose();
     };
   }, []);
-  useS3Refresh(state.workspace.id, apiService);
+  useS3Refresh(state.workspace?.id, apiService);
   return (
     <Provider
       state={{

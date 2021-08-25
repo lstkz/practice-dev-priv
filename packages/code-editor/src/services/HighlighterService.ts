@@ -70,7 +70,8 @@ export class HighlighterService {
   };
 
   dispose() {
-    this.worker.terminate();
+    this.worker?.terminate();
+    this.worker = null!;
   }
 
   private sendMessage(action: HighlighterAction) {
