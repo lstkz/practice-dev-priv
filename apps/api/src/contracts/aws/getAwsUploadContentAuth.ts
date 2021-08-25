@@ -10,9 +10,10 @@ export const getAwsUploadContentAuth = createContract(
   .fn(async () => {
     const baseArn = 'arn:aws:s3:::' + config.aws.s3Bucket;
     const ret = await sts
-      .getFederationToken(
+      .assumeRole(
         {
-          Name: 'content-upload',
+          RoleArn: config.aws.bucketRoleArn,
+          RoleSessionName: 'content-upload',
           Policy: JSON.stringify(
             {
               Version: '2012-10-17',

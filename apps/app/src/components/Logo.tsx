@@ -16,9 +16,9 @@ export function Logo(props: LogoProps) {
         <span className="sr-only">Practice.dev</span>
         <img
           {...rest}
-          tw="h-8 w-auto sm:h-8"
-          src={black ? logo_black.src : logo.src}
           alt=""
+          tw="h-8 w-auto sm:h-8"
+          {...(black ? logo_black : logo)}
         />
       </a>
     </Link>

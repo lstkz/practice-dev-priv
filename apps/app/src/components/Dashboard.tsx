@@ -42,8 +42,8 @@ export default function Dashboard(props: DashboardProps) {
                       <a>
                         <span className="sr-only">Practice.dev</span>
                         <img
+                          {...logo}
                           className="h-6 w-auto"
-                          src={logo.src}
                           alt="practice.dev"
                         />
                       </a>

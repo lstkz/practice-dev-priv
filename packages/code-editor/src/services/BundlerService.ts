@@ -81,6 +81,7 @@ export class BundlerService {
 
   dispose() {
     this.worker?.terminate();
+    this.worker = null!;
   }
 
   loadCode(options: LoadCodeOptions) {

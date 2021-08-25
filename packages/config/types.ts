@@ -22,6 +22,7 @@ export interface AppConfig {
     region: string;
     s3Bucket: string;
     testerLambdaName: string;
+    bucketRoleArn: string;
   };
   adminToken: string;
   api: {
@@ -29,6 +30,7 @@ export interface AppConfig {
     eventQueueSuffix: string;
   };
   web: {
+    useCDN: boolean;
     port: number;
   };
   iframe: {
@@ -59,6 +61,37 @@ export interface AppConfig {
     senderName: string;
     templates: {
       actionButton: number;
+    };
+  };
+  deploy: {
+    lbCertArn: string;
+    lbDomain: string;
+    zone: {
+      hostedZoneId: string;
+      zoneName: string;
+    };
+    web: {
+      cpu: number;
+      memory: number;
+      count: number;
+    };
+    api: {
+      cpu: number;
+      memory: number;
+      count: number;
+    };
+    worker: {
+      cpu: number;
+      memory: number;
+      count: number;
+    };
+    cdn: {
+      certArn: string;
+      domainName: string;
+    };
+    iframe: {
+      certArn: string;
+      domainName: string;
     };
   };
 }

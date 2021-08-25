@@ -11,7 +11,7 @@ setupDb();
 
 beforeEach(async () => {
   await registerSampleUsers();
-  sts.getFederationToken = () =>
+  sts.assumeRole = () =>
     ({
       promise: async () => ({
         Credentials: {

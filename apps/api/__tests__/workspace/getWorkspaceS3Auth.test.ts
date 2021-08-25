@@ -14,7 +14,7 @@ beforeEach(async () => {
   await registerSampleUsers();
   await createSampleChallenges();
   await createSampleWorkspaces();
-  sts.getFederationToken = () =>
+  sts.assumeRole = () =>
     ({
       promise: async () => ({
         Credentials: {
