@@ -21,6 +21,8 @@ const extMap: Record<string, string> = {
   tsx: 'TypeScriptReact.tmLanguage.json',
 };
 
+export const CDN_BASE_URL = process.env.CDN_BASE_URL! ?? '';
+
 const registry = new Registry({
   getGrammarDefinition: async scopeName => {
     const name = extMap[scopeName];
@@ -29,7 +31,9 @@ const registry = new Registry({
     }
     return {
       format: 'json',
-      content: await fetch(`/grammars/${name}`).then(x => x.text()),
+      content: await fetch(CDN_BASE_URL + `/grammars/${name}`).then(x =>
+        x.text()
+      ),
     };
   },
 });
@@ -37,7 +41,9 @@ const registry = new Registry({
 let initPromise: Promise<void> | null = null;
 
 async function init() {
-  await loadWASM(await fetch('/onigasm.wasm').then(x => x.arrayBuffer()));
+  await loadWASM(
+    await fetch(CDN_BASE_URL + '/onigasm.wasm').then(x => x.arrayBuffer())
+  );
 }
 
 self.addEventListener('message', async event => {

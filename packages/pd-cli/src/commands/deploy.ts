@@ -9,7 +9,12 @@ import { getConfig, getMaybeStagePasswordEnv } from 'config';
 
 const s3 = new AWS.S3();
 
-async function uploadS3(name: string, bucketName: string, suffix: string) {
+async function uploadS3(
+  name: string,
+  bucketName: string,
+  suffix: string,
+  filter: (path: string) => boolean = () => true
+) {
   const [app, ...folder] = name.split('/');
   const frontRoot = getAppRoot(app);
   const buildDir = Path.join(frontRoot, ...folder);
@@ -18,6 +23,7 @@ async function uploadS3(name: string, bucketName: string, suffix: string) {
   await Promise.all(
     files
       .filter(path => !path.endsWith('.DS_Store'))
+      .filter(filter)
       .map(async filePath => {
         const contentType = mime.lookup(filePath) || 'text/plain';
         const noCache =
@@ -86,6 +92,12 @@ export function init() {
             'cdn/_next/static/'
           ),
           uploadS3('iframe/build', config.aws.s3Bucket, 'iframe/'),
+          uploadS3(
+            'app/public',
+            config.aws.s3Bucket,
+            'cdn/',
+            path => path.includes('onigasm.wasm') || path.includes('/grammars/')
+          ),
         ]);
       }
       await cpToPromise(

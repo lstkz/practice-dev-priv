@@ -414,10 +414,10 @@ function createApp(mainBucket: aws.s3.Bucket) {
       },
     ],
   });
-  const apiService = new awsx.ecs.FargateService('api', {
+  new awsx.ecs.FargateService('api', {
     cluster,
     desiredCount: config.deploy.api.count,
-    healthCheckGracePeriodSeconds: 600,
+    healthCheckGracePeriodSeconds: 60,
     taskDefinitionArgs: {
       memory: config.deploy.api.memory.toString(),
       cpu: config.deploy.api.cpu.toString(),
@@ -474,7 +474,7 @@ function createApp(mainBucket: aws.s3.Bucket) {
       },
     }
   );
-  const webService = new awsx.ecs.FargateService('web', {
+  new awsx.ecs.FargateService('web', {
     cluster,
     desiredCount: config.deploy.web.count,
     healthCheckGracePeriodSeconds: 20,
