@@ -65,7 +65,7 @@ beforeEach(async () => {
     },
   ]);
 
-  sts.getFederationToken = () =>
+  sts.assumeRole = () =>
     ({
       promise: async () => ({
         Credentials: {

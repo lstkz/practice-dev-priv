@@ -10,13 +10,15 @@ beforeEach(async () => {
 });
 
 it('should return a profile', async () => {
-  s3.createPresignedPost = () => ({
-    url: '/foo',
-    fields: {
-      'Content-Type': 'image/png',
-      foo: 'bar',
-    } as any,
-  });
+  s3.createPresignedPost = ((_params: any, callback: any) => {
+    callback(null, {
+      url: '/foo',
+      fields: {
+        'Content-Type': 'image/png',
+        foo: 'bar',
+      } as any,
+    });
+  }) as any;
   const ret = await execContract(getAvatarUploadUrl, {}, 'user1_token');
   expect(ret).toMatchInlineSnapshot(`
 Object {
