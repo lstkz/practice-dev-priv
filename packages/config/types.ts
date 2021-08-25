@@ -30,6 +30,7 @@ export interface AppConfig {
     eventQueueSuffix: string;
   };
   web: {
+    useCDN: boolean;
     port: number;
   };
   iframe: {

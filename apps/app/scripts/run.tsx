@@ -14,6 +14,7 @@ export function runScript(
     env: {
       ...process.env,
       NODE_ENV: nodeEnv,
+      ASSET_PREFIX: config.web.useCDN ? config.cdnBaseUrl : undefined,
       PD_PUBLIC_MIXPANEL_API_KEY: config.mixpanel.apiKey.toString(),
       PD_PUBLIC_BUGSNAG_API_KEY: config.bugsnag.frontKey.toString(),
       PD_PUBLIC_GITHUB_CLIENT_ID: config.github.clientId,

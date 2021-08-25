@@ -37,6 +37,7 @@ function getOnigasmPath() {
 }
 
 module.exports = withTM({
+  assetPrefix: process.env.ASSET_PREFIX,
   typescript: {
     ignoreBuildErrors: true,
   },
