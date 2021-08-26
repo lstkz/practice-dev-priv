@@ -10,6 +10,7 @@ import logo from '../../public/logo.png';
 import { useUser } from 'src/features/AuthModule';
 import { VerifyAccountAlert } from './VerifyAccountAlert';
 import { MainMenu } from './MainMenu';
+import { CustomImage } from './CustomImage';
 
 interface DashboardProps {
   children: React.ReactNode;
@@ -41,7 +42,7 @@ export default function Dashboard(props: DashboardProps) {
                     <Link href={createUrl({ name: 'modules' })}>
                       <a>
                         <span className="sr-only">Practice.dev</span>
-                        <img
+                        <CustomImage
                           {...logo}
                           className="h-6 w-auto"
                           alt="practice.dev"
