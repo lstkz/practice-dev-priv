@@ -25,6 +25,11 @@ export function FileTab(props: FileTabProps) {
             onOpen();
           }
         }}
+        onMouseUp={e => {
+          if (e.button === 1) {
+            onClose();
+          }
+        }}
       >
         <div tw="w-4 h-4 mr-2">
           <FileIcon name={name} />
