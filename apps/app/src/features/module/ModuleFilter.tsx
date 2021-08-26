@@ -1,4 +1,5 @@
 import React from 'react';
+import { getDifficulties } from 'src/common/helper';
 import { Checkbox } from '../../components/Checkbox';
 import { FilterPanel } from '../../components/FilterPanel';
 import { FilterSection } from '../../components/FilterSection';
@@ -33,7 +34,7 @@ function CheckboxList(props: CheckboxListProps) {
               toggleFilter(filterProps, value);
             }}
           >
-            {option}
+            <span tw="capitalize">{option}</span>
           </Checkbox>
         );
       })}
@@ -42,6 +43,8 @@ function CheckboxList(props: CheckboxListProps) {
 }
 
 export function ModuleFilter() {
+  const { challenges } = useModuleState();
+  const difficulties = getDifficulties(challenges);
   return (
     <FilterPanel>
       <FilterSection title="Status">
@@ -55,7 +58,7 @@ export function ModuleFilter() {
         <CheckboxList
           filterProps="difficulty"
           idPrefix="difficulty"
-          options={['Beginner', 'Intermediate', 'Various']}
+          options={difficulties}
         />
       </FilterSection>
     </FilterPanel>

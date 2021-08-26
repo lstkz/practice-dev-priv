@@ -1,5 +1,6 @@
 import { GetServerSideProps, NextPageContext } from 'next';
 import { APIClient } from 'shared';
+import * as R from 'remeda';
 import { API_URL, CDN_BASE_URL } from 'src/config';
 import { readCookieFromString } from './cookie';
 
@@ -75,4 +76,19 @@ export function createSSRClient<
     'token'
   );
   return new APIClient(API_URL, () => token);
+}
+
+export function getDifficulties<
+  T extends {
+    difficulty: string;
+  }
+>(items: T[]) {
+  const ret = R.pipe(
+    items,
+    R.map(x => x.difficulty),
+    R.uniq()
+  );
+  const order = ['beginner', 'easy', 'medium', 'hard', 'expert', 'various'];
+  ret.sort((a, b) => order.indexOf(a) - order.indexOf(b));
+  return ret;
 }
