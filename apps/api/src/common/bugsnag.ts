@@ -95,7 +95,10 @@ interface ReportErrorOptions {
 
 export function reportError(options: ReportErrorOptions) {
   const { source, error, request, data, isHandled } = options;
-  logger.info(`[${source}]`, error, { request, data });
+  logger.info(`[${source}]`, error, {
+    request: getRequestInfo(request as any),
+    data,
+  });
   if (!bugsnagClient) {
     return;
   }

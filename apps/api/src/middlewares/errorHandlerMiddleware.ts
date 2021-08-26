@@ -30,7 +30,7 @@ export const errorHandlerMiddleware: ErrorRequestHandler = (
   res,
   next
 ) => {
-  const req = (req_ as any) as Request;
+  const req = req_ as any as Request;
   const status = _isPublicError(err)
     ? _getTargetError(err).statusCode || BAD_REQUEST
     : INTERNAL_SERVER_ERROR;
