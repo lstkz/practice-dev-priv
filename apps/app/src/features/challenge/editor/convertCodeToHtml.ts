@@ -9,7 +9,9 @@ export function convertCodeToHtml(
   libraries.forEach(lib => {
     importMap[lib.name] = lib.source;
   });
-  const escape = (str: string) => str.replace(/</g, '\\u003c');
+  // below escape is not working
+  // const escape = (str: string) => str.replace(/</g, '\\u003c');
+  const escape = (str: string) => str;
   return `
 <!DOCTYPE html>
 <html>
