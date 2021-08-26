@@ -514,6 +514,7 @@ function createApp(mainBucket: aws.s3.Bucket) {
       memory: config.deploy.worker.memory.toString(),
       cpu: config.deploy.worker.cpu.toString(),
       vpc,
+      taskRole: taskRole,
       containers: {
         worker: {
           command: ['yarn', 'run', 'start:worker'],
