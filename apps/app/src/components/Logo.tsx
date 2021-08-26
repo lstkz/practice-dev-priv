@@ -17,9 +17,9 @@ export function Logo(props: LogoProps) {
       <a>
         <span className="sr-only">Practice.dev</span>
         <CustomImage
+          tw="h-8 w-auto sm:h-8"
           {...rest}
           alt=""
-          tw="h-8 w-auto sm:h-8"
           {...(black ? logo_black : logo)}
         />
       </a>

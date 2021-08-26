@@ -7,9 +7,9 @@ import { TsLogo } from './TsLogo';
 
 export function MainSection() {
   return (
-    <div className="relative bg-gray-800 overflow-hidden">
+    <div className="relative bg-gray-800 ">
       <div
-        className="hidden sm:block sm:absolute sm:inset-0"
+        className="hidden sm:block sm:absolute sm:inset-0 overflow-hidden"
         aria-hidden="true"
       >
         <svg
