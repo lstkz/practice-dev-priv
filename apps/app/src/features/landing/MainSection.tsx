@@ -48,19 +48,14 @@ export function MainSection() {
                 <div>
                   <ProductHunt tw="lg:absolute  top-1 hidden lg:block" />
                   <h1 className="mt-4 text-4xl tracking-tight font-extrabold text-white sm:mt-5 sm:leading-none lg:mt-6 lg:text-5xl xl:text-6xl">
-                    <span className="md:block">Boost your</span>{' '}
-                    <span className="text-indigo-400 md:block">
-                      frontend skills
-                    </span>
+                    <span className="md:block">Learn programming</span>{' '}
+                    <span className="text-indigo-400 md:block">for free</span>
                   </h1>
                   <p className="mt-3 text-base text-gray-300 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
-                    Learning programming by practicing various challenges.{' '}
-                    <br />
-                    Learn by doing for{' '}
-                    <span className="px-3 py-0.5 text-white text-xs font-semibold leading-5 uppercase tracking-wide bg-indigo-500 rounded-full">
-                      free
+                    We are the first education platform backed by{' '}
+                    <span className="px-3 py-0.5 text-white text-xs font-semibold leading-5 uppercase tracking-wide bg-yellow-500 rounded-full">
+                      crypto
                     </span>
-                    .
                   </p>
                   <p className="mt-8 text-sm text-white uppercase tracking-wide font-semibold sm:mt-10">
                     Supported technologies

@@ -4,7 +4,11 @@ import {
   TerminalIcon,
   DocumentTextIcon,
   SunIcon,
+  XCircleIcon,
 } from '@heroicons/react/outline';
+import { CustomImage } from 'src/components/CustomImage';
+import screenshot1 from './screenshot1.png';
+import screenshot2 from './screenshot2.png';
 
 const pickChallengeSteps = [
   {
@@ -42,12 +46,18 @@ const testShareSteps = [
     description: 'Congrats! Now share your solution with other users.',
     icon: SunIcon,
   },
+  {
+    id: 3,
+    name: 'Failed?',
+    description: 'Check the every step of the test suite, and debug your app.',
+    icon: XCircleIcon,
+  },
 ];
 
 export default function HowItWorksSection() {
   return (
-    <div className="py-16 bg-gray-50 overflow-hidden lg:py-24">
-      <div className="relative max-w-xl mx-auto px-4 sm:px-6 lg:px-8 lg:max-w-7xl">
+    <div className="py-16 bg-gray-50  lg:py-24">
+      <div className="relative max-w-xl mx-auto px-4 sm:px-6 lg:px-8 lg:max-w-7xl overflow-hidden">
         <svg
           className="hidden lg:block absolute left-full transform -translate-x-1/2 -translate-y-1/4"
           width={404}
@@ -156,11 +166,9 @@ export default function HowItWorksSection() {
                 fill="url(#ca9667ae-9f92-4be7-abcb-9e3d727f2941)"
               />
             </svg>
-            <img
-              className="relative mx-auto"
-              width={490}
-              src="https://tailwindui.com/img/features/feature-example-1.png"
-              alt=""
+            <CustomImage
+              className="relative mx-auto shadow-xl rounded-lg z-10"
+              {...screenshot1}
             />
           </div>
         </div>
@@ -264,11 +272,10 @@ export default function HowItWorksSection() {
                   fill="url(#e80155a9-dfde-425a-b5ea-1f6fadd20131)"
                 />
               </svg>
-              <img
-                className="relative mx-auto"
-                width={490}
-                src="https://tailwindui.com/img/features/feature-example-2.png"
-                alt=""
+
+              <CustomImage
+                className="relative mx-auto shadow-xl rounded-lg z-10 mb-10"
+                {...screenshot2}
               />
             </div>
           </div>

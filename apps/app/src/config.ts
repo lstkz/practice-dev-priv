@@ -27,3 +27,10 @@ if (!IFRAME_ORIGIN) {
 }
 
 export const IDE_MOBILE_THRESHOLD = 650;
+
+export const CRYPTO_LINK =
+  'https://app.uniswap.org/#/swap?outputCurrency=0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
+
+export const DISCORD_LINK = 'https://discord.gg/76PceHgyf6';
+
+export const GITHUB_LINK = 'https://github.com/practice-dev/practice-dev';
