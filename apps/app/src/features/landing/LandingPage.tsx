@@ -1,14 +1,15 @@
 import React from 'react';
 import { createGetServerSideProps, createSSRClient } from 'src/common/helper';
 import { createUrl } from 'src/common/url';
+import { CryptoSection } from './CryptoSection';
 import CTASection from './CTASection';
 import { FAQSection } from './FAQSection';
 import Footer from './Footer';
 import HowItWorksSection from './HowItWorksSection';
 import { MainSection } from './MainSection';
 import { RoadmapSection } from './RoadmapSection';
-import { StatsSection } from './StatsSection';
-import TestimonialsSection from './TestimonialsSection';
+// import { StatsSection } from './StatsSection';
+// import TestimonialsSection from './TestimonialsSection';
 import { WhatsPracticeDevSection } from './WhatsPracticeDevSection';
 
 export function LandingPage() {
@@ -17,8 +18,9 @@ export function LandingPage() {
       <MainSection />
       <WhatsPracticeDevSection />
       <HowItWorksSection />
-      <StatsSection />
-      <TestimonialsSection />
+      {/* <StatsSection />
+      <TestimonialsSection /> */}
+      <CryptoSection />
       <FAQSection />
       <RoadmapSection />
       <CTASection />

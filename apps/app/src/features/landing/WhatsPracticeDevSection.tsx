@@ -11,38 +11,62 @@ import {
 const features = [
   {
     name: 'Many Challenges',
-    description:
-      "We've prepared many challenges that reflect problems from real projects. A challenge is a simple task that focuses on a particular area.",
+    description: (
+      <>
+        We've prepared many challenges that reflect problems from real projects.
+        A challenge is a simple task that focuses on a particular area.
+      </>
+    ),
     icon: CodeIcon,
   },
   {
     name: 'Embedded VS Code',
-    description:
-      'No setup required. Code directly in the browser using an embedded IDE with full autocomplete and type checking.',
+    description: (
+      <>
+        No setup required. Code directly in the browser using an embedded IDE
+        with full autocomplete and type checking.
+      </>
+    ),
     icon: TerminalIcon,
   },
   {
     name: 'Not Only for Beginners',
-    description:
-      'Not for juniors only. Try our hard challenges that are not easy to solve!',
+    description: (
+      <>
+        The platform is not only for juniors. If you are an experience
+        developer, you can try hard or expert challenges.
+      </>
+    ),
     icon: UserGroupIcon,
   },
   {
     name: 'Automatic Testing',
-    description:
-      'All your work is verified automatically by our testing engine. You can submit an unlimited number of times. There are no fees!',
+    description: (
+      <>
+        All your work is verified automatically by our testing engine. You can
+        submit an unlimited number of times. There are no fees!
+      </>
+    ),
     icon: CheckCircleIcon,
   },
   {
     name: 'Learn from others',
-    description:
-      'You can view shared solutions created by other users, and see how their approached the problem.',
+    description: (
+      <>
+        You can view shared solutions created by other users, and see how their
+        approached the problem.
+      </>
+    ),
     icon: AcademicCapIcon,
   },
   {
     name: 'Open Source',
-    description:
-      'We love open-source! All challenges are open-sourced. If you have an idea for a challenge or found a bug, feel free to submit a pull request.',
+    description: (
+      <>
+        We love open-source! All challenges are open-sourced. If you have an
+        idea for a challenge or found a bug, feel free to submit a pull request.
+      </>
+    ),
     icon: EmojiHappyIcon,
   },
 ];
@@ -56,7 +80,7 @@ export function WhatsPracticeDevSection() {
             What's Practice.dev?
           </p>
           <p className="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
-            A better way to learn programming.
+            Learn programming by doing.
             {/* It's a complete platform for learning programming. */}
           </p>
         </div>

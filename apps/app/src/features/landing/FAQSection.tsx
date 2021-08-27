@@ -1,8 +1,27 @@
+import Link from 'next/link';
+import React from 'react';
+import { createUrl } from 'src/common/url';
+import tw, { styled } from 'twin.macro';
+
+const CodeWrapper = styled.div`
+  code {
+    ${tw`bg-indigo-50 text-indigo-400 px-2 rounded-sm`}
+  }
+`;
+
 const faqs = [
   {
     id: 1,
     question: 'Is it free?',
-    answer: 'Yes! You can solve all challenges for free without any limits.',
+    answer: (
+      <>
+        Yes! You can solve all challenges for free without any limits.
+        <br />
+        <strong className="font-semibold">
+          You don't have to buy any crypto to use the website!
+        </strong>
+      </>
+    ),
   },
   {
     id: 2,
@@ -18,15 +37,42 @@ const faqs = [
   },
   {
     id: 4,
-    question: 'Can I add my custom challenge?',
+    question: 'How can I add my module or challenges?',
     answer: (
       <>
-        Yes, please visit our Github{' '}
-        <a href="https://github.com" target="_blank">
-          here
-        </a>
+        Please contact us{' '}
+        <Link href={createUrl({ name: 'contact-us' })}>
+          <a>here</a>
+        </Link>
         .
+        <br />
+        We highly encourage open-source maintainers from popular frameworks or
+        libraries to contribute.
       </>
+    ),
+  },
+  {
+    id: 5,
+    question: 'How crypto royalties will be calculates?',
+    answer: (
+      <CodeWrapper>
+        Royalties will be calculated proportionally based on the module or
+        challenge popularity.
+        <br />
+        Example:
+        <br />
+        Assume there are <code>100,000</code> users, <code>500</code>{' '}
+        challenges, and every user participates in <code>40</code> challenges on
+        average.
+        <br />
+        That gives us <code>4,000,000</code> participants on the whole platform.
+        <br />
+        If your challenges have <code>400,000</code> participants, then you will
+        receive <code>$POOL * 400,000/4,000,000</code>.
+        <br />
+        If <code>$POOL</code> is <code>$1,000,000</code> then you would get{' '}
+        <code>$100,000</code>.
+      </CodeWrapper>
     ),
   },
 ];
@@ -40,14 +86,13 @@ export function FAQSection() {
             Frequently asked questions
           </h2>
           <p className="text-lg text-gray-500">
-            Can’t find the answer you’re looking for? Reach out to our{' '}
-            <a
-              href="#"
-              className="font-medium text-purple-600 hover:text-purple-500"
-            >
-              customer support
-            </a>{' '}
-            team.
+            Can’t find the answer you’re looking for? Contact us{' '}
+            <Link href={createUrl({ name: 'contact-us' })} passHref>
+              <a className="font-medium text-purple-600 hover:text-purple-500">
+                here
+              </a>
+            </Link>
+            .
           </p>
         </div>
         <div className="mt-12 lg:mt-0 lg:col-span-2">

@@ -6,6 +6,8 @@ import { FormProvider } from 'react-hook-form';
 import { Alert } from 'src/components/Alert';
 import { useRegisterForm } from 'src/hooks/useRegisterForm';
 import { RegisterContextFields } from 'src/components/RegisterContextFields';
+import { createUrl } from 'src/common/url';
+import Link from 'next/link';
 
 export function RegisterForm() {
   const { formMethods, error, isSubmitting, onSubmit } = useRegisterForm();
@@ -35,13 +37,15 @@ export function RegisterForm() {
           <div tw="px-4 py-6 bg-gray-50 border-t-2 border-gray-200 sm:px-10">
             <p tw="text-xs leading-5 text-gray-500">
               By signing up, you agree to our{' '}
-              <a href="#" tw="font-medium text-gray-900 hover:underline">
-                Terms
-              </a>{' '}
+              <Link passHref href={createUrl({ name: 'terms' })}>
+                <a tw="font-medium text-gray-900 hover:underline">Terms</a>
+              </Link>{' '}
               and{' '}
-              <a href="#" tw="font-medium text-gray-900 hover:underline">
-                Cookies Policy
-              </a>
+              <Link passHref href={createUrl({ name: 'privacy' })}>
+                <a tw="font-medium text-gray-900 hover:underline">
+                  Privacy Policy
+                </a>
+              </Link>
               .
             </p>
           </div>
