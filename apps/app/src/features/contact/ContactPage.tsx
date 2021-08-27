@@ -2,6 +2,7 @@ import React from 'react';
 import { Container } from 'src/components/Container';
 import Dashboard from 'src/components/Dashboard';
 import { ContactMail } from 'src/components/LegalPage';
+import { DISCORD_LINK } from 'src/config';
 
 const faqs = [
   {
@@ -22,8 +23,7 @@ const faqs = [
     question: 'Need help with programming?',
     answer: (
       <>
-        Ask for help in our{' '}
-        <a href="https://discord.gg/76PceHgyf6">Discord community</a> or in{' '}
+        Ask for help in our <a href={DISCORD_LINK}>Discord community</a> or in{' '}
         <a href="https://github.com/practice-dev/practice-dev/discussions">
           Github discussions
         </a>

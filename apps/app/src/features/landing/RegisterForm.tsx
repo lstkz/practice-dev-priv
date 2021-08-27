@@ -14,8 +14,8 @@ export function RegisterForm() {
   const { handleSubmit } = formMethods;
   return (
     <FormProvider {...formMethods}>
-      <div tw="mt-16 sm:mt-12 lg:mt-0 lg:col-span-6">
-        <div tw="bg-white sm:max-w-md sm:w-full sm:mx-auto sm:rounded-lg sm:overflow-hidden">
+      <div tw="mt-16 sm:mt-12 lg:mt-0 lg:col-span-6 px-4 ">
+        <div tw="bg-white sm:max-w-md sm:w-full sm:mx-auto rounded-lg">
           <div tw="px-4 py-8 sm:px-10">
             <div>
               <p tw="text-sm font-medium text-gray-700">Sign up with</p>
@@ -34,7 +34,7 @@ export function RegisterForm() {
               </form>
             </div>
           </div>
-          <div tw="px-4 py-6 bg-gray-50 border-t-2 border-gray-200 sm:px-10">
+          <div tw="px-4 py-6 bg-gray-50 border-t-2 border-gray-200 sm:px-10 rounded-b-lg">
             <p tw="text-xs leading-5 text-gray-500">
               By signing up, you agree to our{' '}
               <Link passHref href={createUrl({ name: 'terms' })}>

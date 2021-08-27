@@ -12,7 +12,7 @@ const CodeWrapper = styled.div`
 const faqs = [
   {
     id: 1,
-    question: 'Is it free?',
+    question: 'Is it really free?',
     answer: (
       <>
         Yes! You can solve all challenges for free without any limits.
@@ -53,7 +53,7 @@ const faqs = [
   },
   {
     id: 5,
-    question: 'How crypto royalties will be calculates?',
+    question: 'How will crypto royalties be calculated?',
     answer: (
       <CodeWrapper>
         Royalties will be calculated proportionally based on the module or

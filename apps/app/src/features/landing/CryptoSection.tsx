@@ -8,6 +8,7 @@ import {
   TrashIcon,
   UsersIcon,
 } from '@heroicons/react/outline';
+import { CRYPTO_LINK } from 'src/config';
 
 const features = [
   {
@@ -130,7 +131,8 @@ const items = [
     answer: (
       <>
         The initial price is $0.01 per token. The number of tokens at this price
-        is limited.
+        is limited. <br />
+        We estimate that token will cost $30 per token within a year.
       </>
     ),
   },
@@ -142,12 +144,15 @@ const items = [
         You can buy it on{' '}
         <a
           target="_blank"
-          href="https://app.uniswap.org/#/swap?outputCurrency=0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+          href={CRYPTO_LINK}
           rel="nofollow"
           className="text-blue-400"
         >
           Uniswap.
         </a>
+        <br />
+        Make sure to buy crypto through this link. Do not open links sent by
+        other people!
       </>
     ),
   },
