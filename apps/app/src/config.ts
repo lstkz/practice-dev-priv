@@ -4,7 +4,7 @@ export const API_URL = process.env.API_URL!;
 export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
 export const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID!;
 export const CDN_BASE_URL = process.env.CDN_BASE_URL!;
-export const IFRAME_ORIGIN = process.env.SEGMENT_KEY!;
+export const IFRAME_ORIGIN = process.env.IFRAME_ORIGIN!;
 
 if (!API_URL) {
   throw new Error('API_URL is not set');
