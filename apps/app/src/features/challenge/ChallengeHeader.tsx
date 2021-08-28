@@ -9,6 +9,7 @@ import { createUrl } from 'src/common/url';
 import { useUser } from '../AuthModule';
 import { doFn } from 'src/common/helper';
 import { ChallengeMenu } from './ChallengeMenu';
+import tw from 'twin.macro';
 
 interface ForkBarProps {
   onFork: () => void;
@@ -67,7 +68,7 @@ export function ChallengeHeader(props: ChallengeHeaderProps) {
         isOpen={isConfirmOpen}
       />
       <Logo
-        tw="h-5"
+        imgCss={tw`h-5 w-auto`}
         href={createUrl({
           name: 'module',
           slug: challenge.slug.split('/')[0],
