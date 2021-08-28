@@ -7,7 +7,7 @@ import {
 import Link from 'next/link';
 import React from 'react';
 import { Challenge } from 'shared';
-import { doFn } from 'src/common/helper';
+import { doFn, formatTotalTime } from 'src/common/helper';
 import { createUrl } from 'src/common/url';
 import Badge from '../../components/Badge';
 import DotBadge from '../../components/DotBadge';
@@ -51,7 +51,7 @@ export function ChallengeListItem(props: ChallengeListItemProps) {
                 {item.stats.uniqueAttempts}
               </IconStats>
               <IconStats icon={<ClockIcon />} tooltip="Total practice time">
-                {item.practiceTime}m
+                {formatTotalTime(item.practiceTime)}
               </IconStats>
               <IconStats icon={<ChartSquareBarIcon />} tooltip="Success rate">
                 {doFn(() => {

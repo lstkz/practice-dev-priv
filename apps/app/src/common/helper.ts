@@ -92,3 +92,10 @@ export function getDifficulties<
   ret.sort((a, b) => order.indexOf(a) - order.indexOf(b));
   return ret;
 }
+
+export function formatTotalTime(minutes: number) {
+  if (minutes < 60) {
+    return minutes + 'm';
+  }
+  return Math.ceil(minutes / 50) + 'h';
+}

@@ -2,6 +2,7 @@ import { UsersIcon, ClockIcon } from '@heroicons/react/outline';
 import Link from 'next/link';
 import React from 'react';
 import { Module } from 'shared';
+import { formatTotalTime } from 'src/common/helper';
 import tw from 'twin.macro';
 import { createUrl } from '../../common/url';
 import Badge from '../../components/Badge';
@@ -54,7 +55,7 @@ export function ModuleListItem(props: ModuleListItemProps) {
               {item.stats.enrolledUsers}
             </IconStats>
             <IconStats icon={<ClockIcon />} tooltip="Total practice time">
-              {item.totalTime}m
+              {formatTotalTime(item.totalTime)}
             </IconStats>
           </div>
         )}
