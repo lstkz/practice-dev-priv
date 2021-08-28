@@ -12,6 +12,7 @@ import { createSSRClient } from 'src/common/helper';
 import { ConfirmModalModule } from 'src/features/ConfirmModalModule';
 import { PubSubContextModule } from 'src/features/PubSubContextModule';
 import { usePageViewAnalytics } from 'src/hooks/usePageViewAnalytics';
+import { ErrorBoundary } from 'src/bug-report';
 
 config.autoAddCss = false;
 
@@ -31,7 +32,7 @@ export default function App({
   }, []);
   usePageViewAnalytics();
   return (
-    <>
+    <ErrorBoundary>
       <PubSubContextModule>
         <AuthModule initialUser={initialUser}>
           <ConfirmModalModule>
@@ -43,7 +44,7 @@ export default function App({
         </AuthModule>
       </PubSubContextModule>
       <div id="portals" />
-    </>
+    </ErrorBoundary>
   );
 }
 

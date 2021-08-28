@@ -24,6 +24,7 @@ export function runScript(
       PD_PUBLIC_CDN_BASE_URL: config.cdnBaseUrl,
       PD_PUBLIC_IFRAME_ORIGIN: config.iframe.origin,
       PD_PUBLIC_SEGMENT_KEY: (config.segment?.key ?? -1).toString(),
+      PD_PUBLIC_BUGSNAG_KEY: (config.bugsnag?.frontKey ?? -1).toString(),
     },
   });
 

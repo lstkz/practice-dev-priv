@@ -46,7 +46,6 @@ export interface AppConfig {
   };
   bugsnag: {
     apiKey: string | -1;
-    workerKey: string | -1;
     frontKey: string | -1;
   };
   github: {

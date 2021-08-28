@@ -40,3 +40,9 @@ if (!process.env.SEGMENT_KEY) {
 }
 export const SEGMENT_KEY =
   process.env.SEGMENT_KEY === '-1' ? -1 : process.env.SEGMENT_KEY;
+
+if (!process.env.BUGSNAG_KEY) {
+  throw new Error('BUGSNAG_KEY is not set');
+}
+export const BUGSNAG_KEY =
+  process.env.BUGSNAG_KEY === '-1' ? -1 : process.env.BUGSNAG_KEY;
