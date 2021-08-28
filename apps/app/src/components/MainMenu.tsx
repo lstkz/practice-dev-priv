@@ -15,10 +15,6 @@ const navigation = [
     href: createUrl({ name: 'modules' }),
   },
   {
-    name: 'Votes',
-    comingSoon: true,
-  },
-  {
     name: 'Ranking',
     comingSoon: true,
   },
