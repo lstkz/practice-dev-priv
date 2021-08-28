@@ -11,6 +11,7 @@ import { User } from 'shared';
 import { createSSRClient } from 'src/common/helper';
 import { ConfirmModalModule } from 'src/features/ConfirmModalModule';
 import { PubSubContextModule } from 'src/features/PubSubContextModule';
+import { usePageViewAnalytics } from 'src/hooks/usePageViewAnalytics';
 
 config.autoAddCss = false;
 
@@ -28,6 +29,7 @@ export default function App({
       clearAccessToken();
     }
   }, []);
+  usePageViewAnalytics();
   return (
     <>
       <PubSubContextModule>

@@ -34,3 +34,9 @@ export const CRYPTO_LINK =
 export const DISCORD_LINK = 'https://discord.gg/76PceHgyf6';
 
 export const GITHUB_LINK = 'https://github.com/practice-dev/practice-dev';
+
+if (!process.env.SEGMENT_KEY) {
+  throw new Error('SEGMENT_KEY is not set');
+}
+export const SEGMENT_KEY =
+  process.env.SEGMENT_KEY === '-1' ? -1 : process.env.SEGMENT_KEY;
