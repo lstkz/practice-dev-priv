@@ -4,7 +4,7 @@ export const API_URL = process.env.API_URL!;
 export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
 export const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID!;
 export const CDN_BASE_URL = process.env.CDN_BASE_URL!;
-export const IFRAME_ORIGIN = process.env.IFRAME_ORIGIN!;
+export const IFRAME_ORIGIN = process.env.SEGMENT_KEY!;
 
 if (!API_URL) {
   throw new Error('API_URL is not set');
@@ -34,3 +34,9 @@ export const CRYPTO_LINK =
 export const DISCORD_LINK = 'https://discord.gg/76PceHgyf6';
 
 export const GITHUB_LINK = 'https://github.com/practice-dev/practice-dev';
+
+if (!process.env.SEGMENT_KEY) {
+  throw new Error('SEGMENT_KEY is not set');
+}
+export const SEGMENT_KEY =
+  process.env.SEGMENT_KEY === '-1' ? -1 : process.env.SEGMENT_KEY;

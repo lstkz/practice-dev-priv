@@ -18,6 +18,9 @@ export interface AppConfig {
   workspace: {
     expirationHours: number;
   };
+  segment: {
+    key: string | -1;
+  };
   aws: {
     region: string;
     s3Bucket: string;

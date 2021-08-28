@@ -23,6 +23,7 @@ export function runScript(
       PD_PUBLIC_PROTECTED_BASE_URL: config.apiBaseUrl,
       PD_PUBLIC_CDN_BASE_URL: config.cdnBaseUrl,
       PD_PUBLIC_IFRAME_ORIGIN: config.iframe.origin,
+      PD_PUBLIC_SEGMENT_KEY: (config.segment?.key ?? -1).toString(),
     },
   });
 
