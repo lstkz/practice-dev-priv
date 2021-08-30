@@ -3,7 +3,7 @@ import {
   CogIcon,
   KeyIcon,
   UserCircleIcon,
-  CurrencyDollarIcon,
+  // CurrencyDollarIcon,
 } from '@heroicons/react/outline';
 import { useRouter } from 'next/dist/client/router';
 import Link from 'next/link';
@@ -36,12 +36,12 @@ const subNavigation = [
     href: createUrl({ name: 'settings', sub: 'notifications' }),
     icon: BellIcon,
   },
-  {
-    name: 'crypto',
-    label: 'Crypto',
-    href: createUrl({ name: 'settings', sub: 'crypto' }),
-    icon: CurrencyDollarIcon,
-  },
+  // {
+  //   name: 'crypto',
+  //   label: 'Crypto',
+  //   href: createUrl({ name: 'settings', sub: 'crypto' }),
+  //   icon: CurrencyDollarIcon,
+  // },
 ];
 
 export function SettingsNavigation() {

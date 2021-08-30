@@ -23,6 +23,7 @@ export function mapUser(user: UserModel): User {
     isVerified: user.isVerified,
     isAdmin: user.isAdmin,
     avatarId: user.avatarId,
+    hasNewsletter: user.notificationSettings?.newsletter ?? false,
   };
 }
 

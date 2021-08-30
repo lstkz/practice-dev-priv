@@ -14,6 +14,7 @@ it('should return user', async () => {
 Object {
   "avatarId": undefined,
   "email": "user1@example.com",
+  "hasNewsletter": false,
   "id": "000000000000000000000001",
   "isAdmin": undefined,
   "isVerified": true,

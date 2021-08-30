@@ -14,6 +14,7 @@ export interface User {
   isAdmin?: boolean | null;
   avatarId?: string | null;
   isVerified: boolean;
+  hasNewsletter: boolean;
 }
 
 export interface AuthData {

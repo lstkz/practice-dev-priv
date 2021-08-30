@@ -11,6 +11,7 @@ import { useUser } from 'src/features/AuthModule';
 import { VerifyAccountAlert } from './VerifyAccountAlert';
 import { MainMenu } from './MainMenu';
 import { CustomImage } from './CustomImage';
+import { SubscribeNewsletterAlert } from './SubscribeNewsletterAlert';
 
 interface DashboardProps {
   children: React.ReactNode;
@@ -82,6 +83,7 @@ export default function Dashboard(props: DashboardProps) {
       </Disclosure>
       <div tw="bg-gray-50 flex-1 pb-10">
         {user && !user.isVerified && <VerifyAccountAlert />}
+        {user && <SubscribeNewsletterAlert />}
         {children}
       </div>
       <Footer />
