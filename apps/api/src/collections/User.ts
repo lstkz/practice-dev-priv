@@ -23,6 +23,7 @@ export interface UserModel {
   notificationSettings?: NotificationSettings;
   registeredAt: Date;
   lastSeenAt: Date;
+  isImported?: boolean;
 }
 
 export const UserCollection = safeExtend(
