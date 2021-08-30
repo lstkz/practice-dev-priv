@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+// @ts-ignore
 import dynamoData from './dynamo-data.json';
 import * as R from 'remeda';
 import { APIClient } from 'shared';

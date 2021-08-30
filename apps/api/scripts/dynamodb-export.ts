@@ -2,6 +2,7 @@ import AWS from 'aws-sdk';
 import Path from 'path';
 import fs from 'fs';
 import { Converter } from 'aws-sdk/clients/dynamodb';
+// @ts-ignore
 import credentials from './aws-credentials.json';
 
 AWS.config.region = 'eu-central-1';
