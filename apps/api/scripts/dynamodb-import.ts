@@ -5,4 +5,6 @@ import { APIClient } from 'shared';
 
 const client = new APIClient('http://localhost:3001', () => 'admin-wOcAcBPqRt');
 
-R.chunk(dynamoData, 100).map(data => client.migrate_importLegacyUsers(data));
+R.chunk(dynamoData, 100).map((data: any[]) =>
+  client.migrate_importLegacyUsers(data)
+);
