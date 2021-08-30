@@ -102,6 +102,9 @@ export class APIClient {
   follower_unfollowUser(username: string): Promise<void> {
     return this.call('follower.unfollowUser', { username });
   }
+  migrate_importLegacyUsers(users: LegacyUserEntity[]): Promise<void> {
+    return this.call('migrate.importLegacyUsers', { users });
+  }
   module_getModule(values: {
     id?: number | undefined;
     slug?: string | undefined;
@@ -122,6 +125,7 @@ export class APIClient {
     difficulty: string;
     tags: string[];
     mainTechnology: string;
+    isComingSoon?: boolean | undefined;
   }): Promise<void> {
     return this.call('module.updateModule', { values });
   }

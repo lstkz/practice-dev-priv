@@ -5,6 +5,7 @@
     "lib": ["es6", "ES2017.object", "ES2016.Array.Include"],
     "target": "es2018",
     "module": "commonjs",
+    "resolveJsonModule": true,
     "paths": {
       "shared": ["../../packages/shared"]
     }

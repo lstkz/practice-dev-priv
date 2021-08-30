@@ -351,3 +351,30 @@ export interface Follower {
   avatarId?: string | null;
   isFollowing: boolean;
 }
+
+export interface LegacyUserEntity {
+  entityType: 'User';
+  stats: {
+    followers: number;
+    following: number;
+    likes: number;
+    solutions: number;
+    solved: number;
+    submissions: number;
+  };
+  bio: string;
+  avatarUrl: string;
+  isAdmin: boolean;
+  email: string;
+  url: string;
+  country: string;
+  name: string;
+  isVerified: true;
+  githubId: 4478684;
+  password: string;
+  salt: string;
+  userId: string;
+  sk: string;
+  username: string;
+  pk: string;
+}
