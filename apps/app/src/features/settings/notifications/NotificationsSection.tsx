@@ -5,6 +5,7 @@ import { useErrorModalActions } from 'src/features/ErrorModalModule';
 import { ContextSwitchGroup } from 'src/components/ContextSwitchGroup';
 import { NotificationSettings } from 'shared';
 import { api } from 'src/services/api';
+import { useUser } from 'src/features/AuthModule';
 
 interface NotificationsSectionProps {
   initialValues: NotificationSettings;
@@ -17,6 +18,7 @@ export function NotificationsSection(props: NotificationsSectionProps) {
   const { show: showError } = useErrorModalActions();
   const { handleSubmit } = formMethods;
   const [isLoading, setIsLoading] = React.useState(false);
+  const user = useUser();
 
   return (
     <form
@@ -42,6 +44,7 @@ export function NotificationsSection(props: NotificationsSectionProps) {
               name="newsletter"
               label="Newsletter"
               description="News about new functionality and new features. Zero spam!"
+              disabled={!user.isVerified}
             />
           </div>
         </FormProvider>

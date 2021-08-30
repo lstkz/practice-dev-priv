@@ -40,7 +40,7 @@ export const resetPassword = createContract('user.resetPassword')
             title: 'Password reset.',
             link_text: 'Set new password',
             link_url: url,
-            content: 'Click on the below link to confirm reset your password',
+            content: 'Click on the below link to reset your password',
           },
         },
       },

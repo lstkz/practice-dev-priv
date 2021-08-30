@@ -14,7 +14,7 @@ export const getNotificationSettings = createContract(
   .fn(async user => {
     if (!user.notificationSettings) {
       return updateNotificationSettings(user, {
-        newsletter: true,
+        newsletter: false,
       });
     }
     return user.notificationSettings;

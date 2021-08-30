@@ -1,7 +1,7 @@
 import { ObjectID } from 'mongodb';
 import { S } from 'schema';
 import { UserCollection } from '../../collections/User';
-import { dispatchEvent } from '../../dispatch';
+import { dispatchEvent, dispatchTask } from '../../dispatch';
 import { createContract, createEventBinding } from '../../lib';
 import { sendVerificationEmail } from './_common';
 
@@ -22,6 +22,13 @@ export const completeRegistration = createContract('user.completeRegistration')
         },
       });
     }
+    await dispatchTask({
+      type: 'CreateEmailContact',
+      payload: {
+        email: user.email,
+        subscribe: false,
+      },
+    });
   });
 
 export const completeRegistrationEvent = createEventBinding({

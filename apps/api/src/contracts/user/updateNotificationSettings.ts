@@ -1,6 +1,7 @@
 import { S } from 'schema';
 import { NotificationSettings } from 'shared';
 import { UserCollection } from '../../collections/User';
+import { dispatchTask } from '../../dispatch';
 import { createContract, createRpcBinding } from '../../lib';
 
 export const updateNotificationSettings = createContract(
@@ -17,6 +18,13 @@ export const updateNotificationSettings = createContract(
   .fn(async (user, values) => {
     user.notificationSettings = values;
     await UserCollection.update(user, ['notificationSettings']);
+    await dispatchTask({
+      type: 'UpdateNewsletterSettings',
+      payload: {
+        email: user.email,
+        subscribe: values.newsletter,
+      },
+    });
     return values;
   });
 

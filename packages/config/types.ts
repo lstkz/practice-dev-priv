@@ -61,6 +61,9 @@ export interface AppConfig {
     privateKey: string;
     senderEmail: string;
     senderName: string;
+    lists: {
+      newsletter: number;
+    };
     templates: {
       actionButton: number;
     };
