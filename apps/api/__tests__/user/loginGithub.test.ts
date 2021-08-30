@@ -35,6 +35,7 @@ it('should login successfully', async () => {
 Object {
   "avatarId": undefined,
   "email": "user1@example.com",
+  "hasNewsletter": false,
   "id": "000000000000000000000001",
   "isAdmin": undefined,
   "isVerified": true,

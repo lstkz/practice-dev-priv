@@ -22,6 +22,7 @@ it('should register successfully', async () => {
 Object {
   "avatarId": undefined,
   "email": "user1@example.com",
+  "hasNewsletter": false,
   "id": "",
   "isAdmin": undefined,
   "isVerified": true,
