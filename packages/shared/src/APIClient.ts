@@ -26,7 +26,12 @@ import {
 } from './types';
 // IMPORTS END
 
-import { SubmissionSortBy, WorkspaceNodeType, SolutionSortBy } from './types';
+import {
+  SubmissionSortBy,
+  WorkspaceNodeType,
+  SolutionSortBy,
+  LegacyUserEntity,
+} from './types';
 type ObjectId = string;
 
 export class APIClient {
