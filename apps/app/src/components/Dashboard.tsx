@@ -11,6 +11,8 @@ import { VerifyAccountAlert } from './VerifyAccountAlert';
 import { HeaderAuthButtons, MainMenu } from './MainMenu';
 import { CustomImage } from './CustomImage';
 import { SubscribeNewsletterAlert } from './SubscribeNewsletterAlert';
+import { Logo } from './Logo';
+import tw from 'twin.macro';
 
 interface DashboardProps {
   children: React.ReactNode;
@@ -39,16 +41,10 @@ export default function Dashboard(props: DashboardProps) {
                 </div>
                 <div className="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
                   <div className="flex-shrink-0 flex items-center">
-                    <Link href={createUrl({ name: 'modules' })}>
-                      <a>
-                        <span className="sr-only">Practice.dev</span>
-                        <CustomImage
-                          {...logo}
-                          className="h-6 w-auto"
-                          alt="practice.dev"
-                        />
-                      </a>
-                    </Link>
+                    <Logo
+                      imgCss={tw`h-6 w-auto`}
+                      href={createUrl({ name: 'modules' })}
+                    />
                   </div>
                   <MainMenu />
                 </div>

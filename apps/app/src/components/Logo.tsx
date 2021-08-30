@@ -1,9 +1,7 @@
 import Link from 'next/link';
 import React from 'react';
 import tw from 'twin.macro';
-import logo_black from '../../public/logo-black.png';
-import logo from '../../public/logo.png';
-import { CustomImage } from './CustomImage';
+import { LogoSvg } from './LogoSvg';
 
 interface LogoProps {
   imgCss?: any;
@@ -18,12 +16,7 @@ export function Logo(props: LogoProps) {
     <Link href={href ?? '/'}>
       <a>
         <span className="sr-only">Practice.dev</span>
-        <CustomImage
-          css={[tw`h-8 w-auto`, imgCss]}
-          {...rest}
-          alt=""
-          {...(black ? logo_black : logo)}
-        />
+        <LogoSvg css={[tw`h-8 w-auto`, imgCss]} {...rest} dark={black} />
       </a>
     </Link>
   );
