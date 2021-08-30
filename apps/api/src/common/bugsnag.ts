@@ -14,6 +14,9 @@ const bugsnagClient =
       });
 
 function getRequestInfo(req: Request) {
+  if (!req) {
+    return {};
+  }
   const connection = req.connection;
   const url = req.url;
   const request: any = {

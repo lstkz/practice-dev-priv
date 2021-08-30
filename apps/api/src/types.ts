@@ -33,6 +33,21 @@ export interface SendEmailTask {
   };
 }
 
+export interface CreateEmailContactTask {
+  type: 'CreateEmailContact';
+  payload: {
+    email: string;
+    subscribe: boolean;
+  };
+}
+export interface UpdateNewsletterSettingsTask {
+  type: 'UpdateNewsletterSettings';
+  payload: {
+    email: string;
+    subscribe: boolean;
+  };
+}
+
 export interface TestSubmissionTask {
   type: 'TestSubmission';
   payload: {
@@ -58,7 +73,9 @@ export interface ButtonActionTemplateProps {
 export type AppTask =
   | SendEmailTask
   | TestSubmissionTask
-  | CloneWorkspaceFilesTask;
+  | CloneWorkspaceFilesTask
+  | CreateEmailContactTask
+  | UpdateNewsletterSettingsTask;
 
 export interface UserRegisteredEvent {
   type: 'UserRegistered';

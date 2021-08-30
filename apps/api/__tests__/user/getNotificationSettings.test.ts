@@ -3,6 +3,8 @@ import { getNotificationSettings } from '../../src/contracts/user/getNotificatio
 import { execContract, getId, setupDb } from '../helper';
 import { registerSampleUsers } from '../seed-data';
 
+jest.mock('../../src/dispatch');
+
 setupDb();
 
 beforeEach(async () => {
@@ -14,7 +16,7 @@ beforeEach(async () => {
     {
       $set: {
         notificationSettings: {
-          newsletter: false,
+          newsletter: true,
         },
       },
     }
@@ -25,7 +27,7 @@ it('should return create notification settings if not exists', async () => {
   const ret = await execContract(getNotificationSettings, {}, 'user1_token');
   expect(ret).toMatchInlineSnapshot(`
 Object {
-  "newsletter": true,
+  "newsletter": false,
 }
 `);
 });
@@ -34,7 +36,7 @@ it('should return return existing notification settings', async () => {
   const ret = await execContract(getNotificationSettings, {}, 'user2_token');
   expect(ret).toMatchInlineSnapshot(`
 Object {
-  "newsletter": false,
+  "newsletter": true,
 }
 `);
 });

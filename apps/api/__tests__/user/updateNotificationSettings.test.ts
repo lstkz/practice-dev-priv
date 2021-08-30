@@ -3,6 +3,7 @@ import { updateNotificationSettings } from '../../src/contracts/user/updateNotif
 import { execContract, getId, setupDb } from '../helper';
 import { registerSampleUsers } from '../seed-data';
 
+jest.mock('../../src/dispatch');
 setupDb();
 
 beforeEach(async () => {

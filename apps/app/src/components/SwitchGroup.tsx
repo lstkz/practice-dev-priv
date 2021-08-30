@@ -6,11 +6,12 @@ export interface SwitchGroupProps {
   label: React.ReactNode;
   description?: React.ReactNode;
   checked: boolean;
+  disabled?: boolean;
   onChange: (checked: boolean) => void;
 }
 
 export function SwitchGroup(props: SwitchGroupProps) {
-  const { label, description, checked, onChange } = props;
+  const { label, description, checked, onChange, disabled } = props;
   return (
     <Switch.Group as="li" className="py-4 flex items-center justify-between">
       <div className="flex flex-col">
@@ -26,11 +27,13 @@ export function SwitchGroup(props: SwitchGroupProps) {
         </Switch.Description>
       </div>
       <Switch
+        disabled={disabled}
         checked={checked}
         onChange={onChange}
         css={[
           tw`ml-4 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`,
           checked ? tw`bg-indigo-500` : tw`bg-gray-200`,
+          disabled && tw`opacity-70 cursor-not-allowed`,
         ]}
       >
         <span
