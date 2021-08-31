@@ -29,7 +29,10 @@ export function ModuleListItem(props: ModuleListItemProps) {
               </span>
             )}
           </p>
-          <p tw="text-sm mt-2 text-gray-600">{item.description}</p>
+          <p
+            tw="text-sm mt-2 text-gray-600"
+            dangerouslySetInnerHTML={{ __html: item.description }}
+          ></p>
         </div>
         {!isComingSoon && (
           <div tw="ml-6">

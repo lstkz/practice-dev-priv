@@ -45,7 +45,10 @@ export function ModulePage() {
           <h2 tw="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
             {module.title}
           </h2>
-          <p tw="text-sm mt-2 text-gray-600  max-w-xl">{module.description}</p>
+          <p
+            tw="text-sm mt-2 text-gray-600  max-w-xl"
+            dangerouslySetInnerHTML={{ __html: module.description }}
+          ></p>
           <div tw="mt-2 space-x-2">
             {allTags.map((tag, i) => (
               <Badge key={i} color="purple">
