@@ -4,12 +4,11 @@ import { MenuIcon, XIcon } from '@heroicons/react/outline';
 import { ProfileDropdown } from './ProfileDropdown';
 import Link from 'next/link';
 import { createUrl } from '../common/url';
-import { Button } from './Button';
 import Footer from '../features/landing/Footer';
 import logo from '../../public/logo.png';
 import { useUser } from 'src/features/AuthModule';
 import { VerifyAccountAlert } from './VerifyAccountAlert';
-import { MainMenu } from './MainMenu';
+import { HeaderAuthButtons, MainMenu } from './MainMenu';
 import { CustomImage } from './CustomImage';
 import { SubscribeNewsletterAlert } from './SubscribeNewsletterAlert';
 
@@ -57,21 +56,8 @@ export default function Dashboard(props: DashboardProps) {
                   {user ? (
                     <ProfileDropdown />
                   ) : (
-                    <div tw="space-x-4">
-                      <Button
-                        href={createUrl({ name: 'login' })}
-                        focusBg="gray-800"
-                        type="white"
-                      >
-                        Log in
-                      </Button>
-                      <Button
-                        href={createUrl({ name: 'register' })}
-                        focusBg="gray-800"
-                        type="primary"
-                      >
-                        Join now
-                      </Button>
+                    <div tw="space-x-4 hidden sm:block">
+                      <HeaderAuthButtons />
                     </div>
                   )}
                 </div>

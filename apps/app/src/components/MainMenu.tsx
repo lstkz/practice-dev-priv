@@ -3,7 +3,9 @@ import { useRouter } from 'next/dist/client/router';
 import Link from 'next/link';
 import React from 'react';
 import { createUrl } from 'src/common/url';
+import { useUser } from 'src/features/AuthModule';
 import tw from 'twin.macro';
+import { Button } from './Button';
 
 interface MainMenuProps {
   mobile?: boolean;
@@ -26,6 +28,27 @@ interface MenuItemProps {
   children: React.ReactNode;
   current?: boolean;
   block?: boolean;
+}
+
+export function HeaderAuthButtons() {
+  return (
+    <>
+      <Button
+        href={createUrl({ name: 'login' })}
+        focusBg="gray-800"
+        type="white"
+      >
+        Log in
+      </Button>
+      <Button
+        href={createUrl({ name: 'register' })}
+        focusBg="gray-800"
+        type="primary"
+      >
+        Join now
+      </Button>
+    </>
+  );
 }
 
 function MenuItem(props: MenuItemProps) {
@@ -61,10 +84,16 @@ function MenuItem(props: MenuItemProps) {
 
 export function MainMenu(props: MainMenuProps) {
   const { mobile } = props;
+  const user = useUser();
   const router = useRouter();
   if (mobile) {
     return (
       <Disclosure.Panel tw="sm:hidden">
+        {!user && (
+          <div tw="space-x-2 flex justify-end px-4">
+            <HeaderAuthButtons />
+          </div>
+        )}
         <div tw="px-2 pt-2 pb-3 space-y-1">
           {navigation.map((item, i) => (
             <MenuItem
