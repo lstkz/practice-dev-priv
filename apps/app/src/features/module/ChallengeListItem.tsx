@@ -36,7 +36,10 @@ export function ChallengeListItem(props: ChallengeListItemProps) {
                 <p tw="text-xl font-medium text-gray-800  truncate">
                   {item.title}
                 </p>
-                <p tw="text-sm mt-2 text-gray-600">{item.description}</p>
+                <p
+                  tw="text-sm mt-2 text-gray-600"
+                  dangerouslySetInnerHTML={{ __html: item.description }}
+                />
               </div>
               <div tw="ml-6">
                 <DotBadge
