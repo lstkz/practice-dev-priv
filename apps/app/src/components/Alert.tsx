@@ -20,7 +20,7 @@ export function Alert(props: AlertProps) {
         type === 'info' && tw`bg-blue-100 text-blue-700`,
       ]}
     >
-      <div tw="flex justify-center items-center px-10">
+      <div tw="flex justify-center items-center" css={[onClose && tw`px-10`]}>
         <div tw="flex-shrink-0">
           <ExclamationIcon
             tw="h-5 w-5 text-red-400"
