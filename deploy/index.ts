@@ -71,14 +71,6 @@ function createTester() {
       dependsOn: [lambdaLogs],
     }
   );
-  if (config.deploy.testerProvisionedConcurrency) {
-    new aws.lambda.ProvisionedConcurrencyConfig('pd-tester-fixed-concurrency', {
-      functionName: lambda.name,
-      qualifier: lambda.version,
-      provisionedConcurrentExecutions:
-        config.deploy.testerProvisionedConcurrency,
-    });
-  }
   return lambda;
 }
 

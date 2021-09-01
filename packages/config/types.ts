@@ -95,6 +95,5 @@ export interface AppConfig {
       certArn: string;
       domainName: string;
     };
-    testerProvisionedConcurrency?: number;
   };
 }
