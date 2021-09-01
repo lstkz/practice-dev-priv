@@ -412,6 +412,19 @@ function createApp(mainBucket: aws.s3.Bucket) {
           ],
         }),
       },
+      {
+        name: 'p3',
+        policy: JSON.stringify({
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Resource: '*',
+              Action: ['lambda:InvokeFunction'],
+              Effect: 'Allow',
+            },
+          ],
+        }),
+      },
     ],
   });
   new awsx.ecs.FargateService('api', {
