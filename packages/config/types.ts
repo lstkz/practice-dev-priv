@@ -41,9 +41,6 @@ export interface AppConfig {
     origin: string;
     port?: number;
   };
-  mixpanel: {
-    apiKey: string | -1;
-  };
   bugsnag: {
     apiKey: string | -1;
     frontKey: string | -1;
