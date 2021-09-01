@@ -26,7 +26,11 @@ export function UserAvatar(props: UserAvatarProps) {
       ) : (
         <div
           tw="bg-blue-600 text-white text-lg leading-none flex items-center justify-center uppercase rounded-full"
-          css={[sizeCss, size === 'xl' && tw`text-5xl`]}
+          css={[
+            sizeCss,
+            size === 'xl' && tw`text-3xl`,
+            size === 'xxl' && tw`text-5xl`,
+          ]}
         >
           {user.username[0]}
         </div>
