@@ -85,20 +85,20 @@ export function init() {
             })
           ),
         ]);
-        await await Promise.all([
-          uploadS3(
-            'app/.next/static',
-            config.aws.s3Bucket,
-            'cdn/_next/static/'
-          ),
-          uploadS3('iframe/build', config.aws.s3Bucket, 'iframe/'),
-          uploadS3(
-            'app/public',
-            config.aws.s3Bucket,
-            'cdn/',
-            path => path.includes('onigasm.wasm') || path.includes('/grammars/')
-          ),
-        ]);
+        // await await Promise.all([
+        //   uploadS3(
+        //     'app/.next/static',
+        //     config.aws.s3Bucket,
+        //     'cdn/_next/static/'
+        //   ),
+        //   uploadS3('iframe/build', config.aws.s3Bucket, 'iframe/'),
+        //   uploadS3(
+        //     'app/public',
+        //     config.aws.s3Bucket,
+        //     'cdn/',
+        //     path => path.includes('onigasm.wasm') || path.includes('/grammars/')
+        //   ),
+        // ]);
       }
       await cpToPromise(
         spawn('pulumi', ['up', '-s', stage ? 'dev' : 'prod', '-y'], {
