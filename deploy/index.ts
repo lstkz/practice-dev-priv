@@ -65,7 +65,6 @@ function createTester() {
           IS_AWS: '1',
         },
       },
-      publish: true,
     },
     {
       dependsOn: [lambdaLogs],
