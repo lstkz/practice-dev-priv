@@ -43,7 +43,8 @@ export const importLegacyUsers = createContract('migrate.importLegacyUsers')
       }
       if (user.avatarUrl) {
         const res = await fetch(
-          `https://practice.dev/avatars/${user.avatarUrl}-org.png`
+          `https://d3ia4clr21inua.cloudfront.net	
+          /avatars/${user.avatarUrl}-org.png`
         );
         const imgBuffer = Buffer.from(await res.arrayBuffer());
         mapped.avatarId = await uploadUserAvatar(imgBuffer);
