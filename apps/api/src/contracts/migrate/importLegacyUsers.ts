@@ -42,10 +42,13 @@ export const importLegacyUsers = createContract('migrate.importLegacyUsers')
         delete mapped.githubId;
       }
       if (user.avatarUrl) {
-        const res = await fetch(
-          `https://d3ia4clr21inua.cloudfront.net	
-          /avatars/${user.avatarUrl}-org.png`
-        );
+        const url = `https://d3ia4clr21inua.cloudfront.net/avatars/${user.avatarUrl}-org.png`;
+        const res = await fetch(url);
+        if (res.status !== 200) {
+          throw new Error(
+            'Invalid image status: ' + res.status + '. Url: ' + url
+          );
+        }
         const imgBuffer = Buffer.from(await res.arrayBuffer());
         mapped.avatarId = await uploadUserAvatar(imgBuffer);
       }
