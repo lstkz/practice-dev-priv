@@ -41,7 +41,7 @@ export function MainSection() {
             />
           </svg>
         </div>
-        <div className="relative pt-6 pb-16 sm:pb-24">
+        <div className="relative pt-20 pb-16 sm:pb-24">
           <LandingHeader />
 
           <main className="mt-16 sm:mt-24">
