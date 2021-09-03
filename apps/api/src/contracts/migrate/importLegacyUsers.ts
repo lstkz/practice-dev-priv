@@ -49,14 +49,21 @@ export const importLegacyUsers = createContract('migrate.importLegacyUsers')
         const imgBuffer = Buffer.from(await res.arrayBuffer());
         mapped.avatarId = await uploadUserAvatar(imgBuffer);
       }
-      await UserCollection.insertOne(mapped);
-      await dispatchTask({
-        type: 'CreateEmailContact',
-        payload: {
-          email: mapped.email,
-          subscribe: mapped.notificationSettings?.newsletter ?? false,
-        },
-      });
+      const success = await UserCollection.insertOne(mapped)
+        .then(() => true)
+        .catch(e => {
+          console.error('failed to add', e, mapped);
+          return false;
+        });
+      if (success) {
+        await dispatchTask({
+          type: 'CreateEmailContact',
+          payload: {
+            email: mapped.email,
+            subscribe: mapped.notificationSettings?.newsletter ?? false,
+          },
+        });
+      }
     }
   });
 
