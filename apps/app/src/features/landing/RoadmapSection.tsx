@@ -73,7 +73,7 @@ export function RoadmapSection() {
               />
               <RoadmapItem
                 active
-                title="Start token sale on uniswap."
+                title="Start token sale on Uniswap."
                 small
                 checked
               />
@@ -87,7 +87,7 @@ export function RoadmapSection() {
             </>
             <RoadmapItem title="Q4 2021" />
             <>
-              <RoadmapItem title="Reach $1M TVL on uniswap." small />
+              <RoadmapItem title="Reach $2M TVL on Uniswap." small />
               <RoadmapItem title="Enable royalties." small />
               <RoadmapItem title="Gamification system." small />
               <RoadmapItem title="Reach 100 challenges." small />
