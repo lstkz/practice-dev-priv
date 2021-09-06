@@ -118,10 +118,16 @@ export class TesterPage {
     });
   }
 
-  async expectToMatch(selector: string, expected: string, exact = false) {
+  async expectToMatch(
+    selector: string,
+    expected: string | number,
+    exact = false
+  ) {
     const input = convertSelector(selector);
+    const serialized =
+      typeof expected === 'number' ? `${expected}` : `"${expected}"`;
     await this.stepNotifier.notify(
-      `Expect "${input}" to ${exact ? 'equal' : 'contain'} "${expected}"`
+      `Expect "${input}" to ${exact ? 'equal' : 'contain'} ${serialized}`
     );
     await this.page.waitForSelector(input, this.waitOptions);
 
@@ -691,6 +697,60 @@ export class TesterPage {
       }
       throw new TestError(
         `Expected class: "${className}". Actual: "${actual}"`
+      );
+    }
+  }
+
+  async expectToBeChecked(selector: string, checked: boolean) {
+    const expected = checked ? 'checked' : 'unchecked';
+    const unexpected = !checked ? 'checked' : 'unchecked';
+    const input = convertSelector(selector);
+    await this.stepNotifier.notify(`Expect "${input}" to be ${expected}`);
+    await this.page.waitForSelector(input, this.waitOptions);
+    const handle = await this.page.evaluateHandle(() => document);
+    try {
+      await this.page.waitForFunction(
+        (handle: any, input: any, checked: any) => {
+          const elements = [...handle.querySelectorAll(input)];
+          if (elements.length !== 1) {
+            return null;
+          }
+          const element = elements[0];
+          return element.checked === checked;
+        },
+        {
+          timeout: this.defaultTimeout,
+        },
+        handle,
+        input,
+        checked
+      );
+    } catch (error) {
+      rethrowNonTimeout(error);
+      const actual = await this.page.evaluate(
+        (handle, input) => {
+          const elements = [...handle.querySelectorAll(input)];
+          if (elements.length !== 1) {
+            return { error: 'multiple', count: elements.length };
+          }
+          if (elements[0].checked == null) {
+            return { error: 'not-checkbox' };
+          }
+          return null;
+        },
+        handle,
+        input
+      );
+      if (actual?.error === 'multiple') {
+        throw new TestError(
+          `Found ${actual.count} elements with selector '${selector}'. Expected only 1.`
+        );
+      }
+      if (actual?.error === 'not-checkbox') {
+        throw new TestError(`The selector '${input}' is not a checkbox.`);
+      }
+      throw new TestError(
+        `Expected "${input}" to be ${expected}, but it's still ${unexpected}.`
       );
     }
   }
