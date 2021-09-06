@@ -42,20 +42,31 @@ export const importLegacyUsers = createContract('migrate.importLegacyUsers')
         delete mapped.githubId;
       }
       if (user.avatarUrl) {
-        const res = await fetch(
-          `https://practice.dev/avatars/${user.avatarUrl}-org.png`
-        );
+        const url = `https://d3ia4clr21inua.cloudfront.net/avatars/${user.avatarUrl}-org.png`;
+        const res = await fetch(url);
+        if (res.status !== 200) {
+          throw new Error(
+            'Invalid image status: ' + res.status + '. Url: ' + url
+          );
+        }
         const imgBuffer = Buffer.from(await res.arrayBuffer());
         mapped.avatarId = await uploadUserAvatar(imgBuffer);
       }
-      await UserCollection.insertOne(mapped);
-      await dispatchTask({
-        type: 'CreateEmailContact',
-        payload: {
-          email: mapped.email,
-          subscribe: mapped.notificationSettings?.newsletter ?? false,
-        },
-      });
+      const success = await UserCollection.insertOne(mapped)
+        .then(() => true)
+        .catch(e => {
+          console.error('failed to add', e, mapped);
+          return false;
+        });
+      if (success) {
+        await dispatchTask({
+          type: 'CreateEmailContact',
+          payload: {
+            email: mapped.email,
+            subscribe: mapped.notificationSettings?.newsletter ?? false,
+          },
+        });
+      }
     }
   });
 
