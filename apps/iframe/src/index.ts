@@ -4,6 +4,12 @@ import {
   IframeMessage,
   IframeNavigationCallbackMessage,
 } from 'shared';
+import { detect } from 'detect-browser';
+
+const browser = detect();
+
+const USE_SHIM = !browser || browser.name !== 'chrome';
+
 import { createNavigationProxy } from './NavigationProxy';
 
 function sendMessage(
@@ -62,7 +68,10 @@ window.addEventListener('message', e => {
       const head = document.head;
       if (!head.querySelector('#__importmap')) {
         const importScript = document.createElement('script');
-        importScript.setAttribute('type', 'importmap');
+        importScript.setAttribute(
+          'type',
+          USE_SHIM ? 'importmap-shim' : 'importmap'
+        );
         importScript.setAttribute('id', '__importmap');
         importScript.innerHTML = JSON.stringify(
           {
@@ -75,7 +84,7 @@ window.addEventListener('message', e => {
       }
       head.querySelector('#__app')?.remove();
       const script = document.createElement('script');
-      script.setAttribute('type', 'module');
+      script.setAttribute('type', USE_SHIM ? 'module-shim' : 'module');
       script.setAttribute('id', '__app');
       script.innerHTML = data.code;
       head.append(script);
@@ -86,6 +95,16 @@ window.addEventListener('message', e => {
         style.setAttribute('id', '__css');
         style.innerHTML = data.css;
         head.append(style);
+      }
+      if (!document.body.querySelector('#__module_shim') && USE_SHIM) {
+        const moduleShimScript = document.createElement('script');
+        moduleShimScript.setAttribute('type', 'text/javascript');
+        moduleShimScript.setAttribute('id', '__module_shim');
+        moduleShimScript.setAttribute(
+          'src',
+          'https://unpkg.com/es-module-shims@0.12.8/dist/es-module-shims.js'
+        );
+        head.append(moduleShimScript);
       }
       break;
     }
