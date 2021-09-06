@@ -6,6 +6,7 @@ import {
   Activity,
   AwsUploadContentAuth,
   ChallengeDetails,
+  NextChallengeInfo,
   Challenge,
   Follower,
   Module,
@@ -63,6 +64,12 @@ export class APIClient {
     slug?: string | undefined;
   }): Promise<ChallengeDetails> {
     return this.call('challenge.getChallenge', { values });
+  }
+  challenge_getNextChallenge(values: {
+    id?: string | undefined;
+    slug?: string | undefined;
+  }): Promise<NextChallengeInfo> {
+    return this.call('challenge.getNextChallenge', { values });
   }
   challenge_searchChallenges(criteria: {
     limit: number;

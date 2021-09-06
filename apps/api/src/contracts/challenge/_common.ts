@@ -1,8 +1,13 @@
 import * as R from 'remeda';
 import { Challenge } from 'shared';
-import { ChallengeModel } from '../../collections/Challenge';
+import {
+  ChallengeCollection,
+  ChallengeModel,
+} from '../../collections/Challenge';
 import { ChallengeAttemptCollection } from '../../collections/ChallengeAttempt';
 import { ChallengeSolvedCollection } from '../../collections/ChallengeSolved';
+import { AppError } from '../../common/errors';
+import { doFn } from '../../common/helper';
 import { AppUser } from '../../types';
 
 async function _getAttemptedStats(
@@ -72,4 +77,25 @@ export async function populateChallenges(
     };
     return mapped;
   });
+}
+
+export async function getChallengeByIdOrSlug(values: {
+  id?: string;
+  slug?: string;
+}) {
+  if (!values.id && !values.slug) {
+    throw new AppError('id or slug required');
+  }
+  const challenge = await doFn(async () => {
+    if (values.id) {
+      return ChallengeCollection.findById(values.id);
+    }
+    return ChallengeCollection.findOne({
+      slug: values.slug,
+    });
+  });
+  if (!challenge) {
+    throw new AppError('Challenge not found');
+  }
+  return challenge;
 }

@@ -136,6 +136,14 @@ export interface ChallengeDetails {
   tests: Array<string>;
 }
 
+export interface NextChallengeInfo {
+  next: {
+    id: string;
+    title: string;
+    slug: string;
+  } | null;
+}
+
 export enum SubmissionSortBy {
   Newest = 'newest',
   Oldest = 'oldest',

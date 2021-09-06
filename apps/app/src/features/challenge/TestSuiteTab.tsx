@@ -1,10 +1,12 @@
 import {
   faAngleRight,
+  faArrowRight,
   faExclamationCircle,
   faSpinner,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
+import { createUrl } from 'src/common/url';
 import { IS_SSR } from 'src/config';
 import { useLayoutEffectFix } from 'src/hooks/useLayoutEffectFix';
 import tw from 'twin.macro';
@@ -72,6 +74,32 @@ if (!IS_SSR && !Element.prototype.scrollIntoViewIfNeeded) {
       this.scrollIntoView(alignWithTop);
     }
   };
+}
+
+function NextChallengeButton() {
+  const { nextChallengeInfo } = useTesterState();
+  if (!nextChallengeInfo) {
+    return null;
+  }
+  if (!nextChallengeInfo.next) {
+    return (
+      <div tw="bg-blue-200 text-gray-900 font-medium text-center rounded-sm p-1 mt-3">
+        Module completed
+      </div>
+    );
+  }
+  return (
+    <Button
+      tw="mt-2"
+      block
+      type="light"
+      focusBg="gray-900"
+      href={createUrl({ name: 'challenge', slug: nextChallengeInfo.next.slug })}
+      disabled
+    >
+      Next Challenge <FontAwesomeIcon tw="ml-2" icon={faArrowRight} />
+    </Button>
+  );
 }
 
 export function TestSuiteTab() {
@@ -148,11 +176,11 @@ export function TestSuiteTab() {
             onClick={() => {
               modalRef.current.open();
             }}
-            disabled={isShared}
           >
             Share Your Solution!
           </Button>
         )}
+        {result === 'PASS' && <NextChallengeButton />}
       </div>
       <SolutionModal
         ref={modalRef}
