@@ -85,6 +85,10 @@ function useSyncSolutionUrl(
 }
 
 export function ChallengeModule(props: ChallengeSSRProps) {
+  return <ChallengeModuleInner key={props.challenge.id} {...props} />;
+}
+
+function ChallengeModuleInner(props: ChallengeSSRProps) {
   const {
     initialLeftSidebar,
     initialRightSidebar,

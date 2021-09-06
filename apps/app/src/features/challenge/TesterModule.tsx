@@ -1,7 +1,13 @@
 import { createModuleContext, useActions, useImmer } from 'context-api';
 import React from 'react';
 import WS from 'reconnecting-websocket';
-import { ChallengeDetails, TestInfo, Workspace, AppSocketMsg } from 'shared';
+import {
+  ChallengeDetails,
+  TestInfo,
+  Workspace,
+  AppSocketMsg,
+  NextChallengeInfo,
+} from 'shared';
 import { updateTestResult } from 'shared/src/utils';
 import { API_URL } from 'src/config';
 import { api } from 'src/services/api';
@@ -19,6 +25,7 @@ interface State {
   challenge: ChallengeDetails;
   tests: TestInfo[];
   result: 'PASS' | 'FAIL' | null;
+  nextChallengeInfo: NextChallengeInfo | null;
 }
 
 const [Provider, useContext] = createModuleContext<State, Actions>();
@@ -46,9 +53,10 @@ export function TesterModule(props: TesterModuleProps) {
   const defaultTests = React.useMemo(() => {
     return _getDefaultTests(challenge);
   }, [challenge]);
-  const [state, setState] = useImmer<State>(
+  const [state, setState, getState] = useImmer<State>(
     {
       challenge,
+      nextChallengeInfo: null,
       isSubmitting: false,
       tests: defaultTests,
       result: null,
@@ -69,8 +77,25 @@ export function TesterModule(props: TesterModuleProps) {
       unsubscribe();
     };
   }, []);
+  const loadNextChallenge = async () => {
+    try {
+      const { nextChallengeInfo, challenge } = getState();
+      if (nextChallengeInfo) {
+        return;
+      }
+      const next = await api.challenge_getNextChallenge({
+        id: challenge.id,
+      });
+      setState(draft => {
+        draft.nextChallengeInfo = next;
+      });
+    } catch (e) {
+      console.error('failed to fetch next challenge', e);
+    }
+  };
   const actions = useActions<Actions>({
     submit: async indexHtmlS3Key => {
+      void loadNextChallenge();
       let submissionId: string = null!;
       let done: () => void = null!;
       setState(draft => {

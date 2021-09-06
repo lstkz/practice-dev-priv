@@ -1,10 +1,8 @@
 import * as R from 'remeda';
 import { S } from 'schema';
 import { ChallengeDetails } from 'shared';
-import { ChallengeCollection } from '../../collections/Challenge';
-import { AppError } from '../../common/errors';
-import { doFn } from '../../common/helper';
 import { createContract, createRpcBinding } from '../../lib';
+import { getChallengeByIdOrSlug } from './_common';
 
 export const getChallenge = createContract('challenge.getChallenge')
   .params('values')
@@ -16,20 +14,7 @@ export const getChallenge = createContract('challenge.getChallenge')
   })
   .returns<ChallengeDetails>()
   .fn(async values => {
-    if (!values.id && !values.slug) {
-      throw new AppError('id or slug required');
-    }
-    const challenge = await doFn(async () => {
-      if (values.id) {
-        return ChallengeCollection.findById(values.id);
-      }
-      return ChallengeCollection.findOne({
-        slug: values.slug,
-      });
-    });
-    if (!challenge) {
-      throw new AppError('Challenge not found');
-    }
+    const challenge = await getChallengeByIdOrSlug(values);
     return {
       id: challenge._id,
       ...R.pick(challenge, [
