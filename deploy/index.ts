@@ -186,7 +186,7 @@ function createBucketCDN() {
     ],
     customErrorResponses: [
       {
-        errorCode: 403,
+        errorCode: 404,
         errorCachingMinTtl: 1,
         responsePagePath: '/index.html',
         responseCode: 200,
