@@ -97,5 +97,5 @@ export function formatTotalTime(minutes: number) {
   if (minutes < 60) {
     return minutes + 'm';
   }
-  return Math.ceil(minutes / 50) + 'h';
+  return Math.ceil(minutes / 60) + 'h';
 }
