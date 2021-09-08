@@ -72,7 +72,7 @@ export type IframeNavigationCallbackMessage =
 
 export interface LibraryDefinition {
   name: string;
-  types: string;
+  types?: string;
   source: string;
 }
 
