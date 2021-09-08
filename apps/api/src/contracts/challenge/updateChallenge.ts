@@ -31,7 +31,7 @@ export const updateChallenge = createContract('challenge.updateChallenge')
       libraries: S.array().items(
         S.object().keys({
           name: S.string(),
-          types: S.string(),
+          types: S.string().optional(),
           source: S.string(),
         })
       ),
