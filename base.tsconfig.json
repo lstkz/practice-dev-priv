@@ -14,7 +14,6 @@
     "noEmitHelpers": true,
     "noEmitOnError": false,
     "noEmit": false,
-    "useUnknownInCatchVariables": false,
     "jsx": "react",
     "lib": [
       "dom",

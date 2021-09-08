@@ -2,6 +2,7 @@
 
 dep-generator/libs
 dep-generator/upload-prod.sh
+dep-generator/upload-stage.sh
 
 # dependencies
 node_modules

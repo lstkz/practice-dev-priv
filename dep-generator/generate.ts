@@ -1,16 +1,27 @@
 /* eslint-disable no-console */
+import tmp from 'tmp';
 import { rollup } from 'rollup';
 import commonjs from '@rollup/plugin-commonjs';
 import replace from '@rollup/plugin-replace';
 import resolve from '@rollup/plugin-node-resolve';
 import virtual from '@rollup/plugin-virtual';
+import { Extractor, ExtractorConfig } from '@microsoft/api-extractor';
 import fs from 'fs';
 import Path from 'path';
+import md5 from 'md5';
+
+const DOMAIN = process.env.STAGE
+  ? 'https://cdn.styx-dev.com'
+  : 'https://cdn.practice.dev';
 
 interface LibOutput {
   name: string;
   source: string;
   types: string;
+}
+
+function _getHash(content: string) {
+  return md5(content).substr(0, 10);
 }
 
 function snake2Pascal(input: string) {
@@ -124,13 +135,14 @@ ${Object.keys(require(lib))
     exports: 'named',
   });
   const dir = Path.join(targetLib, targetPath);
-  const sourceFilename = `${pkg.version}.js`;
+  const content = output[0].code;
+  const sourceFilename = `${pkg.version}.${_getHash(content)}.js`;
   const fullDir = Path.join(__dirname, 'libs', dir);
   fs.mkdirSync(fullDir, { recursive: true });
-  fs.writeFileSync(Path.join(fullDir, sourceFilename), output[0].code);
+  fs.writeFileSync(Path.join(fullDir, sourceFilename), content);
   const libOutput: LibOutput = {
     name: lib,
-    source: 'https://cdn.practice.dev/npm/' + Path.join(dir, sourceFilename),
+    source: DOMAIN + '/npm/' + Path.join(dir, sourceFilename),
     types: '',
   };
   return libOutput;
@@ -142,42 +154,265 @@ function ensureSuffix(str: string, suffix: string) {
 
 async function fetchTypes(output: LibOutput) {
   const lib = output.name;
-  if (lib.includes('/')) {
+  if (!/^(@[a-z0-9_-]+\/[a-z0-9_-]+)|([a-z0-9_-]+)$/.test(lib)) {
     // TODO
     return;
   }
-  const targetLib = '@types/' + lib;
+  const mapOrgLib = (lib: string) => {
+    if (lib[0] === '@') {
+      return lib.substr(1).replace('/', '__');
+    }
+    return lib;
+  };
+  const getTypes = (lib: string) => {
+    let pkg: any = null;
+    try {
+      pkg = require(lib + '/package.json');
+    } catch (e) {
+      return null;
+    }
+    const forceTypingsPath = Path.join(
+      __dirname,
+      'force-typings',
+      lib,
+      'default.d.ts'
+    );
+    if (fs.existsSync(forceTypingsPath)) {
+      return { content: fs.readFileSync(forceTypingsPath, 'utf8'), pkg };
+    }
+    if (!pkg.types && !pkg.typings) {
+      return null;
+    }
+    const types = (pkg.types || pkg.typings).replace('./', '');
+    const content = fs.readFileSync(
+      require.resolve(lib + '/' + ensureSuffix(types, '.d.ts')),
+      'utf8'
+    );
+    return { content, pkg };
+  };
+  const targetLib = '@types/' + mapOrgLib(lib);
+  const data = getTypes(targetLib) || getTypes(lib);
+  if (!data) {
+    return;
+  }
+  const { content, pkg } = data;
+  const sourceFilename = `${pkg.version}.${_getHash(content)}.d.ts`;
+  const fullDir = Path.join(__dirname, 'libs', targetLib);
+  fs.mkdirSync(fullDir, { recursive: true });
+  fs.writeFileSync(Path.join(fullDir, sourceFilename), content);
+  output.types = DOMAIN + '/npm/' + Path.join(targetLib, sourceFilename);
+}
+
+// async function fetchTypes2(output: LibOutput) {
+//   const lib = output.name;
+//   if (!/^(@[a-z0-9_-]+\/[a-z0-9_-]+)|([a-z0-9_-]+)$/.test(lib)) {
+//     // TODO
+//     return;
+//   }
+//   const mapOrgLib = (lib: string) => {
+//     if (lib[0] === '@') {
+//       return lib.substr(1).replace('/', '__');
+//     }
+//     return lib;
+//   };
+//   const getTypes = (lib: string) => {
+//     let pkg: any = null;
+//     try {
+//       pkg = require(lib + '/package.json');
+//     } catch (e) {
+//       return null;
+//     }
+//     if (!pkg.types && !pkg.typings) {
+//       return null;
+//     }
+//     const types = (pkg.types || pkg.typings).replace('./', '');
+//     // const content = fs.readFileSync(
+//     //   require.resolve(lib + '/' + ensureSuffix(types, '.d.ts')),
+//     //   'utf8'
+//     // );
+//     return {
+//       path: require.resolve(lib + '/' + ensureSuffix(types, '.d.ts')),
+//       pkg,
+//     };
+//   };
+//   const targetLib = '@types/' + mapOrgLib(lib);
+//   const data = getTypes(targetLib) || getTypes(lib);
+//   if (!data) {
+//     return;
+//   }
+//   const { path, pkg } = data;
+
+//   const build = await rollup({
+//     input: path,
+//     plugins: [ts()],
+//   });
+//   const ret = await build.generate({
+//     format: 'es',
+//     // plugins: [flatDts()],
+//   });
+//   if (lib === '@reduxjs/toolkit') {
+//     console.log(ret);
+//   }
+//   const content = ret.output[0].code;
+//   const hash = md5(content);
+//   const sourceFilename = `${pkg.version}.d.ts`;
+//   const fullDir = Path.join(__dirname, 'libs', targetLib);
+//   fs.mkdirSync(fullDir, { recursive: true });
+//   fs.writeFileSync(Path.join(fullDir, sourceFilename), content);
+//   output.types = DOMAIN + '/npm/' + Path.join(targetLib, sourceFilename);
+// }
+
+function mapOrgLib(lib: string) {
+  if (lib[0] === '@') {
+    return lib.substr(1).replace('/', '__');
+  }
+  return lib;
+}
+
+function getExternalTypeData(lib: string) {
+  const targetLib = '@types/' + mapOrgLib(lib);
   let pkg: any = null;
   try {
     pkg = require(targetLib + '/package.json');
   } catch (e) {
-    return;
+    return null;
   }
-  if (!pkg.types) {
-    return;
+  if (!pkg.types && !pkg.typings) {
+    return null;
   }
+  const types = ensureSuffix(
+    (pkg.types || pkg.typings).replace('./', ''),
+    '.d.ts'
+  );
   const content = fs.readFileSync(
-    require.resolve(targetLib + '/' + ensureSuffix(pkg.types, '.d.ts')),
+    require.resolve(targetLib + '/' + ensureSuffix(types, '.d.ts')),
     'utf8'
   );
-  const sourceFilename = `${pkg.version}.d.ts`;
+  return { pkg, content };
+}
+
+function getEmbeddedTypeData(lib: string) {
+  let pkg: any = null;
+  try {
+    pkg = require(lib + '/package.json');
+  } catch (e) {
+    return null;
+  }
+  if (!pkg.types && !pkg.typings) {
+    return null;
+  }
+  const tmpFile = tmp.fileSync();
+  const projectFolder = Path.join(__dirname, 'node_modules', lib);
+  const types = ensureSuffix(
+    (pkg.types || pkg.typings).replace('./', ''),
+    '.d.ts'
+  );
+  const config = ExtractorConfig.prepare({
+    configObject: {
+      projectFolder,
+      mainEntryPointFilePath: require.resolve(lib + '/' + types),
+      dtsRollup: {
+        enabled: true,
+        untrimmedFilePath: tmpFile.name,
+      },
+      compiler: {
+        tsconfigFilePath: Path.join(__dirname, 'tsconfig.json'),
+      },
+    },
+    configObjectFullPath: undefined,
+    packageJsonFullPath: Path.join(projectFolder, 'package.json'),
+  });
+  Extractor.invoke(config);
+  const content = fs.readFileSync(tmpFile.name, 'utf8');
+  tmpFile.removeCallback();
+  return { pkg, content };
+}
+
+async function fetchTypes3(output: LibOutput) {
+  const lib = output.name;
+  if (!/^(@[a-z0-9_-]+\/[a-z0-9_-]+)|([a-z0-9_-]+)$/.test(lib)) {
+    // TODO
+    return;
+  }
+  // const mapOrgLib = (lib: string) => {
+  //   if (lib[0] === '@') {
+  //     return lib.substr(1).replace('/', '__');
+  //   }
+  //   return lib;
+  // };
+
+  // const getTypes = (lib: string) => {
+  //   let pkg: any = null;
+  //   try {
+  //     pkg = require(lib + '/package.json');
+  //   } catch (e) {
+  //     return null;
+  //   }
+  //   if (!pkg.types && !pkg.typings) {
+  //     return null;
+  //   }
+  //   const types = (pkg.types || pkg.typings).replace('./', '');
+  //   // const content = fs.readFileSync(
+  //   //   require.resolve(lib + '/' + ensureSuffix(types, '.d.ts')),
+  //   //   'utf8'
+  //   // );
+  //   return {
+  //     path: require.resolve(lib + '/' + ensureSuffix(types, '.d.ts')),
+  //     pkg,
+  //     projectFolder: Path.join(__dirname, 'node_modules', lib),
+  //   };
+  // };
+  // const targetLib = '@types/' + mapOrgLib(lib);
+  // const data = getTypes(targetLib) || getTypes(lib);
+  // if (!data) {
+  //   return;
+  // }
+  // const { path, pkg, projectFolder } = data;
+
+  // const tmpFile = tmp.fileSync();
+  // const config = ExtractorConfig.prepare({
+  //   configObject: {
+  //     projectFolder,
+  //     mainEntryPointFilePath: path,
+  //     dtsRollup: {
+  //       enabled: true,
+  //       untrimmedFilePath: tmpFile.name,
+  //     },
+  //     compiler: {
+  //       tsconfigFilePath: Path.join(__dirname, 'tsconfig.json'),
+  //     },
+  //   },
+  //   configObjectFullPath: undefined,
+  //   packageJsonFullPath: Path.join(projectFolder, 'package.json'),
+  // });
+  // Extractor.invoke(config);
+  // const content = fs.readFileSync(tmpFile.name, 'utf8');
+  // tmpFile.removeCallback();
+
+  const data = getExternalTypeData(lib) || getEmbeddedTypeData(lib);
+  if (!data) {
+    return;
+  }
+  const targetLib = '@types/' + mapOrgLib(lib);
+  const { content, pkg } = data;
+
+  const sourceFilename = `${pkg.version}.${_getHash(content)}.d.ts`;
   const fullDir = Path.join(__dirname, 'libs', targetLib);
   fs.mkdirSync(fullDir, { recursive: true });
   fs.writeFileSync(Path.join(fullDir, sourceFilename), content);
-  output.types =
-    'https://cdn.practice.dev/npm/' + Path.join(targetLib, sourceFilename);
+  output.types = DOMAIN + '/npm/' + Path.join(targetLib, sourceFilename);
 }
 
 async function generate() {
   const deps: Set<string> = new Set();
-  const baseLibs = ['react', 'react-dom', 'react-router-dom'];
+  const baseLibs = ['@reduxjs/toolkit', 'react', 'react-dom', 'react-redux'];
   await Promise.all(baseLibs.map(lib => findAllDeps(lib, deps)));
   const result: LibOutput[] = [];
   await Promise.all(
     [...deps.values()].map(async lib => {
       try {
         const output = await bundleLib(lib);
-        await fetchTypes(output);
+        await fetchTypes3(output);
         result.push(output);
       } catch (e) {
         console.error('bundle failed for ', lib, e);
