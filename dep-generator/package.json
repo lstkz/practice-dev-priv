@@ -1,0 +1,29 @@
+{
+  "name": "bundler",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "engines": {},
+  "scripts": {
+    "tsc": "tsc --noEmit",
+    "test": "yarn run tsc "
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@rollup/plugin-commonjs": "^20.0.0",
+    "@rollup/plugin-node-resolve": "^13.0.4",
+    "@rollup/plugin-replace": "^3.0.0",
+    "@rollup/plugin-virtual": "^2.0.3",
+    "@types/react": "^17.0.20",
+    "@types/react-dom": "^17.0.9",
+    "@types/react-router": "^5.1.16",
+    "@types/react-router-dom": "^5.1.8",
+    "@types/rollup__plugin-virtual": "^2.0.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-router-dom": "^5.3.0",
+    "rollup": "^2.56.3"
+  }
+}

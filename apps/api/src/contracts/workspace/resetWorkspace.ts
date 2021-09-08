@@ -1,5 +1,6 @@
 import { S } from 'schema';
 import { Workspace } from 'shared';
+import { ChallengeCollection } from '../../collections/Challenge';
 import { WorkspaceCollection } from '../../collections/Workspace';
 import { WorkspaceNodeCollection } from '../../collections/WorkspaceNode';
 import { AppError } from '../../common/errors';
@@ -18,11 +19,15 @@ export const resetWorkspace = createContract('workspace.resetWorkspace')
     if (!workspace) {
       throw new AppError('Workspace not found');
     }
+    const challenge = await ChallengeCollection.findByIdOrThrow(
+      workspace.challengeId
+    );
     await WorkspaceNodeCollection.deleteMany({
       workspaceId: workspace._id,
     });
     workspace.isReady = false;
-    await WorkspaceCollection.update(workspace, ['isReady']);
+    workspace.libraries = challenge.libraries;
+    await WorkspaceCollection.update(workspace, ['isReady', 'libraries']);
     await prepareWorkspace(workspaceId);
     return getMappedWorkspace(workspace);
   });
