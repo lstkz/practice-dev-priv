@@ -7,5 +7,5 @@
     "module": "commonjs",
     "resolveJsonModule": true
   },
-  "include": ["bundle.ts"]
+  "include": ["generate.ts"]
 }
