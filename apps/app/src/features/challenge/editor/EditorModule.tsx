@@ -191,9 +191,9 @@ export const EditorModule = React.forwardRef<
       themeService.init();
       creator.init(monaco, editorFactory.create());
       await Promise.all(
-        workspace.libraries.map(lib =>
-          creator.modelCollection.addLib(lib.name, lib.types)
-        )
+        workspace.libraries
+          .filter(lib => lib.types)
+          .map(lib => creator.modelCollection.addLib(lib.name, lib.types))
       );
       await browserPreviewService.waitForLoad();
       browserPreviewService.setLibraries(workspace.libraries);
