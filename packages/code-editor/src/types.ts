@@ -42,7 +42,7 @@ export interface RecDirectoryNode extends DirectoryNode {
 
 export interface LibraryDep {
   name: string;
-  types: string;
+  types?: string;
   source: string;
 }
 
