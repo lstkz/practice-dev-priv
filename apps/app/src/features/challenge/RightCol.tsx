@@ -6,7 +6,7 @@ import { SolutionIframe } from './SolutionIframe';
 import { WebNavigator } from './WebNavigator';
 
 export function RightCol() {
-  const { rightSidebarTab } = useChallengeState();
+  const { rightSidebarTab, challenge } = useChallengeState();
   const isDragging = false;
   return (
     <div
@@ -16,12 +16,17 @@ export function RightCol() {
       }}
     >
       <WebNavigator
+        name="PreviewNavigator"
         shallowHidden={rightSidebarTab !== 'preview'}
         origin={IFRAME_ORIGIN}
       >
         <PreviewIframe />
       </WebNavigator>
-      <WebNavigator shallowHidden={rightSidebarTab !== 'demo'} origin="*">
+      <WebNavigator
+        name="DemoNavigator"
+        shallowHidden={rightSidebarTab !== 'demo'}
+        origin={challenge.solutionUrl}
+      >
         <SolutionIframe />
       </WebNavigator>
     </div>

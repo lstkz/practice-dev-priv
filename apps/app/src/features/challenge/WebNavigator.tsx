@@ -13,6 +13,7 @@ import {
 import tw, { styled } from 'twin.macro';
 
 interface WebNavigatorProps {
+  name: string;
   children: React.ReactNode;
   origin: string;
   shallowHidden: boolean;
@@ -37,7 +38,7 @@ interface State {
 const [Provider, useContext] = createModuleContext<State, Actions>();
 
 export function WebNavigator(props: WebNavigatorProps) {
-  const { children, shallowHidden, origin } = props;
+  const { children, shallowHidden, name } = props;
   const iframeRef = React.useRef(null! as HTMLIFrameElement);
   const urlInputRef = React.useRef(null! as HTMLInputElement);
   const [state, setState, getState] = useImmer<State>(
@@ -45,8 +46,11 @@ export function WebNavigator(props: WebNavigatorProps) {
       urlHistory: [],
       historyIdx: -1,
     },
-    'WebNavigator'
+    name
   );
+  const origin = React.useMemo(() => {
+    return new URL(props.origin).origin;
+  }, [props.origin]);
 
   const sendMessage = (message: IframeNavigationMessage) => {
     if (!iframeRef.current?.contentWindow) {
@@ -68,7 +72,7 @@ export function WebNavigator(props: WebNavigatorProps) {
 
   React.useEffect(() => {
     const onMessage = (e: MessageEvent<any>) => {
-      if (origin !== '*' && e.origin !== origin) {
+      if (e.origin !== origin) {
         return;
       }
       const action = e.data as IframeNavigationCallbackMessage;

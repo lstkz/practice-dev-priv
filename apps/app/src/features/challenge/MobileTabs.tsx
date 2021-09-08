@@ -2,6 +2,7 @@ import React from 'react';
 import { doFn } from 'src/common/helper';
 import Select from 'src/components/Select';
 import tw from 'twin.macro';
+import { useChallengeState } from './ChallengeModule';
 import { DetailsTab } from './DetailsTab';
 import { SolutionIframe } from './SolutionIframe';
 import { TestSuiteTab } from './TestSuiteTab';
@@ -9,6 +10,7 @@ import { WebNavigator } from './WebNavigator';
 
 export function MobileTabs() {
   const [tab, setTab] = React.useState('details');
+  const { challenge } = useChallengeState();
 
   return (
     <div tw="bg-gray-900 h-full flex flex-col">
@@ -52,7 +54,11 @@ export function MobileTabs() {
               return <TestSuiteTab />;
             case 'demo':
               return (
-                <WebNavigator shallowHidden={false} origin="*">
+                <WebNavigator
+                  name="DemoNavigator"
+                  shallowHidden={false}
+                  origin={challenge.solutionUrl}
+                >
                   <SolutionIframe />
                 </WebNavigator>
               );
