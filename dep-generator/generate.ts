@@ -9,6 +9,25 @@ import { Extractor, ExtractorConfig } from '@microsoft/api-extractor';
 import fs from 'fs';
 import Path from 'path';
 import md5 from 'md5';
+import { walk } from './helper';
+
+const REMOVE_SCOPE_CHAR = ['@reduxjs/toolkit'];
+
+const monkeyPatches = [
+  {
+    path: Path.join(
+      __dirname,
+      'node_modules',
+      '@reduxjs/toolkit/dist/query/react/index.d.ts'
+    ),
+    transform: (str: string) => {
+      return str.replace(
+        `export * from '@reduxjs/toolkit/query';`,
+        `export * from '../';`
+      );
+    },
+  },
+];
 
 const DOMAIN = process.env.STAGE
   ? 'https://cdn.styx-dev.com'
@@ -18,13 +37,14 @@ interface LibOutput {
   name: string;
   source: string;
   types: string;
+  typesBundle: string;
 }
 
 function _getHash(content: string) {
   return md5(content).substr(0, 10);
 }
 
-function snake2Pascal(input: string) {
+function _snake2Pascal(input: string) {
   const arr = input.split('-');
   for (let i = 0; i < arr.length; i++) {
     arr[i] = arr[i].slice(0, 1).toUpperCase() + arr[i].slice(1, arr[i].length);
@@ -32,12 +52,31 @@ function snake2Pascal(input: string) {
   return arr.join('');
 }
 
+function _findPackage(lib: string) {
+  let path = Path.join(__dirname, 'node_modules', lib, 'package.json');
+  if (!fs.existsSync(path)) {
+    path = Path.join(
+      __dirname,
+      'node_modules',
+      extractLibName(lib),
+      'package.json'
+    );
+  }
+  if (!fs.existsSync(path)) {
+    throw new Error('Cannot find package.json for ' + lib);
+  }
+  return {
+    pkgPath: path,
+    pkg: JSON.parse(fs.readFileSync(path, 'utf8')),
+  };
+}
+
 async function findAllDeps(lib: string, deps: Set<string>) {
   if (deps.has(lib)) {
     return;
   }
   deps.add(lib);
-  const pkg = require(extractLibName(lib) + '/package.json');
+  const { pkg } = _findPackage(lib);
   const isModule = Boolean(pkg.module);
   const input = isModule
     ? require.resolve(lib + '/' + pkg.module)
@@ -90,7 +129,7 @@ async function bundleLib(lib: string) {
     : isModule
     ? require.resolve(lib + '/' + pkg.module)
     : 'index.js';
-  const pascalName = snake2Pascal(lib) + '$$$';
+  const pascalName = _snake2Pascal(lib) + '$$$';
   const build = await rollup({
     input: input,
     plugins: [
@@ -144,123 +183,17 @@ ${Object.keys(require(lib))
     name: lib,
     source: DOMAIN + '/npm/' + Path.join(dir, sourceFilename),
     types: '',
+    typesBundle: '',
   };
   return libOutput;
 }
 
 function ensureSuffix(str: string, suffix: string) {
+  if (!str) {
+    return null;
+  }
   return str.endsWith(suffix) ? str : str + suffix;
 }
-
-async function fetchTypes(output: LibOutput) {
-  const lib = output.name;
-  if (!/^(@[a-z0-9_-]+\/[a-z0-9_-]+)|([a-z0-9_-]+)$/.test(lib)) {
-    // TODO
-    return;
-  }
-  const mapOrgLib = (lib: string) => {
-    if (lib[0] === '@') {
-      return lib.substr(1).replace('/', '__');
-    }
-    return lib;
-  };
-  const getTypes = (lib: string) => {
-    let pkg: any = null;
-    try {
-      pkg = require(lib + '/package.json');
-    } catch (e) {
-      return null;
-    }
-    const forceTypingsPath = Path.join(
-      __dirname,
-      'force-typings',
-      lib,
-      'default.d.ts'
-    );
-    if (fs.existsSync(forceTypingsPath)) {
-      return { content: fs.readFileSync(forceTypingsPath, 'utf8'), pkg };
-    }
-    if (!pkg.types && !pkg.typings) {
-      return null;
-    }
-    const types = (pkg.types || pkg.typings).replace('./', '');
-    const content = fs.readFileSync(
-      require.resolve(lib + '/' + ensureSuffix(types, '.d.ts')),
-      'utf8'
-    );
-    return { content, pkg };
-  };
-  const targetLib = '@types/' + mapOrgLib(lib);
-  const data = getTypes(targetLib) || getTypes(lib);
-  if (!data) {
-    return;
-  }
-  const { content, pkg } = data;
-  const sourceFilename = `${pkg.version}.${_getHash(content)}.d.ts`;
-  const fullDir = Path.join(__dirname, 'libs', targetLib);
-  fs.mkdirSync(fullDir, { recursive: true });
-  fs.writeFileSync(Path.join(fullDir, sourceFilename), content);
-  output.types = DOMAIN + '/npm/' + Path.join(targetLib, sourceFilename);
-}
-
-// async function fetchTypes2(output: LibOutput) {
-//   const lib = output.name;
-//   if (!/^(@[a-z0-9_-]+\/[a-z0-9_-]+)|([a-z0-9_-]+)$/.test(lib)) {
-//     // TODO
-//     return;
-//   }
-//   const mapOrgLib = (lib: string) => {
-//     if (lib[0] === '@') {
-//       return lib.substr(1).replace('/', '__');
-//     }
-//     return lib;
-//   };
-//   const getTypes = (lib: string) => {
-//     let pkg: any = null;
-//     try {
-//       pkg = require(lib + '/package.json');
-//     } catch (e) {
-//       return null;
-//     }
-//     if (!pkg.types && !pkg.typings) {
-//       return null;
-//     }
-//     const types = (pkg.types || pkg.typings).replace('./', '');
-//     // const content = fs.readFileSync(
-//     //   require.resolve(lib + '/' + ensureSuffix(types, '.d.ts')),
-//     //   'utf8'
-//     // );
-//     return {
-//       path: require.resolve(lib + '/' + ensureSuffix(types, '.d.ts')),
-//       pkg,
-//     };
-//   };
-//   const targetLib = '@types/' + mapOrgLib(lib);
-//   const data = getTypes(targetLib) || getTypes(lib);
-//   if (!data) {
-//     return;
-//   }
-//   const { path, pkg } = data;
-
-//   const build = await rollup({
-//     input: path,
-//     plugins: [ts()],
-//   });
-//   const ret = await build.generate({
-//     format: 'es',
-//     // plugins: [flatDts()],
-//   });
-//   if (lib === '@reduxjs/toolkit') {
-//     console.log(ret);
-//   }
-//   const content = ret.output[0].code;
-//   const hash = md5(content);
-//   const sourceFilename = `${pkg.version}.d.ts`;
-//   const fullDir = Path.join(__dirname, 'libs', targetLib);
-//   fs.mkdirSync(fullDir, { recursive: true });
-//   fs.writeFileSync(Path.join(fullDir, sourceFilename), content);
-//   output.types = DOMAIN + '/npm/' + Path.join(targetLib, sourceFilename);
-// }
 
 function mapOrgLib(lib: string) {
   if (lib[0] === '@') {
@@ -277,13 +210,13 @@ function getExternalTypeData(lib: string) {
   } catch (e) {
     return null;
   }
-  if (!pkg.types && !pkg.typings) {
-    return null;
-  }
   const types = ensureSuffix(
     (pkg.types || pkg.typings).replace('./', ''),
     '.d.ts'
   );
+  if (!types) {
+    return null;
+  }
   const content = fs.readFileSync(
     require.resolve(targetLib + '/' + ensureSuffix(types, '.d.ts')),
     'utf8'
@@ -298,19 +231,23 @@ function getEmbeddedTypeData(lib: string) {
   } catch (e) {
     return null;
   }
-  if (!pkg.types && !pkg.typings) {
+  const types = ensureSuffix(pkg.types || pkg.typings, '.d.ts');
+  if (!types) {
     return null;
+  }
+  const entry = Path.join(__dirname, 'node_modules', lib, types);
+  const patch = monkeyPatches.find(x => x.path === entry);
+  if (patch) {
+    const src = fs.readFileSync(entry, 'utf8');
+    const transformed = patch.transform(src);
+    fs.writeFileSync(entry, transformed);
   }
   const tmpFile = tmp.fileSync();
   const projectFolder = Path.join(__dirname, 'node_modules', lib);
-  const types = ensureSuffix(
-    (pkg.types || pkg.typings).replace('./', ''),
-    '.d.ts'
-  );
   const config = ExtractorConfig.prepare({
     configObject: {
       projectFolder,
-      mainEntryPointFilePath: require.resolve(lib + '/' + types),
+      mainEntryPointFilePath: entry,
       dtsRollup: {
         enabled: true,
         untrimmedFilePath: tmpFile.name,
@@ -328,67 +265,12 @@ function getEmbeddedTypeData(lib: string) {
   return { pkg, content };
 }
 
-async function fetchTypes3(output: LibOutput) {
+async function fetchTypes(output: LibOutput) {
   const lib = output.name;
   if (!/^(@[a-z0-9_-]+\/[a-z0-9_-]+)|([a-z0-9_-]+)$/.test(lib)) {
     // TODO
     return;
   }
-  // const mapOrgLib = (lib: string) => {
-  //   if (lib[0] === '@') {
-  //     return lib.substr(1).replace('/', '__');
-  //   }
-  //   return lib;
-  // };
-
-  // const getTypes = (lib: string) => {
-  //   let pkg: any = null;
-  //   try {
-  //     pkg = require(lib + '/package.json');
-  //   } catch (e) {
-  //     return null;
-  //   }
-  //   if (!pkg.types && !pkg.typings) {
-  //     return null;
-  //   }
-  //   const types = (pkg.types || pkg.typings).replace('./', '');
-  //   // const content = fs.readFileSync(
-  //   //   require.resolve(lib + '/' + ensureSuffix(types, '.d.ts')),
-  //   //   'utf8'
-  //   // );
-  //   return {
-  //     path: require.resolve(lib + '/' + ensureSuffix(types, '.d.ts')),
-  //     pkg,
-  //     projectFolder: Path.join(__dirname, 'node_modules', lib),
-  //   };
-  // };
-  // const targetLib = '@types/' + mapOrgLib(lib);
-  // const data = getTypes(targetLib) || getTypes(lib);
-  // if (!data) {
-  //   return;
-  // }
-  // const { path, pkg, projectFolder } = data;
-
-  // const tmpFile = tmp.fileSync();
-  // const config = ExtractorConfig.prepare({
-  //   configObject: {
-  //     projectFolder,
-  //     mainEntryPointFilePath: path,
-  //     dtsRollup: {
-  //       enabled: true,
-  //       untrimmedFilePath: tmpFile.name,
-  //     },
-  //     compiler: {
-  //       tsconfigFilePath: Path.join(__dirname, 'tsconfig.json'),
-  //     },
-  //   },
-  //   configObjectFullPath: undefined,
-  //   packageJsonFullPath: Path.join(projectFolder, 'package.json'),
-  // });
-  // Extractor.invoke(config);
-  // const content = fs.readFileSync(tmpFile.name, 'utf8');
-  // tmpFile.removeCallback();
-
   const data = getExternalTypeData(lib) || getEmbeddedTypeData(lib);
   if (!data) {
     return;
@@ -403,16 +285,63 @@ async function fetchTypes3(output: LibOutput) {
   output.types = DOMAIN + '/npm/' + Path.join(targetLib, sourceFilename);
 }
 
+async function fetchTypesBundle(output: LibOutput) {
+  const lib = output.name;
+  if (!/^(@[a-z0-9_-]+\/[a-z0-9_-]+)|([a-z0-9_-]+)$/.test(lib)) {
+    // TODO
+    return;
+  }
+  const { pkg, pkgPath } = _findPackage(lib);
+  const types = ensureSuffix(pkg.types || pkg.typings, '.d.ts');
+  if (!types) {
+    return;
+  }
+  const typesEntry = Path.join(Path.dirname(pkgPath), types);
+  const typeBaseDir = Path.dirname(typesEntry);
+  const bundle: Record<string, string> = {};
+  const files = walk(typeBaseDir).filter(x => x.endsWith('.d.ts'));
+  files.forEach(file => {
+    const relative = Path.relative(typeBaseDir, file);
+    let content = fs.readFileSync(file, 'utf8');
+    REMOVE_SCOPE_CHAR.forEach(scope => {
+      content = content.replace(new RegExp(scope, 'g'), scope.substr(1));
+    });
+    bundle[relative] = content;
+  });
+  const content = JSON.stringify(bundle, null, 2);
+
+  // const data = getExternalTypeData(lib) || getEmbeddedTypeData(lib);
+  // if (!data) {
+  //   return;
+  // }
+  // const targetLib = '@types/' + mapOrgLib(lib);
+  // const { content, pkg } = data;
+
+  const targetLib = '@types/' + mapOrgLib(lib);
+  const sourceFilename = `${pkg.version}.${_getHash(content)}.json`;
+  const fullDir = Path.join(__dirname, 'libs', targetLib);
+  fs.mkdirSync(fullDir, { recursive: true });
+  fs.writeFileSync(Path.join(fullDir, sourceFilename), content);
+  output.typesBundle = DOMAIN + '/npm/' + Path.join(targetLib, sourceFilename);
+}
+
 async function generate() {
   const deps: Set<string> = new Set();
-  const baseLibs = ['@reduxjs/toolkit', 'react', 'react-dom', 'react-redux'];
+  const baseLibs = [
+    '@reduxjs/toolkit',
+    '@reduxjs/toolkit/query',
+    '@reduxjs/toolkit/query/react',
+    'react',
+    'react-dom',
+    'react-redux',
+  ];
   await Promise.all(baseLibs.map(lib => findAllDeps(lib, deps)));
   const result: LibOutput[] = [];
   await Promise.all(
     [...deps.values()].map(async lib => {
       try {
         const output = await bundleLib(lib);
-        await fetchTypes3(output);
+        await fetchTypesBundle(output);
         result.push(output);
       } catch (e) {
         console.error('bundle failed for ', lib, e);
@@ -420,6 +349,11 @@ async function generate() {
       }
     })
   );
+  result.forEach(item => {
+    if (REMOVE_SCOPE_CHAR.some(x => item.name.startsWith(x))) {
+      item.name = item.name.substr(1);
+    }
+  });
   console.log(JSON.stringify(result, null, 2));
 }
 
