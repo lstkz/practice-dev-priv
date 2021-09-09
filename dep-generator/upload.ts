@@ -3,6 +3,7 @@ import AWS, { S3 } from 'aws-sdk';
 import fs from 'fs';
 import Path from 'path';
 import mime from 'mime-types';
+import { walk } from './helper';
 
 const token = process.env.PD_ADMIN_TOKEN;
 const url = process.env.PD_API_URL || 'http://localhost:3001';
@@ -63,21 +64,6 @@ export class S3Upload {
 
     return s3Key;
   }
-}
-
-export function walk(dir: string) {
-  const results: string[] = [];
-  const list = fs.readdirSync(dir);
-  list.forEach(file => {
-    file = Path.join(dir, file);
-    const stat = fs.statSync(file);
-    if (stat && stat.isDirectory()) {
-      results.push(...walk(file));
-    } else {
-      results.push(file);
-    }
-  });
-  return results;
 }
 
 async function upload() {
