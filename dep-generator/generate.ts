@@ -1,33 +1,15 @@
 /* eslint-disable no-console */
-import tmp from 'tmp';
 import { rollup } from 'rollup';
 import commonjs from '@rollup/plugin-commonjs';
 import replace from '@rollup/plugin-replace';
 import resolve from '@rollup/plugin-node-resolve';
 import virtual from '@rollup/plugin-virtual';
-import { Extractor, ExtractorConfig } from '@microsoft/api-extractor';
 import fs from 'fs';
 import Path from 'path';
 import md5 from 'md5';
 import { walk } from './helper';
 
 const REMOVE_SCOPE_CHAR = ['@reduxjs/toolkit'];
-
-const monkeyPatches = [
-  {
-    path: Path.join(
-      __dirname,
-      'node_modules',
-      '@reduxjs/toolkit/dist/query/react/index.d.ts'
-    ),
-    transform: (str: string) => {
-      return str.replace(
-        `export * from '@reduxjs/toolkit/query';`,
-        `export * from '../';`
-      );
-    },
-  },
-];
 
 const DOMAIN = process.env.STAGE
   ? 'https://cdn.styx-dev.com'
@@ -64,6 +46,18 @@ function _findPackage(lib: string) {
   }
   if (!fs.existsSync(path)) {
     throw new Error('Cannot find package.json for ' + lib);
+  }
+  return {
+    pkgPath: path,
+    pkg: JSON.parse(fs.readFileSync(path, 'utf8')),
+  };
+}
+
+function _findTypesPackage(lib: string) {
+  const targetLib = '@types/' + mapOrgLib(lib);
+  const path = Path.join(__dirname, 'node_modules', targetLib, 'package.json');
+  if (!fs.existsSync(path)) {
+    return;
   }
   return {
     pkgPath: path,
@@ -116,19 +110,40 @@ function extractLibName(path: string) {
   return parts[0];
 }
 
+function _replaceScopeReferences(content: string) {
+  REMOVE_SCOPE_CHAR.forEach(scope => {
+    content = content.replace(new RegExp(scope, 'g'), scope.substr(1));
+  });
+  return content;
+}
+
 async function bundleLib(lib: string) {
   const split = lib.split('/');
   const start = split[0][0] === '@' ? 2 : 1;
   const targetLib = split.slice(0, start).join('/');
-  const targetPath = split.slice(start).join('/');
-  const pkg = require(targetLib + '/package.json');
-  const isModule =
-    Boolean(pkg.module) || ['@babel/runtime'].includes(targetLib);
-  const input = targetPath
-    ? require.resolve(targetLib + '/' + targetPath)
-    : isModule
-    ? require.resolve(lib + '/' + pkg.module)
-    : 'index.js';
+  const rootPkg = require(targetLib + '/package.json');
+  let input = '';
+  let isModule = false;
+  const path = Path.join(__dirname, 'node_modules', lib);
+  const directFilePath = path + '.js';
+  // handle @babel/runtime files
+  if (fs.existsSync(directFilePath)) {
+    input = directFilePath;
+    const pkgPath = Path.join(Path.dirname(input), 'package.json');
+    if (fs.existsSync(pkgPath)) {
+      const subPkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+      isModule = subPkg.type === 'module';
+    }
+  } else {
+    const pkgPath = Path.join(path, 'package.json');
+    const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+    isModule = Boolean(pkg.module);
+    if (isModule) {
+      input = Path.join(path, pkg.module);
+    } else {
+      input = 'index.js';
+    }
+  }
   const pascalName = _snake2Pascal(lib) + '$$$';
   const build = await rollup({
     input: input,
@@ -164,7 +179,7 @@ ${Object.keys(require(lib))
           return null;
         },
       },
-      ...(pkg.module ? [] : [resolve(), commonjs()]),
+      ...(isModule ? [] : [resolve(), commonjs()]),
     ],
   });
   const { output } = await build.generate({
@@ -173,26 +188,29 @@ ${Object.keys(require(lib))
     format: 'esm',
     exports: 'named',
   });
-  const dir = Path.join(targetLib, targetPath);
-  const content = output[0].code;
-  const sourceFilename = `${pkg.version}.${_getHash(content)}.js`;
-  const fullDir = Path.join(__dirname, 'libs', dir);
+  const content = _replaceScopeReferences(output[0].code);
+  const sourceFilename = `${rootPkg.version}.${_getHash(content)}.js`;
+  const fullDir = Path.join(__dirname, 'libs', lib);
   fs.mkdirSync(fullDir, { recursive: true });
   fs.writeFileSync(Path.join(fullDir, sourceFilename), content);
   const libOutput: LibOutput = {
     name: lib,
-    source: DOMAIN + '/npm/' + Path.join(dir, sourceFilename),
+    source: DOMAIN + '/npm/' + Path.join(lib, sourceFilename),
     types: '',
     typesBundle: '',
   };
   return libOutput;
 }
 
-function ensureSuffix(str: string, suffix: string) {
+function _ensureSuffix(str: string, suffix: string) {
   if (!str) {
     return null;
   }
   return str.endsWith(suffix) ? str : str + suffix;
+}
+
+export function _getEntryTypes(pkg: any) {
+  return _ensureSuffix(pkg.types || pkg.typings, '.d.ts');
 }
 
 function mapOrgLib(lib: string) {
@@ -202,121 +220,49 @@ function mapOrgLib(lib: string) {
   return lib;
 }
 
-function getExternalTypeData(lib: string) {
-  const targetLib = '@types/' + mapOrgLib(lib);
-  let pkg: any = null;
-  try {
-    pkg = require(targetLib + '/package.json');
-  } catch (e) {
-    return null;
-  }
-  const types = ensureSuffix(
-    (pkg.types || pkg.typings).replace('./', ''),
-    '.d.ts'
-  );
-  if (!types) {
-    return null;
-  }
-  const content = fs.readFileSync(
-    require.resolve(targetLib + '/' + ensureSuffix(types, '.d.ts')),
-    'utf8'
-  );
-  return { pkg, content };
-}
-
-function getEmbeddedTypeData(lib: string) {
-  let pkg: any = null;
-  try {
-    pkg = require(lib + '/package.json');
-  } catch (e) {
-    return null;
-  }
-  const types = ensureSuffix(pkg.types || pkg.typings, '.d.ts');
-  if (!types) {
-    return null;
-  }
-  const entry = Path.join(__dirname, 'node_modules', lib, types);
-  const patch = monkeyPatches.find(x => x.path === entry);
-  if (patch) {
-    const src = fs.readFileSync(entry, 'utf8');
-    const transformed = patch.transform(src);
-    fs.writeFileSync(entry, transformed);
-  }
-  const tmpFile = tmp.fileSync();
-  const projectFolder = Path.join(__dirname, 'node_modules', lib);
-  const config = ExtractorConfig.prepare({
-    configObject: {
-      projectFolder,
-      mainEntryPointFilePath: entry,
-      dtsRollup: {
-        enabled: true,
-        untrimmedFilePath: tmpFile.name,
-      },
-      compiler: {
-        tsconfigFilePath: Path.join(__dirname, 'tsconfig.json'),
-      },
-    },
-    configObjectFullPath: undefined,
-    packageJsonFullPath: Path.join(projectFolder, 'package.json'),
-  });
-  Extractor.invoke(config);
-  const content = fs.readFileSync(tmpFile.name, 'utf8');
-  tmpFile.removeCallback();
-  return { pkg, content };
-}
-
-async function fetchTypes(output: LibOutput) {
-  const lib = output.name;
-  if (!/^(@[a-z0-9_-]+\/[a-z0-9_-]+)|([a-z0-9_-]+)$/.test(lib)) {
-    // TODO
-    return;
-  }
-  const data = getExternalTypeData(lib) || getEmbeddedTypeData(lib);
-  if (!data) {
-    return;
-  }
-  const targetLib = '@types/' + mapOrgLib(lib);
-  const { content, pkg } = data;
-
-  const sourceFilename = `${pkg.version}.${_getHash(content)}.d.ts`;
-  const fullDir = Path.join(__dirname, 'libs', targetLib);
-  fs.mkdirSync(fullDir, { recursive: true });
-  fs.writeFileSync(Path.join(fullDir, sourceFilename), content);
-  output.types = DOMAIN + '/npm/' + Path.join(targetLib, sourceFilename);
-}
-
 async function fetchTypesBundle(output: LibOutput) {
   const lib = output.name;
   if (!/^(@[a-z0-9_-]+\/[a-z0-9_-]+)|([a-z0-9_-]+)$/.test(lib)) {
     // TODO
     return;
   }
-  const { pkg, pkgPath } = _findPackage(lib);
-  const types = ensureSuffix(pkg.types || pkg.typings, '.d.ts');
+  const { pkg, pkgPath } = _findTypesPackage(lib) || _findPackage(lib);
+  const types = _getEntryTypes(pkg);
   if (!types) {
     return;
   }
-  const typesEntry = Path.join(Path.dirname(pkgPath), types);
-  const typeBaseDir = Path.dirname(typesEntry);
+  const baseDir = Path.dirname(pkgPath);
   const bundle: Record<string, string> = {};
-  const files = walk(typeBaseDir).filter(x => x.endsWith('.d.ts'));
-  files.forEach(file => {
-    const relative = Path.relative(typeBaseDir, file);
-    let content = fs.readFileSync(file, 'utf8');
-    REMOVE_SCOPE_CHAR.forEach(scope => {
-      content = content.replace(new RegExp(scope, 'g'), scope.substr(1));
+  const files = walk(baseDir).filter(
+    x => x.endsWith('.d.ts') || x.endsWith('/package.json')
+  );
+  files
+    .filter(file => file.endsWith('.d.ts'))
+    .forEach(file => {
+      const relative = Path.relative(baseDir, file);
+      const content = fs.readFileSync(file, 'utf8');
+      bundle[relative] = _replaceScopeReferences(content);
     });
-    bundle[relative] = content;
-  });
+  files
+    .filter(file => file.endsWith('.json'))
+    .forEach(file => {
+      const subPkg = JSON.parse(fs.readFileSync(file, 'utf8'));
+      let entryTypes = _getEntryTypes(subPkg);
+      if (!entryTypes) {
+        return;
+      }
+      const newIndexPath = Path.join(Path.dirname(file), 'index.d.ts');
+      const relative = Path.relative(baseDir, newIndexPath);
+      if (bundle[relative]) {
+        return;
+      }
+      if (!entryTypes.startsWith('.')) {
+        entryTypes = './' + entryTypes;
+      }
+      const content = `export * from '${entryTypes.replace('.d.ts', '')}';\n`;
+      bundle[relative] = content;
+    });
   const content = JSON.stringify(bundle, null, 2);
-
-  // const data = getExternalTypeData(lib) || getEmbeddedTypeData(lib);
-  // if (!data) {
-  //   return;
-  // }
-  // const targetLib = '@types/' + mapOrgLib(lib);
-  // const { content, pkg } = data;
-
   const targetLib = '@types/' + mapOrgLib(lib);
   const sourceFilename = `${pkg.version}.${_getHash(content)}.json`;
   const fullDir = Path.join(__dirname, 'libs', targetLib);
@@ -335,13 +281,16 @@ async function generate() {
     'react-dom',
     'react-redux',
   ];
+  const skipTypes = ['@reduxjs/toolkit/query', '@reduxjs/toolkit/query/react'];
   await Promise.all(baseLibs.map(lib => findAllDeps(lib, deps)));
   const result: LibOutput[] = [];
   await Promise.all(
     [...deps.values()].map(async lib => {
       try {
         const output = await bundleLib(lib);
-        await fetchTypesBundle(output);
+        if (!skipTypes.includes(lib)) {
+          await fetchTypesBundle(output);
+        }
         result.push(output);
       } catch (e) {
         console.error('bundle failed for ', lib, e);

@@ -48,6 +48,21 @@ export class ModelCollection {
     this.libs.push(lib);
   }
 
+  async addLibBundle(name: string, url: string) {
+    const sourceMap: Record<string, string> = await fetch(url).then(x =>
+      x.json()
+    );
+    Object.keys(sourceMap).forEach(fileName => {
+      const source = sourceMap[fileName];
+      const lib = this.monaco.editor.createModel(
+        source,
+        'typescript',
+        this.monaco.Uri.parse(`file:///node_modules/${name}/${fileName}`)
+      );
+      this.libs.push(lib);
+    });
+  }
+
   addFile(file: EditorFile) {
     const codeModel = new CodeModel(
       this.monaco,
