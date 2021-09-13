@@ -23,7 +23,9 @@ export function initDb(options: InitOptions) {
     await Promise.all(
       getAllCollection().map(async (collection: any) => {
         await collection.createCollection();
-        await collection.initIndex();
+        if (!process.env.MONDOGB_READONLY) {
+          await collection.initIndex();
+        }
       })
     );
     isCreated = true;

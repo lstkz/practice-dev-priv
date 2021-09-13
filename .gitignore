@@ -4,6 +4,8 @@ dep-generator/libs
 dep-generator/upload-prod.sh
 dep-generator/upload-stage.sh
 
+apps/api/scripts/stats.ts
+
 # dependencies
 node_modules
 /.pnp
