@@ -8,8 +8,6 @@ import {
 import tw from 'twin.macro';
 import { createUrl } from '../../common/url';
 
-createUrl({ name: 'privacy' });
-
 interface NavItem {
   name: string;
   href: string;
@@ -21,7 +19,7 @@ const navigation = {
     { name: 'Modules', href: createUrl({ name: 'modules' }) },
     { name: 'FAQ', href: createUrl({ name: 'faq' }) },
     { name: 'Contact us', href: createUrl({ name: 'contact-us' }) },
-    { name: 'Roadmap', href: createUrl({ name: 'roadmap' }) },
+    ENABLE_CRYPTO && { name: 'Roadmap', href: createUrl({ name: 'roadmap' }) },
     { name: 'Terms', href: createUrl({ name: 'terms' }) },
     { name: 'Privacy Policy', href: createUrl({ name: 'privacy' }) },
     ENABLE_CRYPTO && { name: 'Buy Crypto', href: CRYPTO_LINK, special: true },
