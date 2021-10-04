@@ -1,9 +1,20 @@
 import Link from 'next/link';
-import { CRYPTO_LINK, DISCORD_LINK, GITHUB_LINK } from 'src/config';
+import {
+  CRYPTO_LINK,
+  DISCORD_LINK,
+  ENABLE_CRYPTO,
+  GITHUB_LINK,
+} from 'src/config';
 import tw from 'twin.macro';
 import { createUrl } from '../../common/url';
 
 createUrl({ name: 'privacy' });
+
+interface NavItem {
+  name: string;
+  href: string;
+  special?: boolean;
+}
 
 const navigation = {
   main: [
@@ -13,8 +24,8 @@ const navigation = {
     { name: 'Roadmap', href: createUrl({ name: 'roadmap' }) },
     { name: 'Terms', href: createUrl({ name: 'terms' }) },
     { name: 'Privacy Policy', href: createUrl({ name: 'privacy' }) },
-    { name: 'Buy Crypto', href: CRYPTO_LINK, special: true },
-  ],
+    ENABLE_CRYPTO && { name: 'Buy Crypto', href: CRYPTO_LINK, special: true },
+  ].filter(Boolean) as NavItem[],
   social: [
     {
       name: 'Discord',

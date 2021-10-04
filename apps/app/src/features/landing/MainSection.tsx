@@ -5,11 +5,13 @@ import { ProductHunt } from './ProductHunt';
 import { ReactLogo } from './ReactLogo';
 import { TsLogo } from './TsLogo';
 import { CryptoBanner } from './CryptoBanner';
+import { ENABLE_CRYPTO } from 'src/config';
+import tw from 'twin.macro';
 
 export function MainSection() {
   return (
     <>
-      <CryptoBanner />
+      {ENABLE_CRYPTO && <CryptoBanner />}
       <div className="relative bg-gray-800 ">
         <div
           className="hidden sm:block sm:absolute sm:inset-0 overflow-hidden"
@@ -41,7 +43,10 @@ export function MainSection() {
             />
           </svg>
         </div>
-        <div className="relative pt-20 pb-16 sm:pb-24">
+        <div
+          className="relative pt-8 pb-16 sm:pb-24"
+          css={[ENABLE_CRYPTO && tw`pt-20`]}
+        >
           <LandingHeader />
 
           <main className="mt-16 sm:mt-24">
@@ -54,12 +59,19 @@ export function MainSection() {
                       <div>Learn programming</div>
                       <div className="text-indigo-400">for free</div>
                     </h1>
-                    <p className="mt-3 text-base text-gray-300 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
-                      We are the first education platform backed by{' '}
-                      <span className="px-3 py-0.5 text-white text-xs font-semibold leading-5 uppercase tracking-wide bg-yellow-500 rounded-full">
-                        crypto
-                      </span>
-                    </p>
+                    {ENABLE_CRYPTO ? (
+                      <p className="mt-3 text-base text-gray-300 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
+                        We are the first education platform backed by{' '}
+                        <span className="px-3 py-0.5 text-white text-xs font-semibold leading-5 uppercase tracking-wide bg-yellow-500 rounded-full">
+                          crypto
+                        </span>
+                      </p>
+                    ) : (
+                      <p className="mt-3 text-base text-gray-300 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
+                        Improve your programming skills by solving various
+                        challenges.
+                      </p>
+                    )}
                     <p className="mt-8 text-sm text-white uppercase tracking-wide font-semibold sm:mt-10">
                       Supported technologies
                     </p>

@@ -46,3 +46,5 @@ if (!process.env.BUGSNAG_KEY) {
 }
 export const BUGSNAG_KEY =
   process.env.BUGSNAG_KEY === '-1' ? -1 : process.env.BUGSNAG_KEY;
+
+export const ENABLE_CRYPTO = false;

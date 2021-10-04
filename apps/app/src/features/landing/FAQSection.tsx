@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import React from 'react';
 import { createUrl } from 'src/common/url';
+import { ENABLE_CRYPTO } from 'src/config';
 import tw, { styled } from 'twin.macro';
 
 const CodeWrapper = styled.div`
@@ -13,6 +14,12 @@ const List = styled.ul`
   ${tw`mb-2 list-disc ml-8`}
 `;
 
+interface FaqItem {
+  id: number;
+  question: string;
+  answer: JSX.Element;
+}
+
 export function FAQSection() {
   const faqs = [
     {
@@ -21,10 +28,14 @@ export function FAQSection() {
       answer: (
         <>
           Yes! You can solve all challenges for free without any limits.
-          <br />
-          <strong className="font-semibold text-gray-900">
-            You don't have to buy any crypto to use the website!
-          </strong>
+          {ENABLE_CRYPTO && (
+            <>
+              <br />
+              <strong className="font-semibold text-gray-900">
+                You don't have to buy any crypto to use the website!
+              </strong>
+            </>
+          )}
         </>
       ),
     },
@@ -56,7 +67,7 @@ export function FAQSection() {
         </>
       ),
     },
-    {
+    ENABLE_CRYPTO && {
       id: 5,
       question: 'How will crypto royalties be calculated?',
       answer: (
@@ -87,7 +98,7 @@ export function FAQSection() {
         </CodeWrapper>
       ),
     },
-  ];
+  ].filter(Boolean) as FaqItem[];
 
   return (
     <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:py-20 lg:px-8">

@@ -1,6 +1,7 @@
 import React from 'react';
 import { createGetServerSideProps, createSSRClient } from 'src/common/helper';
 import { createUrl } from 'src/common/url';
+import { ENABLE_CRYPTO } from 'src/config';
 import { CryptoSection } from './CryptoSection';
 import CTASection from './CTASection';
 import { FAQSection } from './FAQSection';
@@ -20,9 +21,9 @@ export function LandingPage() {
       <HowItWorksSection />
       {/* <StatsSection />
       <TestimonialsSection /> */}
-      <CryptoSection />
+      {ENABLE_CRYPTO && <CryptoSection />}
       <FAQSection />
-      <RoadmapSection />
+      {ENABLE_CRYPTO && <RoadmapSection />}
       <CTASection />
       <Footer />
     </>

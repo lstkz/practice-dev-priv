@@ -280,6 +280,7 @@ async function generate() {
     'react',
     'react-dom',
     'react-redux',
+    'react-router',
   ];
   const skipTypes = ['@reduxjs/toolkit/query', '@reduxjs/toolkit/query/react'];
   await Promise.all(baseLibs.map(lib => findAllDeps(lib, deps)));
